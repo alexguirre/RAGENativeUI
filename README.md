@@ -7,7 +7,7 @@ Ported by: alexguirre, Stealth22, LtFlash
 ### Features
 
 * Support for simple buttons, checkboxes and lists.
-* Support for custom banners from game sprites and your own textures.
+* Support for custom banners from game sprites and your own textures(own textures not implement).
 * Easy nested menus for fast and painless nested menu system.
 * Controller support.
 * Mouse controls.
