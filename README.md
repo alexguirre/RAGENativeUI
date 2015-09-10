@@ -1,7 +1,8 @@
 # RAGENativeUI
 
 RAGENativeUI is the NativeUI port to RAGEPluginHook. It helps you quickly and easily build Rockstar-like menus.
-![Example]({{site.baseurl}}/http://i.imgur.com/8myLlwB.png)
+
+![RAGENativeUI Example](http://i.imgur.com/8myLlwB.png)
 
 Ported by: alexguirre, Stealth22, LtFlash
 
