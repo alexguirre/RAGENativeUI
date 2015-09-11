@@ -13,12 +13,12 @@ namespace MenuExample
 
     public static class EntryPoint
     {
-        private static UIMenu mainMenu;
+        private static UIMenu mainMenu;    
         private static UIMenu newMenu;
-        private static MenuCheckboxItem ketchupCheckbox;
+        
+        private static MenuCheckboxItem ketchupCheckbox;     
         private static MenuListItem dishesListItem;
         private static NativeMenuItem cookItem;
-
         private static NativeMenuItem spawnCar;
         private static MenuListItem carsList;
 
@@ -27,6 +27,7 @@ namespace MenuExample
         public static void Main()
         {
             Game.FrameRender += Process;
+            
             _menuPool = new MenuPool();
 
             mainMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
@@ -34,14 +35,15 @@ namespace MenuExample
             _menuPool.Add(mainMenu);
 
             mainMenu.AddItem(ketchupCheckbox = new MenuCheckboxItem("Add ketchup?", false, "Do you wish to add ketchup?"));
+            
             var foods = new List<dynamic>
-        {
-            "Banana",
-            "Apple",
-            "Pizza",
-            "Quartilicious",
-            0xF00D, // Dynamic!
-        };
+            {
+                "Banana",
+                "Apple",
+                "Pizza",
+                "Quartilicious",
+                0xF00D, // Dynamic!
+            };
             mainMenu.AddItem(dishesListItem = new MenuListItem("Food", foods, 0));
             mainMenu.AddItem(cookItem = new NativeMenuItem("Cook!", "Cook the dish with the appropiate ingredients and ketchup."));
 
@@ -111,10 +113,10 @@ namespace MenuExample
 
         public static void OnItemSelect(UIMenu sender, NativeMenuItem selectedItem, int index)
         {
-            if (sender != mainMenu) return; // We only want to detect changes from our menu and our button.
+            if (sender != mainMenu) return; // We only want to detect changes from our menu.
             // You can also detect the button by using index
 
-            if (selectedItem == cookItem)
+            if (selectedItem == cookItem)   // We check wich item has been selected and do different things for each.
             {
                 string dish = dishesListItem.IndexToItem(dishesListItem.Index).ToString();
                 bool ketchup = ketchupCheckbox.Checked;
@@ -128,18 +130,17 @@ namespace MenuExample
             {
                 GameFiber.StartNew(delegate
                 {
-                    Vehicle veh = new Vehicle(((string)carsList.IndexToItem(carsList.Index)).ToLower(), Game.LocalPlayer.Character.Position + Game.LocalPlayer.Character.ForwardVector * 5.6f);
-                    veh.Dismiss();
+                    new Vehicle(((string)carsList.IndexToItem(carsList.Index)).ToLower(), Game.LocalPlayer.Character.Position + Game.LocalPlayer.Character.ForwardVector * 5.6f).Dismiss();
                 }); 
             }
         }
 
         public static void Process(object sender, GraphicsEventArgs e)
         {
-            if (Game.IsKeyDown(Keys.F5) && !_menuPool.IsAnyMenuOpen()) // Our menu on/off switch
+            if (Game.IsKeyDown(Keys.F5) && !_menuPool.IsAnyMenuOpen()) // Our menu on/off switch.
                 mainMenu.Visible = !mainMenu.Visible;
 
-            _menuPool.ProcessMenus();
+            _menuPool.ProcessMenus();       // Procces all our menus: draw the menu and procces the key strokes and the mouse. 
         }
     }
 }
