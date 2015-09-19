@@ -3,6 +3,8 @@
 *
 * Created by: Guad, CamxxCore, jedijosh920
 *
+* 
+* Ported by: alexguirre, Stealth22, LtFlash 
 *
 */
 
@@ -14,8 +16,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Rage;
 using Rage.Native;
-//using Control = GTA.Control;
-//using Font = GTA.Font;
 using RAGENativeUI.Elements;
 
 namespace RAGENativeUI
@@ -39,7 +39,7 @@ namespace RAGENativeUI
     public delegate void ItemListEvent(NativeMenuItem sender, int newIndex);
 
     /// <summary>
-    /// Base class for NativeUI. Calls the next events: OnIndexChange, OnListChanged, OnCheckboxChange, OnItemSelect, OnMenuClose, OnMenuchange.
+    /// Base class for RAGENativeUI. Calls the next events: OnIndexChange, OnListChanged, OnCheckboxChange, OnItemSelect, OnMenuClose, OnMenuchange.
     /// </summary>
     public class UIMenu
     {
@@ -153,10 +153,10 @@ namespace RAGENativeUI
         /// <param name="subtitle">Subtitle that appears in capital letters in a small black bar. Set to "" if you dont want a subtitle.</param>
         /// <param name="offset">Point object with X and Y data for offsets. Applied to all menu elements.</param>
         /// <param name="customBanner">Path to your custom texture.</param>
-        public UIMenu(string title, string subtitle, Point offset, string customBanner) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
-        {
-            _customBanner = customBanner;
-        }
+        //public UIMenu(string title, string subtitle, Point offset, string customBanner) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
+        //{
+        //    _customBanner = customBanner;
+        //}
 
         /// <summary>
         /// Advanced Menu constructor that allows custom title banner.
@@ -364,14 +364,14 @@ namespace RAGENativeUI
             _tmpRectangle.Size = new Size(431 + WidthOffset, 107);
         }
 
-        /// <summary>
-        /// Set the banner to your own custom texture. Set it to "" if you want to restore the banner.
-        /// </summary>
-        /// <param name="pathToCustomSprite">Path to your sprite image.</param>
-        public void SetBannerType(string pathToCustomSprite)
-        {
-            _customBanner = pathToCustomSprite;
-        }
+        ///// <summary>         /* ADD CUSTOM BANNERS */
+        ///// Set the banner to your own custom texture. Set it to "" if you want to restore the banner.[not implemented]
+        ///// </summary>
+        ///// <param name="pathToCustomSprite">Path to your sprite image.</param>
+        //public void SetBannerType(string pathToCustomSprite)
+        //{
+        //    _customBanner = pathToCustomSprite;
+        //}
 
         /// <summary>
         /// Add an item to the menu.
@@ -458,7 +458,7 @@ namespace RAGENativeUI
             else
             {
                 Point safe = GetSafezoneBounds();
-                Sprite.DrawTexture(_customBanner, new Point(safe.X + _offset.X, safe.Y + _offset.Y), new Size(431 + WidthOffset, 107));
+                //Sprite.DrawTexture(_customBanner, new Point(safe.X + _offset.X, safe.Y + _offset.Y), new Size(431 + WidthOffset, 107));
             }
             _mainMenu.Draw();
             if (MenuItems.Count == 0)
@@ -557,7 +557,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Function to get whether the cursor is in an arrow space, or in label of an UIMenuListItem.
+        /// Function to get whether the cursor is in an arrow space, or in label of an MenuListItem.
         /// </summary>
         /// <param name="item">What item to check</param>
         /// <param name="topLeft">top left point of the item.</param>
@@ -701,7 +701,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go left on a UIMenuListItem.
+        /// Go left on a MenuListItem.
         /// </summary>
         public void GoLeft()
         {
@@ -714,7 +714,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go right on a UIMenuListItem.
+        /// Go right on a MenuListItem.
         /// </summary>
         public void GoRight()
         {
@@ -802,7 +802,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Process the mouse's position and check if it's hovering over any UI element. Call this in OnTick
+        /// Process the mouse's position and check if it's hovering over any Element. Call this in Game.FrameRender or in a loop.
         /// </summary>
         public void ProcessMouse()
         {
@@ -825,13 +825,11 @@ namespace RAGENativeUI
 
             if (IsMouseInBounds(new Point(0, 0), new Size(30, 1080)) && MouseEdgeEnabled)
             {
-                //Camera.RenderingCamera.SetRotationRoll(Camera.RenderingCamera.Rotation.Roll + 5f);
                 NativeFunction.CallByName<uint>("SET_GAMEPLAY_CAM_RELATIVE_HEADING", NativeFunction.CallByName<float>("GET_GAMEPLAY_CAM_RELATIVE_HEADING") + 5.0f);
                 NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 6);
             }
             else if (IsMouseInBounds(new Point(Convert.ToInt32(GetScreenResolutionMantainRatio().Width - 30f), 0), new Size(30, 1080)) &&  MouseEdgeEnabled)
             {
-                //Camera.RenderingCamera.SetRotationRoll(Camera.RenderingCamera.Rotation.Roll - 5f);
                 NativeFunction.CallByName<uint>("SET_GAMEPLAY_CAM_RELATIVE_HEADING", NativeFunction.CallByName<float>("GET_GAMEPLAY_CAM_RELATIVE_HEADING") - 5.0f);
                 NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 7);
             }
@@ -914,7 +912,7 @@ namespace RAGENativeUI
             if (IsMouseInBounds(new Point(extraX, extraY+18), new Size(431 + WidthOffset, 18)))
             {
                 _extraRectangleDown.Color = Color.FromArgb(255, 30, 30, 30);
-                if (Game.IsControlJustPressed(0, GameControl.Attack))
+                if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack)) // Fixed move down arrow not working v1.1
                 {
                     if (MenuItems.Count > MaxItemsOnScreen + 1)
                         GoDownOverflow();
@@ -944,7 +942,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Set a GTA.Control to control a menu. Can be multiple controls. This applies it to all indexes.
+        /// Set a Rage.GameControl to control a menu. Can be multiple controls. This applies it to all indexes.
         /// </summary>
         /// <param name="control"></param>
         /// <param name="gtaControl"></param>
@@ -956,7 +954,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Set a GTA.Control to control a menu only on a specific index.
+        /// Set a Rage.GameControl to control a menu only on a specific index.
         /// </summary>
         /// <param name="control"></param>
         /// <param name="gtaControl"></param>
@@ -1062,7 +1060,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Process control-stroke. Call this in the OnTick event.
+        /// Process control-stroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
         public void ProcessControl(Keys key = Keys.None)
         {
@@ -1114,7 +1112,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Process keystroke. Call this in the OnKeyDown event.
+        /// Process keystroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
         /// <param name="key"></param>
         public void ProcessKey(Keys key)
@@ -1237,11 +1235,6 @@ namespace RAGENativeUI
         public static bool IsUsingController = !NativeFunction.CallByHash<bool>(0xa571d46727e2b718, 2);
 
         /// <summary>
-        /// Returns the amount of items in the menu.
-        ///// </summary>
-        //public int Size = MenuItems.Count;
-
-        /// <summary>
         /// Returns the title object.
         /// </summary>
         public ResText Title { get; private set; }
@@ -1297,3 +1290,4 @@ namespace RAGENativeUI
         }
     }
 }
+
