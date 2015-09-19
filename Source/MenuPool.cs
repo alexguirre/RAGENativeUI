@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using RAGENativeUI.Elements;
@@ -147,10 +147,10 @@ namespace RAGENativeUI
             _menuList.ForEach(m => m.SetBannerType(bannerType));
         }
 
-        public void SetBannerType(string bannerPath)
-        {
-            _menuList.ForEach(m => m.SetBannerType(bannerPath));
-        }
+        //public void SetBannerType(string bannerPath)
+        //{
+        //    _menuList.ForEach(m => m.SetBannerType(bannerPath));
+        //}
 
         public void SetKey(Common.MenuControls menuControl, GameControl control)
         {
@@ -171,7 +171,5 @@ namespace RAGENativeUI
         {
             _menuList.ForEach(m => m.ResetKey(menuControl));
         }
-
-        
     }
 }
