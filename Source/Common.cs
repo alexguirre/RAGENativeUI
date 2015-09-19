@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rage;
 using Rage.Native;
 
@@ -6,6 +6,9 @@ namespace RAGENativeUI
 {
     public static class Common
     {
+        /// <summary>
+        /// Fonts used by GTA V
+        /// </summary>
         public enum EFont
         {
             ChaletLondon = 0,
@@ -31,19 +34,34 @@ namespace RAGENativeUI
             NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, soundFile, soundSet, false);
         }
 
-
+        /// <summary>
+        /// Check if a Rage.GameControl is pressed while it's disabled
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="control"></param>
+        /// <returns>true if a Rage.GameControl is pressed while it's disabled</returns>
         public static bool IsDisabledControlPressed(int index, GameControl control)
         {
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_PRESSED", index, (int)control);
         }
 
-
+        /// <summary>
+        /// Check if a Rage.GameControl is just pressed while it's disabled
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="control"></param>
+        /// <returns>true if a Rage.GameControl is just pressed while it's disabled</returns>
         public static bool IsDisabledControlJustPressed(int index, GameControl control)
         {
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_PRESSED", index, (int)control);
         }
 
-
+        /// <summary>
+        /// Check if a Rage.GameControl is just released while it's disabled
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="control"></param>
+        /// <returns>true if a Rage.GameControl is just released while it's disabled</returns>
         public static bool IsDisabledControlJustReleased(int index, GameControl control)
         {
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_RELEASED", index, (int)control);
