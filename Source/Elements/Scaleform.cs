@@ -36,7 +36,8 @@ namespace RAGENativeUI.Elements
 
         public void Render2D()
         {
-            NativeFunction.CallByHash<uint>(0xcf537fde4fbd4ce5, this._handle, 255, 255, 255, 255);
+            const ulong DrawScaleformMovieDefault = 0x0df606929c105be1;         
+            NativeFunction.CallByHash<uint>(DrawScaleformMovieDefault, this.Handle, 255, 255, 255, 255);
         }
         public void Render2DScreenSpace(PointF location, PointF size)
         {
@@ -61,7 +62,7 @@ namespace RAGENativeUI.Elements
 
         public void CallFunction(string function, params object[] arguments)
         {
-            const ulong PushScaleformMovieFunctionHash = 0xf6e48914c7a8694e;      // Add this hashes to the Hash class?
+            const ulong PushScaleformMovieFunctionHash = 0xf6e48914c7a8694e;      
             const ulong PushScaleformMovieFunctionParameterIntHash = 0xc3d0841a0cc546a6;
             const ulong BeginTextComponentHash = 0x80338406f3475e55;
             const ulong AddTextComponentStringHash = 0x6c188be134e074aa;
