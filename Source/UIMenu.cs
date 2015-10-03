@@ -88,6 +88,7 @@ namespace RAGENativeUI
         public bool ResetCursorOnOpen = true;
         public bool FormatDescriptions = true;
         public bool MouseControlsEnabled = true;
+        public bool AllowCameraMovement = false;
 
         //Events
 
@@ -461,7 +462,10 @@ namespace RAGENativeUI
 
             if(ControlDisablingEnabled)
                 DisEnableControls(false);
-
+                
+            if (AllowCameraMovement && ControlDisablingEnabled)
+                EnableCameraMovement();
+                
             if(_buttonsEnabled)
                 _instructionalButtonsScaleform.Render2D();
             
@@ -1203,6 +1207,12 @@ namespace RAGENativeUI
                 count++;
             }
             _instructionalButtonsScaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
+        }
+
+        private void EnableCameraMovement()     
+        {
+            NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", 0, (int)GameControl.LookLeftRight);
+            NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", 0, (int)GameControl.LookUpDown);
         }
 
         /// <summary>
