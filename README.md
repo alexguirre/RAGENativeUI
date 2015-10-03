@@ -4,7 +4,7 @@ RAGENativeUI is the NativeUI port to RAGEPluginHook. It helps you quickly and ea
 
 ![RAGENativeUI Example](http://i.imgur.com/8myLlwB.png)
 
-Ported by: alexguirre, Stealth22, LtFlash
+Ported by: alexguirre, Stealth22, LtFlash, Guad
 
 ### Features
 
