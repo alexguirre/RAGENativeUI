@@ -152,7 +152,7 @@ namespace RAGENativeUI
         /// <param name="title">Title that appears on the big banner. Set to "" if you don't want a title.</param>
         /// <param name="subtitle">Subtitle that appears in capital letters in a small black bar. Set to "" if you dont want a subtitle.</param>
         /// <param name="offset">Point object with X and Y data for offsets. Applied to all menu elements.</param>
-        /// <param name="customBanner">Path to your custom texture.</param>
+        /// <param name="customBanner">Your custom Rage.Texture.</param>
         public UIMenu(string title, string subtitle, Point offset, Texture customBanner) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
         {
             _customBanner = customBanner;
