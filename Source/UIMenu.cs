@@ -4,7 +4,7 @@
 * Created by: Guad, CamxxCore, jedijosh920
 *
 * 
-* Ported by: alexguirre, Stealth22, LtFlash 
+* Ported by: alexguirre, Stealth22, LtFlash, Guad
 *
 */
 
