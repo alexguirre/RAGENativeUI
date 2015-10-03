@@ -90,34 +90,20 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Draw a custom texture from a file on a 1080-pixels height base.
         /// </summary>
-        /// <param name="path">Path to texture file.</param>
+        /// <param name="texture">Your custom texture object.</param>
         /// <param name="position"></param>
         /// <param name="size"></param>
-        //public static void DrawTexture(string path, Point position, Size size)
-        //{
-        //    /*
-        //    int screenw = Game.Resolution.Width;
-        //    int screenh = Game.Resolution.Height;
+        public static void DrawTexture(Texture texture, Point position, Size size, GraphicsEventArgs canvas)
+        { 
+            var origRes = Game.Resolution;
+            float aspectRaidou = origRes.Width / (float)origRes.Height;
             
-        //    const float height = 1080f;
-        //    float ratio = (float)screenw / screenh;
-        //    float width = height * ratio;
-            
-        //    float reduceX = 1280 / width;
-        //    float reduceY = 720 / height;
+            PointF pos = new PointF(position.X / (1080 * aspectRaidou), position.Y / 1080f);
+            SizeF siz = new SizeF(size.Width / (1080 * aspectRaidou), size.Height / 1080f);
 
-            
-        //    Point extra = new Point(0,0);
-        //    if (screenw == 1914 && screenh == 1052) //TODO: Fix this when ScriptHookVDotNet 1.2 comes out.
-        //        extra = new Point(15, 0);
-            
-        //    //UI.DrawTexture(path, 1, 1, 60,
-        //    //    new Point(Convert.ToInt32(position.X*reduceX) + extra.X, Convert.ToInt32(position.Y*reduceY) + extra.Y),
-        //    //    new PointF(0f, 0f), 
-        //    //    new Size(Convert.ToInt32(size.Width * reduceX), Convert.ToInt32(size.Height * reduceY)),
-        //    //    0f, Color.White);
-        //    */
-        //}
+            canvas.Graphics.DrawTexture(texture, pos.X* Game.Resolution.Width, pos.Y* Game.Resolution.Height, siz.Width* Game.Resolution.Width, siz.Height* Game.Resolution.Height);
+
+        }
 
         
         /// <summary>
