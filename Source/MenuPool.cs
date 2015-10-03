@@ -127,6 +127,16 @@ namespace RAGENativeUI
 
 
         /// <summary>
+        /// Draw all of your menus' custom banners.
+        /// </summary>
+        /// <param name="canvas">Canvas to draw on.</param>
+        public void DrawBanners(GraphicsEventArgs canvas)
+        {
+            _menuList.ForEach(menu => menu.DrawBanner(canvas));
+        }
+
+
+        /// <summary>
         /// Closes all of your menus.
         /// </summary>
         public void CloseAllMenus()
@@ -147,10 +157,10 @@ namespace RAGENativeUI
             _menuList.ForEach(m => m.SetBannerType(bannerType));
         }
 
-        //public void SetBannerType(string bannerPath)
-        //{
-        //    _menuList.ForEach(m => m.SetBannerType(bannerPath));
-        //}
+        public void SetBannerType(Texture banner)
+        {
+            _menuList.ForEach(m => m.SetBannerType(banner));
+        }
 
         public void SetKey(Common.MenuControls menuControl, GameControl control)
         {
