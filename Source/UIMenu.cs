@@ -52,7 +52,7 @@ namespace RAGENativeUI
         private readonly ResText _descriptionText;
         private readonly ResText _counterText;
 
-        private string _customBanner;
+        private Texture _customBanner;
 
         private int _activeItem = 1000;
 
@@ -153,10 +153,10 @@ namespace RAGENativeUI
         /// <param name="subtitle">Subtitle that appears in capital letters in a small black bar. Set to "" if you dont want a subtitle.</param>
         /// <param name="offset">Point object with X and Y data for offsets. Applied to all menu elements.</param>
         /// <param name="customBanner">Path to your custom texture.</param>
-        //public UIMenu(string title, string subtitle, Point offset, string customBanner) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
-        //{
-        //    _customBanner = customBanner;
-        //}
+        public UIMenu(string title, string subtitle, Point offset, Texture customBanner) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
+        {
+            _customBanner = customBanner;
+        }
 
         /// <summary>
         /// Advanced Menu constructor that allows custom title banner.
@@ -364,14 +364,14 @@ namespace RAGENativeUI
             _tmpRectangle.Size = new Size(431 + WidthOffset, 107);
         }
 
-        ///// <summary>         /* ADD CUSTOM BANNERS */
-        ///// Set the banner to your own custom texture. Set it to "" if you want to restore the banner.[not implemented]
-        ///// </summary>
-        ///// <param name="pathToCustomSprite">Path to your sprite image.</param>
-        //public void SetBannerType(string pathToCustomSprite)
-        //{
-        //    _customBanner = pathToCustomSprite;
-        //}
+        /// <summary>
+        /// Set the banner to your own custom texture. Set it to null if you want to restore the banner.
+        /// </summary>
+        /// <param name="texture">Rage.Texture object</param>
+        public void SetBannerType(Texture texture)
+        {
+            _customBanner = texture;
+        }
 
         /// <summary>
         /// Add an item to the menu.
@@ -428,6 +428,29 @@ namespace RAGENativeUI
             MenuItems.Clear();
             RecaulculateDescriptionPosition();
         }
+
+
+        /// <summary>
+        /// Draw your custom banner.
+        /// </summary>
+        /// <param name="e">Rage.GraphicsEventArgs to draw on.</param>
+        public void DrawBanner(GraphicsEventArgs e)
+        {
+            if(!Visible || _customBanner == null) return;
+            var origRes = Game.Resolution;
+            var safe = GetSafezoneBounds();
+            float aspectRaidou = origRes.Width / (float)origRes.Height;
+
+            Point bannerPos = new Point(_offset.X + safe.X, _offset.Y + safe.Y);
+            Size bannerSize = new Size(431 + WidthOffset, 107);
+
+            PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
+            SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
+
+            //Bug: funky positionment on windowed games + max resolution.
+
+            e.Graphics.DrawTexture(_customBanner, pos.X*Game.Resolution.Width, pos.Y*Game.Resolution.Height, siz.Width*Game.Resolution.Width, siz.Height*Game.Resolution.Height);
+        }
         
         /// <summary>
         /// Draw the menu and all of it's components.
@@ -446,7 +469,7 @@ namespace RAGENativeUI
             NativeFunction.CallByHash<uint>(0xf5a2c681787e579d, 0f, 0f, 0f, 0f);   // stuff
 
 
-            if (String.IsNullOrWhiteSpace(_customBanner))
+            if (_customBanner == null)
             {
                 if (_logo != null)
                     _logo.Draw();
@@ -454,11 +477,6 @@ namespace RAGENativeUI
                 {
                     _tmpRectangle.Draw();
                 }
-            }
-            else
-            {
-                Point safe = GetSafezoneBounds();
-                //Sprite.DrawTexture(_customBanner, new Point(safe.X + _offset.X, safe.Y + _offset.Y), new Size(431 + WidthOffset, 107));
             }
             _mainMenu.Draw();
             if (MenuItems.Count == 0)
