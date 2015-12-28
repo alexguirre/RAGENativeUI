@@ -66,5 +66,19 @@ namespace RAGENativeUI
         {
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_RELEASED", index, (int)control);
         }
+
+        public static Keys GetKeyDown()
+        {
+            foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                if (Game.IsKeyDown(key)) return key;
+            return Keys.None;
+        }
+
+        public static Keys GetKeyDownRightNow()
+        {
+            foreach (Keys key in Enum.GetValues(typeof(Keys)))
+                if (Game.IsKeyDownRightNow(key)) return key;
+            return Keys.None;
+        }
     }
 }
