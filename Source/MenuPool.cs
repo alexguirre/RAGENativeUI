@@ -72,11 +72,11 @@ namespace RAGENativeUI
         /// Processes all of your visible menus' keys.
         /// </summary>
         /// <param name="key"></param>
-        public void ProcessKey(Keys key)
+        public void ProcessKeys()
         {
             foreach (var menu in _menuList.Where(menu => menu.Visible))
             {
-                menu.ProcessKey(key);
+                menu.ProcessKeys());
             }
         }
 
@@ -121,10 +121,10 @@ namespace RAGENativeUI
         public void ProcessMenus()
         {
             ProcessControl();
+            ProcessKeys();  
             ProcessMouse();
             Draw();
         }
-
 
         /// <summary>
         /// Draw all of your menus' custom banners.
@@ -134,7 +134,6 @@ namespace RAGENativeUI
         {
             _menuList.ForEach(menu => menu.DrawBanner(canvas));
         }
-
 
         /// <summary>
         /// Closes all of your menus.
