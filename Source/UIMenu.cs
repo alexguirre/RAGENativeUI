@@ -1018,9 +1018,11 @@ namespace RAGENativeUI
             if (key != Keys.None)
             {
                 if (tmpKeys.Any(Game.IsKeyDown))
+                {
                     return true;
+                }
             }
-            if (tmpControls.Any(tuple => Game.IsControlJustPressed(tuple.Item2, tuple.Item1)))
+            if (tmpControls.Any(tuple => Game.IsControlJustPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustPressed(tuple.Item2, tuple.Item1)))
                 return true;
             return false;
         }
@@ -1039,7 +1041,9 @@ namespace RAGENativeUI
             if (key != Keys.None)
             {
                 if (tmpKeys.Any(Game.IsKeyDown))
+                {
                     return true;
+                }
             }
             if (tmpControls.Any(tuple => Game.IsControlJustReleased(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustReleased(tuple.Item2, tuple.Item1)))
                 return true;
@@ -1136,9 +1140,9 @@ namespace RAGENativeUI
         /// <summary>
         /// Process keystroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
-        /// <param name="key"></param>
-        public void ProcessKey(Keys key)
+        public void ProcessKeys()                       
         {
+            Keys key = Common.GetKeyDownRightNow();                         
             if ((from object menuControl in Enum.GetValues(typeof(Common.MenuControls)) select new List<Keys>(_keyDictionary[(Common.MenuControls)menuControl].Item1)).Any(tmpKeys => tmpKeys.Any(k => k == key)))
             {
                 ProcessControl(key);
