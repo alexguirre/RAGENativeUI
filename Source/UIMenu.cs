@@ -4,7 +4,7 @@
 * Created by: Guad, CamxxCore, jedijosh920
 *
 * 
-* Ported by: alexguirre, Stealth22, LtFlash, Guad
+* Ported by: alexguirre, Stealth22, LtFlash 
 *
 */
 
@@ -22,21 +22,21 @@ namespace RAGENativeUI
 {
     public delegate void IndexChangedEvent(UIMenu sender, int newIndex);
 
-    public delegate void ListChangedEvent(UIMenu sender, MenuListItem listItem, int newIndex);
+    public delegate void ListChangedEvent(UIMenu sender, UIMenuListItem listItem, int newIndex);
 
-    public delegate void CheckboxChangeEvent(UIMenu sender, MenuCheckboxItem checkboxItem, bool Checked);
+    public delegate void CheckboxChangeEvent(UIMenu sender, UIMenuCheckboxItem checkboxItem, bool Checked);
 
-    public delegate void ItemSelectEvent(UIMenu sender, NativeMenuItem selectedItem, int index);
+    public delegate void ItemSelectEvent(UIMenu sender, UIMenuItem selectedItem, int index);
 
     public delegate void MenuCloseEvent(UIMenu sender);
 
     public delegate void MenuChangeEvent(UIMenu oldMenu, UIMenu newMenu, bool forward);
 
-    public delegate void ItemActivatedEvent(UIMenu sender, NativeMenuItem selectedItem);
+    public delegate void ItemActivatedEvent(UIMenu sender, UIMenuItem selectedItem);
 
-    public delegate void ItemCheckboxEvent(MenuCheckboxItem sender, bool Checked);
+    public delegate void ItemCheckboxEvent(UIMenuCheckboxItem sender, bool Checked);
 
-    public delegate void ItemListEvent(NativeMenuItem sender, int newIndex);
+    public delegate void ItemListEvent(UIMenuItem sender, int newIndex);
 
     /// <summary>
     /// Base class for RAGENativeUI. Calls the next events: OnIndexChange, OnListChanged, OnCheckboxChange, OnItemSelect, OnMenuClose, OnMenuchange.
@@ -81,7 +81,7 @@ namespace RAGENativeUI
         public string AUDIO_BACK = "BACK";
         public string AUDIO_ERROR = "ERROR";
         
-        public List<NativeMenuItem> MenuItems = new List<NativeMenuItem>();
+        public List<UIMenuItem> MenuItems = new List<UIMenuItem>();
 
         public bool MouseEdgeEnabled = true;
         public bool ControlDisablingEnabled = true;
@@ -126,7 +126,7 @@ namespace RAGENativeUI
         private readonly Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>> _keyDictionary = new Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>>();
                          
         //Tree structure
-        public Dictionary<NativeMenuItem, UIMenu> Children { get; private set; }
+        public Dictionary<UIMenuItem, UIMenu> Children { get; private set; }
         
         /// <summary>
         /// Basic Menu constructor.
@@ -170,7 +170,7 @@ namespace RAGENativeUI
         public UIMenu(string title, string subtitle, Point offset, string spriteLibrary, string spriteName)
         {
             _offset = offset;
-            Children = new Dictionary<NativeMenuItem, UIMenu>();
+            Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
 
             _instructionalButtonsScaleform = new Scaleform(0);
@@ -322,7 +322,7 @@ namespace RAGENativeUI
                     GameControl.LookLeftRight,
                     GameControl.Aim,
                     GameControl.Attack,
-                });   
+                });
             }
 
             foreach (var control in list)
@@ -378,7 +378,7 @@ namespace RAGENativeUI
         /// Add an item to the menu.
         /// </summary>
         /// <param name="item">Item object to be added. Can be normal item, checkbox or list item.</param>
-        public void AddItem(NativeMenuItem item)
+        public void AddItem(UIMenuItem item)
         {
             item.Offset = _offset;
             item.Parent = this;
@@ -429,15 +429,14 @@ namespace RAGENativeUI
             MenuItems.Clear();
             RecaulculateDescriptionPosition();
         }
-
-
+        
         /// <summary>
         /// Draw your custom banner.
         /// </summary>
         /// <param name="e">Rage.GraphicsEventArgs to draw on.</param>
         public void DrawBanner(GraphicsEventArgs e)
         {
-            if(!Visible || _customBanner == null) return;
+            if (!Visible || _customBanner == null) return;
             var origRes = Game.Resolution;
             var safe = GetSafezoneBounds();
             float aspectRaidou = origRes.Width / (float)origRes.Height;
@@ -449,10 +448,9 @@ namespace RAGENativeUI
             SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
 
             //Bug: funky positionment on windowed games + max resolution.
-
-            e.Graphics.DrawTexture(_customBanner, pos.X*Game.Resolution.Width, pos.Y*Game.Resolution.Height, siz.Width*Game.Resolution.Width, siz.Height*Game.Resolution.Height);
+            e.Graphics.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
-        
+
         /// <summary>
         /// Draw the menu and all of it's components.
         /// </summary>
@@ -460,12 +458,25 @@ namespace RAGENativeUI
         {
             if (!Visible) return;
 
-            if(ControlDisablingEnabled)
+
+            if (_justOpened)
+            {
+                if (_logo != null && !_logo.IsTextureDictLoaded)
+                    _logo.LoadTextureDict();
+                if (!_background.IsTextureDictLoaded)
+                    _background.LoadTextureDict();
+                if (!_descriptionRectangle.IsTextureDictLoaded)
+                    _descriptionRectangle.LoadTextureDict();
+                if (!_upAndDownSprite.IsTextureDictLoaded)
+                    _upAndDownSprite.LoadTextureDict();
+            }
+
+            if (ControlDisablingEnabled)
                 DisEnableControls(false);
-                
-            if (AllowCameraMovement && ControlDisablingEnabled)
+
+            if (AllowCameraMovement && ControlDisablingEnabled)     
                 EnableCameraMovement();
-                
+
             if(_buttonsEnabled)
                 _instructionalButtonsScaleform.Render2D();
             
@@ -482,6 +493,7 @@ namespace RAGENativeUI
                     _tmpRectangle.Draw();
                 }
             }
+
             _mainMenu.Draw();
             if (MenuItems.Count == 0)
             {
@@ -585,7 +597,7 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of the item.</param>
         /// <param name="safezone">safezone size.</param>
         /// <returns>0 - Not in item at all, 1 - In label, 2 - In arrow space.</returns>
-        public int IsMouseInListItemArrows(MenuListItem item, Point topLeft, Point safezone) // TODO: Ability to scroll left and right
+        public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone) // TODO: Ability to scroll left and right
         {
             NativeFunction.CallByHash<uint>(0x54ce8ac98e120cab, "jamyfafi");
             ResText.AddLongString(item.Text);
@@ -727,8 +739,8 @@ namespace RAGENativeUI
         /// </summary>
         public void GoLeft()
         {
-            if (!(MenuItems[CurrentSelection] is MenuListItem)) return;
-            var it = (MenuListItem)MenuItems[CurrentSelection];
+            if (!(MenuItems[CurrentSelection] is UIMenuListItem)) return;
+            var it = (UIMenuListItem)MenuItems[CurrentSelection];
             it.Index--;
             Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
             ListChange(it, it.Index);
@@ -740,8 +752,8 @@ namespace RAGENativeUI
         /// </summary>
         public void GoRight()
         {
-            if (!(MenuItems[CurrentSelection] is MenuListItem)) return;
-            var it = (MenuListItem)MenuItems[CurrentSelection];
+            if (!(MenuItems[CurrentSelection] is UIMenuListItem)) return;
+            var it = (UIMenuListItem)MenuItems[CurrentSelection];
             it.Index++;
             Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
             ListChange(it, it.Index);
@@ -758,9 +770,9 @@ namespace RAGENativeUI
                 Common.PlaySound(AUDIO_ERROR, AUDIO_LIBRARY);
                 return;
             }
-            if (MenuItems[CurrentSelection] is MenuCheckboxItem)
+            if (MenuItems[CurrentSelection] is UIMenuCheckboxItem)
             {
-                var it = (MenuCheckboxItem)MenuItems[CurrentSelection];
+                var it = (UIMenuCheckboxItem)MenuItems[CurrentSelection];
                 it.Checked = !it.Checked;
                 Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
                 CheckboxChange(it, it.Checked);
@@ -799,7 +811,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Bind a menu to a button. When the button is clicked that menu will open.
         /// </summary>
-        public void BindMenuToItem(UIMenu menuToBind, NativeMenuItem itemToBindTo)
+        public void BindMenuToItem(UIMenu menuToBind, UIMenuItem itemToBindTo)
         {
             menuToBind.ParentMenu = this;
             menuToBind.ParentItem = itemToBindTo;
@@ -814,7 +826,7 @@ namespace RAGENativeUI
         /// </summary>
         /// <param name="releaseFrom">Button to release from.</param>
         /// <returns>Returns true if the operation was successful.</returns>
-        public bool ReleaseMenuFromItem(NativeMenuItem releaseFrom)
+        public bool ReleaseMenuFromItem(UIMenuItem releaseFrom)
         {
             if (!Children.ContainsKey(releaseFrom)) return false;
             Children[releaseFrom].ParentItem = null;
@@ -866,18 +878,18 @@ namespace RAGENativeUI
                 int ypos = _offset.Y + 144 - 37 + _extraYOffset + (counter*38) + safezoneOffset.Y;
                 int xsize = 431 + WidthOffset;
                 const int ysize = 38;
-                NativeMenuItem uiMenuItem = MenuItems[i];
+                UIMenuItem uiMenuItem = MenuItems[i];
                 if (IsMouseInBounds(new Point(xpos, ypos), new Size(xsize, ysize)))
                 {
                     uiMenuItem.Hovered = true;
                     if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack))
                         if (uiMenuItem.Selected && uiMenuItem.Enabled)
                         {
-                            if (MenuItems[i] is MenuListItem &&
-                                IsMouseInListItemArrows((MenuListItem) MenuItems[i], new Point(xpos, ypos),
+                            if (MenuItems[i] is UIMenuListItem &&
+                                IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
                                     safezoneOffset) > 0)
                             {
-                                int res = IsMouseInListItemArrows((MenuListItem) MenuItems[i], new Point(xpos, ypos),
+                                int res = IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
                                     safezoneOffset);
                                 switch (res)
                                 {
@@ -887,7 +899,7 @@ namespace RAGENativeUI
                                         ItemSelect(MenuItems[i], i);
                                         break;
                                     case 2:
-                                        var it = (MenuListItem) MenuItems[i];
+                                        var it = (UIMenuListItem) MenuItems[i];
                                         it.Index++;
                                         Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
                                         ListChange(it, it.Index);
@@ -1018,9 +1030,11 @@ namespace RAGENativeUI
             if (key != Keys.None)
             {
                 if (tmpKeys.Any(Game.IsKeyDown))
+                {
                     return true;
+                }
             }
-            if (tmpControls.Any(tuple => Game.IsControlJustPressed(tuple.Item2, tuple.Item1)))
+            if (tmpControls.Any(tuple => Game.IsControlJustPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustPressed(tuple.Item2, tuple.Item1)))
                 return true;
             return false;
         }
@@ -1039,7 +1053,9 @@ namespace RAGENativeUI
             if (key != Keys.None)
             {
                 if (tmpKeys.Any(Game.IsKeyDown))
+                {
                     return true;
+                }
             }
             if (tmpControls.Any(tuple => Game.IsControlJustReleased(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustReleased(tuple.Item2, tuple.Item1)))
                 return true;
@@ -1136,8 +1152,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Process keystroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
-        /// <param name="key"></param>
-        public void ProcessKey(Keys key)
+        public void ProcessKey(Keys key)      
         {
             if ((from object menuControl in Enum.GetValues(typeof(Common.MenuControls)) select new List<Keys>(_keyDictionary[(Common.MenuControls)menuControl].Item1)).Any(tmpKeys => tmpKeys.Any(k => k == key)))
             {
@@ -1285,24 +1300,24 @@ namespace RAGENativeUI
         /// <summary>
         /// If this is a nested menu, returns the item it was binded to.
         /// </summary>
-        public NativeMenuItem ParentItem { get; set; }
+        public UIMenuItem ParentItem { get; set; }
 
         protected virtual void IndexChange(int newindex)
         {
             OnIndexChange.Invoke(this, newindex);
         }
 
-        protected virtual void ListChange(MenuListItem sender, int newindex)
+        protected virtual void ListChange(UIMenuListItem sender, int newindex)
         {
             OnListChange.Invoke(this, sender, newindex);
         }
 
-        protected virtual void ItemSelect(NativeMenuItem selecteditem, int index)
+        protected virtual void ItemSelect(UIMenuItem selecteditem, int index)
         {
             OnItemSelect.Invoke(this, selecteditem, index);
         }
 
-        protected virtual void CheckboxChange(MenuCheckboxItem sender, bool Checked)
+        protected virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
         {
             OnCheckboxChange.Invoke(this, sender, Checked);
         }

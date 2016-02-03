@@ -1,8 +1,4 @@
-// Added by alexguirre
-
 using System.Drawing;
-// using GTA;
-// using GTA.Native;
 using Rage;
 using Rage.Native;
 

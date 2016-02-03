@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace RAGENativeUI.Elements
 {
-    public class MenuCheckboxItem : NativeMenuItem
+    public class UIMenuCheckboxItem : UIMenuItem
     {
         private readonly Sprite _checkedSprite;
         
@@ -17,7 +17,7 @@ namespace RAGENativeUI.Elements
         /// </summary>
         /// <param name="text">Item label.</param>
         /// <param name="check">Boolean value whether the checkbox is checked.</param>
-        public MenuCheckboxItem(string text, bool check)
+        public UIMenuCheckboxItem(string text, bool check)
             : this(text, check, "")
         {
         }
@@ -28,7 +28,7 @@ namespace RAGENativeUI.Elements
         /// <param name="text">Item label.</param>
         /// <param name="check">Boolean value whether the checkbox is checked.</param>
         /// <param name="description">Description for this item.</param>
-        public MenuCheckboxItem(string text, bool check, string description)
+        public UIMenuCheckboxItem(string text, bool check, string description)
             : base(text, description)
         {
             const int y = 0;

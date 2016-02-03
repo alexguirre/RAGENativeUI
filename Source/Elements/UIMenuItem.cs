@@ -6,16 +6,16 @@ namespace RAGENativeUI.Elements
     /// <summary>
     /// Simple item with a label.
     /// </summary>
-    public class NativeMenuItem
+    public class UIMenuItem
     {
-        private readonly ResRectangle _rectangle;
-        private readonly ResText _text;
-        private readonly Sprite _selectedSprite;
+        protected ResRectangle _rectangle;
+        protected ResText _text;
+        protected Sprite _selectedSprite;
 
-        private readonly Sprite _badgeLeft;
-        private readonly Sprite _badgeRight;
+        protected Sprite _badgeLeft;
+        protected Sprite _badgeRight;
 
-        private readonly ResText _labelText;
+        protected ResText _labelText;
 
         /// <summary>
         /// Called when user selects the current item.
@@ -27,7 +27,7 @@ namespace RAGENativeUI.Elements
         /// Basic menu button.
         /// </summary>
         /// <param name="text">Button label.</param>
-        public NativeMenuItem(string text) : this(text, "")
+        public UIMenuItem(string text) : this(text, "")
         {
         }
 
@@ -36,7 +36,7 @@ namespace RAGENativeUI.Elements
         /// </summary>
         /// <param name="text">Button label.</param>
         /// <param name="description">Description.</param>
-        public NativeMenuItem(string text, string description)
+        public UIMenuItem(string text, string description)
         {
             Enabled = true;
 
@@ -67,13 +67,13 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// This item's description.
         /// </summary>
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
 
         /// <summary>
         /// Whether this item is enabled or disabled (text is greyed out and you cannot select it).
         /// </summary>
-        public bool Enabled { get; set; }
+        public virtual bool Enabled { get; set; }
 
         internal virtual void ItemActivate(UIMenu sender)
         {
@@ -193,23 +193,23 @@ namespace RAGENativeUI.Elements
         {
             RightLabel = text;
         }
-        
+
         /// <summary>
         /// Returns the current right label.
         /// </summary>
-        public string RightLabel { get; private set; }
+        public virtual string RightLabel { get; private set; }
 
 
         /// <summary>
         /// Returns the current left badge.
         /// </summary>
-        public BadgeStyle LeftBadge { get; private set; }
+        public virtual BadgeStyle LeftBadge { get; private set; }
 
 
         /// <summary>
         /// Returns the current right badge.
         /// </summary>
-        public BadgeStyle RightBadge { get; private set; }
+        public virtual BadgeStyle RightBadge { get; private set; }
 
         public enum BadgeStyle
         {
@@ -238,7 +238,7 @@ namespace RAGENativeUI.Elements
             Tick,
         }
 
-        private string BadgeToSpriteLib(BadgeStyle badge)
+        protected virtual string BadgeToSpriteLib(BadgeStyle badge)
         {
             switch (badge)
             {
@@ -247,7 +247,7 @@ namespace RAGENativeUI.Elements
             }   
         }
 
-        private string BadgeToSpriteName(BadgeStyle badge, bool selected)
+        protected virtual string BadgeToSpriteName(BadgeStyle badge, bool selected)
         {
             switch (badge)
             {
@@ -302,7 +302,7 @@ namespace RAGENativeUI.Elements
             }
         }
 
-        private Color BadgeToColor(BadgeStyle badge, bool selected)
+        protected virtual Color BadgeToColor(BadgeStyle badge, bool selected)
         {
             switch (badge)
             {

@@ -17,20 +17,23 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>E:\Rockstar Games\Grand Theft Auto V\</OutputPath>
+    <OutputPath>..\..\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
+    <DocumentationFile>..\..\RAGENativeUI.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
+    <DocumentationFile>..\..\RAGENativeUI.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +56,7 @@
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
       <HintPath>DLLs\RagePluginHookSDK.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,20 +71,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Elements\BigMessage.cs" />
     <Compile Include="Elements\Container.cs" />
     <Compile Include="Elements\Rectangle.cs" />
     <Compile Include="Elements\Text.cs" />
     <Compile Include="Elements\IElement.cs" />
-    <None Include="MenuExample.cs" />
-    <Compile Include="InstructionalButton.cs" />
+    <Compile Include="Elements\TimerBars.cs" />
+    <Compile Include="Elements\UIMenuColoredItem.cs" />
+    <Compile Include="Elements\InstructionalButton.cs" />
     <Compile Include="MenuPool.cs" />
+    <Compile Include="PauseMenu\TabItem.cs" />
+    <Compile Include="PauseMenu\TabItemSimpleList.cs" />
+    <Compile Include="PauseMenu\TabMissionSelectItem.cs" />
+    <Compile Include="PauseMenu\TabSubmenuItem.cs" />
+    <Compile Include="PauseMenu\TabTextItem.cs" />
+    <Compile Include="PauseMenu\TabView.cs" />
+    <Compile Include="PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="StringMeasurer.cs" />
     <Compile Include="UIMenu.cs" />
-    <Compile Include="Elements\MenuCheckboxItem.cs" />
-    <Compile Include="Elements\NativeMenuItem.cs" />
-    <Compile Include="Elements\MenuListItem.cs" />
+    <Compile Include="Elements\UIMenuCheckboxItem.cs" />
+    <Compile Include="Elements\UIMenuItem.cs" />
+    <Compile Include="Elements\UIMenuListItem.cs" />
     <Compile Include="Elements\ResRectangle.cs" />
     <Compile Include="Elements\ResText.cs" />
     <Compile Include="Elements\Scaleform.cs" />
