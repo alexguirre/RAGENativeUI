@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Rage;
 using Rage.Native;
 
@@ -11,8 +7,8 @@ namespace RAGENativeUI.Elements
 {
     public class Container : Rectangle
     {
-        //private List<IElement> _mItems = new List<IElement>();
-        public List<IElement> Items = new List<IElement>(); /*{ get { return this._mItems; } set { this._mItems = value; } }*/
+        private List<IElement> _mItems = new List<IElement>();
+        public List<IElement> Items { get { return this._mItems; } set { this._mItems = value; } }
 
         public Container()
             : base()

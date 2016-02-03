@@ -1,14 +1,13 @@
 using Rage;
 using Rage.Native;
-using RAGENativeUI.Elements;
 
-namespace RAGENativeUI
+namespace RAGENativeUI.Elements
 {
     public class InstructionalButton
     {
         public string Text { get; set; }
 
-        public NativeMenuItem ItemBind { get; private set; }
+        public UIMenuItem ItemBind { get; private set; }
 
         private readonly string _buttonString;
         private readonly GameControl _buttonControl;
@@ -43,7 +42,7 @@ namespace RAGENativeUI
         /// Bind this button to an item, so it's only shown when that item is selected.
         /// </summary>
         /// <param name="item">Item to bind to.</param>
-        public void BindToItem(NativeMenuItem item)
+        public void BindToItem(UIMenuItem item)
         {
             ItemBind = item;
         }

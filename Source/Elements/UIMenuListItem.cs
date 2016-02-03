@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-//using GTA;
-//using Font = GTA.Font;
 
 namespace RAGENativeUI.Elements
 {
-    public class MenuListItem : NativeMenuItem
+    public class UIMenuListItem : UIMenuItem
     {
-        private readonly ResText _itemText;
+        protected ResText _itemText;
 
-        private readonly Sprite _arrowLeft;
-        private readonly Sprite _arrowRight;
+        protected Sprite _arrowLeft;
+        protected Sprite _arrowRight;
 
-        private readonly List<dynamic> _items;
+        protected List<dynamic> _items;
 
 
         /// <summary>
@@ -21,7 +19,7 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public event ItemListEvent OnListChanged = delegate { };
 
-        private int _index;
+        protected int _index;
         
         /// <summary>
         /// Returns the current selected index.
@@ -39,7 +37,7 @@ namespace RAGENativeUI.Elements
         /// <param name="text">Item label.</param>
         /// <param name="items">List that contains your items.</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
-        public MenuListItem(string text, List<dynamic> items, int index)
+        public UIMenuListItem(string text, List<dynamic> items, int index)
             : this(text, items, index, "")
         {
         }
@@ -51,7 +49,7 @@ namespace RAGENativeUI.Elements
         /// <param name="items">List that contains your items.</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
         /// <param name="description">Description for this item.</param>
-        public MenuListItem(string text, List<dynamic> items, int index, string description)
+        public UIMenuListItem(string text, List<dynamic> items, int index, string description)
             : base(text, description)
         {
             const int y = 0;
@@ -82,7 +80,7 @@ namespace RAGENativeUI.Elements
         /// </summary>
         /// <param name="item">Item to search for.</param>
         /// <returns>Item index.</returns>
-        public int ItemToIndex(dynamic item)
+        public virtual int ItemToIndex(dynamic item)
         {
             return _items.FindIndex(item);
         }
@@ -93,7 +91,7 @@ namespace RAGENativeUI.Elements
         /// </summary>
         /// <param name="index">Item's index.</param>
         /// <returns>Item</returns>
-        public dynamic IndexToItem(int index)
+        public virtual dynamic IndexToItem(int index)
         {
             return _items[index];
         }

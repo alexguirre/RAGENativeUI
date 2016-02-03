@@ -1,9 +1,5 @@
-//Added by LtFlash
-?//Edited by alexguirre: File renamed to UIElement, added UIElement interface, UIText inherits from UIElement interface, added UIRectangle and UIContainer
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using Rage;
 using Rage.Native;
 
 namespace RAGENativeUI.Elements
@@ -20,7 +16,7 @@ namespace RAGENativeUI.Elements
         public virtual Point Position { get; set; }
         public virtual Color Color { get; set; }
 
-        public Text(String caption, Point position, float scale)
+        public Text(string caption, Point position, float scale)
 	    {
 		    this.Enabled = true;
 		    this.Caption = caption;
@@ -31,7 +27,7 @@ namespace RAGENativeUI.Elements
 		    this.Centered = false;
 	    }
 
-        public Text(String caption, Point position, float scale, Color color)
+        public Text(string caption, Point position, float scale, Color color)
 	    {
             Enabled = true;
 		    Caption = caption;
@@ -42,7 +38,7 @@ namespace RAGENativeUI.Elements
 		    Centered = false;
         }
 
-        public Text(String caption, Point position, float scale, Color color, Common.EFont font, bool centered)
+        public Text(string caption, Point position, float scale, Color color, Common.EFont font, bool centered)
 	    {
             Enabled = true;
 		    Caption = caption;

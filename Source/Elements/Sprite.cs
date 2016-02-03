@@ -39,7 +39,7 @@ namespace RAGENativeUI.Elements
         /// <param name="size"></param>
         /// <param name="heading"></param>
         /// <param name="color"></param>
-        public Sprite(string textureDict, string textureName, Point position, Size size, float heading, Color color) //BASE
+        public Sprite(string textureDict, string textureName, Point position, Size size, float heading, Color color)
         {
             if (!NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", textureDict))
                 NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", textureDict, true);
@@ -93,16 +93,13 @@ namespace RAGENativeUI.Elements
         /// <param name="texture">Your custom texture object.</param>
         /// <param name="position"></param>
         /// <param name="size"></param>
-        public static void DrawTexture(Texture texture, Point position, Size size, GraphicsEventArgs canvas)
-        { 
+        public static void DrawTexture(Texture texture, Point position, Size size, GraphicsEventArgs canvas) 
+        {
             var origRes = Game.Resolution;
             float aspectRaidou = origRes.Width / (float)origRes.Height;
-            
             PointF pos = new PointF(position.X / (1080 * aspectRaidou), position.Y / 1080f);
             SizeF siz = new SizeF(size.Width / (1080 * aspectRaidou), size.Height / 1080f);
-
-            canvas.Graphics.DrawTexture(texture, pos.X* Game.Resolution.Width, pos.Y* Game.Resolution.Height, siz.Width* Game.Resolution.Width, siz.Height* Game.Resolution.Height);
-
+            canvas.Graphics.DrawTexture(texture, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
 
         
@@ -144,6 +141,15 @@ namespace RAGENativeUI.Elements
             }
             return Path.GetFullPath(savePath);
         }
+
+        public bool IsTextureDictLoaded
+        {
+            get { return NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", TextureDict); }
+        }
+
+        public void LoadTextureDict()
+        {
+            NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", TextureDict, true);
+        }
     }
 }
-

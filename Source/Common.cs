@@ -1,6 +1,7 @@
-using System;
+using System.Windows.Forms;
 using Rage;
 using Rage.Native;
+using System.Collections.Generic;
 
 namespace RAGENativeUI
 {
@@ -66,6 +67,10 @@ namespace RAGENativeUI
         {
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_RELEASED", index, (int)control);
         }
+
+        public static IList<Keys> GetPressedKeys()
+        {
+            return Game.GetKeyboardState().PressedKeys;
+        }
     }
 }
-

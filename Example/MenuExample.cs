@@ -1,41 +1,46 @@
-[assembly: Rage.Attributes.Plugin("MenuExample", Author = "alexguirre", Description = "Example using RAGENativeUI")]
+[assembly: Rage.Attributes.Plugin("MenuExample", Author = "Guad / alexguirre", Description = "Example using RAGENativeUI")]
 
 namespace MenuExample
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Windows.Forms;
+    using System.Drawing;
     using Rage;
-    using Rage.Native;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
 
     public static class EntryPoint
     {
-        private static UIMenu mainMenu;    
+        private static UIMenu mainMenu;
         private static UIMenu newMenu;
-        
-        private static MenuCheckboxItem ketchupCheckbox;     
-        private static MenuListItem dishesListItem;
-        private static NativeMenuItem cookItem;
-        private static NativeMenuItem spawnCar;
-        private static MenuListItem carsList;
+
+        private static UIMenuCheckboxItem ketchupCheckbox;
+        private static UIMenuListItem dishesListItem;
+        private static UIMenuItem cookItem;
+        private static UIMenuItem spawnCar;
+        private static UIMenuListItem carsList;
+        private static UIMenuColoredItem coloredItem;
 
         private static MenuPool _menuPool;
 
         public static void Main()
         {
             Game.FrameRender += Process;
-            
+
             _menuPool = new MenuPool();
 
             mainMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
+            mainMenu.SetKey(Common.MenuControls.Up, Keys.W);
+            mainMenu.SetKey(Common.MenuControls.Down, Keys.S);
+            mainMenu.SetKey(Common.MenuControls.Left, Keys.A);
+            mainMenu.SetKey(Common.MenuControls.Right, Keys.D);
+
 
             _menuPool.Add(mainMenu);
 
-            mainMenu.AddItem(ketchupCheckbox = new MenuCheckboxItem("Add ketchup?", false, "Do you wish to add ketchup?"));
-            
+            mainMenu.AddItem(ketchupCheckbox = new UIMenuCheckboxItem("Add ketchup?", false, "Do you wish to add ketchup?"));
+
             var foods = new List<dynamic>
             {
                 "Banana",
@@ -44,13 +49,13 @@ namespace MenuExample
                 "Quartilicious",
                 0xF00D, // Dynamic!
             };
-            mainMenu.AddItem(dishesListItem = new MenuListItem("Food", foods, 0));
-            mainMenu.AddItem(cookItem = new NativeMenuItem("Cook!", "Cook the dish with the appropiate ingredients and ketchup."));
+            mainMenu.AddItem(dishesListItem = new UIMenuListItem("Food", foods, 0));
+            mainMenu.AddItem(cookItem = new UIMenuItem("Cook!", "Cook the dish with the appropiate ingredients and ketchup."));
 
-            var menuItem = new NativeMenuItem("Go to another menu.");
+            var menuItem = new UIMenuItem("Go to another menu.");
             mainMenu.AddItem(menuItem);
-            cookItem.SetLeftBadge(NativeMenuItem.BadgeStyle.Star);
-            cookItem.SetRightBadge(NativeMenuItem.BadgeStyle.Tick);
+            cookItem.SetLeftBadge(UIMenuItem.BadgeStyle.Star);
+            cookItem.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
 
             var carsModel = new List<dynamic>
             {
@@ -65,25 +70,29 @@ namespace MenuExample
                 "Ambulance",
                 "Rhino",
             };
-            carsList = new MenuListItem("Cars Models", carsModel, 0);
+            carsList = new UIMenuListItem("Cars Models", carsModel, 0);
             mainMenu.AddItem(carsList);
 
-            spawnCar = new NativeMenuItem("Spawn Car");
+            spawnCar = new UIMenuItem("Spawn Car");
             mainMenu.AddItem(spawnCar);
-           
+
+            coloredItem = new UIMenuColoredItem("Color!", System.Drawing.Color.Red, System.Drawing.Color.Blue);
+            mainMenu.AddItem(coloredItem);
+
+
             mainMenu.RefreshIndex();
 
             mainMenu.OnItemSelect += OnItemSelect;
             mainMenu.OnListChange += OnListChange;
             mainMenu.OnCheckboxChange += OnCheckboxChange;
             mainMenu.OnIndexChange += OnItemChange;
-            
+
 
             newMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
             _menuPool.Add(newMenu);
             for (int i = 0; i < 35; i++)
             {
-                newMenu.AddItem(new NativeMenuItem("PageFiller " + i.ToString(), "Sample description that takes more than one line. Moreso, it takes way more than two lines since it's so long. Wow, check out this length!"));
+                newMenu.AddItem(new UIMenuItem("PageFiller " + i.ToString(), "Sample description that takes more than one line. Moreso, it takes way more than two lines since it's so long. Wow, check out this length!"));
             }
             newMenu.RefreshIndex();
             mainMenu.BindMenuToItem(newMenu, menuItem);
@@ -95,28 +104,28 @@ namespace MenuExample
 
         public static void OnItemChange(UIMenu sender, int index)
         {
-            sender.MenuItems[index].SetLeftBadge(NativeMenuItem.BadgeStyle.None);
+            sender.MenuItems[index].SetLeftBadge(UIMenuItem.BadgeStyle.None);
         }
 
-        public static void OnCheckboxChange(UIMenu sender, MenuCheckboxItem checkbox, bool Checked)
+        public static void OnCheckboxChange(UIMenu sender, UIMenuCheckboxItem checkbox, bool Checked)
         {
             if (sender != mainMenu || checkbox != ketchupCheckbox) return; // We only want to detect changes from our menu.
             Game.DisplayNotification("~r~Ketchup status: ~b~" + Checked);
         }
 
-        public static void OnListChange(UIMenu sender, MenuListItem list, int index)
+        public static void OnListChange(UIMenu sender, UIMenuListItem list, int index)
         {
             if (sender != mainMenu || list != dishesListItem) return; // We only want to detect changes from our menu.
             string dish = list.IndexToItem(index).ToString();
             Game.DisplayNotification("Preparing ~b~" + dish + "~w~...");
         }
 
-        public static void OnItemSelect(UIMenu sender, NativeMenuItem selectedItem, int index)
+        public static void OnItemSelect(UIMenu sender, UIMenuItem selectedItem, int index)
         {
             if (sender != mainMenu) return; // We only want to detect changes from our menu.
             // You can also detect the button by using index
 
-            if (selectedItem == cookItem)   // We check wich item has been selected and do different things for each.
+            if (selectedItem == cookItem)   // We check which item has been selected and do different things for each.
             {
                 string dish = dishesListItem.IndexToItem(dishesListItem.Index).ToString();
                 bool ketchup = ketchupCheckbox.Checked;
@@ -130,8 +139,34 @@ namespace MenuExample
             {
                 GameFiber.StartNew(delegate
                 {
-                    new Vehicle(((string)carsList.IndexToItem(carsList.Index)).ToLower(), Game.LocalPlayer.Character.Position + Game.LocalPlayer.Character.ForwardVector * 5.6f).Dismiss();
-                }); 
+                    new Vehicle(((string)carsList.IndexToItem(carsList.Index)).ToLower(), Game.LocalPlayer.Character.GetOffsetPositionFront(6f)).Dismiss();
+                });
+            }
+            else if (selectedItem == coloredItem)
+            {
+                GameFiber.StartNew(delegate
+                {
+                    Game.DisplaySubtitle("~h~~r~COLOR", 500);
+                    GameFiber.Sleep(500);
+                    Game.DisplaySubtitle("~h~~b~COLOR", 500);
+                    GameFiber.Sleep(500);
+                    Game.DisplaySubtitle("~h~~g~COLOR", 500);
+                    GameFiber.Sleep(500);
+                    Game.DisplaySubtitle("~h~~o~COLOR", 500);
+                    GameFiber.Sleep(500);
+                    Game.DisplaySubtitle("~h~~d~COLOR", 500);
+                });
+                GameFiber.StartNew(delegate
+                {
+                    for (int i = 0; i < 100; i++)
+                    {
+                        coloredItem.HighlightColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.HighlightedTextColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.MainColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.TextColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        GameFiber.Sleep(10);
+                    }
+                });
             }
         }
 
@@ -144,4 +179,5 @@ namespace MenuExample
         }
     }
 }
+
 
