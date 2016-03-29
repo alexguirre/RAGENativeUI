@@ -1278,7 +1278,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Returns false if last input was made with mouse and keyboard, true if it was made with a controller.
         /// </summary>
-        public static bool IsUsingController = !NativeFunction.CallByHash<bool>(0xa571d46727e2b718, 2);
+        public static bool IsUsingController => !NativeFunction.CallByHash<bool>(0xa571d46727e2b718, 2);
 
         /// <summary>
         /// Returns the title object.
