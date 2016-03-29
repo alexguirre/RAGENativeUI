@@ -249,7 +249,10 @@ namespace RAGENativeUI
         public void SetMenuWidthOffset(int widthOffset)
         {
             WidthOffset = widthOffset;
-            _logo.Size = new Size(431 + WidthOffset, 107);
+            if(_logo != null)
+            {
+                _logo.Size = new Size(431 + WidthOffset, 107);
+            }
             _mainMenu.Items[0].Position = new Point((WidthOffset + _offset.X + 431)/2, 20 + _offset.Y); // Title
             _counterText.Position = new Point(425 + _offset.X + widthOffset, 110 + _offset.Y);
             if (_mainMenu.Items.Count >= 1)
