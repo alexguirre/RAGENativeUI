@@ -249,15 +249,18 @@ namespace RAGENativeUI
         public void SetMenuWidthOffset(int widthOffset)
         {
             WidthOffset = widthOffset;
-            if(_logo != null)
+            if (_logo != null)
             {
                 _logo.Size = new Size(431 + WidthOffset, 107);
             }
-            _mainMenu.Items[0].Position = new Point((WidthOffset + _offset.X + 431)/2, 20 + _offset.Y); // Title
-            _counterText.Position = new Point(425 + _offset.X + widthOffset, 110 + _offset.Y);
-            if (_mainMenu.Items.Count >= 1)
+            _mainMenu.Items[0].Position = new Point((WidthOffset + _offset.X + 431) / 2, 20 + _offset.Y); // Title
+            if (_counterText != null)
             {
-                var tmp = (ResRectangle) _mainMenu.Items[1];
+                _counterText.Position = new Point(425 + _offset.X + widthOffset, 110 + _offset.Y);
+            }
+            if (_mainMenu.Items.Count >= 2)
+            {
+                var tmp = (ResRectangle)_mainMenu.Items[1];
                 tmp.Size = new Size(431 + WidthOffset, 37);
             }
             if (_tmpRectangle != null)
