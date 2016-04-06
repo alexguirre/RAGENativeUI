@@ -48,6 +48,15 @@ namespace RAGENativeUI
         }
 
         /// <summary>
+        /// Removes the specified menu from the pool
+        /// </summary>
+        /// <param name="menu"></param>
+        public void Remove(UIMenu menu)
+        {
+            _menuList.Remove(menu);
+        }
+
+        /// <summary>
         /// Create and add a submenu to the menu pool.
         /// Adds an item with the given text to the menu, creates a corresponding submenu, and binds the submenu to the item.
         /// The submenu inherits its title from the menu, and its subtitle from the item text.
