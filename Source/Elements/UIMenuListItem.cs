@@ -24,7 +24,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Returns the current selected index.
         /// </summary>
-        public int Index
+        public virtual int Index
         {
             get { return _index % _items.Count; }
             set { _index = 100000 - (100000 % _items.Count) + value; }
@@ -143,3 +143,4 @@ namespace RAGENativeUI.Elements
         }
     }
 }
+
