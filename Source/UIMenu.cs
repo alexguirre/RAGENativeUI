@@ -1229,6 +1229,39 @@ namespace RAGENativeUI
             }
             _instructionalButtonsScaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
         }
+        
+        /// <summary>
+        /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
+        /// </summary>
+        /// <param name="resetLists">If true the index of all lists will be set to 0.</param>
+        /// <param name="resetCheckboxes">If true all the checkboxes will be unchecked.</param>
+        public void Reset(bool resetLists, bool resetCheckboxes)
+        {
+            foreach (UIMenuItem item in MenuItems)
+            {
+                if (resetLists)
+                {
+                    UIMenuListItem itemAsList = item as UIMenuListItem;
+                    if(itemAsList != null)
+                    {
+                        itemAsList.Index = 0;
+                        continue;
+                    }
+                }
+
+                if (resetCheckboxes)
+                {
+                    UIMenuCheckboxItem itemAsCheckbox = item as UIMenuCheckboxItem;
+                    if(itemAsCheckbox != null)
+                    {
+                        itemAsCheckbox.Checked = false;
+                        continue;
+                    }
+                }
+            }
+            CurrentSelection = 0;
+        }
+        
 
         private void EnableCameraMovement()     
         {
