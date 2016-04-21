@@ -27,13 +27,41 @@ namespace RAGENativeUI.Elements
             }
             set
             {
+                if (value == _currentMenu)
+                    return;
+
                 if (!_menus.Contains(value))
                     throw new ArgumentException("The item doesn't contain the specified UIMenu", "value");
-                if (!value.MenuItems.Contains(this))
-                    throw new ArgumentException("The specified UIMenu doesn't contain this item", "value");
-                _currentMenu = value;
-                _currentMenu.CurrentSelection = _currentMenu.MenuItems.IndexOf(this);
-                Index = _menus.IndexOf(_currentMenu);
+
+                Index = MenuToIndex(value);
+            }
+        }
+
+        /// <summary>
+        /// Returns the current selected index.
+        /// </summary>
+        public override int Index
+        {
+            get { return _index % _items.Count; }
+            set
+            {
+                _index = 100000 - (100000 % _items.Count) + value;
+                if(_menus != null)
+                {
+                    UIMenu newMenu = IndexToMenu(_index % _items.Count);
+
+                    if (newMenu == _currentMenu)
+                        return;
+
+                    if (!newMenu.MenuItems.Contains(this))
+                        throw new ArgumentException("The specified UIMenu doesn't contain this item", "value");
+
+                    _currentMenu.Visible = false;
+                    _currentMenu = newMenu;
+                    _currentMenu.Visible = true;
+
+                    _currentMenu.CurrentSelection = _currentMenu.MenuItems.IndexOf(this);
+                }
             }
         }
 
@@ -114,15 +142,6 @@ namespace RAGENativeUI.Elements
         public virtual UIMenu IndexToMenu(int index)
         {
             return _menus[index];
-        }
-
-
-        internal override void ListChangedTrigger(int newindex)
-        {
-            CurrentMenu.Visible = false;
-            CurrentMenu = _menus[newindex % _menus.Count];
-            CurrentMenu.Visible = true;
-            base.ListChangedTrigger(newindex);
         }
     }
 }
