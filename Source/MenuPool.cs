@@ -184,6 +184,16 @@ namespace RAGENativeUI
                 menu.Visible = false;
             }
         }
+        
+        /// <summary>
+        /// Sets the index of all lists to 0 and unchecks all the checkboxes from your menus. 
+        /// </summary>
+        /// <param name="resetLists">If true the index of all lists will be set to 0.</param>
+        /// <param name="resetCheckboxes">If true all the checkboxes will be unchecked.</param>
+        public void ResetMenus(bool resetLists, bool resetCheckboxes)
+        {
+            _menuList.ForEach(m => m.Reset(resetLists, resetCheckboxes));
+        }
 
         public void SetBannerType(Sprite bannerType)
         {
