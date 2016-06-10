@@ -68,7 +68,7 @@ namespace RAGENativeUI
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_RELEASED", index, (int)control);
         }
 
-        public static IList<Keys> GetPressedKeys()
+        public static ICollection<Keys> GetPressedKeys()
         {
             return Game.GetKeyboardState().PressedKeys;
         }

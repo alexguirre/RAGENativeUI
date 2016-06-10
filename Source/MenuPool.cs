@@ -45,7 +45,6 @@ namespace RAGENativeUI
         public void Add(UIMenu menu)
         {
             _menuList.Add(menu);
-            Logger.Log(System.String.Format("Added UIMenu(T::{0}, S::{1}) to MenuPool", menu.Title, menu.Subtitle));
         }
 
         /// <summary>
@@ -55,7 +54,6 @@ namespace RAGENativeUI
         public void Remove(UIMenu menu)
         {
             _menuList.Remove(menu);
-            Logger.Log(System.String.Format("Removed UIMenu(T::{0}, S::{1}) from MenuPool", menu.Title, menu.Subtitle));
         }
 
         /// <summary>
@@ -159,10 +157,9 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessMenus()
         {
-            IList<Keys> pressedKeys = Common.GetPressedKeys();
+            ICollection<Keys> pressedKeys = Common.GetPressedKeys();
             foreach (var menu in _menuList.Where(menu => menu.Visible))
             {
-                Logger.Log(System.String.Format("Processing UIMenu(T::{0}, S::{1}) from MenuPool", menu.Title, menu.Subtitle));
                 menu.ProcessControl();
                 foreach (Keys key in pressedKeys)
                 {
