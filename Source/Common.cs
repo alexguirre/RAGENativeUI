@@ -2,7 +2,6 @@ using System.Windows.Forms;
 using Rage;
 using Rage.Native;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RAGENativeUI
 {
@@ -71,7 +70,7 @@ namespace RAGENativeUI
 
         public static IList<Keys> GetPressedKeys()
         {
-            return Game.GetKeyboardState().PressedKeys.ToList();
+            return Game.GetKeyboardState().PressedKeys;
         }
     }
 }
