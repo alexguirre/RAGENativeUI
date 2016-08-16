@@ -1087,7 +1087,7 @@ namespace RAGENativeUI
                     return false;
                 }
                 List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-                List<Tuple<GameControl, int>> tmpControls = new List<Tuple<Control, int>>(_keyDictionary[control].Item2);
+                List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
                 if (key != Keys.None)
                 {
                     if (tmpKeys.Any(Game.IsKeyDown))
@@ -1114,7 +1114,7 @@ namespace RAGENativeUI
                         return false;
                     }
                     List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-                    List<Tuple<GameControl, int>> tmpControls = new List<Tuple<Control, int>>(_keyDictionary[control].Item2);
+                    List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
                     if (key != Keys.None)
                     {
                         if (tmpKeys.Any(Game.IsKeyDown))
