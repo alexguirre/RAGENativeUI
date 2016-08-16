@@ -12,8 +12,15 @@ namespace RAGENativeUI.Elements
         protected Sprite _arrowRight;
 
         protected List<dynamic> _items;
-
-
+        /// <summary>
+        /// Enables or disables scrolling through the list by holding the key
+        /// </summary>
+        public bool ScrollingEnabled = true;
+         /// <summary>
+        /// Hold time in milliseconds before scrolling to the next item on list when holding the key [Default = 200]
+        /// </summary>
+        public float HoldTimeBeforeScroll = 200;
+        
         /// <summary>
         /// Triggered when the list is changed.
         /// </summary>
