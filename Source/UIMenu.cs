@@ -1068,37 +1068,72 @@ namespace RAGENativeUI
             return false;
         }
 
-        private int _controlCounter;
+        public uint HoldTimeBeforeScroll = 200;
+       
+        private uint _holdTime;
         /// <summary>
-        /// Check whether a menucontrol is being pressed.
+        /// Checks whether a menucontrol is being pressed and if selected item is UIListItem, uses UIListItem variables
         /// </summary>
         /// <param name="control"></param>
         /// <param name="key"></param>
         /// <returns></returns>
         public bool IsControlBeingPressed(Common.MenuControls control, Keys key = Keys.None)
-        {
-            List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-            List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
-            if (HasControlJustBeenReleaseed(control, key)) _controlCounter = 0;
-            if (_controlCounter > 0)
+        {  
+            if (control != Common.MenuControls.Left && control != Common.MenuControls.Right)
             {
-                _controlCounter++;
-                if (_controlCounter > 30)
-                    _controlCounter = 0;
-                return false;
-            }
-            if (key != Keys.None)
-            {
-                if (tmpKeys.Any(Game.IsKeyDown))
+                if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
+                if(Game.GameTime <= _holdTime)
                 {
-                    _controlCounter = 1;
+                    return false;
+                }
+                List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
+                List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
+                if (key != Keys.None)
+                {
+                    if (tmpKeys.Any(Game.IsKeyDown))
+                    {
+                        _holdTime = Game.GameTime + HoldTimeBeforeScroll;
+                        return true;
+                    }
+                }
+                if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
+                {
+                    _holdTime = Game.GameTime + HoldTimeBeforeScroll;
                     return true;
                 }
+                return false;
             }
-            if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
+            else if ((MenuItems[CurrentSelection] is UIMenuListItem))
             {
-                _controlCounter = 1;
-                return true;
+                UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
+                if(it.ScrollingEnabled)
+                {
+                    if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
+                    if(Game.GameTime <= _holdTime)
+                    {
+                        return false;
+                    }
+                    List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
+                    List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
+                    if (key != Keys.None)
+                    {
+                        if (tmpKeys.Any(Game.IsKeyDown))
+                        {
+                            _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                            return true;
+                        }
+                    }
+                    if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
+                    {
+                        _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                        return true;
+                    }
+                }
+                else if(HasControlJustBeenPressed(control, key))
+                {
+                    return true;
+                }
+                
             }
             return false;
         }
