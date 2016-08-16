@@ -1068,9 +1068,9 @@ namespace RAGENativeUI
             return false;
         }
 
-        public float HoldTimeBeforeScroll = 200;
+        public uint HoldTimeBeforeScroll = 200;
        
-        private float _holdTime;
+        private uint _holdTime;
         /// <summary>
         /// Checks whether a menucontrol is being pressed and if selected item is UIListItem, uses UIListItem variables
         /// </summary>
