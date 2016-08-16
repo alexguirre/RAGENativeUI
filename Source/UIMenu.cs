@@ -1077,9 +1077,9 @@ namespace RAGENativeUI
         /// <param name="control"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool IsControlBeingPressed(MenuControls control, Keys key = Keys.None)
+        public bool IsControlBeingPressed(Common.MenuControls control, Keys key = Keys.None)
         {  
-            if (!(MenuItems[CurrentSelection] is UIMenuListItem))
+            if (control != Common.MenuControls.Left && control != Common.MenuControls.Right)
             {
                 if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
                 if(Game.GameTime <= _holdTime)
@@ -1087,23 +1087,23 @@ namespace RAGENativeUI
                     return false;
                 }
                 List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-                List<Tuple<Control, int>> tmpControls = new List<Tuple<Control, int>>(_keyDictionary[control].Item2);
+                List<Tuple<GameControl, int>> tmpControls = new List<Tuple<Control, int>>(_keyDictionary[control].Item2);
                 if (key != Keys.None)
                 {
-                    if (tmpKeys.Any(Game.IsKeyPressed))
+                    if (tmpKeys.Any(Game.IsKeyDown))
                     {
-                        holdTime = Game.GameTime + HoldTimeBeforeScroll;
+                        _holdTime = Game.GameTime + HoldTimeBeforeScroll;
                         return true;
                     }
                 }
-                if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1)))
+                if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
                 {
-                    holdTime = Game.GameTime + HoldTimeBeforeScroll;
+                    _holdTime = Game.GameTime + HoldTimeBeforeScroll;
                     return true;
                 }
                 return false;
             }
-            else
+            else if ((MenuItems[CurrentSelection] is UIMenuListItem))
             {
                 UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
                 if(it.ScrollingEnabled)
@@ -1114,18 +1114,18 @@ namespace RAGENativeUI
                         return false;
                     }
                     List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-                    List<Tuple<Control, int>> tmpControls = new List<Tuple<Control, int>>(_keyDictionary[control].Item2);
+                    List<Tuple<GameControl, int>> tmpControls = new List<Tuple<Control, int>>(_keyDictionary[control].Item2);
                     if (key != Keys.None)
                     {
-                        if (tmpKeys.Any(Game.IsKeyPressed))
+                        if (tmpKeys.Any(Game.IsKeyDown))
                         {
-                            holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                            _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
                             return true;
                         }
                     }
-                    if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1)))
+                    if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
                     {
-                        holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                        _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
                         return true;
                     }
                 }
@@ -1133,8 +1133,9 @@ namespace RAGENativeUI
                 {
                     return true;
                 }
-                return false;
+                
             }
+            return false;
         }
 
         /// <summary>
