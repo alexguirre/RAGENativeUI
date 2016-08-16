@@ -19,7 +19,7 @@ namespace RAGENativeUI.Elements
          /// <summary>
         /// Hold time in milliseconds before scrolling to the next item on list when holding the key [Default = 200]
         /// </summary>
-        public float HoldTimeBeforeScroll = 200;
+        public uint HoldTimeBeforeScroll = 200;
         
         /// <summary>
         /// Triggered when the list is changed.
