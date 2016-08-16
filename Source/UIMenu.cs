@@ -1090,7 +1090,7 @@ namespace RAGENativeUI
                 List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
                 if (key != Keys.None)
                 {
-                    if (tmpKeys.Any(Game.IsKeyDown))
+                    if (tmpKeys.Any(Game.IsKeyDownRightNow))
                     {
                         _holdTime = Game.GameTime + HoldTimeBeforeScroll;
                         return true;
@@ -1117,7 +1117,7 @@ namespace RAGENativeUI
                     List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
                     if (key != Keys.None)
                     {
-                        if (tmpKeys.Any(Game.IsKeyDown))
+                        if (tmpKeys.Any(Game.IsKeyDownRightNow))
                         {
                             _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
                             return true;
