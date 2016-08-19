@@ -12,6 +12,19 @@ namespace RAGENativeUI.Elements
         protected Sprite _arrowRight;
 
         protected List<dynamic> _items;
+        
+        /// <summary>
+        /// Gets or sets the items from this <see cref="UIMenuListItem"/> instance.
+        /// </summary>
+        /// <remarks>
+        /// For better safety before modifying the items <see cref="List{dynamic}"/> set <see cref="Index"/> to 0.
+        /// </remarks>
+        public virtual List<dynamic> Items
+        {
+            get { return _items; }
+            set { _items = value;  }
+        }
+
         /// <summary>
         /// Enables or disables scrolling through the list by holding the key
         /// </summary>
