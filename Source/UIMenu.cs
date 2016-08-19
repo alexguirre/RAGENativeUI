@@ -1103,8 +1103,9 @@ namespace RAGENativeUI
                 }
                 return false;
             }
-            else if ((MenuItems[CurrentSelection] is UIMenuListItem))
+            else if ((MenuItems[CurrentSelection] is UIMenuListItem) && MenuItems[CurrentSelection].Enabled)
             {
+                
                 UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
                 if(it.ScrollingEnabled)
                 {
