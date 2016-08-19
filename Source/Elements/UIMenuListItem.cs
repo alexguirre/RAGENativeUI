@@ -11,7 +11,7 @@ namespace RAGENativeUI.Elements
         protected Sprite _arrowLeft;
         protected Sprite _arrowRight;
 
-        protected List<dynamic> _items;
+        public List<dynamic> Items;
         /// <summary>
         /// Enables or disables scrolling through the list by holding the key
         /// </summary>
@@ -33,8 +33,8 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public virtual int Index
         {
-            get { return _index % _items.Count; }
-            set { _index = 100000 - (100000 % _items.Count) + value; }
+            get { return _index % Items.Count; }
+            set { _index = 100000 - (100000 % Items.Count) + value; }
         }
 
 
@@ -60,7 +60,7 @@ namespace RAGENativeUI.Elements
             : base(text, description)
         {
             const int y = 0;
-            _items = new List<dynamic>(items);
+            Items = new List<dynamic>(items);
             _arrowLeft = new Sprite("commonmenu", "arrowleft", new Point(110, 105 + y), new Size(30, 30));
             _arrowRight = new Sprite("commonmenu", "arrowright", new Point(280, 105 + y), new Size(30, 30));
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
@@ -89,7 +89,7 @@ namespace RAGENativeUI.Elements
         /// <returns>Item index.</returns>
         public virtual int ItemToIndex(dynamic item)
         {
-            return _items.FindIndex(item);
+            return Items.FindIndex(item);
         }
 
 
@@ -100,7 +100,7 @@ namespace RAGENativeUI.Elements
         /// <returns>Item</returns>
         public virtual dynamic IndexToItem(int index)
         {
-            return _items[index];
+            return Items[index];
         }
 
 
@@ -110,7 +110,7 @@ namespace RAGENativeUI.Elements
         public override void Draw()
         {
             base.Draw();
-            string caption = _items[Index % _items.Count].ToString();
+            string caption = Items[Index % Items.Count].ToString();
             int offset = StringMeasurer.MeasureString(caption);
 
             _itemText.Color = Enabled ? Selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
