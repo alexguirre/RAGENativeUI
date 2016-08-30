@@ -440,7 +440,7 @@ namespace RAGENativeUI
         /// Draw your custom banner.
         /// </summary>
         /// <param name="e">Rage.GraphicsEventArgs to draw on.</param>
-        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead")]
+        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead.")]
         public void DrawBanner(GraphicsEventArgs e)
         {
             if (!Visible || _customBanner == null) return;
@@ -559,6 +559,11 @@ namespace RAGENativeUI
                     item.Draw();
                     count++;
                 }
+                if (_counterText != null && CounterOverride != null)
+                {
+                    _counterText.Caption = CounterPretext + CounterOverride;
+                    _counterText.Draw();
+                }
             }
             else
             {
@@ -580,8 +585,15 @@ namespace RAGENativeUI
                 _upAndDownSprite.Draw();
                 if (_counterText != null)
                 {
-                    string cap = (CurrentSelection + 1) + " / " + MenuItems.Count;
-                    _counterText.Caption = CounterPretext + cap;
+                    if (CounterOverride == null)
+                    {
+                        string cap = (CurrentSelection + 1) + " / " + MenuItems.Count;
+                        _counterText.Caption = CounterPretext + cap;
+                    }
+                    else
+                    {
+                        _counterText.Caption = CounterPretext + CounterOverride;
+                    }
                     _counterText.Draw();
                 }
             }
@@ -1390,6 +1402,17 @@ namespace RAGENativeUI
         /// String to pre-attach to the counter string. Useful for color codes.
         /// </summary>
         public string CounterPretext { get; set; }
+
+        /// <summary>
+        /// Gets or sets the text that overrides the counter string.
+        /// <para>
+        /// If <c>null</c> the counter string isn't overrided.
+        /// </para>
+        /// </summary>
+        /// <value>
+        /// The text that overrides the counter string.
+        /// </value>
+        public string CounterOverride { get; set; }
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.

@@ -15,7 +15,7 @@ namespace RAGENativeUI.Elements
         public bool Visible;
         public float Heading;
 
-        [Obsolete("Use Sprite.TextureDictionary instead")]
+        [Obsolete("Use Sprite.TextureDictionary instead.")]
         public string TextureDict
         {
             get { return _textureDict; }
@@ -41,7 +41,7 @@ namespace RAGENativeUI.Elements
         public string TextureName;
         private string _textureDict;
 
-        [Obsolete("Use Sprite.IsTextureDictionaryLoaded instead")]
+        [Obsolete("Use Sprite.IsTextureDictionaryLoaded instead.")]
         public bool IsTextureDictLoaded
         {
             get { return NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", TextureDict); }
@@ -52,7 +52,7 @@ namespace RAGENativeUI.Elements
             get { return NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", TextureDictionary); }
         }
 
-        [Obsolete("Use Sprite.LoadTextureDictionary() instead")]
+        [Obsolete("Use Sprite.LoadTextureDictionary() instead.")]
         public void LoadTextureDict()
         {
             NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", TextureDict, true);
