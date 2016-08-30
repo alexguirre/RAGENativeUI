@@ -440,6 +440,7 @@ namespace RAGENativeUI
         /// Draw your custom banner.
         /// </summary>
         /// <param name="e">Rage.GraphicsEventArgs to draw on.</param>
+        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead")]
         public void DrawBanner(GraphicsEventArgs e)
         {
             if (!Visible || _customBanner == null) return;
@@ -454,6 +455,29 @@ namespace RAGENativeUI
 
             //Bug: funky positionment on windowed games + max resolution.
             e.Graphics.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
+        }
+
+        /// <summary>
+        /// Draw your custom banner.
+        /// <para>
+        /// To prevent flickering call it inside a <see cref="Game.RawFrameRender"/> event handler.
+        /// </para>
+        /// </summary>
+        /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
+        public void DrawBanner(Rage.Graphics g)
+        {
+            if (!Visible || _customBanner == null) return;
+            var origRes = Game.Resolution;
+            float aspectRaidou = origRes.Width / (float)origRes.Height;
+
+            Point bannerPos = new Point(_offset.X + safezoneBounds.X, _offset.Y + safezoneBounds.Y);
+            Size bannerSize = new Size(431 + WidthOffset, 107);
+
+            PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
+            SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
+
+            //Bug: funky positionment on windowed games + max resolution.
+            g.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
 
         /// <summary>

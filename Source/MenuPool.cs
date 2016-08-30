@@ -174,9 +174,19 @@ namespace RAGENativeUI
         /// Draw all of your menus' custom banners.
         /// </summary>
         /// <param name="canvas">Canvas to draw on.</param>
+        [System.Obsolete("MenuPool.DrawBanners(GraphicsEventArgs) will be removed soon, use MenuPool.DrawBanners(Graphics) instead")]
         public void DrawBanners(GraphicsEventArgs canvas)
         {
             _menuList.ForEach(menu => menu.DrawBanner(canvas));
+        }
+
+        /// <summary>
+        /// Draw all of your menus' custom banners.
+        /// </summary>
+        /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
+        public void DrawBanners(Graphics g)
+        {
+            _menuList.ForEach(menu => menu.DrawBanner(g));
         }
 
         /// <summary>
