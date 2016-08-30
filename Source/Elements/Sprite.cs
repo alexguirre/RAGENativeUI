@@ -158,6 +158,7 @@ namespace RAGENativeUI.Elements
         /// <param name="yourAssembly">Your executing assembly.</param>
         /// <param name="fullResourceName">Resource name including your solution name. E.G MyMenuMod.banner.png</param>
         /// <returns>Absolute path to the written file.</returns>
+        [Obsolete("Sprite.WriteFileFromResources() will be removed soon, use Common.WriteFileFromResources() instead.")]
         public static string WriteFileFromResources(Assembly yourAssembly, string fullResourceName)
         {
             string tmpPath = Path.GetTempFileName();
@@ -172,6 +173,7 @@ namespace RAGENativeUI.Elements
         /// <param name="fullResourceName">Resource name including your solution name. E.G MyMenuMod.banner.png</param>
         /// <param name="savePath">Path to where save the file, including the filename.</param>
         /// <returns>Absolute path to the written file.</returns>
+        [Obsolete("Sprite.WriteFileFromResources() will be removed soon, use Common.WriteFileFromResources() instead.")]
         public static string WriteFileFromResources(Assembly yourAssembly, string fullResourceName, string savePath)
         {
             using (Stream stream = yourAssembly.GetManifestResourceStream(fullResourceName))

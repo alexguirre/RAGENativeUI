@@ -2,6 +2,8 @@ using System.Windows.Forms;
 using Rage;
 using Rage.Native;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace RAGENativeUI
 {
@@ -68,9 +70,51 @@ namespace RAGENativeUI
             return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_RELEASED", index, (int)control);
         }
 
+        /// <summary>
+        /// Gets the current pressed keys.
+        /// </summary>
+        /// <returns>A <see cref="ICollection{T}"/> with the current pressed keys.</returns>
         public static ICollection<Keys> GetPressedKeys()
         {
             return Game.GetKeyboardState().PressedKeys;
+        }
+
+        /// <summary>
+        /// Save an embedded resource to a temporary file.
+        /// </summary>
+        /// <param name="yourAssembly">Your executing assembly.</param>
+        /// <param name="fullResourceName">Resource name including your solution name. E.G MyMenuMod.banner.png</param>
+        /// <returns>Absolute path to the written file.</returns>
+        public static string WriteFileFromResources(Assembly yourAssembly, string fullResourceName)
+        {
+            string tmpPath = Path.GetTempFileName();
+            return WriteFileFromResources(yourAssembly, fullResourceName, tmpPath);
+        }
+
+        /// <summary>
+        /// Save an embedded resource to a concrete path.
+        /// </summary>
+        /// <param name="yourAssembly">Your executing assembly.</param>
+        /// <param name="fullResourceName">Resource name including your solution name. E.G MyMenuMod.banner.png</param>
+        /// <param name="savePath">Path to where save the file, including the filename.</param>
+        /// <returns>Absolute path to the written file.</returns>
+        public static string WriteFileFromResources(Assembly yourAssembly, string fullResourceName, string savePath)
+        {
+            using (Stream stream = yourAssembly.GetManifestResourceStream(fullResourceName))
+            {
+                if (stream != null)
+                {
+                    byte[] buffer = new byte[stream.Length];
+                    stream.Read(buffer, 0, System.Convert.ToInt32(stream.Length));
+
+                    using (FileStream fileStream = File.Create(savePath))
+                    {
+                        fileStream.Write(buffer, 0, System.Convert.ToInt32(stream.Length));
+                        fileStream.Close();
+                    }
+                }
+            }
+            return Path.GetFullPath(savePath);
         }
     }
 }
