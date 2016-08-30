@@ -262,6 +262,13 @@ namespace RAGENativeUI.PauseMenu
 
             _sc.Render2D();
         }
+
+        public void DrawTextures(Rage.Graphics g)
+        {
+            if (!Visible) return;
+
+            Tabs[Index].DrawTextures(g);
+        }
     }
 }
 
