@@ -72,5 +72,8 @@ namespace RAGENativeUI.PauseMenu
                 }
             }
         }
+
+        public virtual void DrawTextures(Rage.Graphics g)
+        { }
     }
 }

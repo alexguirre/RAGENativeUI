@@ -32,15 +32,15 @@ namespace RAGENativeUI.PauseMenu
 
     public class MissionLogo
     {
-        ///// <summary>
-        ///// Create a logo from an external picture.
-        ///// </summary>
-        ///// <param name="filepath">Path to the picture</param>
-        //public MissionLogo(string filepath)
-        //{
-        //    FileName = filepath;
-        //    //IsGameTexture = false;
-        //}
+        /// <summary>
+        /// Create a logo from an external picture.
+        /// </summary>
+        /// <param name="filepath">Path to the picture</param>
+        public MissionLogo(Texture texture)
+        {
+            Texture = texture;
+            IsGameSprite = false;
+        }
 
         /// <summary>
         /// Create a mission logo from a game texture.
@@ -49,14 +49,13 @@ namespace RAGENativeUI.PauseMenu
         /// <param name="textureName">Name of the texture.</param>
         public MissionLogo(string textureDict, string textureName)
         {
-            TextureName = textureName;
-            DictionaryName = textureDict;
-            //IsGameTexture = true;
+            Sprite = new Sprite(textureDict, textureName, Point.Empty, Size.Empty);
+            IsGameSprite = true;
         }
 
-        //internal bool IsGameTexture;
-        internal string TextureName/*FileName*/ { get; set; }
-        internal string DictionaryName { get; set; }
+        internal readonly bool IsGameSprite;
+        internal readonly Texture Texture;
+        internal readonly Sprite Sprite;
     }
 
     public class TabMissionSelectItem : TabItem
@@ -141,6 +140,7 @@ namespace RAGENativeUI.PauseMenu
             }
         }
 
+        SizeF res;
         public override void Draw()
         {
             base.Draw();
@@ -148,7 +148,7 @@ namespace RAGENativeUI.PauseMenu
 
             ProcessControls();
 
-            var res = UIMenu.GetScreenResolutionMantainRatio();
+            res = UIMenu.GetScreenResolutionMantainRatio();
 
             var activeWidth = res.Width - SafeSize.X * 2;
             var itemSize = new Size((int)activeWidth - 515, 40);
@@ -165,24 +165,28 @@ namespace RAGENativeUI.PauseMenu
                 counter++;
             }
 
-            if (Heists[Index].Logo == null || string.IsNullOrEmpty(Heists[Index].Logo.TextureName))
+            if (Heists[Index].Logo == null || (Heists[Index].Logo.Sprite == null && Heists[Index].Logo.Texture == null))
             {
+                drawTexture = false;
                 _noLogo.Position = new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y);
                 _noLogo.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
                 _noLogo.Draw();
             }
-            //else if (Heists[Index].Logo != null && Heists[Index].Logo.TextureName != null && !Heists[Index].Logo.IsGameTexture)
-            //{
-            //    var target = Heists[Index].Logo.FileName;
-            //    //Sprite.DrawTexture(target, new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y), new Size(512, 256));
-            //}
-            else if (Heists[Index].Logo != null && Heists[Index].Logo.TextureName != null/* &&
-                     Heists[Index].Logo.IsGameTexture*/)
+            else if (Heists[Index].Logo != null && Heists[Index].Logo.Texture != null && !Heists[Index].Logo.IsGameSprite)
             {
-                var newLogo = new Sprite(Heists[Index].Logo.DictionaryName, Heists[Index].Logo.TextureName, new Point(), new Size(512, 256));
-                newLogo.Position = new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y);
-                newLogo.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
-                newLogo.Draw();
+                drawTexture = true;
+            }
+            else if (Heists[Index].Logo != null && Heists[Index].Logo.Sprite != null && Heists[Index].Logo.IsGameSprite)
+            {
+                drawTexture = false;
+                Sprite sprite = Heists[Index].Logo.Sprite;
+                sprite.Position = new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y);
+                sprite.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
+                sprite.Draw();
+            }
+            else
+            {
+                drawTexture = false;
             }
 
             new ResRectangle(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256), new Size(512, 40), Color.FromArgb(fullAlpha, Color.Black)).Draw();
@@ -216,6 +220,15 @@ namespace RAGENativeUI.PauseMenu
                 new ResRectangle(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 44 + 40 * propLen),
                     new Size(512, 45 * (StringMeasurer.MeasureString(Heists[Index].Description) / 500)),
                     Color.FromArgb(blackAlpha, 0, 0, 0)).Draw();
+            }
+        }
+
+        private bool drawTexture = false;
+        public override void DrawTextures(Rage.Graphics g)
+        {
+            if (drawTexture)
+            {
+                Sprite.DrawTexture(Heists[Index].Logo.Texture, new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y), new Size(512, 256), g);
             }
         }
     }
