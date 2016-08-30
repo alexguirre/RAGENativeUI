@@ -444,10 +444,9 @@ namespace RAGENativeUI
         {
             if (!Visible || _customBanner == null) return;
             var origRes = Game.Resolution;
-            var safe = GetSafezoneBounds();
             float aspectRaidou = origRes.Width / (float)origRes.Height;
 
-            Point bannerPos = new Point(_offset.X + safe.X, _offset.Y + safe.Y);
+            Point bannerPos = new Point(_offset.X + safezoneBounds.X, _offset.Y + safezoneBounds.Y);
             Size bannerSize = new Size(431 + WidthOffset, 107);
 
             PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
@@ -489,6 +488,7 @@ namespace RAGENativeUI
             NativeFunction.CallByHash<uint>(0xb8a850f20a067eb6, 76, 84);           // Safezone
             NativeFunction.CallByHash<uint>(0xf5a2c681787e579d, 0f, 0f, 0f, 0f);   // stuff
 
+            safezoneBounds = GetSafezoneBounds();
 
             if (_customBanner == null)
             {
@@ -841,6 +841,7 @@ namespace RAGENativeUI
             return true;
         }
 
+        private Point safezoneBounds;
         /// <summary>
         /// Process the mouse's position and check if it's hovering over any Element. Call this in Game.FrameRender or in a loop.
         /// </summary>
@@ -856,7 +857,6 @@ namespace RAGENativeUI
                 return;
             }
 
-            Point safezoneOffset = GetSafezoneBounds();
             NativeFunction.CallByHash<uint>(0xaae7ce1d63167423);  // _SHOW_CURSOR_THIS_FRAME
             int limit = MenuItems.Count - 1;
             int counter = 0;
@@ -880,8 +880,8 @@ namespace RAGENativeUI
 
             for (int i = _minItem; i <= limit; i++)
             {
-                int xpos = _offset.X + safezoneOffset.X;
-                int ypos = _offset.Y + 144 - 37 + _extraYOffset + (counter*38) + safezoneOffset.Y;
+                int xpos = _offset.X + safezoneBounds.X;
+                int ypos = _offset.Y + 144 - 37 + _extraYOffset + (counter*38) + safezoneBounds.Y;
                 int xsize = 431 + WidthOffset;
                 const int ysize = 38;
                 UIMenuItem uiMenuItem = MenuItems[i];
@@ -893,10 +893,10 @@ namespace RAGENativeUI
                         {
                             if (MenuItems[i] is UIMenuListItem &&
                                 IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
-                                    safezoneOffset) > 0)
+                                    safezoneBounds) > 0)
                             {
                                 int res = IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
-                                    safezoneOffset);
+                                    safezoneBounds);
                                 switch (res)
                                 {
                                     case 1:
@@ -932,8 +932,8 @@ namespace RAGENativeUI
                     uiMenuItem.Hovered = false;
                 counter++;
             }
-            int extraY = 144 + 38*(MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset + safezoneOffset.Y;
-            int extraX = safezoneOffset.X + _offset.X;
+            int extraY = 144 + 38*(MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset + safezoneBounds.Y;
+            int extraX = safezoneBounds.X + _offset.X;
             if (MenuItems.Count <= MaxItemsOnScreen + 1) return;
             if (IsMouseInBounds(new Point(extraX, extraY), new Size(431 + WidthOffset, 18)))
             {
