@@ -93,6 +93,7 @@ namespace RAGENativeUI.Elements
         /// <param name="texture">Your custom texture object.</param>
         /// <param name="position"></param>
         /// <param name="size"></param>
+        [Obsolete("The Sprite.DrawTexture() overload that accepts a GraphicsEventArgs instance will be removed soon, use the Sprite.DrawTexture() overload that accepts a Graphics instance instead.")]
         public static void DrawTexture(Texture texture, Point position, Size size, GraphicsEventArgs canvas) 
         {
             var origRes = Game.Resolution;
@@ -102,7 +103,22 @@ namespace RAGENativeUI.Elements
             canvas.Graphics.DrawTexture(texture, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
 
-        
+        /// <summary>
+        /// Draws a custom texture from a file on a 1080-pixels height base.
+        /// </summary>
+        /// <param name="texture">Your custom texture object.</param>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        /// <param name="graphics"></param>
+        public static void DrawTexture(Texture texture, Point position, Size size, Rage.Graphics graphics)
+        {
+            var origRes = Game.Resolution;
+            float aspectRaidou = origRes.Width / (float)origRes.Height;
+            PointF pos = new PointF(position.X / (1080 * aspectRaidou), position.Y / 1080f);
+            SizeF siz = new SizeF(size.Width / (1080 * aspectRaidou), size.Height / 1080f);
+            graphics.DrawTexture(texture, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
+        }
+
         /// <summary>
         /// Save an embedded resource to a temporary file.
         /// </summary>
