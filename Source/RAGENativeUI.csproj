@@ -79,6 +79,7 @@
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\UIMenuColoredItem.cs" />
     <Compile Include="Elements\InstructionalButton.cs" />
+    <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
     <Compile Include="MenuPool.cs" />
     <Compile Include="PauseMenu\TabItem.cs" />
     <Compile Include="PauseMenu\TabItemSimpleList.cs" />
