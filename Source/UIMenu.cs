@@ -490,14 +490,14 @@ namespace RAGENativeUI
 
             if (_justOpened)
             {
-                if (_logo != null && !_logo.IsTextureDictLoaded)
-                    _logo.LoadTextureDict();
-                if (!_background.IsTextureDictLoaded)
-                    _background.LoadTextureDict();
-                if (!_descriptionRectangle.IsTextureDictLoaded)
-                    _descriptionRectangle.LoadTextureDict();
-                if (!_upAndDownSprite.IsTextureDictLoaded)
-                    _upAndDownSprite.LoadTextureDict();
+                if (_logo != null && !_logo.IsTextureDictionaryLoaded)
+                    _logo.LoadTextureDictionary();
+                if (!_background.IsTextureDictionaryLoaded)
+                    _background.LoadTextureDictionary();
+                if (!_descriptionRectangle.IsTextureDictionaryLoaded)
+                    _descriptionRectangle.LoadTextureDictionary();
+                if (!_upAndDownSprite.IsTextureDictionaryLoaded)
+                    _upAndDownSprite.LoadTextureDictionary();
             }
 
             if (ControlDisablingEnabled)

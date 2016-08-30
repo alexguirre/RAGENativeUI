@@ -119,7 +119,7 @@ namespace RAGENativeUI.Elements
             if (LeftBadge != BadgeStyle.None)
             {
                 _text.Position = new Point(35 + Offset.X, _text.Position.Y);
-                _badgeLeft.TextureDict = BadgeToSpriteLib(LeftBadge);
+                _badgeLeft.TextureDictionary = BadgeToSpriteLib(LeftBadge);
                 _badgeLeft.TextureName = BadgeToSpriteName(LeftBadge, Selected);
                 _badgeLeft.Color = BadgeToColor(LeftBadge, Selected);
                 _badgeLeft.Draw();
@@ -132,7 +132,7 @@ namespace RAGENativeUI.Elements
             if (RightBadge != BadgeStyle.None)
             {
                 _badgeRight.Position = new Point(385 + Offset.X + Parent.WidthOffset, _badgeRight.Position.Y);
-                _badgeRight.TextureDict = BadgeToSpriteLib(RightBadge);
+                _badgeRight.TextureDictionary = BadgeToSpriteLib(RightBadge);
                 _badgeRight.TextureName = BadgeToSpriteName(RightBadge, Selected);
                 _badgeRight.Color = BadgeToColor(RightBadge, Selected);
                 _badgeRight.Draw();
