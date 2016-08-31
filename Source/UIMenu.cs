@@ -95,32 +95,32 @@ namespace RAGENativeUI
         /// <summary>
         /// Called when user presses up or down, changing current selection.
         /// </summary>
-        public event IndexChangedEvent OnIndexChange = delegate { };
+        public event IndexChangedEvent OnIndexChange;
 
         /// <summary>
         /// Called when user presses left or right, changing a list position.
         /// </summary>
-        public event ListChangedEvent OnListChange = delegate { };
+        public event ListChangedEvent OnListChange;
 
         /// <summary>
         /// Called when user presses enter on a checkbox item.
         /// </summary>
-        public event CheckboxChangeEvent OnCheckboxChange = delegate { };
+        public event CheckboxChangeEvent OnCheckboxChange;
 
         /// <summary>
         /// Called when user selects a simple item.
         /// </summary>
-        public event ItemSelectEvent OnItemSelect = delegate { };
+        public event ItemSelectEvent OnItemSelect;
 
         /// <summary>
         /// Called when user closes the menu or goes back in a menu chain.
         /// </summary>
-        public event MenuCloseEvent OnMenuClose = delegate { };
+        public event MenuCloseEvent OnMenuClose;
 
         /// <summary>
         /// Called when user either clicks on a binded button or goes back to a parent menu.
         /// </summary>
-        public event MenuChangeEvent OnMenuChange = delegate { };
+        public event MenuChangeEvent OnMenuChange;
 
         //Keys
         private readonly Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>> _keyDictionary = new Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>>();
@@ -1426,32 +1426,32 @@ namespace RAGENativeUI
 
         protected virtual void IndexChange(int newindex)
         {
-            OnIndexChange.Invoke(this, newindex);
+            OnIndexChange?.Invoke(this, newindex);
         }
 
         protected virtual void ListChange(UIMenuListItem sender, int newindex)
         {
-            OnListChange.Invoke(this, sender, newindex);
+            OnListChange?.Invoke(this, sender, newindex);
         }
 
         protected virtual void ItemSelect(UIMenuItem selecteditem, int index)
         {
-            OnItemSelect.Invoke(this, selecteditem, index);
+            OnItemSelect?.Invoke(this, selecteditem, index);
         }
 
         protected virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
         {
-            OnCheckboxChange.Invoke(this, sender, Checked);
+            OnCheckboxChange?.Invoke(this, sender, Checked);
         }
         
         protected virtual void MenuCloseEv()
         {
-            OnMenuClose.Invoke(this);
+            OnMenuClose?.Invoke(this);
         }
 
         protected virtual void MenuChangeEv(UIMenu newmenu, bool forward)
         {
-            OnMenuChange.Invoke(this, newmenu, forward);
+            OnMenuChange?.Invoke(this, newmenu, forward);
         }
     }
 }
