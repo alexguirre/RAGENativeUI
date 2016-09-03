@@ -37,7 +37,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Triggered when the list is changed.
         /// </summary>
-        public event ItemListEvent OnListChanged = delegate { };
+        public event ItemListEvent OnListChanged;
 
         protected int _index;
         
@@ -149,7 +149,7 @@ namespace RAGENativeUI.Elements
 
         internal virtual void ListChangedTrigger(int newindex)
         {
-            OnListChanged.Invoke(this, newindex);
+            OnListChanged?.Invoke(this, newindex);
         }
 
         public override void SetRightBadge(BadgeStyle badge)

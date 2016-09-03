@@ -10,7 +10,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Triggered when the checkbox state is changed.
         /// </summary>
-        public event ItemCheckboxEvent CheckboxEvent = delegate { };
+        public event ItemCheckboxEvent CheckboxEvent;
 
         /// <summary>
         /// Checkbox item with a toggleable checkbox.
@@ -74,7 +74,7 @@ namespace RAGENativeUI.Elements
 
         public void CheckboxEventTrigger()
         {
-            CheckboxEvent.Invoke(this, Checked);
+            CheckboxEvent?.Invoke(this, Checked);
         }
 
         public override void SetRightBadge(BadgeStyle badge)
