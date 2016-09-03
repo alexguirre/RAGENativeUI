@@ -20,7 +20,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Called when user selects the current item.
         /// </summary>
-        public event ItemActivatedEvent Activated = delegate { };
+        public event ItemActivatedEvent Activated;
 
         
         /// <summary>
@@ -77,7 +77,7 @@ namespace RAGENativeUI.Elements
 
         internal virtual void ItemActivate(UIMenu sender)
         {
-            Activated.Invoke(sender, this);
+            Activated?.Invoke(sender, this);
         }
         
 
