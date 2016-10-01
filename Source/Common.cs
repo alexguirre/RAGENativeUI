@@ -76,7 +76,9 @@ namespace RAGENativeUI
         /// <returns>A <see cref="ICollection{T}"/> with the current pressed keys.</returns>
         public static ICollection<Keys> GetPressedKeys()
         {
-            return Game.GetKeyboardState().PressedKeys;
+            KeyboardState keyboard = Game.GetKeyboardState();
+
+            return keyboard == null ? null : keyboard.PressedKeys;
         }
 
         /// <summary>

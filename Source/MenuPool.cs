@@ -158,12 +158,17 @@ namespace RAGENativeUI
         public void ProcessMenus()
         {
             ICollection<Keys> pressedKeys = Common.GetPressedKeys();
+            bool checkPressedKeys = pressedKeys != null;
+
             foreach (var menu in _menuList.Where(menu => menu.Visible))
             {
                 menu.ProcessControl();
-                foreach (Keys key in pressedKeys)
+                if (checkPressedKeys)
                 {
-                    menu.ProcessKey(key);
+                    foreach (Keys key in pressedKeys)
+                    {
+                        menu.ProcessKey(key);
+                    }
                 }
                 menu.ProcessMouse();
                 menu.Draw();
