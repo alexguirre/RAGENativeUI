@@ -15,8 +15,6 @@ namespace RAGENativeUI.Elements
 
         internal uint _holdTime; //used instead of UIMenu's _holdtime to eliminate issues with menu switches instantly switching back
 
-
-
         /// <summary>
         /// Gets or sets the items from this <see cref="UIMenuListItem"/> instance.
         /// </summary>
