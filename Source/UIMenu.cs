@@ -1100,12 +1100,15 @@ namespace RAGENativeUI
                 }
             }
             if (tmpControls.Any(tuple => Game.IsControlJustReleased(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustReleased(tuple.Item2, tuple.Item1)))
+            {
                 return true;
+            }
+            
             return false;
         }
 
         public uint HoldTimeBeforeScroll = 200;
-       
+        public static UIMenuListItem lastitem;
         private uint _holdTime;
         /// <summary>
         /// Checks whether a menucontrol is being pressed and if selected item is UIListItem, uses UIListItem variables
@@ -1144,9 +1147,9 @@ namespace RAGENativeUI
                 
                 UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
                 if(it.ScrollingEnabled)
-                {
-                    if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
-                    if(Game.GameTime <= _holdTime)
+                {                   
+                    if (HasControlJustBeenReleaseed(control, key)) { it._holdTime = 0; }
+                    if(Game.GameTime <= it._holdTime)
                     {
                         return false;
                     }
@@ -1156,13 +1159,13 @@ namespace RAGENativeUI
                     {
                         if (tmpKeys.Any(Game.IsKeyDownRightNow))
                         {
-                            _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                            it._holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
                             return true;
                         }
                     }
                     if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
                     {
-                        _holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                        it._holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
                         return true;
                     }
                 }
