@@ -12,7 +12,11 @@ namespace RAGENativeUI.Elements
         protected Sprite _arrowRight;
 
         protected List<dynamic> _items;
-        
+
+        internal uint _holdTime; //used instead of UIMenu's _holdtime to eliminate issues with menu switches instantly switching back
+
+
+
         /// <summary>
         /// Gets or sets the items from this <see cref="UIMenuListItem"/> instance.
         /// </summary>
@@ -33,7 +37,9 @@ namespace RAGENativeUI.Elements
         /// Hold time in milliseconds before scrolling to the next item on list when holding the key [Default = 200]
         /// </summary>
         public uint HoldTimeBeforeScroll = 200;
+
         
+
         /// <summary>
         /// Triggered when the list is changed.
         /// </summary>
