@@ -107,8 +107,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "F:\Program Files\Rockstar Games\Grand Theft Auto V
-copy /Y "$(TargetDir)$(ProjectName).pdb" "F:\Program Files\Rockstar Games\Grand Theft Auto V</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
