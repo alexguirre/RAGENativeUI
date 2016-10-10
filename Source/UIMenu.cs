@@ -1108,7 +1108,7 @@ namespace RAGENativeUI
         }
 
         public uint HoldTimeBeforeScroll = 200;
-        public static UIMenuListItem lastitem;
+
         private uint _holdTime;
         /// <summary>
         /// Checks whether a menucontrol is being pressed and if selected item is UIListItem, uses UIListItem variables
