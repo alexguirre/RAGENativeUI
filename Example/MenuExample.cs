@@ -6,12 +6,16 @@ namespace MenuExample
     using System.Collections.Generic;
     using System.Windows.Forms;
     using System.Drawing;
+
     using Rage;
+
     using RAGENativeUI;
     using RAGENativeUI.Elements;
 
     public static class EntryPoint
     {
+        private static GameFiber MenusProcessFiber;
+
         private static UIMenu mainMenu;
         private static UIMenu newMenu;
 
@@ -26,19 +30,19 @@ namespace MenuExample
 
         public static void Main()
         {
-            Game.FrameRender += Process;
+            // Create a fiber to process our menus
+            MenusProcessFiber = new GameFiber(ProcessLoop);
 
+            // Create the MenuPool to easily process our menus
             _menuPool = new MenuPool();
 
+            // Create our main menu
             mainMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
-            mainMenu.SetKey(Common.MenuControls.Up, Keys.W);
-            mainMenu.SetKey(Common.MenuControls.Down, Keys.S);
-            mainMenu.SetKey(Common.MenuControls.Left, Keys.A);
-            mainMenu.SetKey(Common.MenuControls.Right, Keys.D);
 
-
+            // Add our main menu to the MenuPool
             _menuPool.Add(mainMenu);
 
+            // create our items and add them to our main menu
             mainMenu.AddItem(ketchupCheckbox = new UIMenuCheckboxItem("Add ketchup?", false, "Do you wish to add ketchup?"));
 
             var foods = new List<dynamic>
@@ -79,7 +83,6 @@ namespace MenuExample
             coloredItem = new UIMenuColoredItem("Color!", System.Drawing.Color.Red, System.Drawing.Color.Blue);
             mainMenu.AddItem(coloredItem);
 
-
             mainMenu.RefreshIndex();
 
             mainMenu.OnItemSelect += OnItemSelect;
@@ -87,18 +90,22 @@ namespace MenuExample
             mainMenu.OnCheckboxChange += OnCheckboxChange;
             mainMenu.OnIndexChange += OnItemChange;
 
-
+            // Create another menu
             newMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
-            _menuPool.Add(newMenu);
-            for (int i = 0; i < 35; i++)
+            newMenu.CounterOverride = "Counter Override";
+            _menuPool.Add(newMenu); // add it to the menu pool
+            for (int i = 0; i < 35; i++) // add items
             {
-                newMenu.AddItem(new UIMenuItem("PageFiller " + i.ToString(), "Sample description that takes more than one line. Moreso, it takes way more than two lines since it's so long. Wow, check out this length!"));
+                newMenu.AddItem(new UIMenuItem("PageFiller " + i.ToString(), "Sample description that takes more than one line. More so, it takes way more than two lines since it's so long. Wow, check out this length!"));
             }
             newMenu.RefreshIndex();
-            mainMenu.BindMenuToItem(newMenu, menuItem);
+            mainMenu.BindMenuToItem(newMenu, menuItem); // and bind it to an item in our main menu
 
-            while (true)
-                GameFiber.Yield();
+            // Start our process fiber
+            MenusProcessFiber.Start();
+
+            // Continue with our plugin... in this example, hibernate to prevent it from being unloaded
+            GameFiber.Hibernate();
         }
 
 
@@ -137,7 +144,7 @@ namespace MenuExample
             }
             else if (selectedItem == spawnCar)
             {
-                GameFiber.StartNew(delegate
+                GameFiber.StartNew(delegate // Start a new fiber if the code sleeps or waits and we don't want to block the MenusProcessFiber
                 {
                     new Vehicle(((string)carsList.IndexToItem(carsList.Index)).ToLower(), Game.LocalPlayer.Character.GetOffsetPositionFront(6f)).Dismiss();
                 });
@@ -170,13 +177,25 @@ namespace MenuExample
             }
         }
 
-        public static void Process(object sender, GraphicsEventArgs e)
-        {
-            if (Game.IsKeyDown(Keys.F5) && !_menuPool.IsAnyMenuOpen()) // Our menu on/off switch.
-                mainMenu.Visible = !mainMenu.Visible;
 
-            _menuPool.ProcessMenus();       // Procces all our menus: draw the menu and procces the key strokes and the mouse. 
+        // The method that contains a loop to handle our menus
+        public static void ProcessLoop()
+        {
+            // if we are using banners with a Rage.Texture (UIMenu.SetBannerType(...)), we need to draw them in the RawFrameRender, in this example we don't have a Rage.Texture banner so this isn't needed
+            //Game.RawFrameRender += (s, e) => 
+            //{
+            //    _menuPool.DrawBanners(e.Graphics);
+            //};
+
+            while (true)
+            {
+                GameFiber.Yield();
+
+                if (Game.IsKeyDown(Keys.F5) && !_menuPool.IsAnyMenuOpen()) // Our menu on/off switch.
+                    mainMenu.Visible = !mainMenu.Visible;
+
+                _menuPool.ProcessMenus();       // Process all our menus: draw the menu and process the key strokes and the mouse. 
+            }
         }
     }
 }
-
