@@ -20,7 +20,18 @@ namespace RAGENativeUI.PauseMenu
         public int Index { get; set; }
         public bool IsInList { get; set; }
 
-        public void ProcessControls()
+        public void RefreshIndex()
+        {
+            foreach (TabItem item in Items)
+            {
+                item.Focused = false;
+                item.Active = false;
+                item.Visible = false;
+            }
+            Index = (1000 - (1000 % Items.Count)) % Items.Count;
+        }
+
+        public override void ProcessControls()
         {
             if (JustOpened)
             {
@@ -30,32 +41,54 @@ namespace RAGENativeUI.PauseMenu
 
             if (!Focused) return;
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect) && Focused)
+            if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect) && Focused && Parent.FocusLevel == 1)
             {
-                NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1);
-                Items[Index].OnActivated();
+                Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+
+                if (Items[Index].CanBeFocused && !Items[Index].Focused)
+                {
+                    Parent.FocusLevel++;
+                    Items[Index].JustOpened = true;
+                    Items[Index].Focused = true;
+                }
+                else
+                {
+                    Items[Index].OnActivated();
+                }
+
+                
             }
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly))
+            if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && Focused && Parent.FocusLevel > 1)
+            {
+                Common.PlaySound("CANCEL", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                if (Items[Index].CanBeFocused && Items[Index].Focused)
+                {
+                    Parent.FocusLevel--;
+                    Items[Index].Focused = false;
+                }
+            }
+
+            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp) && Parent.FocusLevel == 1)
             {
                 Index = (1000 - (1000 % Items.Count) + Index - 1) % Items.Count;
-                NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1);
+                Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
             }
 
-            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly))
+            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown) && Parent.FocusLevel == 1)
             {
                 Index = (1000 - (1000 % Items.Count) + Index + 1) % Items.Count;
-                NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1);
+                Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
             }
+
+            if (Items.Count > 0) Items[Index].ProcessControls();
         }
 
         public override void Draw()
         {
             if (!Visible) return;
             base.Draw();
-
-            ProcessControls();
-
+            
             var res = UIMenu.GetScreenResolutionMantainRatio();
 
             var alpha = Focused ? 120 : 30;
@@ -68,14 +101,41 @@ namespace RAGENativeUI.PauseMenu
 
             for (int i = 0; i < Items.Count; i++)
             {
-                new ResRectangle(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black)).Draw();
+                bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
+
+                new ResRectangle(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : hovering && Focused ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black)).Draw();
                 new ResText(Items[i].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White)).Draw();
+
+                if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
+                {
+                    Items[Index].Focused = false;
+                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    bool open = Index == i;
+                    Index = (1000 - (1000 % Items.Count) + i) % Items.Count;
+                    if (open)
+                    {
+                        if (Items[Index].CanBeFocused && !Items[Index].Focused)
+                        {
+                            Parent.FocusLevel = 2;
+                            Items[Index].JustOpened = true;
+                            Items[Index].Focused = true;
+                        }
+                        else
+                        {
+                            Items[Index].OnActivated();
+                        }
+                    }
+                    else
+                    {
+                        Parent.FocusLevel = 1;
+                    }
+                }
             }
 
             Items[Index].Visible = true;
             Items[Index].FadeInWhenFocused = true;
-            Items[Index].CanBeFocused = true;
-            Items[Index].Focused = Focused;
+            if (Items[Index].CanBeFocused)
+                Items[Index].Focused = true;
             Items[Index].UseDynamicPositionment = false;
             Items[Index].SafeSize = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));
             Items[Index].TopLeft = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));

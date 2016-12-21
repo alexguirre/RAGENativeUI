@@ -84,9 +84,9 @@ namespace RAGENativeUI.PauseMenu
         protected int _maxItem;
         protected Sprite _noLogo { get; set; }
 
-        public void ProcessControls()
+        public override void ProcessControls()
         {
-            if (!Focused) return;
+            if (!Focused || Heists.Count == 0) return;
             if (JustOpened)
             {
                 JustOpened = false;
@@ -145,9 +145,7 @@ namespace RAGENativeUI.PauseMenu
         {
             base.Draw();
             if (Heists.Count == 0) return;
-
-            ProcessControls();
-
+            
             res = UIMenu.GetScreenResolutionMantainRatio();
 
             var activeWidth = res.Width - SafeSize.X * 2;
