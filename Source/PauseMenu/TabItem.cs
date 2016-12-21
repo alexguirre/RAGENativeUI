@@ -24,9 +24,10 @@ namespace RAGENativeUI.PauseMenu
         public Point BottomRight { get; set; }
         public Point SafeSize { get; set; }
         public bool UseDynamicPositionment { get; set; }
-
+        public TabView Parent { get; set; }
 
         public event EventHandler Activated;
+        public event EventHandler DrawInstructionalButtons;
         public bool DrawBg;
         public bool FadeInWhenFocused { get; set; }
 
@@ -35,6 +36,10 @@ namespace RAGENativeUI.PauseMenu
         public void OnActivated()
         {
             Activated?.Invoke(this, EventArgs.Empty);
+        }
+
+        public virtual void ProcessControls()
+        {
         }
 
         public virtual void Draw()
@@ -52,6 +57,8 @@ namespace RAGENativeUI.PauseMenu
             }
 
             var rectSize = new Size(BottomRight.SubtractPoints(TopLeft));
+
+            DrawInstructionalButtons?.Invoke(this, EventArgs.Empty);
 
             if (DrawBg)
             {
