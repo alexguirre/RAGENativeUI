@@ -6,6 +6,7 @@ namespace PauseMenuExampleProject
     using System.Collections.Generic;
     using System.Windows.Forms;
     using Rage;
+    using RAGENativeUI.Elements;
     using RAGENativeUI.PauseMenu;
 
     public static class EntryPoint
@@ -23,6 +24,7 @@ namespace PauseMenuExampleProject
 
             tabView = new TabView("A RAGENativeUI Pause Menu");
             tabView.MoneySubtitle = "$10.000.000";
+            tabView.Name = "Here goes the Name! :D";
 
             Dictionary<string, string> listDict = new Dictionary<string, string>()
             {
@@ -30,32 +32,49 @@ namespace PauseMenuExampleProject
                 { "Second Item", "Hey, here there's some text" },
                 { "Third Item", "Duh!" },
             };
-            tabView.Tabs.Add(simpleListTab = new TabItemSimpleList("A List", listDict));
+            tabView.AddTab(simpleListTab = new TabItemSimpleList("A List", listDict));
             simpleListTab.Activated += SimpleListTab_Activated;
 
             List<MissionInformation> missionsInfo = new List<MissionInformation>()
             {
-                new MissionInformation("Mission One", new Tuple<string, string>[] { new Tuple<string, string>("This the first info", "Random Info"), new Tuple<string, string>("This the second info", "Random Info #2") }),
+                new MissionInformation("Mission One", new Tuple<string, string>[] { new Tuple<string, string>("This the first info", "Random Info"), new Tuple<string, string>("This the second info", "Random Info #2") }) { Logo = new MissionLogo(Game.CreateTextureFromFile("DefaultSkin.png")) },
                 new MissionInformation("Mission Two", "I have description!", new Tuple<string, string>[] { new Tuple<string, string>("Objective", "Mission Two Objective") }),
             };
-            tabView.Tabs.Add(missionSelectTab = new TabMissionSelectItem("I'm a Mission Select Tab", missionsInfo));
+            tabView.AddTab(missionSelectTab = new TabMissionSelectItem("I'm a Mission Select Tab", missionsInfo));
             missionSelectTab.OnItemSelect += MissionSelectTab_OnItemSelect;
 
 
-            tabView.Tabs.Add(textTab = new TabTextItem("TabTextItem", "Text Tab Item", "I'm a text tab item"));
+            tabView.AddTab(textTab = new TabTextItem("TabTextItem", "Text Tab Item", "I'm a text tab item"));
             textTab.Activated += TextTab_Activated;
 
             List<TabItem> items = new List<TabItem>();
             for (int i = 0; i < 10 ; i++)
             {
-                TabItem tItem = new TabItem("Item #" + i);
+                TabTextItem tItem = new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i);
+
                 tItem.Activated += SubMenuItem_Activated;
                 items.Add(tItem);
             }
-            tabView.Tabs.Add(submenuTab = new TabSubmenuItem("A submenu", items));
+            tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
+
+            List<UIMenuItem> menuItems = new List<UIMenuItem>()
+            {
+                new UIMenuItem("First MenuItem!", ""),
+                new UIMenuCheckboxItem("A Checkbox", true),
+                new UIMenuListItem("List", new List<dynamic>()
+                {
+                    "something",
+                    new Vector3(5, 0, 5),
+                    10, 
+                    5,
+                    false,
+                }, 0),
+            };
+            TabInteractiveListItem interactiveListItem = new TabInteractiveListItem("An Interactive List", menuItems);
+            tabView.AddTab(interactiveListItem);
 
             tabView.RefreshIndex();
-           
+
             while (true)
                 GameFiber.Yield();
         }
@@ -93,6 +112,8 @@ namespace PauseMenuExampleProject
                 tabView.Visible = !tabView.Visible;
 
             tabView.Update();
+            tabView.ProcessControls();
+            tabView.DrawTextures(e.Graphics);
         }
     }
 }
