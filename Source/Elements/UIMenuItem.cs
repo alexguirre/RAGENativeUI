@@ -238,7 +238,7 @@ namespace RAGENativeUI.Elements
             Tick,
         }
 
-        protected virtual string BadgeToSpriteLib(BadgeStyle badge)
+        internal static string BadgeToSpriteLib(BadgeStyle badge)
         {
             switch (badge)
             {
@@ -247,7 +247,7 @@ namespace RAGENativeUI.Elements
             }   
         }
 
-        protected virtual string BadgeToSpriteName(BadgeStyle badge, bool selected)
+        internal static string BadgeToSpriteName(BadgeStyle badge, bool selected)
         {
             switch (badge)
             {
@@ -302,7 +302,7 @@ namespace RAGENativeUI.Elements
             }
         }
 
-        protected virtual Color BadgeToColor(BadgeStyle badge, bool selected)
+        internal static Color BadgeToColor(BadgeStyle badge, bool selected)
         {
             switch (badge)
             {
