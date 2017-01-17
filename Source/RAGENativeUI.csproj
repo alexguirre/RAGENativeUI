@@ -85,6 +85,7 @@
     <Compile Include="Elements\UIMenuColoredItem.cs" />
     <Compile Include="Elements\InstructionalButton.cs" />
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
+    <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="MenuPool.cs" />
     <Compile Include="PauseMenu\TabInteractiveListItem.cs" />
     <Compile Include="PauseMenu\TabItem.cs" />

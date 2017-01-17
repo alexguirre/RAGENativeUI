@@ -793,6 +793,7 @@ namespace RAGENativeUI
         {
             if (!(MenuItems[CurrentSelection] is UIMenuListItem)) return;
             var it = (UIMenuListItem)MenuItems[CurrentSelection];
+            if ((it.Collection == null ? it.Items.Count : it.Collection.Count) == 0) return;
             it.Index--;
             Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
             ListChange(it, it.Index);
@@ -806,6 +807,7 @@ namespace RAGENativeUI
         {
             if (!(MenuItems[CurrentSelection] is UIMenuListItem)) return;
             var it = (UIMenuListItem)MenuItems[CurrentSelection];
+            if ((it.Collection == null ? it.Items.Count : it.Collection.Count) == 0) return;
             it.Index++;
             Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
             ListChange(it, it.Index);
@@ -952,10 +954,13 @@ namespace RAGENativeUI
                                         break;
                                     case 2:
                                         var it = (UIMenuListItem) MenuItems[i];
-                                        it.Index++;
-                                        Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-                                        ListChange(it, it.Index);
-                                        it.ListChangedTrigger(it.Index);
+                                        if ((it.Collection == null ? it.Items.Count : it.Collection.Count) > 0)
+                                        {
+                                            it.Index++;
+                                            Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
+                                            ListChange(it, it.Index);
+                                            it.ListChangedTrigger(it.Index);
+                                        }
                                         break;
                                 }
                             }

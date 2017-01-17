@@ -13,6 +13,7 @@ namespace RAGENativeUI.Elements
     /// </remarks>
     public class UIMenuSwitchMenusItem : UIMenuListItem
     {
+        [Obsolete("UIMenuSwitchMenusItem._menus will be removed soon, use UIMenuSwitchMenusItem.Collection instead.")]
         private List<UIMenu> _menus;
 
         private UIMenu _currentMenu;
@@ -30,7 +31,7 @@ namespace RAGENativeUI.Elements
                 if (value == _currentMenu)
                     return;
 
-                if (!_menus.Contains(value))
+                if (Collection == null ? !_menus.Contains(value) : !Collection.Contains(value))
                     throw new ArgumentException("The item doesn't contain the specified UIMenu", "value");
 
                 Index = MenuToIndex(value);
@@ -42,13 +43,13 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public override int Index
         {
-            get { return _index % _items.Count; }
+            get { return _index % (Collection == null ? _items.Count : Collection.Count); }
             set
             {
-                _index = 100000 - (100000 % _items.Count) + value;
-                if(_menus != null)
+                _index = 100000 - (100000 % (Collection == null ? _items.Count : Collection.Count)) + value;
+                if((Collection == null ? _menus != null : true))
                 {
-                    UIMenu newMenu = IndexToMenu(_index % _items.Count);
+                    UIMenu newMenu = IndexToMenu(_index % (Collection == null ? _items.Count : Collection.Count));
 
                     if (newMenu == _currentMenu)
                         return;
@@ -72,6 +73,7 @@ namespace RAGENativeUI.Elements
         /// <param name="text">Item label.</param>
         /// <param name="menus">List that contains your <see cref="UIMenu"/>s.</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
+        [Obsolete("This constructor overload will be removed soon, use one of the other overloads.")]
         public UIMenuSwitchMenusItem(string text, List<UIMenu> menus, int index)
             : this(text, menus, new List<string>(menus.Select(m => m.Title.Caption)), index, "")
         {
@@ -85,6 +87,7 @@ namespace RAGENativeUI.Elements
         /// <param name="menus">List that contains your <see cref="UIMenu"/>s.</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
         /// <param name="description">Description for this item.</param>
+        [Obsolete("This constructor overload will be removed soon, use one of the other overloads.")]
         public UIMenuSwitchMenusItem(string text, List<UIMenu> menus, int index, string description) 
             : this(text, menus, new List<string>(menus.Select(m => m.Title.Caption)), index, description)
         {
@@ -98,6 +101,7 @@ namespace RAGENativeUI.Elements
         /// <param name="menus">List that contains your <see cref="UIMenu"/>s.</param>
         /// <param name="menusNames">List that contains a name for each <see cref="UIMenu"/> in the same order</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
+        [Obsolete("This constructor overload will be removed soon, use one of the other overloads.")]
         public UIMenuSwitchMenusItem(string text, List<UIMenu> menus, List<string> menusNames, int index)
             : this(text, menus, menusNames, index, "")
         {
@@ -112,6 +116,7 @@ namespace RAGENativeUI.Elements
         /// <param name="menusNames">List that contains a name for each <see cref="UIMenu"/> in the same order</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
         /// <param name="description">Description for this item.</param>
+        [Obsolete("This constructor overload will be removed soon, use one of the other overloads.")]
         public UIMenuSwitchMenusItem(string text, List<UIMenu> menus, List<string> menusNames, int index, string description)
             : base(text, new List<dynamic>(menusNames), index, description)
         {
@@ -122,6 +127,65 @@ namespace RAGENativeUI.Elements
             _currentMenu = IndexToMenu(index);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuSwitchMenusItem"/> class a list menu item, with left/right arrows that switches the current menu depending on the current <see cref="UIMenu"/> item,
+        /// from a collection of <see cref="IDisplayItem"/>s.
+        /// <para>
+        /// All <see cref="IDisplayItem.Value"/>s need to be <see cref="UIMenu"/>s.
+        /// </para>
+        /// </summary>
+        /// <param name="text">The item label.</param>
+        /// <param name="description">The description for this item.</param>
+        /// <param name="menusDisplayItems">The collection of <see cref="IDisplayItem"/>s with <see cref="UIMenu"/>s as <see cref="IDisplayItem.Value"/>s.</param>
+        /// <exception cref="ArgumentException">Thrown if any <see cref="IDisplayItem.Value"/> isn't a <see cref="UIMenu"/></exception>
+        public UIMenuSwitchMenusItem(string text, string description, IEnumerable<IDisplayItem> menusDisplayItems)
+            : base(text, description, menusDisplayItems)
+        {
+            if (menusDisplayItems.Any(i => !(i.Value is UIMenu)))
+                throw new ArgumentException($"All {nameof(IDisplayItem.Value)}s need to be {nameof(UIMenu)}s", nameof(menusDisplayItems));
+
+            _currentMenu = IndexToMenu(0);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuSwitchMenusItem"/> class a list menu item, with left/right arrows that switches the current menu depending on the current <see cref="UIMenu"/> item,
+        /// from a collection of <see cref="IDisplayItem"/>s.
+        /// <para>
+        /// All <see cref="IDisplayItem.Value"/>s need to be <see cref="UIMenu"/>s.
+        /// </para>
+        /// </summary>
+        /// <param name="text">The item label.</param>
+        /// <param name="description">The description for this item.</param>
+        /// <param name="menusDisplayItems">The collection of <see cref="IDisplayItem"/>s with <see cref="UIMenu"/>s as <see cref="IDisplayItem.Value"/>s.</param>
+        /// <exception cref="ArgumentException">Thrown if any <see cref="IDisplayItem.Value"/> isn't a <see cref="UIMenu"/></exception>
+        public UIMenuSwitchMenusItem(string text, string description, params IDisplayItem[] menusDisplayItems)
+            : this(text, description, (IEnumerable<IDisplayItem>)menusDisplayItems)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuSwitchMenusItem"/> class a list menu item, with left/right arrows that switches the current menu depending on the current <see cref="UIMenu"/> item,
+        /// from a collection of <see cref="UIMenu"/>s using the default implementation of <see cref="IDisplayItem"/>, <see cref="DisplayItem"/>, and the <see cref="UIMenu"/>'s title caption as display text.
+        /// </summary>
+        /// <param name="text">The item label.</param>
+        /// <param name="description">The description for this item.</param>
+        /// <param name="menus">The collection of <see cref="UIMenu"/>s.</param>
+        public UIMenuSwitchMenusItem(string text, string description, IEnumerable<UIMenu> menus)
+            : this(text, description, menus.Select(m => new DisplayItem(m, m.Title.Caption)))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuSwitchMenusItem"/> class a list menu item, with left/right arrows that switches the current menu depending on the current <see cref="UIMenu"/> item,
+        /// from a collection of <see cref="UIMenu"/>s using the default implementation of <see cref="IDisplayItem"/>, <see cref="DisplayItem"/>, and the <see cref="UIMenu"/>'s title caption as display text.
+        /// </summary>
+        /// <param name="text">The item label.</param>
+        /// <param name="description">The description for this item.</param>
+        /// <param name="menus">The collection of <see cref="UIMenu"/>s.</param>
+        public UIMenuSwitchMenusItem(string text, string description, params UIMenu[] menus)
+            : this(text, description, (IEnumerable<UIMenu>)menus)
+        {
+        }
 
         /// <summary>
         /// Find a menu in the list and return it's index.
@@ -130,7 +194,7 @@ namespace RAGENativeUI.Elements
         /// <returns>Item index.</returns>
         public virtual int MenuToIndex(UIMenu menu)
         {
-            return _menus.FindIndex(m => m == menu);
+            return Collection == null ? _menus.FindIndex(m => m == menu) : Collection.IndexOf(menu);
         }
 
 
@@ -141,7 +205,7 @@ namespace RAGENativeUI.Elements
         /// <returns>Menu</returns>
         public virtual UIMenu IndexToMenu(int index)
         {
-            return _menus[index];
+            return Collection == null ? _menus[index] : Collection[index].Value as UIMenu;
         }
     }
 }

@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 
 namespace RAGENativeUI.Elements
 {
+    /// <summary>
+    ///  A list item, with left/right arrows.
+    /// </summary>
+    /// <seealso cref="RAGENativeUI.Elements.UIMenuItem" />
     public class UIMenuListItem : UIMenuItem
     {
         protected ResText _itemText;
@@ -11,6 +16,7 @@ namespace RAGENativeUI.Elements
         protected Sprite _arrowLeft;
         protected Sprite _arrowRight;
 
+        [Obsolete("UIMenuListItem._items will be removed soon, use UIMenuListItem.Collection instead.")]
         protected List<dynamic> _items;
 
         internal uint _holdTime; //used instead of UIMenu's _holdtime to eliminate issues with menu switches instantly switching back
@@ -21,11 +27,35 @@ namespace RAGENativeUI.Elements
         /// <remarks>
         /// For better safety before modifying the items <see cref="List{dynamic}"/> set <see cref="Index"/> to 0.
         /// </remarks>
+        [Obsolete("UIMenuListItem.Items will be removed soon, use UIMenuListItem.Collection instead.")]
         public virtual List<dynamic> Items
         {
             get { return _items; }
             set { _items = value;  }
         }
+
+        /// <summary>
+        /// Gets the collection of items of this <see cref="UIMenuListItem"/>.
+        /// </summary>
+        /// <value>
+        /// The <see cref="DisplayItemsCollection"/> of this <see cref="UIMenuListItem"/>.
+        /// </value>
+        public DisplayItemsCollection Collection { get; }
+
+        /// <summary>
+        /// Gets the current selection.
+        /// </summary>
+        /// <value>
+        /// The current selection's <see cref="IDisplayItem"/>.
+        /// </value>
+        public IDisplayItem SelectedItem { get { return Collection.Count > 0 ? Collection[Index] : null; } }
+        /// <summary>
+        /// Gets the current selection value.
+        /// </summary>
+        /// <value>
+        /// The current selection's <see cref="IDisplayItem.Value"/>.
+        /// </value>
+        public object SelectedValue { get { return SelectedItem == null ? null : SelectedItem.Value; } }
 
         /// <summary>
         /// Enables or disables scrolling through the list by holding the key
@@ -36,8 +66,6 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public uint HoldTimeBeforeScroll = 200;
 
-        
-
         /// <summary>
         /// Triggered when the list is changed.
         /// </summary>
@@ -46,12 +74,28 @@ namespace RAGENativeUI.Elements
         protected int _index;
         
         /// <summary>
-        /// Returns the current selected index.
+        /// Returns the current selected index or -1 if the collection is empty.
         /// </summary>
         public virtual int Index
         {
-            get { return _index % _items.Count; }
-            set { _index = 100000 - (100000 % _items.Count) + value; }
+            get
+            {
+                if (Collection == null && _items != null && _items.Count == 0)
+                    return -1;
+                if (Collection != null && Collection.Count == 0)
+                    return -1;
+
+                return _index % (Collection == null ? _items.Count : Collection.Count);
+            }
+            set
+            {
+                if (Collection == null && _items != null && _items.Count == 0)
+                    return;
+                if (Collection != null && Collection.Count == 0)
+                    return;
+
+                _index = 100000 - (100000 % (Collection == null ? _items.Count : Collection.Count)) + value;
+            }
         }
 
 
@@ -61,6 +105,7 @@ namespace RAGENativeUI.Elements
         /// <param name="text">Item label.</param>
         /// <param name="items">List that contains your items.</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
+        [Obsolete("This constructor overload will be removed soon, use one of the other overloads that don't require a List<dynamic> for the items. If this constructor is used UIMenuListItem.Collection will be null.")]
         public UIMenuListItem(string text, List<dynamic> items, int index)
             : this(text, items, index, "")
         {
@@ -73,6 +118,7 @@ namespace RAGENativeUI.Elements
         /// <param name="items">List that contains your items.</param>
         /// <param name="index">Index in the list. If unsure user 0.</param>
         /// <param name="description">Description for this item.</param>
+        [Obsolete("This constructor overload will be removed soon, use one of the other overloads that don't require a List<dynamic> for the items. If this constructor is used UIMenuListItem.Collection will be null.")]
         public UIMenuListItem(string text, List<dynamic> items, int index, string description)
             : base(text, description)
         {
@@ -85,6 +131,66 @@ namespace RAGENativeUI.Elements
             Index = index;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuListItem"/> class, from a collection of <see cref="IDisplayItem"/>s.
+        /// </summary>
+        /// <param name="text">The <see cref="UIMenuListItem"/>'s label.</param>
+        /// <param name="description">The <see cref="UIMenuListItem"/>'s description.</param>
+        /// <param name="items">The collection of <see cref="IDisplayItem"/>s.</param>
+        public UIMenuListItem(string text, string description, IEnumerable<IDisplayItem> items)
+            : base(text, description)
+        {
+            const int y = 0;
+            Collection = new DisplayItemsCollection(items);
+            _arrowLeft = new Sprite("commonmenu", "arrowleft", new Point(110, 105 + y), new Size(30, 30));
+            _arrowRight = new Sprite("commonmenu", "arrowright", new Point(280, 105 + y), new Size(30, 30));
+            _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
+                ResText.Alignment.Left)
+            { TextAlignment = ResText.Alignment.Right };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuListItem"/> class, from a collection of <see cref="IDisplayItem"/>s.
+        /// </summary>
+        /// <param name="text">The <see cref="UIMenuListItem"/>'s label.</param>
+        /// <param name="description">The <see cref="UIMenuListItem"/>'s description.</param>
+        /// <param name="items">The collection of <see cref="IDisplayItem"/>s.</param>
+        public UIMenuListItem(string text, string description, params IDisplayItem[] items)
+            : this(text, description, (IEnumerable<IDisplayItem>)items)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuListItem"/> class, from a collection of <see cref="object"/>s using the default implementation of <see cref="IDisplayItem"/>, <see cref="DisplayItem"/>.
+        /// </summary>
+        /// <param name="text">The <see cref="UIMenuListItem"/>'s label.</param>
+        /// <param name="description">The <see cref="UIMenuListItem"/>'s description.</param>
+        /// <param name="itemsValues">The collection of <see cref="object"/>s.</param>
+        public UIMenuListItem(string text, string description, IEnumerable<object> itemsValues)
+            : this(text, description, itemsValues.Select(o => new DisplayItem(o)))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuListItem"/> class, from a collection of <see cref="object"/>s using the default implementation of <see cref="IDisplayItem"/>, <see cref="DisplayItem"/>.
+        /// </summary>
+        /// <param name="text">The <see cref="UIMenuListItem"/>'s label.</param>
+        /// <param name="description">The <see cref="UIMenuListItem"/>'s description.</param>
+        /// <param name="itemsValues">The collection of <see cref="object"/>s.</param>
+        public UIMenuListItem(string text, string description, params object[] itemsValues)
+            : this(text, description, (IEnumerable<object>)itemsValues)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UIMenuListItem"/> class with an empty <see cref="Collection"/>.
+        /// </summary>
+        /// <param name="text">The <see cref="UIMenuListItem"/>'s label.</param>
+        /// <param name="description">The <see cref="UIMenuListItem"/>'s description.</param>
+        public UIMenuListItem(string text, string description)
+            : this(text, description, Enumerable.Empty<IDisplayItem>())
+        {
+        }
 
         /// <summary>
         /// Change item's position.
@@ -104,9 +210,10 @@ namespace RAGENativeUI.Elements
         /// </summary>
         /// <param name="item">Item to search for.</param>
         /// <returns>Item index.</returns>
+        [Obsolete("UIMenuListItem.ItemToIndex() will be removed soon, use UIMenuListItem.Collection instead.")]
         public virtual int ItemToIndex(dynamic item)
         {
-            return _items.FindIndex(item);
+            return Collection == null ? _items.FindIndex(item) : Collection.IndexOf(item);
         }
 
 
@@ -115,9 +222,10 @@ namespace RAGENativeUI.Elements
         /// </summary>
         /// <param name="index">Item's index.</param>
         /// <returns>Item</returns>
+        [Obsolete("UIMenuListItem.IndexToItem() will be removed soon, use UIMenuListItem.Collection instead.")]
         public virtual dynamic IndexToItem(int index)
         {
-            return _items[index];
+            return Collection == null ? _items[index] : Collection[index];
         }
 
 
@@ -127,7 +235,9 @@ namespace RAGENativeUI.Elements
         public override void Draw()
         {
             base.Draw();
-            string caption = _items[Index % _items.Count].ToString();
+            string caption = Collection == null ? 
+                                (_items.Count > 0 ? _items[Index].ToString() : " ") : 
+                                (Collection.Count > 0 ? Collection[Index].DisplayText : " ");
             int offset = StringMeasurer.MeasureString(caption);
 
             _itemText.Color = Enabled ? Selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
