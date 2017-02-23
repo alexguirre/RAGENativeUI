@@ -218,7 +218,7 @@ namespace RAGENativeUI
             SetKey(Common.MenuControls.Back, GameControl.FrontendPause);
         }
 
-        private void RecaulculateDescriptionPosition()
+        private void RecalculateDescriptionPosition()
         {
             //_descriptionText.WordWrap = new Size(425 + WidthOffset, 0);
 
@@ -392,7 +392,26 @@ namespace RAGENativeUI
             item.Position((MenuItems.Count * 25) - 37 + _extraYOffset);
             MenuItems.Add(item);
 
-            RecaulculateDescriptionPosition();
+            RecalculateDescriptionPosition();
+        }
+
+        /// <summary>
+        /// Add an item to the menu at the specified index.
+        /// </summary>
+        /// <param name="item">Item object to be added. Can be normal item, checkbox or list item.</param>
+        /// <param name="index"></param>
+        public void AddItem(UIMenuItem item, int index)
+        {
+            item.Offset = _offset;
+            item.Parent = this;
+            MenuItems.Insert(index, item);
+
+            for (int i = index; i < MenuItems.Count; i++) // recalculate items positions
+            {
+                item.Position((i * 25) - 37 + _extraYOffset);
+            }
+
+            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -407,7 +426,7 @@ namespace RAGENativeUI
                 _minItem--;
             }
             MenuItems.RemoveAt(index);
-            RecaulculateDescriptionPosition();
+            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -422,7 +441,10 @@ namespace RAGENativeUI
                 _minItem = 0;
                 return;
             }
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
+
+            for (int i = 0; i < MenuItems.Count; i++)
+                MenuItems[i].Selected = false;
+            
             _activeItem = 1000 - (1000 % MenuItems.Count);
             _maxItem = MaxItemsOnScreen;
             _minItem = 0;
@@ -434,7 +456,7 @@ namespace RAGENativeUI
         public void Clear()
         {
             MenuItems.Clear();
-            RecaulculateDescriptionPosition();
+            RecalculateDescriptionPosition();
         }
         
         /// <summary>
@@ -544,7 +566,7 @@ namespace RAGENativeUI
             MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
             if (!String.IsNullOrWhiteSpace(MenuItems[_activeItem%(MenuItems.Count)].Description))
             {
-                RecaulculateDescriptionPosition();
+                RecalculateDescriptionPosition();
                 string descCaption = MenuItems[_activeItem % (MenuItems.Count)].Description;
                 if (FormatDescriptions)
                     _descriptionText.Caption = FormatDescription(descCaption);
