@@ -130,6 +130,21 @@
     public class DisplayItemsCollection : BaseCollection<IDisplayItem>
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayItemsCollection"/> class that is empty.
+        /// </summary>
+        public DisplayItemsCollection() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayItemsCollection"/> class that contains elements copied from the specified collection.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        public DisplayItemsCollection(IEnumerable<IDisplayItem> collection) : base(collection)
+        {
+        }
+
+        /// <summary>
         /// Adds the specified value and display text using the default implementation of <see cref="IDisplayItem"/>, <see cref="DisplayItem"/>.
         /// </summary>
         /// <param name="value">The value.</param>
