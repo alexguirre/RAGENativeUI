@@ -48,6 +48,7 @@ namespace RAGENativeUI
         /// The value.
         /// </value>
         public object Value { get; }
+
         private string displayText;
         /// <summary>
         /// Gets the display text of this <see cref="DisplayItem"/>.
@@ -125,77 +126,9 @@ namespace RAGENativeUI
     /// <summary>
     /// Represents a collection of <see cref="IDisplayItem"/>.
     /// </summary>
-    /// <seealso cref="System.Collections.Generic.ICollection{IDisplayItem}" />
-    public class DisplayItemsCollection : ICollection<IDisplayItem>
+    /// <seealso cref="BaseCollection{IDisplayItem}" />
+    public class DisplayItemsCollection : BaseCollection<IDisplayItem>
     {
-        public delegate void DisplayItemsCollectionItemChangedEventHandler(DisplayItemsCollection sender, IDisplayItem changedItem);
-        public delegate void DisplayItemsCollectionClearedEventHandler(DisplayItemsCollection sender);
-
-        private List<IDisplayItem> internalList;
-
-        /// <summary>
-        /// Occurs when an item is added to this <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        public event DisplayItemsCollectionItemChangedEventHandler ItemAdded;
-        /// <summary>
-        /// Occurs when an item is removed to this <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        public event DisplayItemsCollectionItemChangedEventHandler ItemRemoved;
-        /// <summary>
-        /// Occurs when all the items of this <see cref="DisplayItemsCollection"/> are removed using <see cref="Clear"/>.
-        /// </summary>
-        public event DisplayItemsCollectionClearedEventHandler Cleared;
-
-        /// <summary>
-        /// Gets the number of elements contained in this <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        public int Count { get { return internalList.Count; } }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="DisplayItemsCollection"/> is read-only.
-        /// </summary>
-        public bool IsReadOnly { get { return false; } }
-
-        /// <summary>
-        /// Gets the <see cref="IDisplayItem"/> at the specified index.
-        /// </summary>
-        /// <value>
-        /// The <see cref="IDisplayItem"/>.
-        /// </value>
-        /// <param name="index">The index.</param>
-        /// <returns>The <see cref="IDisplayItem"/> at the specified index.</returns>
-        public IDisplayItem this[int index]
-        {
-            get { return internalList[index]; }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisplayItemsCollection"/> class that is empty.
-        /// </summary>
-        public DisplayItemsCollection()
-        {
-            internalList = new List<IDisplayItem>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisplayItemsCollection"/> class that contains elements copied from the specified collection.
-        /// </summary>
-        /// <param name="collection">The collection.</param>
-        public DisplayItemsCollection(IEnumerable<IDisplayItem> collection)
-        {
-            internalList = new List<IDisplayItem>(collection);
-        }
-
-        /// <summary>
-        /// Adds an <see cref="IDisplayItem"/> to this <see cref="DisplayItemsCollection" />.
-        /// </summary>
-        /// <param name="item">The <see cref="IDisplayItem"/> to add to this <see cref="DisplayItemsCollection" />.</param>
-        public void Add(IDisplayItem item)
-        {
-            internalList.Add(item);
-            ItemAdded?.Invoke(this, item);
-        }
-
         /// <summary>
         /// Adds the specified value and display text using the default implementation of <see cref="IDisplayItem"/>, <see cref="DisplayItem"/>.
         /// </summary>
@@ -216,32 +149,6 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Removes the <see cref="IDisplayItem"/> at the specified index from this <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        public void RemoveAt(int index)
-        {
-            IDisplayItem i = internalList[index];
-            internalList.RemoveAt(index);
-            ItemRemoved?.Invoke(this, i);
-        }
-
-        /// <summary>
-        /// Removes the first occurrence of the specified <see cref="IDisplayItem"/> from this <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        /// <param name="item">The <see cref="IDisplayItem"/> to remove from this <see cref="DisplayItemsCollection"/>.</param>
-        /// <returns>
-        /// <c>true</c> if the <paramref name="item"/> was successfully removed from this <see cref="DisplayItemsCollection"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="DisplayItemsCollection"/>.
-        /// </returns>
-        public bool Remove(IDisplayItem item)
-        {
-            bool result = internalList.Remove(item);
-            if (result)
-                ItemRemoved?.Invoke(this, item);
-            return result;
-        }
-
-        /// <summary>
         /// Removes all the occurrences of <see cref="IDisplayItem"/>s which <see cref="IDisplayItem.Value"/> equals the specified <paramref name="value"/> from this <see cref="DisplayItemsCollection"/>.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -249,31 +156,10 @@ namespace RAGENativeUI
         {
             for (int i = Count - 1; i >= 0; i--)
             {
-                if ((internalList[i].Value == null && value == null) ||
-                    (internalList[i].Value.Equals(value)))
+                if ((InternalList[i].Value == null && value == null) ||
+                    (InternalList[i].Value.Equals(value)))
                     RemoveAt(i);
             }
-        }
-
-        /// <summary>
-        /// Removes all items from this <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        public void Clear()
-        {
-            internalList.Clear();
-            Cleared?.Invoke(this);
-        }
-
-        /// <summary>
-        /// Determines whether this <see cref="DisplayItemsCollection"/> contains a specific <see cref="IDisplayItem"/>.
-        /// </summary>
-        /// <param name="item">The <see cref="IDisplayItem"/> to locate in this <see cref="DisplayItemsCollection"/>.</param>
-        /// <returns>
-        /// true if <paramref name="item"/> is found in this <see cref="DisplayItemsCollection"/>; otherwise, false.
-        /// </returns>
-        public bool Contains(IDisplayItem item)
-        {
-            return internalList.Contains(item);
         }
 
         /// <summary>
@@ -287,31 +173,11 @@ namespace RAGENativeUI
         {
             for (int i = 0; i < Count; i++)
             {
-                if ((internalList[i].Value == null && value == null) ||
-                    (internalList[i].Value.Equals(value)))
+                if ((InternalList[i].Value == null && value == null) ||
+                    (InternalList[i].Value.Equals(value)))
                     return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Copies the elements of this <see cref="DisplayItemsCollection"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
-        /// </summary>
-        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from this <see cref="DisplayItemsCollection"/>. The <see cref="Array" /> must have zero-based indexing.</param>
-        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-        public void CopyTo(IDisplayItem[] array, int arrayIndex)
-        {
-            internalList.CopyTo(array, arrayIndex);
-        }
-
-        /// <summary>
-        /// Searches for the specified <see cref="IDisplayItem"/> and returns the zero-based index of the first occurrence within the entire <see cref="DisplayItemsCollection"/>.
-        /// </summary>
-        /// <param name="item">The <see cref="IDisplayItem"/>.</param>
-        /// <returns>The zero-based index of the first occurrence of the item within the entire <see cref="DisplayItemsCollection"/>, if found; otherwise, –1.</returns>
-        public int IndexOf(IDisplayItem item)
-        {
-            return internalList.IndexOf(item);
         }
 
         /// <summary>
@@ -325,7 +191,7 @@ namespace RAGENativeUI
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (internalList[i].Value == null)
+                    if (InternalList[i].Value == null)
                         return i;
                 }
             }
@@ -333,28 +199,12 @@ namespace RAGENativeUI
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (value.Equals(internalList[i].Value))
+                    if (value.Equals(InternalList[i].Value))
                         return i;
                 }
             }
 
             return -1;
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        /// An enumerator that can be used to iterate through the collection.
-        /// </returns>
-        public IEnumerator<IDisplayItem> GetEnumerator()
-        {
-            return internalList.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return internalList.GetEnumerator();
         }
     }
 }

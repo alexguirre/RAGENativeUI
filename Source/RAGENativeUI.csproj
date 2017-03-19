@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseCollection.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Elements\BigMessage.cs" />
     <Compile Include="Elements\Container.cs" />
