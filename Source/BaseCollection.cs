@@ -57,14 +57,15 @@
             get
             {
                 if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException("index");
+                    throw new ArgumentOutOfRangeException(nameof(index));
 
                 return InternalList[index];
             }
             set
             {
                 if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException("index");
+                    throw new ArgumentOutOfRangeException(nameof(index));
+
                 T old = InternalList[index];
                 if(!EqualityComparer<T>.Default.Equals(old, value))
                 {

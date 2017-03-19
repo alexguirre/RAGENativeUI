@@ -151,7 +151,7 @@
         /// <param name="displayText">The display text.</param>
         public void Add(object value, string displayText)
         {
-            Add(new DisplayItem(value, displayText));
+            base.Add(new DisplayItem(value, displayText));
         }
 
         /// <summary>
@@ -160,7 +160,7 @@
         /// <param name="value">The value.</param>
         public void Add(object value)
         {
-            Add(new DisplayItem(value));
+            base.Add(new DisplayItem(value));
         }
 
         /// <summary>
