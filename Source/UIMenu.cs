@@ -73,6 +73,8 @@ namespace RAGENativeUI
         private Point _offset;
         private readonly int _extraYOffset;
 
+        private readonly InstructionalButtons instructionalButtons;
+
         public string AUDIO_LIBRARY = "HUD_FRONTEND_DEFAULT_SOUNDSET";
 
         public string AUDIO_UPDOWN = "NAV_UP_DOWN";
@@ -173,10 +175,10 @@ namespace RAGENativeUI
             _offset = offset;
             Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
-
-            _instructionalButtonsScaleform = new Scaleform(0);
-            _instructionalButtonsScaleform.Load("instructional_buttons");
-            UpdateScaleform();
+            
+            instructionalButtons = new InstructionalButtons();
+            instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
+            instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
             _mainMenu = new Container(new Point(0, 0), new Size(700, 500), Color.FromArgb(0, 0, 0, 0));
             _logo = new Sprite(spriteLibrary, spriteName, new Point(0 + _offset.X, 0 + _offset.Y), new Size(431, 107));
@@ -530,7 +532,7 @@ namespace RAGENativeUI
                 EnableCameraMovement();
 
             if(_buttonsEnabled)
-                _instructionalButtonsScaleform.Render2D();
+                instructionalButtons.Draw();
 
             safezoneOffset = GetSafezoneBounds();
             if (ScaleWithSafezone)
@@ -994,7 +996,7 @@ namespace RAGENativeUI
                             CurrentSelection = i;
                             Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                             IndexChange(CurrentSelection);
-                            UpdateScaleform();
+                            instructionalButtons.Update();
                         }
                         else if (!uiMenuItem.Enabled && uiMenuItem.Selected)
                         {
@@ -1238,7 +1240,7 @@ namespace RAGENativeUI
                     GoUpOverflow();
                 else
                     GoUp();
-                UpdateScaleform();
+                instructionalButtons.Update();
             }
 
             else if (IsControlBeingPressed(Common.MenuControls.Down, key))
@@ -1247,7 +1249,7 @@ namespace RAGENativeUI
                     GoDownOverflow();
                 else
                     GoDown();
-                UpdateScaleform();
+                instructionalButtons.Update();
             }
 
             else if (IsControlBeingPressed(Common.MenuControls.Left, key))
@@ -1306,40 +1308,15 @@ namespace RAGENativeUI
             }
             return output;
         }
-
-        private readonly List<InstructionalButton> _instructionalButtons = new List<InstructionalButton>();
-
+        
         public void AddInstructionalButton(InstructionalButton button)
         {
-            _instructionalButtons.Add(button);
+            instructionalButtons.Buttons.Add(button);
         }
 
         public void RemoveInstructionalButton(InstructionalButton button)
         {
-            _instructionalButtons.Remove(button);
-        }
-
-        private readonly Scaleform _instructionalButtonsScaleform;
-        /// <summary>
-        /// Manually update the instructional buttons scaleform.
-        /// </summary>
-        public void UpdateScaleform()
-        {   
-            if (!Visible) return;
-            _instructionalButtonsScaleform.CallFunction("CLEAR_ALL");
-            _instructionalButtonsScaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", 0);
-            _instructionalButtonsScaleform.CallFunction("CREATE_CONTAINER");
-
-
-            _instructionalButtonsScaleform.CallFunction("SET_DATA_SLOT", 0, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)GameControl.CellphoneSelect, 0), "Select");
-            _instructionalButtonsScaleform.CallFunction("SET_DATA_SLOT", 1, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)GameControl.CellphoneCancel, 0), "Back");
-            int count = 2;
-            foreach (var button in _instructionalButtons.Where(button => button.ItemBind == null || MenuItems[CurrentSelection] == button.ItemBind))
-            {
-                _instructionalButtonsScaleform.CallFunction("SET_DATA_SLOT", count, button.GetButtonId(), button.Text);
-                count++;
-            }
-            _instructionalButtonsScaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
+            instructionalButtons.Buttons.Remove(button);
         }
         
         /// <summary>
@@ -1391,7 +1368,7 @@ namespace RAGENativeUI
             {   
                 _visible = value;
                 _justOpened = value;
-                UpdateScaleform();
+                instructionalButtons.Update();
                 if (ParentMenu != null || !value) return;
                 if (!ResetCursorOnOpen) return;
                 Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width/2, Screen.PrimaryScreen.Bounds.Height/2);
