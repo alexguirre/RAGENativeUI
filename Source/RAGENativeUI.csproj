@@ -84,7 +84,7 @@
     <Compile Include="Elements\IElement.cs" />
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\UIMenuColoredItem.cs" />
-    <Compile Include="Elements\InstructionalButton.cs" />
+    <Compile Include="Elements\InstructionalButtons.cs" />
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="MenuPool.cs" />
