@@ -21,21 +21,33 @@ namespace RAGENativeUI.Elements
         { 
         }
 
+        public override void Draw()
+        {
+            Draw(Size.Empty);
+        }
+
         public override void Draw(Size offset)
         {
-            if (!Enabled) return;
+            if (!Enabled)
+                return;
+
+            Draw(new Point(Position.X + offset.Width, Position.Y + offset.Height), Size, Color);
+        }
+
+        public new static void Draw(Point position, Size size, Color color)
+        {
             int screenw = Game.Resolution.Width;
             int screenh = Game.Resolution.Height;
             const float height = 1080f;
             float ratio = (float)screenw / screenh;
             var width = height * ratio;
 
-            float w = Size.Width / width;
-            float h = Size.Height / height;
-            float x = ((Position.X + offset.Width) / width) + w * 0.5f;
-            float y = ((Position.Y + offset.Height) / height) + h * 0.5f;
+            float w = size.Width / width;
+            float h = size.Height / height;
+            float x = (position.X / width) + w * 0.5f;
+            float y = (position.Y / height) + h * 0.5f;
 
-            NativeFunction.CallByName<uint>("DRAW_RECT", x, y, w, h, (int)Color.R, (int)Color.G, (int)Color.B, (int)Color.A);
+            NativeFunction.CallByName<uint>("DRAW_RECT", x, y, w, h, color.R, color.G, color.B, color.A);
         }
     }
 }
