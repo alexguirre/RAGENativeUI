@@ -51,22 +51,28 @@ namespace RAGENativeUI.Elements
 
         public virtual void Draw()
         {
-            Draw(new Size());
+            Draw(Size.Empty);
         }
 
         public virtual void Draw(Size offset)
         {
-            if (!this.Enabled) return;
+            if (!Enabled)
+                return;
 
-            float x = (this.Position.X + offset.Width) / 1280;
-            float y = (this.Position.Y + offset.Height) / 720;
+            Draw(Caption, new Point(Position.X + offset.Width, Position.Y + offset.Height), Scale, Color, FontEnum, Centered);
+        }
 
-            NativeFunction.CallByName<uint>("SET_TEXT_FONT", (int)this.FontEnum);
-            NativeFunction.CallByName<uint>("SET_TEXT_SCALE", this.Scale, this.Scale);
-            NativeFunction.CallByName<uint>("SET_TEXT_COLOUR", (int)this.Color.R, (int)this.Color.G, (int)this.Color.B, (int)this.Color.A);
-            NativeFunction.CallByName<uint>("SET_TEXT_CENTRE", this.Centered);
+        public static void Draw(string caption, Point position, float scale, Color color, Common.EFont font, bool centered)
+        {
+            float x = position.X / 1280.0f;
+            float y = position.Y / 720.0f;
+
+            NativeFunction.CallByName<uint>("SET_TEXT_FONT", (int)font);
+            NativeFunction.CallByName<uint>("SET_TEXT_SCALE", scale, scale);
+            NativeFunction.CallByName<uint>("SET_TEXT_COLOUR", color.R, color.G, color.B, color.A);
+            NativeFunction.CallByName<uint>("SET_TEXT_CENTRE", centered);
             NativeFunction.CallByHash<uint>(0x25fbb336df1804cb, "STRING"); // SetTextEntry native
-            NativeFunction.CallByHash<uint>(0x6c188be134e074aa, this.Caption); // AddTextComponentString native
+            NativeFunction.CallByHash<uint>(0x6c188be134e074aa, caption); // AddTextComponentString native
             NativeFunction.CallByHash<uint>(0xcd015e5bb0d96a57, x, y); // DrawText native
         }
     }

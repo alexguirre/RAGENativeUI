@@ -104,6 +104,18 @@ namespace RAGENativeUI.Elements
         public void Draw()
         {
             if (!Visible) return;
+
+            Draw(TextureDictionary, TextureName, Position, Size, Heading, Color, false);
+        }
+
+        public static void Draw(string textureDictionary, string textureName, Point position, Size size, float heading, Color color, bool loadTexture = true)
+        {
+            if (loadTexture)
+            {
+                if (!NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", textureDictionary))
+                    NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", textureDictionary, true);
+            }
+
             int screenw = Game.Resolution.Width;
             int screenh = Game.Resolution.Height;
             const float height = 1080f;
@@ -111,14 +123,13 @@ namespace RAGENativeUI.Elements
             var width = height * ratio;
 
 
-            float w = (Size.Width / width);
-            float h = (Size.Height / height);
-            float x = (Position.X / width) + w * 0.5f;
-            float y = (Position.Y / height) + h * 0.5f;
+            float w = (size.Width / width);
+            float h = (size.Height / height);
+            float x = (position.X / width) + w * 0.5f;
+            float y = (position.Y / height) + h * 0.5f;
 
-            NativeFunction.CallByName<uint>("DRAW_SPRITE", TextureDictionary, TextureName, x, y, w, h, Heading, Convert.ToInt32(Color.R), Convert.ToInt32(Color.G), Convert.ToInt32(Color.B), Convert.ToInt32(Color.A));
+            NativeFunction.CallByName<uint>("DRAW_SPRITE", textureDictionary, textureName, x, y, w, h, heading, color.R, color.G, color.B, color.A);
         }
-
 
         /// <summary>
         /// Draw a custom texture from a file on a 1080-pixels height base.

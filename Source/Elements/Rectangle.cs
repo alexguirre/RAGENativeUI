@@ -34,18 +34,25 @@ namespace RAGENativeUI.Elements
 
         public virtual void Draw()
         {
-            Draw(new Size());
+            Draw(Size.Empty);
         }
+
         public virtual void Draw(Size offset)
         {
-            if (!this.Enabled) return;
+            if (!Enabled)
+                return;
 
-            float w = Size.Width / 1280;
-            float h = Size.Height / 720;
-            float x = ((Position.X + offset.Width) / 1280) + w * 0.5f;
-            float y = ((Position.Y + offset.Height) / 720) + h * 0.5f;
+            Draw(new Point(Position.X + offset.Width, Position.Y + offset.Height), Size, Color);
+        }
 
-            NativeFunction.CallByName<uint>("DRAW_RECT", x, y, w, h, (int)Color.R, (int)Color.G, (int)Color.B, (int)Color.A);
+        public static void Draw(Point position, Size size, Color color)
+        {
+            float w = size.Width / 1280.0f;
+            float h = size.Height / 720.0f;
+            float x = (position.X / 1280.0f) + w * 0.5f;
+            float y = (position.Y / 720.0f) + h * 0.5f;
+
+            NativeFunction.CallByName<uint>("DRAW_RECT", x, y, w, h, color.R, color.G, color.B, color.A);
         }
     }
 }
