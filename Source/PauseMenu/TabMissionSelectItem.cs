@@ -158,8 +158,8 @@ namespace RAGENativeUI.PauseMenu
             var counter = 0;
             for (int i = _minItem; i < Math.Min(Heists.Count, _maxItem); i++)
             {
-                new ResRectangle(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * counter)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black)).Draw();
-                new ResText(Heists[i].Name, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * counter)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White)).Draw();
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * counter)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(Heists[i].Name, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * counter)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
                 counter++;
             }
 
@@ -187,37 +187,27 @@ namespace RAGENativeUI.PauseMenu
                 drawTexture = false;
             }
 
-            new ResRectangle(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256), new Size(512, 40), Color.FromArgb(fullAlpha, Color.Black)).Draw();
-            new ResText(Heists[Index].Name, new Point((int)res.Width - SafeSize.X - 4, SafeSize.Y + 260), 0.5f, Color.FromArgb(fullAlpha, Color.White),
-                Common.EFont.HouseScript, ResText.Alignment.Right).Draw();
+            ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256), new Size(512, 40), Color.FromArgb(fullAlpha, Color.Black));
+            ResText.Draw(Heists[Index].Name, new Point((int)res.Width - SafeSize.X - 4, SafeSize.Y + 260), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, Size.Empty);
 
             for (int i = 0; i < Heists[Index].ValueList.Count; i++)
             {
-                new ResRectangle(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 40 + (40 * i)),
-                    new Size(512, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0)).Draw();
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 40 + (40 * i)), new Size(512, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
                 var text = Heists[Index].ValueList[i].Item1;
                 var label = Heists[Index].ValueList[i].Item2;
 
 
-                new ResText(text, new Point((int)res.Width - SafeSize.X - 506, SafeSize.Y + 260 + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White)).Draw();
-                new ResText(label, new Point((int)res.Width - SafeSize.X - 6, SafeSize.Y + 260 + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right).Draw();
+                ResText.Draw(text, new Point((int)res.Width - SafeSize.X - 506, SafeSize.Y + 260 + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
+                ResText.Draw(label, new Point((int)res.Width - SafeSize.X - 6, SafeSize.Y + 260 + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
             }
 
             if (!string.IsNullOrEmpty(Heists[Index].Description))
             {
                 var propLen = Heists[Index].ValueList.Count;
-                new ResRectangle(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 42 + 40 * propLen),
-                    new Size(512, 2), Color.FromArgb(fullAlpha, Color.White)).Draw();
-                new ResText(Heists[Index].Description,
-                    new Point((int)res.Width - SafeSize.X - 508, SafeSize.Y + 256 + 45 + 40 * propLen + 4), 0.35f,
-                    Color.FromArgb(fullAlpha, Color.White))
-                {
-                    WordWrap = new Size(508, 0),
-                }.Draw();
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 42 + 40 * propLen), new Size(512, 2), Color.FromArgb(fullAlpha, Color.White));
+                ResText.Draw(Heists[Index].Description, new Point((int)res.Width - SafeSize.X - 508, SafeSize.Y + 256 + 45 + 40 * propLen + 4), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size(508, 0));
 
-                new ResRectangle(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 44 + 40 * propLen),
-                    new Size(512, 45 * (StringMeasurer.MeasureString(Heists[Index].Description) / 500)),
-                    Color.FromArgb(blackAlpha, 0, 0, 0)).Draw();
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 44 + 40 * propLen), new Size(512, 45 * (StringMeasurer.MeasureString(Heists[Index].Description) / 500)), Color.FromArgb(blackAlpha, 0, 0, 0));
             }
         }
 

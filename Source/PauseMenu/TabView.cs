@@ -221,14 +221,11 @@ namespace RAGENativeUI.PauseMenu
 
             if (!HideTabs)
             {
-                new ResText(Title, new Point(safe.X, safe.Y - 80), 1f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Left)
-                {
-                    DropShadow = true,
-                }.Draw();
+                ResText.Draw(Title, new Point(safe.X, safe.Y - 80), 1f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Left, true, false, Size.Empty);
 
                 if (Photo == null)
                 {
-                    new Sprite("char_multiplayer", "char_multiplayer", new Point((int)res.Width - safe.X - 64, safe.Y - 80), new Size(64, 64)).Draw();
+                    Sprite.Draw("char_multiplayer", "char_multiplayer", new Point((int)res.Width - safe.X - 64, safe.Y - 80), new Size(64, 64), 0f, Color.White);
                 }
                 else
                 {
@@ -237,11 +234,7 @@ namespace RAGENativeUI.PauseMenu
                     Photo.Draw();
                 }
 
-                new ResText(Name, new Point((int)res.Width - safe.X - 70, safe.Y - 95), 0.7f, Color.White,
-                    Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right)
-                {
-                    DropShadow = true,
-                }.Draw();
+                ResText.Draw(Name, new Point((int)res.Width - safe.X - 70, safe.Y - 95), 0.7f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right, true, false, Size.Empty);
 
                 string subt = Money;
                 if (string.IsNullOrEmpty(Money))
@@ -250,17 +243,9 @@ namespace RAGENativeUI.PauseMenu
                 }
 
 
-                new ResText(subt, new Point((int)res.Width - safe.X - 70, safe.Y - 60), 0.4f, Color.White,
-                    Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right)
-                {
-                    DropShadow = true,
-                }.Draw();
+                ResText.Draw(subt, new Point((int)res.Width - safe.X - 70, safe.Y - 60), 0.4f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right, true, false, Size.Empty);
 
-                new ResText(MoneySubtitle, new Point((int)res.Width - safe.X - 70, safe.Y - 40), 0.4f, Color.White,
-                    Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right)
-                {
-                    DropShadow = true,
-                }.Draw();
+                ResText.Draw(MoneySubtitle, new Point((int)res.Width - safe.X - 70, safe.Y - 40), 0.4f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right, true, false, Size.Empty);
 
                 for (int i = 0; i < Tabs.Count; i++)
                 {
@@ -274,14 +259,13 @@ namespace RAGENativeUI.PauseMenu
                     bool hovering = UIMenu.IsMouseInBounds(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40));
 
                     var tabColor = Tabs[i].Active ? Color.White : hovering ? Color.FromArgb(100, 50, 50, 50) : Color.Black;
-                    new ResRectangle(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40), Color.FromArgb(Tabs[i].Active ? 255 : 200, tabColor)).Draw();
+                    ResRectangle.Draw(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40), Color.FromArgb(Tabs[i].Active ? 255 : 200, tabColor));
 
-                    new ResText(Tabs[i].Title.ToUpper(), safe.AddPoints(new Point((tabWidth / 2) + (tabWidth + 5) * i, 5)), 0.35f,
-                        Tabs[i].Active ? Color.Black : Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Centered).Draw();
+                    ResText.Draw(Tabs[i].Title.ToUpper(), safe.AddPoints(new Point((tabWidth / 2) + (tabWidth + 5) * i, 5)), 0.35f, Tabs[i].Active ? Color.Black : Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Centered, false, false, Size.Empty);
 
                     if (Tabs[i].Active)
                     {
-                        new ResRectangle(safe.SubtractPoints(new Point(-((tabWidth + 5) * i), 10)), new Size(tabWidth, 10), Color.DodgerBlue).Draw();
+                        ResRectangle.Draw(safe.SubtractPoints(new Point(-((tabWidth + 5) * i), 10)), new Size(tabWidth, 10), Color.DodgerBlue);
                     }
 
                     if (hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) && !Tabs[i].Active)
@@ -295,10 +279,7 @@ namespace RAGENativeUI.PauseMenu
                         Tabs[Index].Visible = true;
                         Tabs[Index].JustOpened = true;
 
-                        if (Tabs[Index].CanBeFocused)
-                            FocusLevel = 1;
-                        else
-                            FocusLevel = 0;
+                        FocusLevel = Tabs[Index].CanBeFocused ? 1 : 0;
 
                         Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
                     }

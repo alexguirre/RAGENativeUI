@@ -90,8 +90,7 @@ namespace RAGENativeUI.PauseMenu
             base.Draw();
             
             var res = UIMenu.GetScreenResolutionMantainRatio();
-
-            var alpha = Focused ? 120 : 30;
+            
             var blackAlpha = Focused ? 200 : 100;
             var fullAlpha = Focused ? 255 : 150;
 
@@ -103,8 +102,8 @@ namespace RAGENativeUI.PauseMenu
             {
                 bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                new ResRectangle(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : hovering && Focused ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black)).Draw();
-                new ResText(Items[i].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White)).Draw();
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : hovering && Focused ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(Items[i].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
                 if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
                 {

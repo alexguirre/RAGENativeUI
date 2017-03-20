@@ -139,10 +139,7 @@ namespace RAGENativeUI.PauseMenu
                 return;
 
             base.Draw();
-
-            SizeF res = UIMenu.GetScreenResolutionMantainRatio();
-
-            int alpha = Focused ? 120 : 30;
+            
             int blackAlpha = Focused ? 200 : 100;
             int fullAlpha = Focused ? 255 : 150;
 
@@ -160,45 +157,45 @@ namespace RAGENativeUI.PauseMenu
                 bool hasBothBadges = hasRightBadge && hasLeftBadge;
                 bool hasAnyBadge = hasRightBadge || hasLeftBadge;
 
-                new ResRectangle(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Focused && hovering ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black)).Draw();
-                new ResText(Items[c].Text, SafeSize.AddPoints(new Point((hasBothBadges ? 60 : hasAnyBadge ? 30 : 6), 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White)).Draw();
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Focused && hovering ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(Items[c].Text, SafeSize.AddPoints(new Point((hasBothBadges ? 60 : hasAnyBadge ? 30 : 6), 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
                 if (hasLeftBadge && !hasRightBadge)
                 {
-                    new Sprite(UIMenuItem.BadgeToSpriteLib(Items[c].LeftBadge),
-                        UIMenuItem.BadgeToSpriteName(Items[c].LeftBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                        UIMenuItem.BadgeToColor(Items[c].LeftBadge, (Index == c && Focused))).Draw();
+                    Sprite.Draw(UIMenuItem.BadgeToSpriteLib(Items[c].LeftBadge), 
+                                UIMenuItem.BadgeToSpriteName(Items[c].LeftBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
+                                UIMenuItem.BadgeToColor(Items[c].LeftBadge, (Index == c && Focused)));
                 }
 
                 if (!hasLeftBadge && hasRightBadge)
                 {
-                    new Sprite(UIMenuItem.BadgeToSpriteLib(Items[c].RightBadge),
-                        UIMenuItem.BadgeToSpriteName(Items[c].RightBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                        UIMenuItem.BadgeToColor(Items[c].RightBadge, (Index == c && Focused))).Draw();
+                    Sprite.Draw(UIMenuItem.BadgeToSpriteLib(Items[c].RightBadge),
+                                UIMenuItem.BadgeToSpriteName(Items[c].RightBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
+                                UIMenuItem.BadgeToColor(Items[c].RightBadge, (Index == c && Focused)));
                 }
 
                 if (hasLeftBadge && hasRightBadge)
                 {
-                    new Sprite(UIMenuItem.BadgeToSpriteLib(Items[c].LeftBadge),
-                        UIMenuItem.BadgeToSpriteName(Items[c].LeftBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                        UIMenuItem.BadgeToColor(Items[c].LeftBadge, (Index == c && Focused))).Draw();
+                    Sprite.Draw(UIMenuItem.BadgeToSpriteLib(Items[c].LeftBadge),
+                                UIMenuItem.BadgeToSpriteName(Items[c].LeftBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
+                                UIMenuItem.BadgeToColor(Items[c].LeftBadge, (Index == c && Focused)));
 
-                    new Sprite(UIMenuItem.BadgeToSpriteLib(Items[c].RightBadge),
-                        UIMenuItem.BadgeToSpriteName(Items[c].RightBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(25, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                        UIMenuItem.BadgeToColor(Items[c].RightBadge, (Index == c && Focused))).Draw();
+                    Sprite.Draw(UIMenuItem.BadgeToSpriteLib(Items[c].RightBadge),
+                                UIMenuItem.BadgeToSpriteName(Items[c].RightBadge, (Index == c && Focused)), SafeSize.AddPoints(new Point(25, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
+                                UIMenuItem.BadgeToColor(Items[c].RightBadge, (Index == c && Focused)));
                 }
 
                 if (!String.IsNullOrEmpty(Items[c].RightLabel))
                 {
-                    new ResText(Items[c].RightLabel,
-                        SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 5, 5 + (itemSize.Height + 3) * i)),
-                        0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White),
-                        Common.EFont.ChaletLondon, ResText.Alignment.Right).Draw();
+                    ResText.Draw(Items[c].RightLabel,
+                                SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 5, 5 + (itemSize.Height + 3) * i)),
+                                0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White),
+                                Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
                 }
 
                 if (Items[c] is UIMenuCheckboxItem)
                 {
-                    string textureName = "";
+                    string textureName;
                     if (c == Index && Focused)
                     {
                         textureName = ((UIMenuCheckboxItem)Items[c]).Checked ? "shop_box_tickb" : "shop_box_blankb";
@@ -207,7 +204,7 @@ namespace RAGENativeUI.PauseMenu
                     {
                         textureName = ((UIMenuCheckboxItem)Items[c]).Checked ? "shop_box_tick" : "shop_box_blank";
                     }
-                    new Sprite("commonmenu", textureName, SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 60, -5 + (itemSize.Height + 3) * i)), new Size(50, 50)).Draw();
+                    Sprite.Draw("commonmenu", textureName, SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 60, -5 + (itemSize.Height + 3) * i)), new Size(50, 50), 0f, Color.White);
                 }
                 else if (Items[c] is UIMenuListItem)
                 {
@@ -221,7 +218,7 @@ namespace RAGENativeUI.PauseMenu
                     var arrowRight = new Sprite("commonmenu", "arrowright", basePos, new Size(30, 30));
                     var itemText = new ResText("", basePos, 0.35f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right);
 
-                    string caption = convItem.IndexToItem(convItem.Index).ToString();
+                    string caption = (convItem.Collection == null ? convItem.IndexToItem(convItem.Index) : convItem.Collection[convItem.Index]).ToString();
                     int offset = StringMeasurer.MeasureString(caption);
 
                     var selected = c == Index && Focused;

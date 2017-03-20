@@ -62,8 +62,7 @@ namespace RAGENativeUI.PauseMenu
 
             if (DrawBg)
             {
-                new ResRectangle(TopLeft, rectSize,
-                    Color.FromArgb((Focused || !FadeInWhenFocused) ? 200 : 120, 0, 0, 0)).Draw();
+                ResRectangle.Draw(TopLeft, rectSize, Color.FromArgb((Focused || !FadeInWhenFocused) ? 200 : 120, 0, 0, 0));
 
                 var tileSize = 100;
                 RockstarTile.Size = new Size(tileSize, tileSize);
