@@ -67,6 +67,11 @@ namespace RAGENativeUI.Elements
             NativeFunction.CallByName<uint>("SET_TEXT_SCALE", 1.0f, scale);
             NativeFunction.CallByName<uint>("SET_TEXT_COLOUR", color.R, color.G, color.B, color.A);
 
+            if (centered)
+            {
+                NativeFunction.CallByName<uint>("SET_TEXT_CENTRE", true);
+            }
+
             NativeFunction.CallByHash<uint>(0x25fbb336df1804cb, "jamyfafi");      // _SET_TEXT_ENTRY
             AddLongString(caption);
 
