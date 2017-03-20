@@ -18,9 +18,7 @@ namespace RAGENativeUI.PauseMenu
         public override void Draw()
         {
             base.Draw();
-
-            var res = UIMenu.GetScreenResolutionMantainRatio();
-
+            
             var alpha = (Focused || !CanBeFocused) ? 180 : 60;
             var blackAlpha = (Focused || !CanBeFocused) ? 200 : 90;
             var fullAlpha = (Focused || !CanBeFocused) ? 255 : 150;
@@ -29,13 +27,12 @@ namespace RAGENativeUI.PauseMenu
 
             for (int i = 0; i < Dictionary.Count; i++)
             {
-                new ResRectangle(new Point(TopLeft.X, TopLeft.Y + (40 * i)),
-                    new Size(rectSize, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0)).Draw();
+                ResRectangle.Draw(new Point(TopLeft.X, TopLeft.Y + (40 * i)), new Size(rectSize, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
 
                 var item = Dictionary.ElementAt(i);
 
-                new ResText(item.Key, new Point(TopLeft.X + 6, TopLeft.Y + 5 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White)).Draw();
-                new ResText(item.Value, new Point(BottomRight.X - 6, TopLeft.Y + 5 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right).Draw();
+                ResText.Draw(item.Key, new Point(TopLeft.X + 6, TopLeft.Y + 5 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
+                ResText.Draw(item.Value, new Point(BottomRight.X - 6, TopLeft.Y + 5 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
             }
         }
     }
