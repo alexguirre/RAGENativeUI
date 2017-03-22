@@ -19,8 +19,8 @@ namespace RAGENativeUI.Elements
             SizeF res = UIMenu.GetScreenResolutionMantainRatio();
             Point safe = UIMenu.GetSafezoneBounds();
 
-            new ResText(Label, new Point((int)res.Width - safe.X - 180, (int)res.Height - safe.Y - (30 + (4 * interval))), 0.3f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right).Draw();
-            new Sprite("timerbars", "all_black_bg", new Point((int)res.Width - safe.X - 298, (int)res.Height - safe.Y - (40 + (4 * interval))), new Size(300, 37), 0f, Color.FromArgb(180, 255, 255, 255)).Draw();
+            ResText.Draw(Label, new Point((int)res.Width - safe.X - 180, (int)res.Height - safe.Y - (30 + (4 * interval))), 0.3f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
+            Sprite.Draw("timerbars", "all_black_bg", new Point((int)res.Width - safe.X - 298, (int)res.Height - safe.Y - (40 + (4 * interval))), new Size(300, 37), 0f, Color.FromArgb(180, 255, 255, 255));
            
             NativeFunction.CallByName<uint>("HIDE_HUD_COMPONENT_THIS_FRAME", 7);//AreaName
             NativeFunction.CallByName<uint>("HIDE_HUD_COMPONENT_THIS_FRAME", 9);//StreetName
@@ -43,7 +43,7 @@ namespace RAGENativeUI.Elements
             Point safe = UIMenu.GetSafezoneBounds();
 
             base.Draw(interval);
-            new ResText(Text, new Point((int)res.Width - safe.X - 10, (int)res.Height - safe.Y - (42 + (4 * interval))), 0.5f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right).Draw();
+            ResText.Draw(Text, new Point((int)res.Width - safe.X - 10, (int)res.Height - safe.Y - (42 + (4 * interval))), 0.5f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
         }
     }
 
@@ -72,8 +72,8 @@ namespace RAGENativeUI.Elements
 
             var start = new Point((int)res.Width - safe.X - 160, (int)res.Height - safe.Y - (28 + (4 * interval)));
 
-            new ResRectangle(start, new Size(150, 15), BackgroundColor).Draw();
-            new ResRectangle(start, new Size((int)(150 * Percentage), 15), ForegroundColor).Draw();
+            ResRectangle.Draw(start, new Size(150, 15), BackgroundColor);
+            ResRectangle.Draw(start, new Size((int)(150 * Percentage), 15), ForegroundColor);
         }
     }
 
