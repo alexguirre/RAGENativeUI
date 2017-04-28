@@ -24,6 +24,12 @@ namespace RAGENativeUI
         public string CounterPretext { set { InternalList.ForEach(m => m.CounterPretext = value); } }
         public bool DisableInstructionalButtons { set { InternalList.ForEach(m => m.DisableInstructionalButtons(value)); } }
 
+        // added for backwards compatibility, BaseCollection.Remove returns a bool and this one doesn't return anything
+        public new void Remove(UIMenu menu)
+        {
+            base.Remove(menu);
+        }
+
         /// <summary>
         /// Create and add a submenu to the menu pool.
         /// Adds an item with the given text to the menu, creates a corresponding submenu, and binds the submenu to the item.
