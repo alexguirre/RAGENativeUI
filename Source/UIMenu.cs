@@ -391,7 +391,7 @@ namespace RAGENativeUI
         {
             item.Offset = _offset;
             item.Parent = this;
-            item.Position((MenuItems.Count * 25) - 37 + _extraYOffset);
+            item.SetVerticalPosition((MenuItems.Count * 25) - 37 + _extraYOffset);
             MenuItems.Add(item);
 
             RecalculateDescriptionPosition();
@@ -410,7 +410,7 @@ namespace RAGENativeUI
 
             for (int i = index; i < MenuItems.Count; i++) // recalculate items positions
             {
-                item.Position((i * 25) - 37 + _extraYOffset);
+                item.SetVerticalPosition((i * 25) - 37 + _extraYOffset);
             }
 
             RecalculateDescriptionPosition();
@@ -587,7 +587,7 @@ namespace RAGENativeUI
                 int count = 0;
                 foreach (var item in MenuItems)
                 {
-                    item.Position(count * 38 - 37 + _extraYOffset);
+                    item.SetVerticalPosition(count * 38 - 37 + _extraYOffset);
                     item.Draw();
                     count++;
                 }
@@ -603,7 +603,7 @@ namespace RAGENativeUI
                 for (int index = _minItem; index <= _maxItem; index++)
                 {
                     var item = MenuItems[index];
-                    item.Position(count * 38 - 37 + _extraYOffset);
+                    item.SetVerticalPosition(count * 38 - 37 + _extraYOffset);
                     item.Draw();
                     count++;
                 }

@@ -198,15 +198,25 @@ namespace RAGENativeUI.Elements
         }
 
         /// <summary>
-        /// Change item's position.
+        /// Set item's position.
         /// </summary>
-        /// <param name="y">New Y position.</param>
+        /// <param name="y"></param>
+        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
         public override void Position(int y)
+        {
+            SetVerticalPosition(y);
+        }
+
+        /// <summary>
+        /// Set item's vertical position.
+        /// </summary>
+        /// <param name="y"></param>
+        public override void SetVerticalPosition(int y)
         {
             _arrowLeft.Position = new Point(300 + Offset.X + Parent.WidthOffset, 147 + y + Offset.Y);
             _arrowRight.Position = new Point(400 + Offset.X + Parent.WidthOffset, 147 + y + Offset.Y);
             _itemText.Position = new Point(300 + Offset.X + Parent.WidthOffset, y + 147 + Offset.Y);
-            base.Position(y);
+            base.SetVerticalPosition(y);
         }
 
 

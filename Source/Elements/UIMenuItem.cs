@@ -80,12 +80,21 @@ namespace RAGENativeUI.Elements
             Activated?.Invoke(sender, this);
         }
         
-
         /// <summary>
         /// Set item's position.
         /// </summary>
         /// <param name="y"></param>
+        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
         public virtual void Position(int y)
+        {
+            SetVerticalPosition(y);
+        }
+
+        /// <summary>
+        /// Set item's vertical position.
+        /// </summary>
+        /// <param name="y"></param>
+        public virtual void SetVerticalPosition(int y)
         {
             _rectangle.Position = new Point(Offset.X, y + 144 + Offset.Y);
             _selectedSprite.Position = new Point(0 + Offset.X, y + 144 + Offset.Y);
@@ -96,7 +105,6 @@ namespace RAGENativeUI.Elements
 
             _labelText.Position = new Point(420 + Offset.X, y + 148 + Offset.Y);
         }
-
 
         /// <summary>
         /// Draw this item.
