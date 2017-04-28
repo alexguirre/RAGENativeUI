@@ -9,52 +9,20 @@ namespace RAGENativeUI
     /// <summary>
     /// Helper class that handles all of your Menus. After instatiating it, you will have to add your menu by using the Add method.
     /// </summary>
-    public class MenuPool
+    public class MenuPool : BaseCollection<UIMenu>
     {
-        public bool MouseEdgeEnabled { set { _menuList.ForEach(m => m.MouseEdgeEnabled = value); } }
-
-        public bool ControlDisablingEnabled { set { _menuList.ForEach(m => m.ControlDisablingEnabled = value); } }
-
-        public bool ResetCursorOnOpen { set { _menuList.ForEach(m => m.ResetCursorOnOpen = value); } }
-
-        public bool FormatDescriptions { set { _menuList.ForEach(m => m.FormatDescriptions = value); } }
-
-        public string AUDIO_LIBRARY { set { _menuList.ForEach(m => m.AUDIO_LIBRARY = value); } }
-
-        public string AUDIO_UPDOWN { set { _menuList.ForEach(m => m.AUDIO_UPDOWN = value); } }
-
-        public string AUDIO_SELECT { set { _menuList.ForEach(m => m.AUDIO_SELECT = value); } }
-
-        public string AUDIO_BACK { set { _menuList.ForEach(m => m.AUDIO_BACK = value); } }
-
-        public string AUDIO_ERROR { set { _menuList.ForEach(m => m.AUDIO_ERROR = value); } }
-
-        public int WidthOffset { set { _menuList.ForEach(m => m.SetMenuWidthOffset(value)); } }
-
-        public string CounterPretext { set { _menuList.ForEach(m => m.CounterPretext = value); } }
-        
-        public bool DisableInstructionalButtons { set { _menuList.ForEach(m => m.DisableInstructionalButtons(value)); } }
-
-        private readonly List<UIMenu> _menuList = new List<UIMenu>();
-
-
-        /// <summary>
-        /// Add your menu to the menu pool.
-        /// </summary>
-        /// <param name="menu"></param>
-        public void Add(UIMenu menu)
-        {
-            _menuList.Add(menu);
-        }
-
-        /// <summary>
-        /// Removes the specified menu from the pool
-        /// </summary>
-        /// <param name="menu"></param>
-        public void Remove(UIMenu menu)
-        {
-            _menuList.Remove(menu);
-        }
+        public bool MouseEdgeEnabled { set { InternalList.ForEach(m => m.MouseEdgeEnabled = value); } }
+        public bool ControlDisablingEnabled { set { InternalList.ForEach(m => m.ControlDisablingEnabled = value); } }
+        public bool ResetCursorOnOpen { set { InternalList.ForEach(m => m.ResetCursorOnOpen = value); } }
+        public bool FormatDescriptions { set { InternalList.ForEach(m => m.FormatDescriptions = value); } }
+        public string AUDIO_LIBRARY { set { InternalList.ForEach(m => m.AUDIO_LIBRARY = value); } }
+        public string AUDIO_UPDOWN { set { InternalList.ForEach(m => m.AUDIO_UPDOWN = value); } }
+        public string AUDIO_SELECT { set { InternalList.ForEach(m => m.AUDIO_SELECT = value); } }
+        public string AUDIO_BACK { set { InternalList.ForEach(m => m.AUDIO_BACK = value); } }
+        public string AUDIO_ERROR { set { InternalList.ForEach(m => m.AUDIO_ERROR = value); } }
+        public int WidthOffset { set { InternalList.ForEach(m => m.SetMenuWidthOffset(value)); } }
+        public string CounterPretext { set { InternalList.ForEach(m => m.CounterPretext = value); } }
+        public bool DisableInstructionalButtons { set { InternalList.ForEach(m => m.DisableInstructionalButtons(value)); } }
 
         /// <summary>
         /// Create and add a submenu to the menu pool.
@@ -74,14 +42,13 @@ namespace RAGENativeUI
             return submenu;
         }
 
-
         /// <summary>
         /// Refresh index of every menu in the pool.
         /// Use this after you have finished constructing the entire menu pool.
         /// </summary>
         public void RefreshIndex()
         {
-            foreach (UIMenu menu in _menuList) menu.RefreshIndex();
+            foreach (UIMenu menu in InternalList) menu.RefreshIndex();
         }
 
         /// <summary>
@@ -90,7 +57,7 @@ namespace RAGENativeUI
         /// <returns></returns>
         public List<UIMenu> ToList()
         {
-            return _menuList;
+            return InternalList;
         }
 
         /// <summary>
@@ -98,9 +65,12 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl()
         {
-            foreach (var menu in _menuList.Where(menu => menu.Visible))
+            foreach (UIMenu menu in InternalList)
             {
-                menu.ProcessControl();
+                if (menu.Visible)
+                {
+                    menu.ProcessControl();
+                }
             }
         }
 
@@ -111,9 +81,12 @@ namespace RAGENativeUI
         /// <param name="key"></param>
         public void ProcessKey(Keys key)
         {
-            foreach (var menu in _menuList.Where(menu => menu.Visible))
+            foreach (UIMenu menu in InternalList)
             {
-                menu.ProcessKey(key);
+                if (menu.Visible)
+                {
+                    menu.ProcessKey(key);
+                }
             }
         }
 
@@ -123,9 +96,12 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessMouse()
         {
-            foreach (var menu in _menuList.Where(menu => menu.Visible))
+            foreach (UIMenu menu in InternalList)
             {
-                menu.ProcessMouse();
+                if (menu.Visible)
+                {
+                    menu.ProcessMouse();
+                }
             }
         }
         
@@ -135,9 +111,12 @@ namespace RAGENativeUI
         /// </summary>
         public void Draw()
         {
-            foreach (var menu in _menuList.Where(menu => menu.Visible))
+            foreach (UIMenu menu in InternalList)
             {
-                menu.Draw();
+                if (menu.Visible)
+                {
+                    menu.Draw();
+                }
             }
         }
 
@@ -148,7 +127,7 @@ namespace RAGENativeUI
         /// <returns>true if at least one menu is visible, false if not.</returns>
         public bool IsAnyMenuOpen()
         {
-            return _menuList.Any(menu => menu.Visible);
+            return InternalList.Any(menu => menu.Visible);
         }
 
 
@@ -160,18 +139,21 @@ namespace RAGENativeUI
             ICollection<Keys> pressedKeys = Common.GetPressedKeys();
             bool checkPressedKeys = pressedKeys != null;
 
-            foreach (var menu in _menuList.Where(menu => menu.Visible))
+            foreach (UIMenu menu in InternalList)
             {
-                menu.ProcessControl();
-                if (checkPressedKeys)
+                if (menu.Visible)
                 {
-                    foreach (Keys key in pressedKeys)
+                    menu.ProcessControl();
+                    if (checkPressedKeys)
                     {
-                        menu.ProcessKey(key);
+                        foreach (Keys key in pressedKeys)
+                        {
+                            menu.ProcessKey(key);
+                        }
                     }
+                    menu.ProcessMouse();
+                    menu.Draw();
                 }
-                menu.ProcessMouse();
-                menu.Draw();
             }
         }
 
@@ -182,7 +164,7 @@ namespace RAGENativeUI
         [System.Obsolete("MenuPool.DrawBanners(GraphicsEventArgs) will be removed soon, use MenuPool.DrawBanners(Graphics) instead")]
         public void DrawBanners(GraphicsEventArgs canvas)
         {
-            _menuList.ForEach(menu => menu.DrawBanner(canvas));
+            InternalList.ForEach(menu => menu.DrawBanner(canvas));
         }
 
         /// <summary>
@@ -191,7 +173,7 @@ namespace RAGENativeUI
         /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
         public void DrawBanners(Graphics g)
         {
-            _menuList.ForEach(menu => menu.DrawBanner(g));
+            InternalList.ForEach(menu => menu.DrawBanner(g));
         }
 
         /// <summary>
@@ -199,9 +181,12 @@ namespace RAGENativeUI
         /// </summary>
         public void CloseAllMenus()
         {
-            foreach (var menu in _menuList.Where(menu => menu.Visible))
+            foreach (UIMenu menu in InternalList)
             {
-                menu.Visible = false;
+                if (menu.Visible)
+                {
+                    menu.Visible = false;
+                }
             }
         }
 
@@ -212,42 +197,42 @@ namespace RAGENativeUI
         /// <param name="resetCheckboxes">If true all the checkboxes will be unchecked.</param>
         public void ResetMenus(bool resetLists, bool resetCheckboxes)
         {
-            _menuList.ForEach(m => m.Reset(resetLists, resetCheckboxes));
+            InternalList.ForEach(m => m.Reset(resetLists, resetCheckboxes));
         }
 
         public void SetBannerType(Sprite bannerType)
         {
-            _menuList.ForEach(m => m.SetBannerType(bannerType));
+            InternalList.ForEach(m => m.SetBannerType(bannerType));
         }
 
         public void SetBannerType(ResRectangle bannerType)
         {
-            _menuList.ForEach(m => m.SetBannerType(bannerType));
+            InternalList.ForEach(m => m.SetBannerType(bannerType));
         }
 
         public void SetBannerType(Texture banner)
         {
-            _menuList.ForEach(m => m.SetBannerType(banner));
+            InternalList.ForEach(m => m.SetBannerType(banner));
         }
 
         public void SetKey(Common.MenuControls menuControl, GameControl control)
         {
-            _menuList.ForEach(m => m.SetKey(menuControl, control));
+            InternalList.ForEach(m => m.SetKey(menuControl, control));
         }
 
         public void SetKey(Common.MenuControls menuControl, GameControl control, int controllerIndex)
         {
-            _menuList.ForEach(m => m.SetKey(menuControl, control, controllerIndex));
+            InternalList.ForEach(m => m.SetKey(menuControl, control, controllerIndex));
         }
 
         public void SetKey(Common.MenuControls menuControl, Keys control)
         {
-            _menuList.ForEach(m => m.SetKey(menuControl, control));
+            InternalList.ForEach(m => m.SetKey(menuControl, control));
         }
 
         public void ResetKey(Common.MenuControls menuControl)
         {
-            _menuList.ForEach(m => m.ResetKey(menuControl));
+            InternalList.ForEach(m => m.ResetKey(menuControl));
         }
     }
 }
