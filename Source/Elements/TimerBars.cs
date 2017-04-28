@@ -84,6 +84,12 @@ namespace RAGENativeUI.Elements
             return InternalList;
         }
 
+        // added for backwards compatibility, BaseCollection.Remove returns a bool and this one doesn't return anything
+        public new void Remove(TimerBarBase item) 
+        {
+            base.Remove(item);
+        }
+
         public void Draw()
         {
             for (int i = 0; i < InternalList.Count; i++)
