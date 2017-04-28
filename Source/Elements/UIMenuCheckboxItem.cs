@@ -41,18 +41,27 @@ namespace RAGENativeUI.Elements
         /// Change or get whether the checkbox is checked.
         /// </summary>
         public bool Checked { get; set; }
-
-
+        
         /// <summary>
-        /// Change item's position.
+        /// Set item's position.
         /// </summary>
-        /// <param name="y">New Y value.</param>
+        /// <param name="y"></param>
+        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
         public override void Position(int y)
         {
-            base.Position(y);
+            SetVerticalPosition(y);
+        }
+
+        /// <summary>
+        /// Set item's vertical position.
+        /// </summary>
+        /// <param name="y"></param>
+        public override void SetVerticalPosition(int y)
+        {
+            base.SetVerticalPosition(y);
             _checkedSprite.Position = new Point(380 + Offset.X + Parent.WidthOffset, y + 138 + Offset.Y);
         }
-        
+
 
         /// <summary>
         /// Draw item.
