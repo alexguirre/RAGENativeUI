@@ -34,13 +34,18 @@ namespace RAGENativeUI.Elements
             set { _items = value;  }
         }
 
+        private DisplayItemsCollection collection;
         /// <summary>
         /// Gets the collection of items of this <see cref="UIMenuListItem"/>.
         /// </summary>
         /// <value>
         /// The <see cref="DisplayItemsCollection"/> of this <see cref="UIMenuListItem"/>.
         /// </value>
-        public DisplayItemsCollection Collection { get; }
+        public DisplayItemsCollection Collection
+        {
+            get { return collection; }
+            set { collection = value ?? throw new ArgumentNullException("value", "The collection can't be null"); }
+        }
 
         /// <summary>
         /// Gets the current selection.
