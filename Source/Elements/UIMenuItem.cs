@@ -8,6 +8,11 @@ namespace RAGENativeUI.Elements
     /// </summary>
     public class UIMenuItem
     {
+        public static readonly Color DefaultBackColor = Color.Empty,
+                                     DefaultHighlightedBackColor = Color.White,
+                                     DefaultForeColor = Color.WhiteSmoke,
+                                     DefaultHighlightedForeColor = Color.Black;
+
         protected ResRectangle _rectangle;
         protected ResText _text;
         protected Sprite _selectedSprite;
@@ -23,11 +28,11 @@ namespace RAGENativeUI.Elements
         public event ItemActivatedEvent Activated;
 
 
-        public Color BackColor { get; set; } = Color.Empty;
-        public Color HighlightedBackColor { get; set; } = Color.White;
+        public Color BackColor { get; set; } = DefaultBackColor;
+        public Color HighlightedBackColor { get; set; } = DefaultHighlightedBackColor;
 
-        public Color ForeColor { get; set; } = Color.WhiteSmoke;
-        public Color HighlightedForeColor { get; set; } = Color.Black;
+        public Color ForeColor { get; set; } = DefaultForeColor;
+        public Color HighlightedForeColor { get; set; } = DefaultHighlightedForeColor;
 
         /// <summary>
         /// Basic menu button.

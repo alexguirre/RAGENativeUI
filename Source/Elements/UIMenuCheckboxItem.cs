@@ -70,7 +70,8 @@ namespace RAGENativeUI.Elements
         {
             base.Draw();
             _checkedSprite.Position = _checkedSprite.Position = new Point(380 + Offset.X + Parent.WidthOffset, _checkedSprite.Position.Y);
-            if (Selected)
+            bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
+            if (Selected && isDefaultHightlitedForeColor)
             {
                 _checkedSprite.TextureName = Checked ? "shop_box_tickb" : "shop_box_blankb";
             }
@@ -78,7 +79,7 @@ namespace RAGENativeUI.Elements
             {
                 _checkedSprite.TextureName = Checked ? "shop_box_tick" : "shop_box_blank";
             }
-            _checkedSprite.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
+            _checkedSprite.Color = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
             _checkedSprite.Draw();
         }
 
