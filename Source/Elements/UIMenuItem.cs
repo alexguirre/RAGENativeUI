@@ -22,7 +22,13 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public event ItemActivatedEvent Activated;
 
-        
+
+        public Color BackColor { get; set; } = Color.Empty;
+        public Color HighlightedBackColor { get; set; } = Color.White;
+
+        public Color ForeColor { get; set; } = Color.WhiteSmoke;
+        public Color HighlightedForeColor { get; set; } = Color.Black;
+
         /// <summary>
         /// Basic menu button.
         /// </summary>
@@ -119,17 +125,18 @@ namespace RAGENativeUI.Elements
                 _rectangle.Color = Color.FromArgb(20, 255, 255, 255);
                 _rectangle.Draw();
             }
-            if (Selected)
-                _selectedSprite.Draw();
 
-            _text.Color = Enabled ? Selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
+            _selectedSprite.Color = Selected ? HighlightedBackColor : BackColor;
+            _selectedSprite.Draw();
+
+            _text.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
 
             if (LeftBadge != BadgeStyle.None)
             {
                 _text.Position = new Point(35 + Offset.X, _text.Position.Y);
                 _badgeLeft.TextureDictionary = BadgeToSpriteLib(LeftBadge);
                 _badgeLeft.TextureName = BadgeToSpriteName(LeftBadge, Selected);
-                _badgeLeft.Color = BadgeToColor(LeftBadge, Selected);
+                _badgeLeft.Color = IsBagdeWhiteSprite(LeftBadge) ? Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148) : Color.White;
                 _badgeLeft.Draw();
             }
             else
@@ -142,7 +149,7 @@ namespace RAGENativeUI.Elements
                 _badgeRight.Position = new Point(385 + Offset.X + Parent.WidthOffset, _badgeRight.Position.Y);
                 _badgeRight.TextureDictionary = BadgeToSpriteLib(RightBadge);
                 _badgeRight.TextureName = BadgeToSpriteName(RightBadge, Selected);
-                _badgeRight.Color = BadgeToColor(RightBadge, Selected);
+                _badgeRight.Color = IsBagdeWhiteSprite(RightBadge) ? Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148) : Color.White;
                 _badgeRight.Draw();
             }
 
@@ -150,7 +157,7 @@ namespace RAGENativeUI.Elements
             {
                 _labelText.Position = new Point(420 + Offset.X + Parent.WidthOffset, _labelText.Position.Y);
                 _labelText.Caption = RightLabel;
-                _labelText.Color = _text.Color = Enabled ? Selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
+                _labelText.Color = _text.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
                 _labelText.Draw();
             }
             _text.Draw();
@@ -310,6 +317,19 @@ namespace RAGENativeUI.Elements
             }
         }
 
+        internal static bool IsBagdeWhiteSprite(BadgeStyle badge/*, bool selected*/)
+        {
+            switch (badge)
+            {
+                case BadgeStyle.Lock:
+                case BadgeStyle.Tick:
+                case BadgeStyle.Crown:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         internal static Color BadgeToColor(BadgeStyle badge, bool selected)
         {
             switch (badge)
@@ -322,7 +342,6 @@ namespace RAGENativeUI.Elements
                     return Color.FromArgb(255, 255, 255, 255);
             }
         }
-
 
         /// <summary>
         /// Returns the menu this item is in.

@@ -78,6 +78,7 @@ namespace RAGENativeUI.Elements
             {
                 _checkedSprite.TextureName = Checked ? "shop_box_tick" : "shop_box_blank";
             }
+            _checkedSprite.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
             _checkedSprite.Draw();
         }
 
