@@ -3,7 +3,6 @@
 namespace MenuExample
 {
     using System;
-    using System.Collections.Generic;
     using System.Windows.Forms;
     using System.Drawing;
 
@@ -24,9 +23,9 @@ namespace MenuExample
         private static UIMenuItem cookItem;
         private static UIMenuItem spawnCar;
         private static UIMenuListItem carsList;
-        private static UIMenuColoredItem coloredItem;
+        private static UIMenuItem coloredItem;
 
-        private static MenuPool _menuPool;
+        private static MenuPool menuPool;
 
         public static void Main()
         {
@@ -34,26 +33,23 @@ namespace MenuExample
             MenusProcessFiber = new GameFiber(ProcessLoop);
 
             // Create the MenuPool to easily process our menus
-            _menuPool = new MenuPool();
+            menuPool = new MenuPool();
 
             // Create our main menu
             mainMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
 
             // Add our main menu to the MenuPool
-            _menuPool.Add(mainMenu);
+            menuPool.Add(mainMenu);
 
             // create our items and add them to our main menu
             mainMenu.AddItem(ketchupCheckbox = new UIMenuCheckboxItem("Add ketchup?", false, "Do you wish to add ketchup?"));
 
-            var foods = new List<dynamic>
-            {
-                "Banana",
-                "Apple",
-                "Pizza",
-                "Quartilicious",
-                0xF00D, // Dynamic!
-            };
-            mainMenu.AddItem(dishesListItem = new UIMenuListItem("Food", foods, 0));
+            mainMenu.AddItem(dishesListItem = new UIMenuListItem("Food", "",
+                                                                    "Banana",
+                                                                    "Apple",
+                                                                    "Pizza",
+                                                                    "Quartilicious",
+                                                                    0xF00D));
             mainMenu.AddItem(cookItem = new UIMenuItem("Cook!", "Cook the dish with the appropiate ingredients and ketchup."));
 
             var menuItem = new UIMenuItem("Go to another menu.");
@@ -61,26 +57,23 @@ namespace MenuExample
             cookItem.SetLeftBadge(UIMenuItem.BadgeStyle.Star);
             cookItem.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
 
-            var carsModel = new List<dynamic>
-            {
-                "Adder",
-                "Bullet",
-                "Police",
-                "Police2",
-                "Asea",
-                "FBI",
-                "FBI2",
-                "Firetruk",
-                "Ambulance",
-                "Rhino",
-            };
-            carsList = new UIMenuListItem("Cars Models", carsModel, 0);
+            carsList = new UIMenuListItem("Cars Models", "",
+                                            "Adder",
+                                            "Bullet",
+                                            "Police",
+                                            "Police2",
+                                            "Asea",
+                                            "FBI",
+                                            "FBI2",
+                                            "Firetruk",
+                                            "Ambulance",
+                                            "Rhino");
             mainMenu.AddItem(carsList);
 
             spawnCar = new UIMenuItem("Spawn Car");
             mainMenu.AddItem(spawnCar);
 
-            coloredItem = new UIMenuColoredItem("Color!", System.Drawing.Color.Red, System.Drawing.Color.Blue);
+            coloredItem = new UIMenuItem("Color!");
             mainMenu.AddItem(coloredItem);
 
             mainMenu.RefreshIndex();
@@ -93,7 +86,7 @@ namespace MenuExample
             // Create another menu
             newMenu = new UIMenu("RAGENative UI", "~b~RAGENATIVEUI SHOWCASE");
             newMenu.CounterOverride = "Counter Override";
-            _menuPool.Add(newMenu); // add it to the menu pool
+            menuPool.Add(newMenu); // add it to the menu pool
             for (int i = 0; i < 35; i++) // add items
             {
                 newMenu.AddItem(new UIMenuItem("PageFiller " + i.ToString(), "Sample description that takes more than one line. More so, it takes way more than two lines since it's so long. Wow, check out this length!"));
@@ -123,7 +116,7 @@ namespace MenuExample
         public static void OnListChange(UIMenu sender, UIMenuListItem list, int index)
         {
             if (sender != mainMenu || list != dishesListItem) return; // We only want to detect changes from our menu.
-            string dish = list.IndexToItem(index).ToString();
+            string dish = list.Collection[index].Value.ToString();
             Game.DisplayNotification("Preparing ~b~" + dish + "~w~...");
         }
 
@@ -134,7 +127,7 @@ namespace MenuExample
 
             if (selectedItem == cookItem)   // We check which item has been selected and do different things for each.
             {
-                string dish = dishesListItem.IndexToItem(dishesListItem.Index).ToString();
+                string dish = dishesListItem.Collection[dishesListItem.Index].Value.ToString();
                 bool ketchup = ketchupCheckbox.Checked;
 
                 string output = ketchup
@@ -146,38 +139,25 @@ namespace MenuExample
             {
                 GameFiber.StartNew(delegate // Start a new fiber if the code sleeps or waits and we don't want to block the MenusProcessFiber
                 {
-                    new Vehicle(((string)carsList.IndexToItem(carsList.Index)).ToLower(), Game.LocalPlayer.Character.GetOffsetPositionFront(6f)).Dismiss();
+                    new Vehicle(((string)carsList.Collection[carsList.Index].Value).ToLower(), Game.LocalPlayer.Character.GetOffsetPositionFront(6f)).Dismiss();
                 });
             }
             else if (selectedItem == coloredItem)
             {
                 GameFiber.StartNew(delegate
                 {
-                    Game.DisplaySubtitle("~h~~r~COLOR", 500);
-                    GameFiber.Sleep(500);
-                    Game.DisplaySubtitle("~h~~b~COLOR", 500);
-                    GameFiber.Sleep(500);
-                    Game.DisplaySubtitle("~h~~g~COLOR", 500);
-                    GameFiber.Sleep(500);
-                    Game.DisplaySubtitle("~h~~o~COLOR", 500);
-                    GameFiber.Sleep(500);
-                    Game.DisplaySubtitle("~h~~d~COLOR", 500);
-                });
-                GameFiber.StartNew(delegate
-                {
                     for (int i = 0; i < 100; i++)
                     {
-                        coloredItem.HighlightColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
-                        coloredItem.HighlightedTextColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
-                        coloredItem.MainColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
-                        coloredItem.TextColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.HighlightedBackColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.HighlightedForeColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.BackColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
+                        coloredItem.ForeColor = Color.FromArgb(MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256));
                         GameFiber.Sleep(10);
                     }
                 });
             }
         }
-
-
+        
         // The method that contains a loop to handle our menus
         public static void ProcessLoop()
         {
@@ -191,11 +171,14 @@ namespace MenuExample
             {
                 GameFiber.Yield();
 
-                if (Game.IsKeyDown(Keys.F5) && !_menuPool.IsAnyMenuOpen()) // Our menu on/off switch.
+                if (Game.IsKeyDown(Keys.F5) && !menuPool.IsAnyMenuOpen()) // Our menu on/off switch.
+                {
                     mainMenu.Visible = !mainMenu.Visible;
+                }
 
-                _menuPool.ProcessMenus();       // Process all our menus: draw the menu and process the key strokes and the mouse. 
+                menuPool.ProcessMenus();       // Process all our menus: draw the menu and process the key strokes and the mouse. 
             }
         }
     }
 }
+
