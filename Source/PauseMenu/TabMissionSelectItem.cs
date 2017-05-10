@@ -214,7 +214,7 @@ namespace RAGENativeUI.PauseMenu
         private bool drawTexture = false;
         public override void DrawTextures(Rage.Graphics g)
         {
-            if (drawTexture)
+            if (drawTexture && Heists[Index].Logo != null)
             {
                 Sprite.DrawTexture(Heists[Index].Logo.Texture, new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y), new Size(512, 256), g);
             }
