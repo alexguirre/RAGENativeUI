@@ -214,7 +214,7 @@ namespace RAGENativeUI.PauseMenu
 
             ShowInstructionalButtons();
             NativeFunction.CallByName<uint>("HIDE_HUD_AND_RADAR_THIS_FRAME");
-            NativeFunction.CallByHash<uint>(0xaae7ce1d63167423); // _SHOW_CURSOR_THIS_FRAME
+            //NativeFunction.CallByHash<uint>(0xaae7ce1d63167423); // _SHOW_CURSOR_THIS_FRAME
             
             var res = UIMenu.GetScreenResolutionMantainRatio();
             var safe = new Point(300, 180);
@@ -253,12 +253,12 @@ namespace RAGENativeUI.PauseMenu
                     activeSize -= 4 * 5;
                     int tabWidth = (int)activeSize / Tabs.Count;
 
-                    Game.DisableControlAction(0, GameControl.CursorX, false);
-                    Game.DisableControlAction(0, GameControl.CursorY, false);
+                    //Game.DisableControlAction(0, GameControl.CursorX, false);
+                    //Game.DisableControlAction(0, GameControl.CursorY, false);
 
-                    bool hovering = UIMenu.IsMouseInBounds(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40));
+                    //bool hovering = UIMenu.IsMouseInBounds(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40));
 
-                    var tabColor = Tabs[i].Active ? Color.White : hovering ? Color.FromArgb(100, 50, 50, 50) : Color.Black;
+                    var tabColor = Tabs[i].Active ? Color.White : /*hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.Black;
                     ResRectangle.Draw(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40), Color.FromArgb(Tabs[i].Active ? 255 : 200, tabColor));
 
                     ResText.Draw(Tabs[i].Title.ToUpper(), safe.AddPoints(new Point((tabWidth / 2) + (tabWidth + 5) * i, 5)), 0.35f, Tabs[i].Active ? Color.Black : Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Centered, false, false, Size.Empty);
@@ -268,21 +268,21 @@ namespace RAGENativeUI.PauseMenu
                         ResRectangle.Draw(safe.SubtractPoints(new Point(-((tabWidth + 5) * i), 10)), new Size(tabWidth, 10), Color.DodgerBlue);
                     }
 
-                    if (hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) && !Tabs[i].Active)
-                    {
-                        Tabs[Index].Active = false;
-                        Tabs[Index].Focused = false;
-                        Tabs[Index].Visible = false;
-                        Index = (1000 - (1000 % Tabs.Count) + i) % Tabs.Count;
-                        Tabs[Index].Active = true;
-                        Tabs[Index].Focused = true;
-                        Tabs[Index].Visible = true;
-                        Tabs[Index].JustOpened = true;
+                    //if (hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) && !Tabs[i].Active)
+                    //{
+                    //    Tabs[Index].Active = false;
+                    //    Tabs[Index].Focused = false;
+                    //    Tabs[Index].Visible = false;
+                    //    Index = (1000 - (1000 % Tabs.Count) + i) % Tabs.Count;
+                    //    Tabs[Index].Active = true;
+                    //    Tabs[Index].Focused = true;
+                    //    Tabs[Index].Visible = true;
+                    //    Tabs[Index].JustOpened = true;
 
-                        FocusLevel = Tabs[Index].CanBeFocused ? 1 : 0;
+                    //    FocusLevel = Tabs[Index].CanBeFocused ? 1 : 0;
 
-                        Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                    }
+                    //    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    //}
                 }
             }
 

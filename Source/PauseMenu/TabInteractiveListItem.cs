@@ -149,7 +149,7 @@ namespace RAGENativeUI.PauseMenu
             int i = 0;
             for (int c = minItem; c < Math.Min(Items.Count, maxItem); c++)
             {
-                bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
+                //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
                 bool hasLeftBadge = Items[c].LeftBadge != UIMenuItem.BadgeStyle.None;
                 bool hasRightBadge = Items[c].RightBadge != UIMenuItem.BadgeStyle.None;
@@ -157,7 +157,7 @@ namespace RAGENativeUI.PauseMenu
                 bool hasBothBadges = hasRightBadge && hasLeftBadge;
                 bool hasAnyBadge = hasRightBadge || hasLeftBadge;
 
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Focused && hovering ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black));
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : /*Focused && hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.FromArgb(blackAlpha, Color.Black));
                 ResText.Draw(Items[c].Text, SafeSize.AddPoints(new Point((hasBothBadges ? 60 : hasAnyBadge ? 30 : 6), 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
                 if (hasLeftBadge && !hasRightBadge)
@@ -245,28 +245,28 @@ namespace RAGENativeUI.PauseMenu
                     itemText.Draw();
                 }
 
-                if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
-                {
-                    bool open = Index == c;
-                    Index = (1000 - (1000 % Items.Count) + c) % Items.Count;
-                    if (!open)
-                        Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                    else
-                    {
-                        if (Items[Index] is UIMenuCheckboxItem)
-                        {
-                            Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                            UIMenuCheckboxItem cb = (UIMenuCheckboxItem)Items[Index];
-                            cb.Checked = !cb.Checked;
-                            cb.CheckboxEventTrigger();
-                        }
-                        else
-                        {
-                            Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                            Items[Index].ItemActivate(null);
-                        }
-                    }
-                }
+                //if (Focused && hovering && (Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) || Game.IsControlJustPressed(0, GameControl.CursorAccept)))
+                //{
+                //    bool open = Index == c;
+                //    Index = (1000 - (1000 % Items.Count) + c) % Items.Count;
+                //    if (!open)
+                //        Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                //    else
+                //    {
+                //        if (Items[Index] is UIMenuCheckboxItem)
+                //        {
+                //            Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                //            UIMenuCheckboxItem cb = (UIMenuCheckboxItem)Items[Index];
+                //            cb.Checked = !cb.Checked;
+                //            cb.CheckboxEventTrigger();
+                //        }
+                //        else
+                //        {
+                //            Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                //            Items[Index].ItemActivate(null);
+                //        }
+                //    }
+                //}
 
                 i++;
             }

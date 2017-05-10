@@ -84,6 +84,9 @@ namespace RAGENativeUI.PauseMenu
             if (Items.Count > 0) Items[Index].ProcessControls();
         }
 
+        /// <summary>
+        /// Draws this instance.
+        /// </summary>
         public override void Draw()
         {
             if (!Visible) return;
@@ -100,35 +103,35 @@ namespace RAGENativeUI.PauseMenu
 
             for (int i = 0; i < Items.Count; i++)
             {
-                bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
+                //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : hovering && Focused ? Color.FromArgb(100, 50, 50, 50) : Color.FromArgb(blackAlpha, Color.Black));
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
                 ResText.Draw(Items[i].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
-                if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
-                {
-                    Items[Index].Focused = false;
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                    bool open = Index == i;
-                    Index = (1000 - (1000 % Items.Count) + i) % Items.Count;
-                    if (open)
-                    {
-                        if (Items[Index].CanBeFocused && !Items[Index].Focused)
-                        {
-                            Parent.FocusLevel = 2;
-                            Items[Index].JustOpened = true;
-                            Items[Index].Focused = true;
-                        }
-                        else
-                        {
-                            Items[Index].OnActivated();
-                        }
-                    }
-                    else
-                    {
-                        Parent.FocusLevel = 1;
-                    }
-                }
+                //if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
+                //{
+                //    Items[Index].Focused = false;
+                //    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                //    bool open = Index == i;
+                //    Index = (1000 - (1000 % Items.Count) + i) % Items.Count;
+                //    if (open)
+                //    {
+                //        if (Items[Index].CanBeFocused && !Items[Index].Focused)
+                //        {
+                //            Parent.FocusLevel = 2;
+                //            Items[Index].JustOpened = true;
+                //            Items[Index].Focused = true;
+                //        }
+                //        else
+                //        {
+                //            Items[Index].OnActivated();
+                //        }
+                //    }
+                //    else
+                //    {
+                //        Parent.FocusLevel = 1;
+                //    }
+                //}
             }
 
             Items[Index].Visible = true;
