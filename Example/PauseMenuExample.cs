@@ -112,7 +112,6 @@ namespace PauseMenuExampleProject
                 tabView.Visible = !tabView.Visible;
 
             tabView.Update();
-            tabView.ProcessControls();
             tabView.DrawTextures(e.Graphics);
         }
     }
