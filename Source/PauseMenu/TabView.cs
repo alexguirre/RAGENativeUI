@@ -216,6 +216,8 @@ namespace RAGENativeUI.PauseMenu
             NativeFunction.CallByName<uint>("HIDE_HUD_AND_RADAR_THIS_FRAME");
             //NativeFunction.CallByHash<uint>(0xaae7ce1d63167423); // _SHOW_CURSOR_THIS_FRAME
             
+            ProcessControls();
+            
             var res = UIMenu.GetScreenResolutionMantainRatio();
             var safe = new Point(300, 180);
 
