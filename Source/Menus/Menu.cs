@@ -8,6 +8,7 @@ namespace RAGENativeUI.Menus
     using Graphics = Rage.Graphics;
 
     using RAGENativeUI.Menus.Rendering;
+    using RAGENativeUI.Utility;
 
     public class Menu
     {
@@ -29,15 +30,40 @@ namespace RAGENativeUI.Menus
         public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
         public MenuItem SelectedItem { get { return Items[SelectedIndex]; } set { SelectedIndex = Items.IndexOf(value); } }
 
+        private MenuControls controls;
+        public MenuControls Controls { get { return controls; } set { controls = value ?? throw new InvalidOperationException($"The menu {nameof(Controls)} can't be null."); } }
+
+        private float width;
+        public float Width
+        {
+            get { return width; }
+            set
+            {
+                if (value == width)
+                    return;
+                width = value;
+                Banner.Size = new SizeF(width, Banner.Size.Height);
+                Subtitle.Size = new SizeF(width, Subtitle.Size.Height);
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    MenuItem item = Items[i];
+                    item.Size = new SizeF(width, item.Size.Height);
+                }
+            }
+        }
+
         public Menu(string title, string subtitle)
         {
-            Items = new MenuItemsCollection();
+            Items = new MenuItemsCollection(this);
             Skin = MenuSkin.DefaultSkin;
             Banner = new MenuBanner();
             Subtitle = new MenuSubtitle();
+            Controls = new MenuControls();
 
             Banner.Title = title;
             Subtitle.Text = subtitle;
+
+            Width = 430.0f;
         }
 
         public virtual void ProcessInput()
@@ -104,6 +130,44 @@ namespace RAGENativeUI.Menus
 
     public class MenuItemsCollection : Utility.BaseCollection<MenuItem>
     {
+        protected internal Menu Menu { get; }
+
+        public override MenuItem this[int index]
+        {
+            get { return base[index]; }
+            set
+            {
+                base[index] = value;
+                value.Size = new SizeF(Menu.Width, value.Size.Height);
+            }
+
+        }
+        public MenuItemsCollection(Menu menu)
+        {
+            Menu = menu;
+        }
+
+        public override void Add(MenuItem item)
+        {
+            base.Add(item);
+            item.Size = new SizeF(Menu.Width, item.Size.Height);
+        }
+
+        public override void Insert(int index, MenuItem item)
+        {
+            base.Insert(index, item);
+            item.Size = new SizeF(Menu.Width, item.Size.Height);
+        }
+    }
+
+    public class MenuControls
+    {
+        public Control Up { get; set; } = new Control(GameControl.FrontendUp);
+        public Control Down { get; set; } = new Control(GameControl.FrontendDown);
+        public Control Right { get; set; } = new Control(GameControl.FrontendRight);
+        public Control Left { get; set; } = new Control(GameControl.FrontendLeft);
+        public Control Accept { get; set; } = new Control(GameControl.FrontendAccept);
+        public Control Cancel { get; set; } = new Control(GameControl.FrontendCancel);
     }
 }
 
