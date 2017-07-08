@@ -28,7 +28,7 @@ namespace RAGENativeUI.Menus
 
         private int selectedIndex;
         public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
-        public MenuItem SelectedItem { get { return Items[SelectedIndex]; } set { SelectedIndex = Items.IndexOf(value); } }
+        public MenuItem SelectedItem { get { return Items[selectedIndex]; } set { selectedIndex = Items.IndexOf(value); } }
 
         private MenuControls controls;
         public MenuControls Controls { get { return controls; } set { controls = value ?? throw new InvalidOperationException($"The menu {nameof(Controls)} can't be null."); } }
