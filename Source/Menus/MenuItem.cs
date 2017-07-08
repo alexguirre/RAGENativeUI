@@ -24,7 +24,7 @@ namespace RAGENativeUI.Menus
         {
             if (selected)
             {
-                graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.FromArgb(225, 220, 220, 220));
+                skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
                 skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + TextSafezone, y, Size.Width, Size.Height), Color.FromArgb(225, 10, 10, 10));
             }
             else

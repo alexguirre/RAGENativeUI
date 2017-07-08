@@ -16,6 +16,7 @@ namespace RAGENativeUI.Menus.Rendering
 
         public virtual UVCoords BannerCoords { get; } = new UVCoords(0f, 0f, 0.5f, 0.125f);
         public virtual UVCoords BackgroundCoords { get; } = new UVCoords(0.5f, 0f, 1f, 0.5f);
+        public virtual UVCoords SelectedGradientCoords { get; } = new UVCoords(0f, 0.125f, 0.5f, 0.1875f);
 
         public MenuSkin(string fileName)
         {
@@ -33,6 +34,11 @@ namespace RAGENativeUI.Menus.Rendering
         public virtual void DrawBackground(Graphics graphics, float x, float y, float width, float height)
         {
             graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), BackgroundCoords.U1, BackgroundCoords.V1, BackgroundCoords.U2, BackgroundCoords.V2);
+        }
+
+        public virtual void DrawSelectedGradient(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), SelectedGradientCoords.U1, SelectedGradientCoords.V1, SelectedGradientCoords.U2, SelectedGradientCoords.V2);
         }
 
         public virtual void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
