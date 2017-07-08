@@ -17,6 +17,12 @@ namespace RAGENativeUI.Menus.Rendering
         public virtual UVCoords BannerCoords { get; } = new UVCoords(0f, 0f, 0.5f, 0.125f);
         public virtual UVCoords BackgroundCoords { get; } = new UVCoords(0.5f, 0f, 1f, 0.5f);
         public virtual UVCoords SelectedGradientCoords { get; } = new UVCoords(0f, 0.125f, 0.5f, 0.1875f);
+        public virtual UVCoords CheckboxEmptyWhiteCoords { get; } = new UVCoords(0f, 0.1875f, 0.0625f, 0.25f);
+        public virtual UVCoords CheckboxEmptyBlackCoords { get; } = new UVCoords(0.0625f, 0.1875f, 0.125f, 0.25f);
+        public virtual UVCoords CheckboxCrossWhiteCoords { get; } = new UVCoords(0.125f, 0.1875f, 0.1875f, 0.25f);
+        public virtual UVCoords CheckboxCrossBlackCoords { get; } = new UVCoords(0.1875f, 0.1875f, 0.25f, 0.25f);
+        public virtual UVCoords CheckboxTickWhiteCoords { get; } = new UVCoords(0.25f, 0.1875f, 0.3125f, 0.25f);
+        public virtual UVCoords CheckboxTickBlackCoords { get; } = new UVCoords(0.3125f, 0.1875f, 0.375f, 0.25f);
 
         public MenuSkin(string fileName)
         {
@@ -25,7 +31,7 @@ namespace RAGENativeUI.Menus.Rendering
 
             Image = Game.CreateTextureFromFile(fileName);
         }
-
+        
         public virtual void DrawBanner(Graphics graphics, float x, float y, float width, float height)
         {
             graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), BannerCoords.U1, BannerCoords.V1, BannerCoords.U2, BannerCoords.V2);
@@ -39,6 +45,36 @@ namespace RAGENativeUI.Menus.Rendering
         public virtual void DrawSelectedGradient(Graphics graphics, float x, float y, float width, float height)
         {
             graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), SelectedGradientCoords.U1, SelectedGradientCoords.V1, SelectedGradientCoords.U2, SelectedGradientCoords.V2);
+        }
+
+        public virtual void DrawCheckboxEmptyWhite(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxEmptyWhiteCoords.U1, CheckboxEmptyWhiteCoords.V1, CheckboxEmptyWhiteCoords.U2, CheckboxEmptyWhiteCoords.V2);
+        }
+
+        public virtual void DrawCheckboxEmptyBlack(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxEmptyBlackCoords.U1, CheckboxEmptyBlackCoords.V1, CheckboxEmptyBlackCoords.U2, CheckboxEmptyBlackCoords.V2);
+        }
+
+        public virtual void DrawCheckboxCrossWhite(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxCrossWhiteCoords.U1, CheckboxCrossWhiteCoords.V1, CheckboxCrossWhiteCoords.U2, CheckboxCrossWhiteCoords.V2);
+        }
+
+        public virtual void DrawCheckboxCrossBlack(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxCrossBlackCoords.U1, CheckboxCrossBlackCoords.V1, CheckboxCrossBlackCoords.U2, CheckboxCrossBlackCoords.V2);
+        }
+
+        public virtual void DrawCheckboxTickWhite(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxTickWhiteCoords.U1, CheckboxTickWhiteCoords.V1, CheckboxTickWhiteCoords.U2, CheckboxTickWhiteCoords.V2);
+        }
+
+        public virtual void DrawCheckboxTickBlack(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxTickBlackCoords.U1, CheckboxTickBlackCoords.V1, CheckboxTickBlackCoords.U2, CheckboxTickBlackCoords.V2);
         }
 
         public virtual void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)

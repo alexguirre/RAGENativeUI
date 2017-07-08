@@ -20,6 +20,9 @@ namespace Examples
             {
                 menu.Items.Add(new MenuItem("item #" + i));
             }
+            menu.Items.Add(new MenuItemCheckbox("cb #0") { State = MenuItemCheckboxState.Empty });
+            menu.Items.Add(new MenuItemCheckbox("cb #1") { State = MenuItemCheckboxState.Cross });
+            menu.Items.Add(new MenuItemCheckbox("cb #2") { State = MenuItemCheckboxState.Tick });
 
             Game.RawFrameRender += (s, e) =>
             {
