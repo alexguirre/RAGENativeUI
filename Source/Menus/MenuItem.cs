@@ -20,6 +20,36 @@ namespace RAGENativeUI.Menus
             Text = text;
         }
 
+        public virtual bool OnPreviewMoveDown(Menu menuSender)
+        {
+            return true;
+        }
+
+        public virtual bool OnPreviewMoveUp(Menu menuSender)
+        {
+            return true;
+        }
+
+        public virtual bool OnPreviewMoveRight(Menu menuSender)
+        {
+            return true;
+        }
+
+        public virtual bool OnPreviewMoveLeft(Menu menuSender)
+        {
+            return true;
+        }
+
+        public virtual bool OnPreviewAccept(Menu menuSender)
+        {
+            return true;
+        }
+
+        public virtual bool OnPreviewCancel(Menu menuSender)
+        {
+            return true;
+        }
+
         public virtual void Draw(Graphics graphics, MenuSkin skin, bool selected, ref float x, ref float y)
         {
             if (selected)

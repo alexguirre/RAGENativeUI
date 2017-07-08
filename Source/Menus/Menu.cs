@@ -28,7 +28,7 @@ namespace RAGENativeUI.Menus
 
         private int selectedIndex;
         public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
-        public MenuItem SelectedItem { get { return Items[selectedIndex]; } set { selectedIndex = Items.IndexOf(value); } }
+        public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { selectedIndex = Items.IndexOf(value); } }
 
         private MenuControls controls;
         public MenuControls Controls { get { return controls; } set { controls = value ?? throw new InvalidOperationException($"The menu {nameof(Controls)} can't be null."); } }
@@ -68,17 +68,56 @@ namespace RAGENativeUI.Menus
 
         public virtual void ProcessInput()
         {
-            if (Game.IsKeyDown(System.Windows.Forms.Keys.Up))
+            if (Controls.Up.IsHeld())
             {
-                MoveUp();
+                if (SelectedItem == null || SelectedItem.OnPreviewMoveUp(this))
+                {
+                    MoveUp();
+                }
             }
-            else if (Game.IsKeyDown(System.Windows.Forms.Keys.Down))
+
+            if (Controls.Down.IsHeld())
             {
-                MoveDown();
+                if (SelectedItem == null || SelectedItem.OnPreviewMoveDown(this))
+                {
+                    MoveDown();
+                }
+            }
+
+            if (Controls.Right.IsHeld())
+            {
+                if (SelectedItem == null || SelectedItem.OnPreviewMoveRight(this))
+                {
+                    MoveRight();
+                }
+            }
+
+            if (Controls.Left.IsHeld())
+            {
+                if (SelectedItem == null || SelectedItem.OnPreviewMoveLeft(this))
+                {
+                    MoveLeft();
+                }
+            }
+
+            if (Controls.Accept.IsHeld())
+            {
+                if (SelectedItem == null || SelectedItem.OnPreviewAccept(this))
+                {
+                    Accept();
+                }
+            }
+
+            if (Controls.Cancel.IsHeld())
+            {
+                if (SelectedItem == null || SelectedItem.OnPreviewCancel(this))
+                {
+                    Cancel();
+                }
             }
         }
 
-        public void MoveUp()
+        protected virtual void MoveUp()
         {
             int newIndex = SelectedIndex - 1;
 
@@ -88,7 +127,7 @@ namespace RAGENativeUI.Menus
             SelectedIndex = newIndex;
         }
 
-        public void MoveDown()
+        protected virtual void MoveDown()
         {
             int newIndex = SelectedIndex + 1;
 
@@ -96,6 +135,22 @@ namespace RAGENativeUI.Menus
                 newIndex = 0;
 
             SelectedIndex = newIndex;
+        }
+
+        protected virtual void MoveRight()
+        {
+        }
+
+        protected virtual void MoveLeft()
+        {
+        }
+
+        protected virtual void Accept()
+        {
+        }
+
+        protected virtual void Cancel()
+        {
         }
 
         public virtual void Draw(Graphics graphics)

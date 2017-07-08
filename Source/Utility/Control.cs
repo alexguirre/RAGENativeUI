@@ -5,11 +5,14 @@ namespace RAGENativeUI.Utility
     using Rage;
     using Rage.Native;
 
-    public struct Control
+    public class Control
     {
-        public Keys? Key { get; }
-        public ControllerButtons? Button { get; }
-        public GameControl? NativeControl { get; }
+        public Keys? Key { get; set; }
+        public ControllerButtons? Button { get; set; }
+        public GameControl? NativeControl { get; set; }
+        public uint HeldCooldown { get; set; } = 200;
+
+        protected uint NextHeldTime { get; set; }
 
         public Control(Keys? key = null, ControllerButtons? button = null, GameControl? nativeControl = null)
         {
@@ -33,6 +36,7 @@ namespace RAGENativeUI.Utility
             if (NativeControl.HasValue && (NativeFunction.Natives.IsControlJustPressed<bool>(0, (int)NativeControl.Value) || NativeFunction.Natives.IsDisabledControlJustPressed<bool>(0, (int)NativeControl.Value)))
                 return true;
 
+            NextHeldTime = 0;
             return false;
         }
 
@@ -47,6 +51,24 @@ namespace RAGENativeUI.Utility
             if (NativeControl.HasValue && (NativeFunction.Natives.IsControlPressed<bool>(0, (int)NativeControl.Value) || NativeFunction.Natives.IsDisabledControlPressed<bool>(0, (int)NativeControl.Value)))
                 return true;
 
+            NextHeldTime = 0;
+            return false;
+        }
+
+        public bool IsHeld()
+        {
+            if(Game.GameTime <= NextHeldTime)
+            {
+                return false;
+            }
+
+            if (IsPressed())
+            {
+                NextHeldTime = Game.GameTime + HeldCooldown;
+                return true;
+            }
+
+            NextHeldTime = 0;
             return false;
         }
     }
