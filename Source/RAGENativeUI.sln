@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAGENativeUI", "RAGENativeUI.csproj", "{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "..\Examples\Examples.csproj", "{2E92E425-D307-4902-9DCE-BE8ADC5686FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}.Debug|x64.Build.0 = Debug|x64
 		{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}.Release|x64.ActiveCfg = Release|x64
 		{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}.Release|x64.Build.0 = Release|x64
+		{2E92E425-D307-4902-9DCE-BE8ADC5686FA}.Debug|x64.ActiveCfg = Debug|x64
+		{2E92E425-D307-4902-9DCE-BE8ADC5686FA}.Debug|x64.Build.0 = Debug|x64
+		{2E92E425-D307-4902-9DCE-BE8ADC5686FA}.Release|x64.ActiveCfg = Release|x64
+		{2E92E425-D307-4902-9DCE-BE8ADC5686FA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

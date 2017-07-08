@@ -4,36 +4,32 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}</ProjectGuid>
+    <ProjectGuid>{2E92E425-D307-4902-9DCE-BE8ADC5686FA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RAGENativeUI</RootNamespace>
-    <AssemblyName>RAGENativeUI</AssemblyName>
+    <RootNamespace>Examples</RootNamespace>
+    <AssemblyName>RAGENativeUI Examples</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>
-    </DocumentationFile>
-    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\Plugins\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\bin\RAGENativeUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
@@ -52,27 +48,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common.cs" />
-    <Compile Include="Menus\Menu.cs" />
-    <Compile Include="Menus\MenuBanner.cs" />
-    <Compile Include="Menus\MenuItem.cs" />
-    <Compile Include="Menus\MenuItemCheckbox.cs" />
-    <Compile Include="Menus\MenuItemEnumScroller.cs" />
-    <Compile Include="Menus\MenuItemListScroller.cs" />
-    <Compile Include="Menus\MenuItemNumericScroller.cs" />
-    <Compile Include="Menus\MenuItemScroller.cs" />
-    <Compile Include="Menus\MenuSubtitle.cs" />
-    <Compile Include="Menus\Rendering\MenuSkin.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="MenuExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\ISkin.cs" />
-    <Compile Include="Rendering\TextAligment.cs" />
-    <Compile Include="Utility\BaseCollection.cs" />
-    <Compile Include="Utility\UVCoords.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="RAGENativeUI Resources\menu-default-skin.PNG">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <ProjectReference Include="..\Source\RAGENativeUI.csproj">
+      <Project>{fc3d6fad-db94-4c47-9b48-3b783398bdc5}</Project>
+      <Name>RAGENativeUI</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
