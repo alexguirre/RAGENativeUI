@@ -23,7 +23,7 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        public override bool OnPreviewAccept(Menu menuSender)
+        protected internal override bool OnPreviewAccept(Menu menuSender)
         {
             State = (State == MenuItemCheckboxState.Empty) ? MenuItemCheckboxState.Tick : MenuItemCheckboxState.Empty;
             return true;

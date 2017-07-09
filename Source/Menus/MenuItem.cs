@@ -20,32 +20,32 @@ namespace RAGENativeUI.Menus
             Text = text;
         }
 
-        public virtual bool OnPreviewMoveDown(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveDown(Menu menuSender)
         {
             return true;
         }
 
-        public virtual bool OnPreviewMoveUp(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveUp(Menu menuSender)
         {
             return true;
         }
 
-        public virtual bool OnPreviewMoveRight(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveRight(Menu menuSender)
         {
             return true;
         }
 
-        public virtual bool OnPreviewMoveLeft(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveLeft(Menu menuSender)
         {
             return true;
         }
 
-        public virtual bool OnPreviewAccept(Menu menuSender)
+        protected internal virtual bool OnPreviewAccept(Menu menuSender)
         {
             return true;
         }
 
-        public virtual bool OnPreviewCancel(Menu menuSender)
+        protected internal virtual bool OnPreviewCancel(Menu menuSender)
         {
             return true;
         }
