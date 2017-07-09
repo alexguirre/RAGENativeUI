@@ -10,7 +10,7 @@ namespace RAGENativeUI.Utility
         public Keys? Key { get; set; }
         public ControllerButtons? Button { get; set; }
         public GameControl? NativeControl { get; set; }
-        public uint HeldCooldown { get; set; } = 200;
+        public uint HeldCooldown { get; set; } = 175;
 
         protected uint NextHeldTime { get; set; }
 

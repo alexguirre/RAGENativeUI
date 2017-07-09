@@ -23,6 +23,8 @@ namespace RAGENativeUI.Menus.Rendering
         public virtual UVCoords CheckboxCrossBlackCoords { get; } = new UVCoords(0.1875f, 0.1875f, 0.25f, 0.25f);
         public virtual UVCoords CheckboxTickWhiteCoords { get; } = new UVCoords(0.25f, 0.1875f, 0.3125f, 0.25f);
         public virtual UVCoords CheckboxTickBlackCoords { get; } = new UVCoords(0.3125f, 0.1875f, 0.375f, 0.25f);
+        public virtual UVCoords ArrowLeftCoords { get; } = new UVCoords(0.375f, 0.1875f, 0.4375f, 0.25f);
+        public virtual UVCoords ArrowRightCoords { get; } = new UVCoords(0.4375f, 0.1875f, 0.5f, 0.25f);
 
         public MenuSkin(string fileName)
         {
@@ -77,9 +79,20 @@ namespace RAGENativeUI.Menus.Rendering
             graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxTickBlackCoords.U1, CheckboxTickBlackCoords.V1, CheckboxTickBlackCoords.U2, CheckboxTickBlackCoords.V2);
         }
 
+        public virtual void DrawArrowLeft(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowLeftCoords.U1, ArrowLeftCoords.V1, ArrowLeftCoords.U2, ArrowLeftCoords.V2);
+        }
+
+        public virtual void DrawArrowRight(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowRightCoords.U1, ArrowRightCoords.V1, ArrowRightCoords.U2, ArrowRightCoords.V2);
+        }
+
         public virtual void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
         {
             SizeF textSize = Graphics.MeasureText(text, fontName, fontSize);
+            textSize.Height = Common.GetFontHeight(fontName, fontSize);
             float x = 0.0f, y = 0.0f;
 
             switch (horizontalAligment)
@@ -91,7 +104,7 @@ namespace RAGENativeUI.Menus.Rendering
                     x = rectangle.X + rectangle.Width * 0.5f - textSize.Width * 0.5f;
                     break;
                 case TextHorizontalAligment.Right:
-                    x = rectangle.Right - textSize.Width;
+                    x = rectangle.Right - textSize.Width - 2.0f;
                     break;
             }
 

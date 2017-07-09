@@ -17,18 +17,22 @@ namespace Examples
         {
             Menu menu = new Menu("title", "SUBTITLE");
             menu.Location = new PointF(480, 17);
-            for (int i = 0; i < 5; i++)
-            {
-                menu.Items.Add(new MenuItem("item #" + i));
-            }
+
+            menu.Items.Add(new MenuItem("item #0"));
             menu.Items.Add(new MenuItemCheckbox("cb #0") { State = MenuItemCheckboxState.Empty });
             menu.Items.Add(new MenuItemCheckbox("cb #1") { State = MenuItemCheckboxState.Cross });
             menu.Items.Add(new MenuItemCheckbox("cb #2") { State = MenuItemCheckboxState.Tick });
+            menu.Items.Add(new MenuItemEnumScroller("enum scroller #0", typeof(GameControl)));
+            menu.Items.Add(new MenuItemEnumScroller<GameControl>("enum scroller #1"));
+            menu.Items.Add(new MenuItemNumericScroller("num scroller #0"));
+            menu.Items.Add(new MenuItemNumericScroller("num scroller #1") { ThousandsSeparator = true, Minimum = -50000.0m, Maximum = 50000.0m, Value = 0.0m, Increment = 100.0m });
+            menu.Items.Add(new MenuItemNumericScroller("num scroller #2") { Increment = 1.0m, Hexadecimal = true });
+            menu.Items.Add(new MenuItemNumericScroller("num scroller #3") { Minimum = -1.0m, Maximum = 1.0m, Value = 0.0m, Increment = 0.00005m, DecimalPlaces = 5 });
 
             Game.RawFrameRender += (s, e) =>
             {
                 Graphics g = e.Graphics;
-
+                
                 menu.Draw(g);
             };
 
