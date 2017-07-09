@@ -38,7 +38,7 @@ namespace Examples
                 {
                     GameFiber.Yield();
 
-                    menu.ProcessInput();
+                    menu.Process();
 
                     if(Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {

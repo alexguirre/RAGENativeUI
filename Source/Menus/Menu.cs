@@ -5,6 +5,7 @@ namespace RAGENativeUI.Menus
     using System.Drawing;
 
     using Rage;
+    using Rage.Native;
     using Graphics = Rage.Graphics;
 
     using RAGENativeUI.Menus.Rendering;
@@ -51,6 +52,15 @@ namespace RAGENativeUI.Menus
                 }
             }
         }
+        
+        public bool DisableControlsActions { get; set; } = true;
+        /// <summary>
+        /// Gets or sets the controls that aren't disabled when <see cref="DisableControlsActions"/> is <c>true</c>.
+        /// </summary>
+        /// <value>
+        /// A <see cref="GameControl"/>s array.
+        /// </value>
+        public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls;
 
         public Menu(string title, string subtitle)
         {
@@ -66,7 +76,27 @@ namespace RAGENativeUI.Menus
             Width = 430.0f;
         }
 
-        public virtual void ProcessInput()
+        public virtual void Process()
+        {
+            if (DisableControlsActions)
+            {
+                DisableControls();
+            }
+
+            ProcessInput();
+        }
+
+        protected virtual void DisableControls()
+        {
+            NativeFunction.Natives.DisableAllControlActions(0);
+
+            for (int i = 0; i < AllowedControls.Length; i++)
+            {
+                NativeFunction.Natives.EnableControlAction(0, (int)AllowedControls[i], true);
+            }
+        }
+
+        protected virtual void ProcessInput()
         {
             if (Controls.Up.IsHeld())
             {
@@ -180,6 +210,25 @@ namespace RAGENativeUI.Menus
                 item?.Draw(graphics, skin, i == SelectedIndex, ref x, ref y);
             }
         }
+
+
+        protected static readonly GameControl[] DefaultAllowedControls =
+        {
+            GameControl.MoveUpDown,
+            GameControl.MoveLeftRight,
+            GameControl.Sprint,
+            GameControl.Jump,
+            GameControl.Enter,
+            GameControl.VehicleExit,
+            GameControl.VehicleAccelerate,
+            GameControl.VehicleBrake,
+            GameControl.VehicleMoveLeftRight,
+            GameControl.VehicleFlyYawLeft,
+            GameControl.ScriptedFlyLeftRight,
+            GameControl.ScriptedFlyUpDown,
+            GameControl.VehicleFlyYawRight,
+            GameControl.VehicleHandbrake,
+        };
     }
 
 
