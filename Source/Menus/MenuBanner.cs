@@ -11,7 +11,7 @@ namespace RAGENativeUI.Menus
     public class MenuBanner
     {
         public string Title { get; set; }
-        public SizeF Size { get; set; } = new SizeF(430, 109);
+        public SizeF Size { get; set; } = new SizeF(432f, 109f);
 
         public virtual void Draw(Graphics graphics, MenuSkin skin, ref float x, ref float y)
         {

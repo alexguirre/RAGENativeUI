@@ -16,6 +16,7 @@ namespace Examples
         private static void Command()
         {
             Menu menu = new Menu("title", "SUBTITLE");
+            menu.Location = new PointF(480, 17);
             for (int i = 0; i < 5; i++)
             {
                 menu.Items.Add(new MenuItem("item #" + i));
@@ -47,6 +48,9 @@ namespace Examples
                         else
                             menu.Skin = MenuSkin.DefaultSkin;
                     }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
+                        menu.IsVisible = !menu.IsVisible;
                 }
             });
         }

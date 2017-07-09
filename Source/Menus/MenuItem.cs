@@ -11,7 +11,7 @@ namespace RAGENativeUI.Menus
     public class MenuItem
     {
         public string Text { get; set; }
-        public SizeF Size { get; set; } = new SizeF(430, 37);
+        public SizeF Size { get; set; } = new SizeF(432f, 37f);
 
         public float TextSafezone { get; set; } = 11.5f;
 

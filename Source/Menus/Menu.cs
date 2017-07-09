@@ -13,7 +13,7 @@ namespace RAGENativeUI.Menus
 
     public class Menu
     {
-        public PointF Location { get; set; } = new PointF(480, 17);
+        public PointF Location { get; set; } = new PointF(30, 23);// 17
 
         private MenuItemsCollection items;
         public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new InvalidOperationException($"The menu {nameof(Items)} can't be null."); } }
@@ -62,6 +62,8 @@ namespace RAGENativeUI.Menus
         /// </value>
         public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls;
 
+        public bool IsVisible { get; set; } = false;
+
         public Menu(string title, string subtitle)
         {
             Items = new MenuItemsCollection(this);
@@ -73,11 +75,14 @@ namespace RAGENativeUI.Menus
             Banner.Title = title;
             Subtitle.Text = subtitle;
 
-            Width = 430.0f;
+            Width = 432.0f;
         }
 
         public virtual void Process()
         {
+            if (!IsVisible)
+                return;
+
             if (DisableControlsActions)
             {
                 DisableControls();
@@ -185,6 +190,9 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics)
         {
+            if (!IsVisible)
+                return;
+
             float x = Location.X, y = Location.Y;
 
 #if DEBUG
