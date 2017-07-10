@@ -11,7 +11,7 @@ namespace RAGENativeUI.Menus
     public abstract class MenuItemScroller : MenuItem
     {
         private int selectedIndex;
-        public virtual int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, GetOptionsCount() - 1); } }
+        public virtual int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, MathHelper.Max(0, GetOptionsCount() - 1)); } }
 
         public MenuItemScroller(string text) : base(text)
         {
