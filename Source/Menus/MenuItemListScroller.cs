@@ -1,6 +1,7 @@
 namespace RAGENativeUI.Menus
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
 
     using RAGENativeUI.Utility;
@@ -21,6 +22,8 @@ namespace RAGENativeUI.Menus
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public string DefaultText { get { return defaultText; } set { defaultText = value ?? throw new ArgumentNullException($"The MenuItemListScroller {nameof(DefaultText)} can't be null."); } }
 
+        public IDisplayItem SelectedItem { get { return (SelectedIndex >= 0 && SelectedIndex < Items.Count) ? Items[SelectedIndex] : null; } set { SelectedIndex = Items.IndexOf(value); } }
+
         public MenuItemListScroller(string text) : base(text)
         {
             Items = new DisplayItemsCollection();
@@ -29,6 +32,10 @@ namespace RAGENativeUI.Menus
         public MenuItemListScroller(string text, IEnumerable<IDisplayItem> items) : base(text)
         {
             Items = items.ToCollection();
+        }
+
+        public MenuItemListScroller(string text, IEnumerable<object> items) : this(text, items.Select(o => new DisplayItem(o)))
+        {
         }
 
         protected override int GetOptionsCount()

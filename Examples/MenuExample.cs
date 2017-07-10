@@ -30,7 +30,7 @@ namespace Examples
             menu.Items.Add(new MenuItemNumericScroller("num scroller #2") { Increment = 1.0m, Hexadecimal = true });
             menu.Items.Add(new MenuItemNumericScroller("num scroller #3") { Minimum = -1.0m, Maximum = 1.0m, Value = 0.0m, Increment = 0.00005m, DecimalPlaces = 5 });
             menu.Items.Add(new MenuItemListScroller("list scroller #0"));
-            menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { new DisplayItem("some text"), new DisplayItem("other's items text"), new DisplayItem("and more") }));
+            menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
 
             Game.RawFrameRender += (s, e) =>
             {
