@@ -8,8 +8,8 @@ namespace RAGENativeUI.Menus
     public class MenuItemListScroller : MenuItemScroller
     {
         private DisplayItemsCollection items;
-        /// <exception cref="InvalidOperationException">When setting the property to a null value.</exception>
-        public DisplayItemsCollection Items { get { return items; } set { items = value ?? throw new InvalidOperationException($"The MenuItemListScroller {nameof(Items)} can't be null."); } }
+        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
+        public DisplayItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The MenuItemListScroller {nameof(Items)} can't be null."); } }
 
         private string defaultText = "-";
         /// <summary>
@@ -18,8 +18,8 @@ namespace RAGENativeUI.Menus
         /// <value>
         /// A <see cref="String"/> representing the default text.
         /// </value>
-        /// <exception cref="InvalidOperationException">When setting the property to a null value.</exception>
-        public string DefaultText { get { return defaultText; } set { defaultText = value ?? throw new InvalidOperationException($"The MenuItemListScroller {nameof(DefaultText)} can't be null."); } }
+        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
+        public string DefaultText { get { return defaultText; } set { defaultText = value ?? throw new ArgumentNullException($"The MenuItemListScroller {nameof(DefaultText)} can't be null."); } }
 
         public MenuItemListScroller(string text) : base(text)
         {
