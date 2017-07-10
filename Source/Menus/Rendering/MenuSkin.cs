@@ -9,10 +9,15 @@ namespace RAGENativeUI.Menus.Rendering
 
     using RAGENativeUI.Rendering;
     using RAGENativeUI.Utility;
+    using Font = RAGENativeUI.Utility.Font;
 
     public class MenuSkin : ISkin
     {
         public Texture Image { get; }
+
+        public virtual Font TitleFont { get; } = new Font("Arial", 35.0f);
+        public virtual Font SubtitleFont { get; } = new Font("Arial", 20.0f);
+        public virtual Font ItemTextFont { get; } = new Font("Arial", 20.0f);
 
         public virtual UVCoords BannerCoords { get; } = new UVCoords(0f, 0f, 0.5f, 0.125f);
         public virtual UVCoords BackgroundCoords { get; } = new UVCoords(0.5f, 0f, 1f, 0.5f);
@@ -88,11 +93,15 @@ namespace RAGENativeUI.Menus.Rendering
         {
             graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowRightCoords.U1, ArrowRightCoords.V1, ArrowRightCoords.U2, ArrowRightCoords.V2);
         }
-
         public virtual void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
         {
-            SizeF textSize = Graphics.MeasureText(text, fontName, fontSize);
-            textSize.Height = Common.GetFontHeight(fontName, fontSize);
+            DrawText(graphics, text, new Font(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);
+        }
+
+        public virtual void DrawText(Graphics graphics, string text, Font font, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
+        {
+            SizeF textSize = font.Measure(text);
+            textSize.Height = font.Height;
             float x = 0.0f, y = 0.0f;
 
             switch (horizontalAligment)
@@ -121,7 +130,7 @@ namespace RAGENativeUI.Menus.Rendering
                     break;
             }
 
-            graphics.DrawText(text, fontName, fontSize, new PointF(x, y), color, rectangle);
+            graphics.DrawText(text, font.Name, font.Size, new PointF(x, y), color, rectangle);
         }
 
 

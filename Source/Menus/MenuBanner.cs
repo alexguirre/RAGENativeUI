@@ -20,7 +20,7 @@ namespace RAGENativeUI.Menus
         public virtual void Draw(Graphics graphics, Menu sender, MenuSkin skin, ref float x, ref float y)
         {
             skin.DrawBanner(graphics, x, y, Size.Width, Size.Height);
-            skin.DrawText(graphics, Title, "Arial", 35.0f, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Center, TextVerticalAligment.Center);
+            skin.DrawText(graphics, Title, skin.TitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Center, TextVerticalAligment.Center);
 
             y += Size.Height;
         }

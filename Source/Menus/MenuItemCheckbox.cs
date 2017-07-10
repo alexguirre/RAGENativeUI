@@ -34,7 +34,7 @@ namespace RAGENativeUI.Menus
             if (selected)
             {
                 skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
-                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(225, 10, 10, 10));
+                skin.DrawText(graphics, Text, skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(225, 10, 10, 10));
 
                 switch (State)
                 {
@@ -51,7 +51,7 @@ namespace RAGENativeUI.Menus
             }
             else
             {
-                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
+                skin.DrawText(graphics, Text, skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
 
                 switch (State)
                 {

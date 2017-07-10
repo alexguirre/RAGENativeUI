@@ -49,16 +49,16 @@ namespace RAGENativeUI.Menus
             if (selected)
             {
                 skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
-                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width , Size.Height), Color.FromArgb(225, 10, 10, 10));
+                skin.DrawText(graphics, Text, skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width , Size.Height), Color.FromArgb(225, 10, 10, 10));
                 skin.DrawArrowRight(graphics, x + Size.Width - Size.Height, y + BorderSafezone * 0.5f, Size.Height - BorderSafezone, Size.Height - BorderSafezone);
-                skin.DrawText(graphics, GetSelectedOptionText(), "Arial", 20.0f, new RectangleF(x, y, Size.Width - Size.Height / 1.5f - BorderSafezone, Size.Height), Color.FromArgb(225, 10, 10, 10), TextHorizontalAligment.Right);
-                SizeF textSize = Graphics.MeasureText(GetSelectedOptionText(), "Arial", 20.0f);
+                skin.DrawText(graphics, GetSelectedOptionText(), skin.ItemTextFont, new RectangleF(x, y, Size.Width - Size.Height / 1.5f - BorderSafezone, Size.Height), Color.FromArgb(225, 10, 10, 10), TextHorizontalAligment.Right);
+                SizeF textSize = skin.ItemTextFont.Measure(GetSelectedOptionText());
                 skin.DrawArrowLeft(graphics, x + Size.Width - Size.Height - textSize.Width - BorderSafezone * 2.5f, y + BorderSafezone * 0.5f, Size.Height - BorderSafezone, Size.Height - BorderSafezone);
             }
             else
             {
-                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
-                skin.DrawText(graphics, GetSelectedOptionText(), "Arial", 20.0f, new RectangleF(x, y, Size.Width - BorderSafezone, Size.Height), Color.FromArgb(240, 240, 240, 240), TextHorizontalAligment.Right);
+                skin.DrawText(graphics, Text, skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
+                skin.DrawText(graphics, GetSelectedOptionText(), skin.ItemTextFont, new RectangleF(x, y, Size.Width - BorderSafezone, Size.Height), Color.FromArgb(240, 240, 240, 240), TextHorizontalAligment.Right);
             }
 
             y += Size.Height;

@@ -22,7 +22,7 @@ namespace RAGENativeUI.Menus
         public virtual void Draw(Graphics graphics, Menu sender, MenuSkin skin, ref float x, ref float y)
         {
             graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.Black);
-            skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Center);
+            skin.DrawText(graphics, Text, skin.SubtitleFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Center);
 
             y += Size.Height;
         }
