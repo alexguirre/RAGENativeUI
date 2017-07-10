@@ -10,7 +10,7 @@ namespace RAGENativeUI.Menus
         private decimal currentValue;
         public decimal Value
         {
-            get { return Minimum + (Increment * SelectedIndex); }
+            get { return currentValue; }
             set
             {
                 if(value != currentValue)
@@ -21,6 +21,8 @@ namespace RAGENativeUI.Menus
                     }
 
                     currentValue = value;
+
+                    UpdateSelectedIndex();
                 }
             }
         }
@@ -39,6 +41,8 @@ namespace RAGENativeUI.Menus
                 }
 
                 Value = EnsureValue(Value);
+
+                UpdateSelectedIndex();
             }
         }
 
@@ -55,6 +59,8 @@ namespace RAGENativeUI.Menus
                 }
 
                 Value = EnsureValue(Value);
+
+                UpdateSelectedIndex();
             }
         }
 
@@ -70,6 +76,18 @@ namespace RAGENativeUI.Menus
                 }
 
                 increment = value;
+
+                UpdateSelectedIndex();
+            }
+        }
+
+        public override int SelectedIndex
+        {
+            get { return base.SelectedIndex; }
+            set
+            {
+                base.SelectedIndex = value;
+                currentValue = Minimum + SelectedIndex * Increment;
             }
         }
 
@@ -94,9 +112,14 @@ namespace RAGENativeUI.Menus
 
         }
 
+        private void UpdateSelectedIndex()
+        {
+            SelectedIndex = (int)((currentValue - Minimum) / Increment);
+        }
+
         protected override int GetOptionsCount()
         {
-            return (int)(Math.Abs(Minimum) + Math.Abs(Maximum) / Increment);
+            return (int)((Maximum - Minimum) / Increment);
         }
 
         protected override string GetSelectedOptionText()
@@ -117,8 +140,6 @@ namespace RAGENativeUI.Menus
 
         protected internal override bool OnPreviewMoveLeft(Menu menuSender)
         {
-            base.OnPreviewMoveLeft(menuSender);
-
             decimal newValue = currentValue;
 
             try
@@ -149,8 +170,6 @@ namespace RAGENativeUI.Menus
 
         protected internal override bool OnPreviewMoveRight(Menu menuSender)
         {
-            base.OnPreviewMoveLeft(menuSender);
-
             decimal newValue = currentValue;
 
             try
@@ -178,11 +197,6 @@ namespace RAGENativeUI.Menus
 
             return true;
         }
-        /*
-         0 -> Min
-         (int)(Math.Abs(Minimum) + Math.Abs(Maximum) / Increment) -> Max
-         
-         */
     }
 }
 
