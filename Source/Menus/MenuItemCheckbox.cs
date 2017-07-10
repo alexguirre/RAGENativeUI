@@ -29,7 +29,7 @@ namespace RAGENativeUI.Menus
             return true;
         }
 
-        public override void Draw(Graphics graphics, MenuSkin skin, bool selected, ref float x, ref float y)
+        public override void Draw(Graphics graphics, Menu sender, MenuSkin skin, bool selected, ref float x, ref float y)
         {
             if (selected)
             {
@@ -70,9 +70,9 @@ namespace RAGENativeUI.Menus
             y += Size.Height;
         }
 
-        public override void DebugDraw(Graphics graphics, MenuSkin skin, bool selected, float x, float y)
+        public override void DebugDraw(Graphics graphics, Menu sender, MenuSkin skin, bool selected, float x, float y)
         {
-            base.DebugDraw(graphics, skin, selected, x, y);
+            base.DebugDraw(graphics, sender, skin, selected, x, y);
 
             graphics.DrawRectangle(new RectangleF(x + Size.Width - Size.Height - BorderSafezone, y + BorderSafezone * 0.5f, Size.Height - BorderSafezone, Size.Height - BorderSafezone), Color.Green);
         }

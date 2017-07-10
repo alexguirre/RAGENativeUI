@@ -15,7 +15,11 @@ namespace RAGENativeUI.Menus
 
         public float BorderSafezone { get; set; } = 8.5f;
 
-        public virtual void Draw(Graphics graphics, MenuSkin skin, ref float x, ref float y)
+        public virtual void Process(Menu sender)
+        {
+        }
+
+        public virtual void Draw(Graphics graphics, Menu sender, MenuSkin skin, ref float x, ref float y)
         {
             graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.Black);
             skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Center);
@@ -23,7 +27,7 @@ namespace RAGENativeUI.Menus
             y += Size.Height;
         }
 
-        public virtual void DebugDraw(Graphics graphics, MenuSkin skin, float x, float y)
+        public virtual void DebugDraw(Graphics graphics, Menu sender, MenuSkin skin, float x, float y)
         {
             graphics.DrawLine(new Vector2(x, y), new Vector2(x + Size.Width, y), Color.FromArgb(220, Color.Purple));
             graphics.DrawLine(new Vector2(x, y), new Vector2(x, y + Size.Height), Color.FromArgb(220, Color.Purple));

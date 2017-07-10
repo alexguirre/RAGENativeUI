@@ -92,6 +92,16 @@ namespace RAGENativeUI.Menus
             }
 
             ProcessInput();
+
+
+            Banner?.Process(this);
+            Subtitle?.Process(this);
+
+            for (int i = 0; i < Items.Count; i++)
+            {
+                MenuItem item = Items[i];
+                item?.Process(this);
+            }
         }
 
         protected virtual void DisableControls()
@@ -200,14 +210,14 @@ namespace RAGENativeUI.Menus
 
 #if DEBUG
             bool debugDrawing = Game.IsKeyDownRightNow(System.Windows.Forms.Keys.D0);
-            if (debugDrawing) Banner?.DebugDraw(graphics, skin, x, y);
+            if (debugDrawing) Banner?.DebugDraw(graphics, this, skin, x, y);
 #endif
-            Banner?.Draw(graphics, skin, ref x, ref y);
+            Banner?.Draw(graphics, this, skin, ref x, ref y);
 
 #if DEBUG
-            if (debugDrawing) Subtitle?.DebugDraw(graphics, skin, x, y);
+            if (debugDrawing) Subtitle?.DebugDraw(graphics, this, skin, x, y);
 #endif
-            Subtitle?.Draw(graphics, skin, ref x, ref y);
+            Subtitle?.Draw(graphics, this, skin, ref x, ref y);
 
             skin.DrawBackground(graphics, x, y - 1, Items.Max(m => m.Size.Width), Items.Sum(m => m.Size.Height));
 
@@ -216,9 +226,9 @@ namespace RAGENativeUI.Menus
                 MenuItem item = Items[i];
 
 #if DEBUG
-                if (debugDrawing) item?.DebugDraw(graphics, skin, i == SelectedIndex, x, y);
+                if (debugDrawing) item?.DebugDraw(graphics, this, skin, i == SelectedIndex, x, y);
 #endif
-                item?.Draw(graphics, skin, i == SelectedIndex, ref x, ref y);
+                item?.Draw(graphics, this, skin, i == SelectedIndex, ref x, ref y);
             }
         }
 
@@ -243,7 +253,7 @@ namespace RAGENativeUI.Menus
     }
 
 
-    public class MenuItemsCollection : Utility.BaseCollection<MenuItem>
+    public class MenuItemsCollection : BaseCollection<MenuItem>
     {
         protected internal Menu Menu { get; }
 
