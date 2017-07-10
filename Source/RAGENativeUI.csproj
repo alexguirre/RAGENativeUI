@@ -68,6 +68,7 @@
     <Compile Include="Rendering\TextAligment.cs" />
     <Compile Include="Utility\BaseCollection.cs" />
     <Compile Include="Utility\Control.cs" />
+    <Compile Include="Utility\DisplayItem.cs" />
     <Compile Include="Utility\UVCoords.cs" />
   </ItemGroup>
   <ItemGroup>

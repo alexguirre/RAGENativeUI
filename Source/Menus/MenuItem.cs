@@ -13,7 +13,7 @@ namespace RAGENativeUI.Menus
         public string Text { get; set; }
         public SizeF Size { get; set; } = new SizeF(432f, 37f);
 
-        public float TextSafezone { get; set; } = 8.25f;
+        public float BorderSafezone { get; set; } = 8.25f;
 
         public MenuItem(string text)
         {
@@ -55,11 +55,11 @@ namespace RAGENativeUI.Menus
             if (selected)
             {
                 skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
-                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + TextSafezone, y, Size.Width, Size.Height), Color.FromArgb(225, 10, 10, 10));
+                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(225, 10, 10, 10));
             }
             else
             {
-                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + TextSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
+                skin.DrawText(graphics, Text, "Arial", 20.0f, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
             }
 
             y += Size.Height;
