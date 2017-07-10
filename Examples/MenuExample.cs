@@ -9,6 +9,7 @@ namespace Examples
     using RAGENativeUI;
     using RAGENativeUI.Menus;
     using RAGENativeUI.Menus.Rendering;
+    using RAGENativeUI.Utility;
 
     internal static class MenuExample
     {
@@ -28,6 +29,8 @@ namespace Examples
             menu.Items.Add(new MenuItemNumericScroller("num scroller #1") { ThousandsSeparator = true, Minimum = -50000.0m, Maximum = 50000.0m, Value = 0.0m, Increment = 100.0m });
             menu.Items.Add(new MenuItemNumericScroller("num scroller #2") { Increment = 1.0m, Hexadecimal = true });
             menu.Items.Add(new MenuItemNumericScroller("num scroller #3") { Minimum = -1.0m, Maximum = 1.0m, Value = 0.0m, Increment = 0.00005m, DecimalPlaces = 5 });
+            menu.Items.Add(new MenuItemListScroller("list scroller #0"));
+            menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { new DisplayItem("some text"), new DisplayItem("other's items text"), new DisplayItem("and more") }));
 
             Game.RawFrameRender += (s, e) =>
             {
