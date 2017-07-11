@@ -70,6 +70,7 @@
     <Compile Include="Utility\Control.cs" />
     <Compile Include="Utility\DisplayItem.cs" />
     <Compile Include="Utility\Font.cs" />
+    <Compile Include="Utility\GameScreenCoords.cs" />
     <Compile Include="Utility\UVCoords.cs" />
   </ItemGroup>
   <ItemGroup>
