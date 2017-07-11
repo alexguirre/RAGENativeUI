@@ -54,6 +54,8 @@
   <ItemGroup>
     <Compile Include="Common.cs" />
     <Compile Include="Elements\Scaleform.cs" />
+    <Compile Include="Elements\Sprite.cs" />
+    <Compile Include="Elements\TextureDictionary.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\MenuBanner.cs" />
     <Compile Include="Menus\MenuItem.cs" />
