@@ -85,11 +85,11 @@ namespace RAGENativeUI.Elements
             NativeFunction.Natives.DrawScaleformMovieFullscreen(handle, color.R, color.G, color.B, color.A, 0);
         }
 
-        public void Draw(GameScreenCoords coords) => Draw(coords, Color.White);
+        public void Draw(GameScreenRectangle rectangle) => Draw(rectangle, Color.White);
 
-        public void Draw(GameScreenCoords coords, Color color)
+        public void Draw(GameScreenRectangle rectangle, Color color)
         {
-            NativeFunction.Natives.DrawScaleformMovie(handle, coords.Relative.X, coords.Relative.Y, coords.Relative.Width, coords.Relative.Height, color.R, color.G, color.B, color.A, 0);
+            NativeFunction.Natives.DrawScaleformMovie(handle, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color.R, color.G, color.B, color.A, 0);
         }
 
         public void Draw3D(Vector3 position, Rotator rotation, Vector3 scale)

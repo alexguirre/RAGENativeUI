@@ -12,18 +12,16 @@ namespace Examples
     using RAGENativeUI.Menus.Rendering;
     using RAGENativeUI.Utility;
 
-    internal static class GameScreenCoordsExample
+    internal static class GameScreenRectangleExample
     {
-        [ConsoleCommand(Name = "GameScreenCoordsExample", Description = "Example showing GameScreenCoords struct.")]
+        [ConsoleCommand(Name = "GameScreenRectangleExample", Description = "Example showing GameScreenCoords struct.")]
         private static void Command()
         {
-            GameScreenCoords fromAbsolute = GameScreenCoords.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
-            GameScreenCoords fromRelative = GameScreenCoords.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
+            GameScreenRectangle fromAbsolute = GameScreenRectangle.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
+            GameScreenRectangle fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
 
-            Game.LogTrivial("from absolute");
-            Game.LogTrivial("   Rel: " + fromAbsolute.Relative);
-            Game.LogTrivial("from relative");
-            Game.LogTrivial("   Rel: " + fromRelative.Relative);
+            Game.LogTrivial("from absolute: " + fromAbsolute);
+            Game.LogTrivial("from relative: " + fromRelative);
 
             float w = 0.5f, h = 0.5f;
 
@@ -33,7 +31,7 @@ namespace Examples
                 {
                     GameFiber.Yield();
 
-                    fromRelative = GameScreenCoords.FromRelativeCoords(0.5f, 0.5f, w, h);
+                    fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, w, h);
 
                     if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
                     {
@@ -45,12 +43,10 @@ namespace Examples
                         w -= 0.5f * Game.FrameTime;
                         h -= 0.5f * Game.FrameTime;
                     }
-
-                    RectangleF r = fromAbsolute.Relative;
-                    NativeFunction.Natives.DrawRect(r.X, r.Y, r.Width, r.Height, 255, 0, 0, 100);
-
-                    r = fromRelative.Relative;
-                    NativeFunction.Natives.DrawRect(r.X, r.Y, r.Width, r.Height, 0, 255, 0, 100);
+                    
+                    NativeFunction.Natives.DrawRect(fromAbsolute.X, fromAbsolute.Y, fromAbsolute.Width, fromAbsolute.Height, 255, 0, 0, 100);
+                    
+                    NativeFunction.Natives.DrawRect(fromRelative.X, fromRelative.Y, fromRelative.Width, fromRelative.Height, 0, 255, 0, 100);
                 }
             });
         }

@@ -16,7 +16,7 @@ namespace Examples
         [ConsoleCommand(Name = "ScaleformExample", Description = "Example showing the Scaleform class.")]
         private static void Command()
         {
-            GameScreenCoords coords = GameScreenCoords.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
+            GameScreenRectangle rect = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
             Scaleform sc = new Scaleform("mp_car_stats_01");
             while (!sc.IsLoaded)
             {
@@ -30,7 +30,7 @@ namespace Examples
                 {
                     GameFiber.Yield();
                     
-                    sc.Draw(coords);
+                    sc.Draw(rect);
                     sc.Draw();
                     sc.Draw3D(Game.LocalPlayer.Character.GetOffsetPositionUp(5.45f), Rotator.Zero, new Vector3(12.0f, 9.0f, 1.0f));
                 }
