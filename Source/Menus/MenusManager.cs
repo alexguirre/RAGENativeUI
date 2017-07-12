@@ -12,7 +12,7 @@ namespace RAGENativeUI.Menus
         private MenusCollection menus;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public MenusCollection Menus { get { return menus; } set { menus = value ?? throw new ArgumentNullException($"The manager {nameof(Menus)} collection can't be null."); } }
-        public bool IsAnyMenuVisible { get { return Menus.Any(m => m.IsVisible); } }
+        public bool IsAnyMenuVisible { get { return menus.Any(m => m.IsVisible); } }
         protected internal GameFiber Fiber { get; }
 
         public MenusManager()
