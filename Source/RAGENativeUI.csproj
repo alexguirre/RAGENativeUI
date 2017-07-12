@@ -64,6 +64,7 @@
     <Compile Include="Menus\MenuItemListScroller.cs" />
     <Compile Include="Menus\MenuItemNumericScroller.cs" />
     <Compile Include="Menus\MenuItemScroller.cs" />
+    <Compile Include="Menus\MenusManager.cs" />
     <Compile Include="Menus\MenuSubtitle.cs" />
     <Compile Include="Menus\Rendering\MenuSkin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

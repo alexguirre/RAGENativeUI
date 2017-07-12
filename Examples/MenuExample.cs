@@ -16,6 +16,8 @@ namespace Examples
         [ConsoleCommand(Name = "MenuExample", Description = "Example showing RAGENativeUI menu API")]
         private static void Command()
         {
+            MenusManager menusMgr = new MenusManager();
+
             Menu menu = new Menu("title", "SUBTITLE");
             menu.Location = new PointF(480, 17);
 
@@ -32,12 +34,7 @@ namespace Examples
             menu.Items.Add(new MenuItemListScroller("list scroller #0"));
             menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
 
-            Game.RawFrameRender += (s, e) =>
-            {
-                Graphics g = e.Graphics;
-                
-                menu.Draw(g);
-            };
+            menusMgr.Menus.Add(menu);
 
             MenuSkin redSkin = new MenuSkin(@"RAGENativeUI Resources\menu-red-skin.png");
             GameFiber.StartNew(() =>
@@ -45,9 +42,7 @@ namespace Examples
                 while (true)
                 {
                     GameFiber.Yield();
-
-                    menu.Process();
-
+                    
                     if(Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         if (menu.Skin == MenuSkin.DefaultSkin)
@@ -57,7 +52,17 @@ namespace Examples
                     }
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
-                        menu.IsVisible = !menu.IsVisible;
+                    {
+                        if(menusMgr.IsAnyMenuVisible)
+                        {
+                            menusMgr.HideAllMenus();
+                        }
+                        else
+                        {
+                            menusMgr.ShowAllMenus();
+                        }
+                        //menu.IsVisible = !menu.IsVisible;
+                    }
                 }
             });
         }

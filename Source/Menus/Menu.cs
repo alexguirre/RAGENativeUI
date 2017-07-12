@@ -13,7 +13,7 @@ namespace RAGENativeUI.Menus
 
     public class Menu
     {
-        public PointF Location { get; set; } = new PointF(30, 23);// 17
+        public PointF Location { get; set; } = new PointF(30, 23);
 
         private MenuItemsCollection items;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
