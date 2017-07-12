@@ -49,9 +49,7 @@ namespace RAGENativeUI.Elements
                 }
                 else if (arg is string || arg is char)
                 {
-                    NativeFunction.Natives.BeginTextCommandScaleformString("STRING");
-                    NativeFunction.Natives.x5F68520888E69014(arg.ToString()); // _ADD_TEXT_COMPONENT_SCALEFORM
-                    NativeFunction.Natives.EndTextCommandScaleformString();
+                    NativeFunction.Natives.xBA7148484BD90365(arg.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
                 }
                 else if (arg is float)
                 {
@@ -64,10 +62,6 @@ namespace RAGENativeUI.Elements
                 else if (arg is bool)
                 {
                     NativeFunction.Natives.xC58424BA936EB458((bool)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_BOOL
-                }
-                else if (arg is ScaleformTextureDictionaryArgument)
-                {
-                    NativeFunction.Natives.xBA7148484BD90365(((ScaleformTextureDictionaryArgument)arg).Name); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
                 }
                 else
                 {
@@ -96,20 +90,6 @@ namespace RAGENativeUI.Elements
         {
             NativeFunction.Natives.x1CE592FDC749D6F5(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
         }
-    }
-
-
-    public struct ScaleformTextureDictionaryArgument
-    {
-        public readonly string Name;
-
-        public ScaleformTextureDictionaryArgument(string name)
-        {
-            Name = name;
-        }
-
-        public static implicit operator string(ScaleformTextureDictionaryArgument arg) => arg.Name;
-        public static implicit operator ScaleformTextureDictionaryArgument(string name) => new ScaleformTextureDictionaryArgument(name);
     }
 }
 
