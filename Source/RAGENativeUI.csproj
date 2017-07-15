@@ -58,6 +58,8 @@
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="Elements\Text.cs" />
     <Compile Include="Elements\TextureDictionary.cs" />
+    <Compile Include="Elements\TimerBars.cs" />
+    <Compile Include="Elements\TimerBarsManager.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\MenuBanner.cs" />
     <Compile Include="Menus\MenuItem.cs" />
