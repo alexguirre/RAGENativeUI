@@ -10,31 +10,54 @@ namespace RAGENativeUI.Elements
 
     public class Scaleform
     {
+        public string Name { get; }
+
         private int handle;
         public int Handle { get { return handle; } }
 
-        public bool IsLoaded
-        {
-            get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); }
-        }
+        public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
 
         public Scaleform(string name)
         {
-            handle = NativeFunction.Natives.RequestScaleformMovie<int>(name);
+            Name = name;
+            Load();
         }
 
-        public void Dismiss()
+        public virtual void Load()
         {
-            NativeFunction.Natives.SetScaleformMovieAsNoLongerNeeded(ref handle);
+            handle = NativeFunction.Natives.RequestScaleformMovie<int>(Name);
         }
 
-        public void CallMethod(string methodName)
+        public virtual void LoadAndWait()
         {
+            Load();
+
+            int endTime = Environment.TickCount + 5000;
+            while (!IsLoaded && endTime > Environment.TickCount)
+                GameFiber.Yield();
+        }
+
+        public virtual void Dismiss()
+        {
+            if (IsLoaded)
+            {
+                NativeFunction.Natives.SetScaleformMovieAsNoLongerNeeded(ref handle);
+            }
+        }
+
+        public virtual void CallMethod(string methodName)
+        {
+            if (!IsLoaded)
+                LoadAndWait();
+
             NativeFunction.Natives.CallScaleformMovieMethod(handle, methodName);
         }
 
-        public void CallMethod(string methodName, params object[] arguments)
+        public virtual void CallMethod(string methodName, params object[] arguments)
         {
+            if (!IsLoaded)
+                LoadAndWait();
+
             NativeFunction.Natives.xF6E48914C7A8694E(handle, methodName); // _PUSH_SCALEFORM_MOVIE_FUNCTION
 
             foreach (object arg in arguments)
@@ -72,22 +95,31 @@ namespace RAGENativeUI.Elements
             NativeFunction.Natives.xC6796A8FFA375E53(); // _POP_SCALEFORM_MOVIE_FUNCTION_VOID
         }
 
-        public void Draw() => Draw(Color.White);
+        public virtual void Draw() => Draw(Color.White);
 
-        public void Draw(Color color)
+        public virtual void Draw(Color color)
         {
+            if (!IsLoaded)
+                LoadAndWait();
+
             NativeFunction.Natives.DrawScaleformMovieFullscreen(handle, color.R, color.G, color.B, color.A, 0);
         }
 
-        public void Draw(GameScreenRectangle rectangle) => Draw(rectangle, Color.White);
+        public virtual void Draw(GameScreenRectangle rectangle) => Draw(rectangle, Color.White);
 
-        public void Draw(GameScreenRectangle rectangle, Color color)
+        public virtual void Draw(GameScreenRectangle rectangle, Color color)
         {
+            if (!IsLoaded)
+                LoadAndWait();
+
             NativeFunction.Natives.DrawScaleformMovie(handle, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color.R, color.G, color.B, color.A, 0);
         }
 
-        public void Draw3D(Vector3 position, Rotator rotation, Vector3 scale)
+        public virtual void Draw3D(Vector3 position, Rotator rotation, Vector3 scale)
         {
+            if (!IsLoaded)
+                LoadAndWait();
+
             NativeFunction.Natives.x1CE592FDC749D6F5(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
         }
     }
