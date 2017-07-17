@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigMessageExample.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="GameScreenRectangleExample.cs" />
     <Compile Include="MenuExample.cs" />
