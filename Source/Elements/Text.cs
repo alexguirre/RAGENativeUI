@@ -143,6 +143,7 @@ namespace RAGENativeUI.Elements
         HouseScript = 1,
         Monospace = 2,
         ChaletComprimeCologne = 4,
+        ChaletLondonFixedWidthNumbers = 5,
         Pricedown = 7
     }
 }
