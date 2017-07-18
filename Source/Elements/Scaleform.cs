@@ -86,9 +86,25 @@ namespace RAGENativeUI.Elements
                 {
                     NativeFunction.Natives.xC58424BA936EB458((bool)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_BOOL
                 }
+                else if (arg is ushort)
+                {
+                    NativeFunction.Natives.xC3D0841A0CC546A6((uint)(ushort)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                }
+                else if (arg is short)
+                {
+                    NativeFunction.Natives.xC3D0841A0CC546A6((int)(short)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                }
+                else if (arg is byte)
+                {
+                    NativeFunction.Natives.xC3D0841A0CC546A6((uint)(byte)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                }
+                else if (arg is sbyte)
+                {
+                    NativeFunction.Natives.xC3D0841A0CC546A6((int)(sbyte)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                }
                 else
                 {
-                    throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle}.", nameof(arguments));
+                    throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}'.", nameof(arguments));
                 }
             }
 
