@@ -43,48 +43,57 @@ namespace RAGENativeUI.Elements
             performedOutTransition = false;
         }
 
+        public void CallMethodAndShow(uint time, string methodName, params object[] arguments)
+        {
+            CallMethod(methodName, arguments);
+            SetUpTimer(time);
+        }
+
+        public void Hide()
+        {
+            if (endTime != 0 && !performedOutTransition)
+            {
+                PerformOutTransition();
+                performedOutTransition = true;
+                endTime = Game.GameTime + outTransitionTimeInMilliseconds;
+            }
+        }
+
         public void ShowMissionPassedMessage(string message, uint time = 5000)
         {
             // the subtitle is only shown if TRANSITION_UP is called, so we set it to "placeholder" because
             // if it's undefined the main message isn't centered vertically
-            CallMethod("SHOW_MISSION_PASSED_MESSAGE", message, "placeholder", 100, true, 0, true);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_MISSION_PASSED_MESSAGE", message, "placeholder", 100, true, 0, true);
         }
 
         public void ShowMissionPassedOldMessage(string message, string subtitle, uint time = 5000)
         {
-            CallMethod("SHOW_MISSION_PASSED_MESSAGE", message, subtitle);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_MISSION_PASSED_MESSAGE", message, subtitle);
         }
 
         public void ShowMpMessageLarge(string message, string subtitle, byte textAlpha = 100, uint time = 5000)
         {
-            CallMethod("SHOW_CENTERED_MP_MESSAGE_LARGE", message, subtitle, 100, true, (int)textAlpha);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_CENTERED_MP_MESSAGE_LARGE", message, subtitle, 100, true, (int)textAlpha);
         }
 
         public void ShowColoredShard(string message, string subtitle, HudColor textColor, HudColor backgroundColor, uint time = 5000)
         {
-            CallMethod("SHOW_SHARD_CENTERED_MP_MESSAGE", message, subtitle, (int)textColor, (int)backgroundColor);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_SHARD_CENTERED_MP_MESSAGE", message, subtitle, (int)textColor, (int)backgroundColor);
         }
 
         public void ShowSimpleShard(string message, string subtitle, uint time = 5000)
         {
-            CallMethod("SHOW_SHARD_CREW_RANKUP_MP_MESSAGE", message, subtitle);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_SHARD_CREW_RANKUP_MP_MESSAGE", message, subtitle);
         }
 
         public void ShowRankupMessage(string message, string subtitle, int rank, uint time = 5000)
         {
-            CallMethod("SHOW_BIG_MP_MESSAGE", message, subtitle, rank);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_BIG_MP_MESSAGE", message, subtitle, rank);
         }
 
         public void ShowWeaponPurchasedMessage(string message, string weaponName, WeaponHash weapon, byte alpha = 100, uint time = 5000)
         {
-            CallMethod("SHOW_WEAPON_PURCHASED", message, weaponName, (uint)weapon, 0, (int)alpha);
-            SetUpTimer(time);
+            CallMethodAndShow(time, "SHOW_WEAPON_PURCHASED", message, weaponName, (uint)weapon, 0, (int)alpha);
         }
 
         // returns whether the scaleform should be drawn

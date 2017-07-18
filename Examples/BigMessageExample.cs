@@ -63,6 +63,11 @@ namespace Examples
                         Game.DisplayNotification(bigMessage.OutTransition.ToString());
                     }
 
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
+                    {
+                        bigMessage.Hide();
+                    }
+
                     if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
                     {
                         bigMessage.SetVerticlePositionOverride(y += 0.5f * Game.FrameTime);
