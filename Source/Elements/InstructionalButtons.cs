@@ -27,10 +27,14 @@ namespace RAGENativeUI.Elements
 
             CallMethod("TOGGLE_MOUSE_BUTTONS", false);
 
+            int j = 0;
             for (int i = 0; i < Slots.Count; i++)
             {
                 InstructionalButtonSlot s = Slots[i];
-                CallMethod("SET_DATA_SLOT", i, s.GetButtonId(), s.Label);
+                if (s.IsVisible)
+                {
+                    CallMethod("SET_DATA_SLOT", j++, s.GetButtonId(), s.Label);
+                }
             }
 
             CallMethod("DRAW_INSTRUCTIONAL_BUTTONS", (int)Layout);
@@ -82,6 +86,7 @@ namespace RAGENativeUI.Elements
 
     public abstract class InstructionalButtonSlot
     {
+        public bool IsVisible { get; set; } = true;
         public string Label { get; set; }
 
         public InstructionalButtonSlot(string label)
