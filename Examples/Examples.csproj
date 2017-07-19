@@ -53,6 +53,7 @@
     <Compile Include="GameScreenRectangleExample.cs" />
     <Compile Include="InstructionalButtonsExample.cs" />
     <Compile Include="MenuExample.cs" />
+    <Compile Include="MissionPassedScreenExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScaleformExample.cs" />
     <Compile Include="SpriteExample.cs" />

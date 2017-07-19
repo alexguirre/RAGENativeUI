@@ -56,6 +56,7 @@
     <Compile Include="Elements\BigMessage.cs" />
     <Compile Include="Elements\HudColor.cs" />
     <Compile Include="Elements\InstructionalButtons.cs" />
+    <Compile Include="Elements\MissionPassedScreen.cs" />
     <Compile Include="Elements\Rectangle.cs" />
     <Compile Include="Elements\Scaleform.cs" />
     <Compile Include="Elements\Sprite.cs" />
