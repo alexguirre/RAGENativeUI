@@ -17,7 +17,7 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        public virtual void Draw(Graphics graphics, Menu sender, MenuSkin skin, ref float x, ref float y)
+        public virtual void Draw(Graphics graphics, Menu sender, IMenuSkin skin, ref float x, ref float y)
         {
             skin.DrawArrowsUpDownBackground(graphics, x, y, Size.Width, Size.Height);
             skin.DrawArrowsUpDown(graphics, x - ArrowsUpDownSize / 2f + Size.Width / 2f, y, ArrowsUpDownSize, ArrowsUpDownSize);
@@ -25,7 +25,7 @@ namespace RAGENativeUI.Menus
             y += Size.Height;
         }
 
-        public virtual void DebugDraw(Graphics graphics, Menu sender, MenuSkin skin, float x, float y)
+        public virtual void DebugDraw(Graphics graphics, Menu sender, IMenuSkin skin, float x, float y)
         {
             graphics.DrawLine(new Vector2(x, y), new Vector2(x + Size.Width, y), Color.FromArgb(220, Color.Green));
             graphics.DrawLine(new Vector2(x, y), new Vector2(x, y + Size.Height), Color.FromArgb(220, Color.Green));

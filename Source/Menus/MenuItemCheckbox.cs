@@ -29,7 +29,7 @@ namespace RAGENativeUI.Menus
             return true;
         }
 
-        public override void Draw(Graphics graphics, Menu sender, MenuSkin skin, bool selected, ref float x, ref float y)
+        public override void Draw(Graphics graphics, Menu sender, IMenuSkin skin, bool selected, ref float x, ref float y)
         {
             if (selected)
             {
@@ -70,7 +70,7 @@ namespace RAGENativeUI.Menus
             y += Size.Height;
         }
 
-        public override void DebugDraw(Graphics graphics, Menu sender, MenuSkin skin, bool selected, float x, float y)
+        public override void DebugDraw(Graphics graphics, Menu sender, IMenuSkin skin, bool selected, float x, float y)
         {
             base.DebugDraw(graphics, sender, skin, selected, x, y);
 

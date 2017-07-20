@@ -54,7 +54,7 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        public virtual void Draw(Graphics graphics, Menu sender, MenuSkin skin, bool selected, ref float x, ref float y)
+        public virtual void Draw(Graphics graphics, Menu sender, IMenuSkin skin, bool selected, ref float x, ref float y)
         {
             if (selected)
             {
@@ -69,7 +69,7 @@ namespace RAGENativeUI.Menus
             y += Size.Height;
         }
 
-        public virtual void DebugDraw(Graphics graphics, Menu sender, MenuSkin skin, bool selected, float x, float y)
+        public virtual void DebugDraw(Graphics graphics, Menu sender, IMenuSkin skin, bool selected, float x, float y)
         {
             graphics.DrawLine(new Vector2(x, y), new Vector2(x + Size.Width, y), Color.FromArgb(220, Color.Red));
             graphics.DrawLine(new Vector2(x, y), new Vector2(x, y + Size.Height), Color.FromArgb(220, Color.Red));
