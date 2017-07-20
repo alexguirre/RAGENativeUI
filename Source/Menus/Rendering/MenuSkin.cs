@@ -30,6 +30,8 @@ namespace RAGENativeUI.Menus.Rendering
         public virtual UVCoords CheckboxTickBlackCoords { get; } = new UVCoords(0.3125f, 0.1875f, 0.375f, 0.25f);
         public virtual UVCoords ArrowLeftCoords { get; } = new UVCoords(0.375f, 0.1875f, 0.4375f, 0.25f);
         public virtual UVCoords ArrowRightCoords { get; } = new UVCoords(0.4375f, 0.1875f, 0.5f, 0.25f);
+        public virtual UVCoords ArrowsUpDownCoords { get; } = new UVCoords(0f, 0.25f, 0.0625f, 0.3125f);
+        public virtual UVCoords ArrowsUpDownBackgroundCoords { get; } = new UVCoords(0.5f, 0.5f, 1f, 0.5625f);
 
         public MenuSkin(string fileName)
         {
@@ -93,6 +95,17 @@ namespace RAGENativeUI.Menus.Rendering
         {
             graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowRightCoords.U1, ArrowRightCoords.V1, ArrowRightCoords.U2, ArrowRightCoords.V2);
         }
+
+        public virtual void DrawArrowsUpDown(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowsUpDownCoords.U1, ArrowsUpDownCoords.V1, ArrowsUpDownCoords.U2, ArrowsUpDownCoords.V2);
+        }
+
+        public virtual void DrawArrowsUpDownBackground(Graphics graphics, float x, float y, float width, float height)
+        {
+            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowsUpDownBackgroundCoords.U1, ArrowsUpDownBackgroundCoords.V1, ArrowsUpDownBackgroundCoords.U2, ArrowsUpDownBackgroundCoords.V2);
+        }
+
         public virtual void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
         {
             DrawText(graphics, text, new Font(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);

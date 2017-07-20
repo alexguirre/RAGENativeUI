@@ -29,6 +29,9 @@ namespace RAGENativeUI.Menus
         private MenuSubtitle subtitle;
         public MenuSubtitle Subtitle { get { return subtitle; } set { subtitle = value; } }
 
+        private MenuUpDownDisplay upDownDisplay;
+        public MenuUpDownDisplay UpDownDisplay { get { return upDownDisplay; } set { upDownDisplay = value; } }
+
         private int selectedIndex;
         public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
         public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { selectedIndex = Items.IndexOf(value); } }
@@ -65,6 +68,20 @@ namespace RAGENativeUI.Menus
         /// </value>
         public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls;
 
+        private int minVisibleItemIndex, maxVisibleItemIndex;
+        private int maxItemsOnScreen = 10;
+        public int MaxItemsOnScreen
+        {
+            get { return maxItemsOnScreen; }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException($"{nameof(MaxItemsOnScreen)} can't be a negative value.");
+                maxItemsOnScreen = value;
+                UpdateVisibleItemsIndices();
+            }
+        }
+        public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0; } }
         public bool IsVisible { get; set; } = false;
 
         public Menu(string title, string subtitle)
@@ -74,6 +91,7 @@ namespace RAGENativeUI.Menus
             Banner = new MenuBanner();
             Subtitle = new MenuSubtitle();
             Controls = new MenuControls();
+            UpDownDisplay = new MenuUpDownDisplay();
 
             Banner.Title = title;
             Subtitle.Text = subtitle;
@@ -173,6 +191,7 @@ namespace RAGENativeUI.Menus
                 newIndex = Items.Count - 1;
 
             SelectedIndex = newIndex;
+            UpdateVisibleItemsIndices();
         }
 
         protected virtual void MoveDown()
@@ -183,6 +202,7 @@ namespace RAGENativeUI.Menus
                 newIndex = 0;
 
             SelectedIndex = newIndex;
+            UpdateVisibleItemsIndices();
         }
 
         protected virtual void MoveRight()
@@ -201,11 +221,54 @@ namespace RAGENativeUI.Menus
         {
         }
 
+        internal void UpdateVisibleItemsIndices()
+        {
+            if (MaxItemsOnScreen == 0)
+            {
+                minVisibleItemIndex = -1;
+                maxVisibleItemIndex = -1;
+                return;
+            }
+            else if(MaxItemsOnScreen >= Items.Count)
+            {
+                minVisibleItemIndex = 0;
+                maxVisibleItemIndex = Items.Count - 1;
+                return;
+            }
+
+            int index = SelectedIndex;
+            if (minVisibleItemIndex > index)
+            {
+                int diff = index - minVisibleItemIndex;
+                maxVisibleItemIndex += diff;
+                minVisibleItemIndex += diff;
+            }
+            else if (maxVisibleItemIndex < index)
+            {
+                int diff = index - maxVisibleItemIndex;
+                maxVisibleItemIndex += diff;
+                minVisibleItemIndex += diff;
+            }
+
+            if ((maxVisibleItemIndex - minVisibleItemIndex) + 1 != MaxItemsOnScreen)
+            {
+                maxVisibleItemIndex = minVisibleItemIndex + MaxItemsOnScreen - 1;
+            }
+
+            if (maxVisibleItemIndex < 0)
+                maxVisibleItemIndex = 0;
+            if (maxVisibleItemIndex >= Items.Count)
+                maxVisibleItemIndex = Items.Count - 1;
+
+            if (maxVisibleItemIndex < minVisibleItemIndex)
+                throw new InvalidOperationException($"maxVisibleItemIndex({maxVisibleItemIndex}) < minVisibleItemIndex({minVisibleItemIndex}): this shouldn't happen!");
+        }
+
         public virtual void Draw(Graphics graphics)
         {
             if (!IsVisible)
                 return;
-
+            
             float x = Location.X, y = Location.Y;
 
 #if DEBUG
@@ -219,16 +282,37 @@ namespace RAGENativeUI.Menus
 #endif
             Subtitle?.Draw(graphics, this, skin, ref x, ref y);
 
-            skin.DrawBackground(graphics, x, y - 1, Items.Max(m => m.Size.Width), Items.Sum(m => m.Size.Height));
-
-            for (int i = 0; i < Items.Count; i++)
+            if (IsAnyItemOnScreen)
             {
-                MenuItem item = Items[i];
+                float bgWidth = 0f, bgHeight = 0f;
+                for (int i = minVisibleItemIndex; i <= maxVisibleItemIndex; i++)
+                {
+                    MenuItem item = Items[i];
+
+                    if (item.Size.Width > bgWidth)
+                        bgWidth = item.Size.Width;
+
+                    bgHeight += item.Size.Height;
+                }
+                skin.DrawBackground(graphics, x, y - 1, bgWidth, bgHeight);
+
+                for (int i = minVisibleItemIndex; i <= maxVisibleItemIndex; i++)
+                {
+                    MenuItem item = Items[i];
 
 #if DEBUG
-                if (debugDrawing) item?.DebugDraw(graphics, this, skin, i == SelectedIndex, x, y);
+                    if (debugDrawing) item?.DebugDraw(graphics, this, skin, i == SelectedIndex, x, y);
 #endif
-                item?.Draw(graphics, this, skin, i == SelectedIndex, ref x, ref y);
+                    item?.Draw(graphics, this, skin, i == SelectedIndex, ref x, ref y);
+                }
+
+                if (MaxItemsOnScreen < Items.Count)
+                {
+#if DEBUG
+                    if (debugDrawing) UpDownDisplay?.DebugDraw(graphics, this, skin, x, y);
+#endif
+                    UpDownDisplay?.Draw(graphics, this, skin, ref x, ref y);
+                }
             }
         }
 
@@ -276,12 +360,14 @@ namespace RAGENativeUI.Menus
         {
             base.Add(item);
             item.Size = new SizeF(Menu.Width, item.Size.Height);
+            Menu.UpdateVisibleItemsIndices();
         }
 
         public override void Insert(int index, MenuItem item)
         {
             base.Insert(index, item);
             item.Size = new SizeF(Menu.Width, item.Size.Height);
+            Menu.UpdateVisibleItemsIndices();
         }
     }
 

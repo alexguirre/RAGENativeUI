@@ -61,8 +61,13 @@ namespace Examples
                         {
                             menusMgr.ShowAllMenus();
                         }
-                        //menu.IsVisible = !menu.IsVisible;
                     }
+
+                    Game.DisplayHelp("MaxItemsOnScreen: " + menu.MaxItemsOnScreen.ToString());
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                        menu.MaxItemsOnScreen++;
+                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract) && menu.MaxItemsOnScreen > 0)
+                        menu.MaxItemsOnScreen--;
                 }
             });
         }

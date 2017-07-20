@@ -74,6 +74,7 @@
     <Compile Include="Menus\MenuItemScroller.cs" />
     <Compile Include="Menus\MenusManager.cs" />
     <Compile Include="Menus\MenuSubtitle.cs" />
+    <Compile Include="Menus\MenuUpDownDisplay.cs" />
     <Compile Include="Menus\Rendering\MenuSkin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\ISkin.cs" />
