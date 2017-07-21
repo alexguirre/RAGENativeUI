@@ -1,8 +1,8 @@
 namespace RAGENativeUI.Menus
 {
     using System;
-    using System.Linq;
     using System.Drawing;
+    using System.Collections.Generic;
 
     using Rage;
     using Rage.Native;
@@ -15,10 +15,6 @@ namespace RAGENativeUI.Menus
     {
         public PointF Location { get; set; } = new PointF(30, 23);
 
-        private MenuItemsCollection items;
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null."); } }
-
         private IMenuSkin skin;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public IMenuSkin Skin { get { return skin; } set { skin = value ?? throw new ArgumentNullException($"The menu {nameof(Skin)} can't be null."); } }
@@ -29,8 +25,28 @@ namespace RAGENativeUI.Menus
         private MenuSubtitle subtitle;
         public MenuSubtitle Subtitle { get { return subtitle; } set { subtitle = value; } }
 
+        private MenuBackground background;
+        public MenuBackground Background { get { return background; } set { background = value; } }
+
+        private MenuItemsCollection items;
+        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
+        public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null."); } }
+
         private MenuUpDownDisplay upDownDisplay;
         public MenuUpDownDisplay UpDownDisplay { get { return upDownDisplay; } set { upDownDisplay = value; } }
+
+        public IEnumerable<IMenuComponent> Components
+        {
+            get
+            {
+                // returned in draw order
+                yield return Banner;
+                yield return Subtitle;
+                yield return Background;
+                yield return Items;
+                yield return UpDownDisplay;
+            }
+        }
 
         private int selectedIndex;
         public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
@@ -49,12 +65,13 @@ namespace RAGENativeUI.Menus
                 if (value == width)
                     return;
                 width = value;
-                Banner.Size = new SizeF(width, Banner.Size.Height);
-                Subtitle.Size = new SizeF(width, Subtitle.Size.Height);
-                for (int i = 0; i < Items.Count; i++)
+
+                foreach (IMenuComponent c in Components)
                 {
-                    MenuItem item = Items[i];
-                    item.Size = new SizeF(width, item.Size.Height);
+                    if (c != null)
+                    {
+                        c.Size = new SizeF(width, c.Size.Height);
+                    }
                 }
             }
         }
@@ -68,7 +85,8 @@ namespace RAGENativeUI.Menus
         /// </value>
         public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls;
 
-        private int minVisibleItemIndex, maxVisibleItemIndex;
+        internal int MinVisibleItemIndex { get; private set; }
+        internal int MaxVisibleItemIndex { get; private set; }
         private int maxItemsOnScreen = 10;
         public int MaxItemsOnScreen
         {
@@ -86,12 +104,13 @@ namespace RAGENativeUI.Menus
 
         public Menu(string title, string subtitle)
         {
-            Items = new MenuItemsCollection(this);
             Skin = MenuSkin.DefaultSkin;
-            Banner = new MenuBanner();
-            Subtitle = new MenuSubtitle();
+            Banner = new MenuBanner(this);
+            Subtitle = new MenuSubtitle(this);
+            Background = new MenuBackground(this);
+            Items = new MenuItemsCollection(this);
+            UpDownDisplay = new MenuUpDownDisplay(this);
             Controls = new MenuControls();
-            UpDownDisplay = new MenuUpDownDisplay();
 
             Banner.Title = title;
             Subtitle.Text = subtitle;
@@ -112,13 +131,9 @@ namespace RAGENativeUI.Menus
             ProcessInput();
 
 
-            Banner?.Process(this);
-            Subtitle?.Process(this);
-
-            for (int i = 0; i < Items.Count; i++)
+            foreach (IMenuComponent c in Components)
             {
-                MenuItem item = Items[i];
-                item?.Process(this);
+                c?.Process();
             }
         }
 
@@ -225,43 +240,43 @@ namespace RAGENativeUI.Menus
         {
             if (MaxItemsOnScreen == 0)
             {
-                minVisibleItemIndex = -1;
-                maxVisibleItemIndex = -1;
+                MinVisibleItemIndex = -1;
+                MaxVisibleItemIndex = -1;
                 return;
             }
             else if(MaxItemsOnScreen >= Items.Count)
             {
-                minVisibleItemIndex = 0;
-                maxVisibleItemIndex = Items.Count - 1;
+                MinVisibleItemIndex = 0;
+                MaxVisibleItemIndex = Items.Count - 1;
                 return;
             }
 
             int index = SelectedIndex;
-            if (minVisibleItemIndex > index)
+            if (MinVisibleItemIndex > index)
             {
-                int diff = index - minVisibleItemIndex;
-                maxVisibleItemIndex += diff;
-                minVisibleItemIndex += diff;
+                int diff = index - MinVisibleItemIndex;
+                MaxVisibleItemIndex += diff;
+                MinVisibleItemIndex += diff;
             }
-            else if (maxVisibleItemIndex < index)
+            else if (MaxVisibleItemIndex < index)
             {
-                int diff = index - maxVisibleItemIndex;
-                maxVisibleItemIndex += diff;
-                minVisibleItemIndex += diff;
-            }
-
-            if ((maxVisibleItemIndex - minVisibleItemIndex) + 1 != MaxItemsOnScreen)
-            {
-                maxVisibleItemIndex = minVisibleItemIndex + MaxItemsOnScreen - 1;
+                int diff = index - MaxVisibleItemIndex;
+                MaxVisibleItemIndex += diff;
+                MinVisibleItemIndex += diff;
             }
 
-            if (maxVisibleItemIndex < 0)
-                maxVisibleItemIndex = 0;
-            if (maxVisibleItemIndex >= Items.Count)
-                maxVisibleItemIndex = Items.Count - 1;
+            if ((MaxVisibleItemIndex - MinVisibleItemIndex) + 1 != MaxItemsOnScreen)
+            {
+                MaxVisibleItemIndex = MinVisibleItemIndex + MaxItemsOnScreen - 1;
+            }
 
-            if (maxVisibleItemIndex < minVisibleItemIndex)
-                throw new InvalidOperationException($"maxVisibleItemIndex({maxVisibleItemIndex}) < minVisibleItemIndex({minVisibleItemIndex}): this shouldn't happen!");
+            if (MaxVisibleItemIndex < 0)
+                MaxVisibleItemIndex = 0;
+            if (MaxVisibleItemIndex >= Items.Count)
+                MaxVisibleItemIndex = Items.Count - 1;
+
+            if (MaxVisibleItemIndex < MinVisibleItemIndex)
+                throw new InvalidOperationException($"MaxVisibleItemIndex({MaxVisibleItemIndex}) < MinVisibleItemIndex({MinVisibleItemIndex}): this shouldn't happen!");
         }
 
         public virtual void Draw(Graphics graphics)
@@ -271,48 +286,9 @@ namespace RAGENativeUI.Menus
             
             float x = Location.X, y = Location.Y;
 
-#if DEBUG
-            bool debugDrawing = Game.IsKeyDownRightNow(System.Windows.Forms.Keys.D0);
-            if (debugDrawing) Banner?.DebugDraw(graphics, this, skin, x, y);
-#endif
-            Banner?.Draw(graphics, this, skin, ref x, ref y);
-
-#if DEBUG
-            if (debugDrawing) Subtitle?.DebugDraw(graphics, this, skin, x, y);
-#endif
-            Subtitle?.Draw(graphics, this, skin, ref x, ref y);
-
-            if (IsAnyItemOnScreen)
+            foreach (IMenuComponent c in Components)
             {
-                float bgWidth = 0f, bgHeight = 0f;
-                for (int i = minVisibleItemIndex; i <= maxVisibleItemIndex; i++)
-                {
-                    MenuItem item = Items[i];
-
-                    if (item.Size.Width > bgWidth)
-                        bgWidth = item.Size.Width;
-
-                    bgHeight += item.Size.Height;
-                }
-                skin.DrawBackground(graphics, x, y - 1, bgWidth, bgHeight);
-
-                for (int i = minVisibleItemIndex; i <= maxVisibleItemIndex; i++)
-                {
-                    MenuItem item = Items[i];
-
-#if DEBUG
-                    if (debugDrawing) item?.DebugDraw(graphics, this, skin, i == SelectedIndex, x, y);
-#endif
-                    item?.Draw(graphics, this, skin, i == SelectedIndex, ref x, ref y);
-                }
-
-                if (MaxItemsOnScreen < Items.Count)
-                {
-#if DEBUG
-                    if (debugDrawing) UpDownDisplay?.DebugDraw(graphics, this, skin, x, y);
-#endif
-                    UpDownDisplay?.Draw(graphics, this, skin, ref x, ref y);
-                }
+                c?.Draw(graphics, ref x, ref y);
             }
         }
 
@@ -337,9 +313,38 @@ namespace RAGENativeUI.Menus
     }
 
 
-    public class MenuItemsCollection : BaseCollection<MenuItem>
+    public class MenuItemsCollection : BaseCollection<MenuItem>, IMenuComponent
     {
-        protected internal Menu Menu { get; }
+        public Menu Menu { get; }
+        public SizeF Size
+        {
+            get
+            {
+                float w = 0f, h = 0f;
+                if (Count > 0 && Menu.IsAnyItemOnScreen)
+                {
+                    for (int i = Menu.MinVisibleItemIndex; i <= Menu.MaxVisibleItemIndex; i++)
+                    {
+                        MenuItem item = this[i];
+
+                        if (item.Size.Width > w)
+                            w = item.Size.Width;
+
+                        h += item.Size.Height;
+                    }
+                }
+
+                return new SizeF(w, h);
+            }
+            set
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    MenuItem item = this[i];
+                    item.Size = new SizeF(value.Width, item.Size.Height);
+                }
+            }
+        }
 
         public override MenuItem this[int index]
         {
@@ -351,9 +356,32 @@ namespace RAGENativeUI.Menus
             }
 
         }
+
         public MenuItemsCollection(Menu menu)
         {
             Menu = menu;
+        }
+
+        public void Process()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                MenuItem item = this[i];
+                item?.Process(Menu, i == Menu.SelectedIndex);
+            }
+        }
+
+        public void Draw(Graphics g, ref float x, ref float y)
+        {
+            if (Menu.IsAnyItemOnScreen)
+            {
+                for (int i = Menu.MinVisibleItemIndex; i <= Menu.MaxVisibleItemIndex; i++)
+                {
+                    MenuItem item = this[i];
+
+                    item?.Draw(g, Menu, i == Menu.SelectedIndex, ref x, ref y);
+                }
+            }
         }
 
         public override void Add(MenuItem item)
