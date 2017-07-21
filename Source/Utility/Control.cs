@@ -59,6 +59,11 @@ namespace RAGENativeUI.Utility
         {
             if(Game.GameTime <= NextHeldTime)
             {
+                if(!IsPressed())
+                {
+                    NextHeldTime = 0;
+                }
+
                 return false;
             }
 
