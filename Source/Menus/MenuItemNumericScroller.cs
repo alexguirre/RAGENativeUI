@@ -15,7 +15,7 @@ namespace RAGENativeUI.Menus
             {
                 if(value != currentValue)
                 {
-                    if(value < minimun || value > maximun)
+                    if(value < minimum || value > maximum)
                     {
                         throw new ArgumentOutOfRangeException(nameof(Value), $"{nameof(Value)} can't be lower than {nameof(Minimum)} or higher than {nameof(Maximum)}.");
                     }
@@ -28,16 +28,16 @@ namespace RAGENativeUI.Menus
         }
 
 
-        private decimal minimun = 0.0m;
+        private decimal minimum = 0.0m;
         public decimal Minimum
         {
-            get { return minimun; }
+            get { return minimum; }
             set
             {
-                minimun = value;
-                if (minimun > maximun)
+                minimum = value;
+                if (minimum > maximum)
                 {
-                    maximun = minimun;
+                    maximum = minimum;
                 }
 
                 Value = EnsureValue(Value);
@@ -46,16 +46,16 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        private decimal maximun = 100.0m;
+        private decimal maximum = 100.0m;
         public decimal Maximum
         {
-            get { return maximun; } 
+            get { return maximum; } 
             set
             {
-                maximun = value;
-                if(minimun > maximun)
+                maximum = value;
+                if(minimum > maximum)
                 {
-                    minimun = maximun;
+                    minimum = maximum;
                 }
 
                 Value = EnsureValue(Value);
@@ -102,11 +102,11 @@ namespace RAGENativeUI.Menus
 
         private decimal EnsureValue(decimal value)
         {
-            if (value < minimun)
-                value = minimun;
+            if (value < minimum)
+                value = minimum;
 
-            if (value > maximun)
-                value = maximun;
+            if (value > maximum)
+                value = maximum;
 
             return value;
 
@@ -146,8 +146,8 @@ namespace RAGENativeUI.Menus
             {
                 newValue -= Increment;
 
-                if (newValue < minimun)
-                    newValue = minimun;
+                if (newValue < minimum)
+                    newValue = minimum;
             }
 #if DEBUG
             catch (OverflowException ex)
@@ -155,12 +155,12 @@ namespace RAGENativeUI.Menus
                 Game.LogTrivial("MenuItemNumericScroller.OnPreviewMoveLeft: OverflowException");
                 Game.LogTrivial(ex.ToString());
 
-                newValue = minimun;
+                newValue = minimum;
             }
 #else
             catch (OverflowException)
             {
-                newValue = minimum;
+                newValue = minimun;
             }
 #endif
             Value = newValue;
@@ -176,8 +176,8 @@ namespace RAGENativeUI.Menus
             {
                 newValue += Increment;
 
-                if (newValue > maximun)
-                    newValue = maximun;
+                if (newValue > maximum)
+                    newValue = maximum;
             }
 #if DEBUG
             catch (OverflowException ex)
@@ -185,7 +185,7 @@ namespace RAGENativeUI.Menus
                 Game.LogTrivial("MenuItemNumericScroller.OnPreviewMoveLeft: OverflowException");
                 Game.LogTrivial(ex.ToString());
 
-                newValue = maximun;
+                newValue = maximum;
             }
 #else
             catch (OverflowException)
