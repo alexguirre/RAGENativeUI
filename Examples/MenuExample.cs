@@ -34,6 +34,8 @@ namespace Examples
             menu.Items.Add(new MenuItemListScroller("list scroller #0"));
             menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
 
+            menu.SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Selected index changed from #{oldIndex} to #{newIndex}"); };
+
             menusMgr.Menus.Add(menu);
 
             MenuSkin redSkin = new MenuSkin(@"RAGENativeUI Resources\menu-red-skin.png");
@@ -62,8 +64,7 @@ namespace Examples
                             menusMgr.ShowAllMenus();
                         }
                     }
-
-                    Game.DisplayHelp("MaxItemsOnScreen: " + menu.MaxItemsOnScreen.ToString());
+                    
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                         menu.MaxItemsOnScreen++;
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract) && menu.MaxItemsOnScreen > 0)

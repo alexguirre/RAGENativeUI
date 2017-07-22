@@ -13,6 +13,11 @@ namespace RAGENativeUI.Menus
 
     public class Menu
     {
+        public delegate void MenuSelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
+
+
+        public event MenuSelectedIndexChangedEventHandler SelectedIndexChanged;
+
         public PointF Location { get; set; } = new PointF(30, 23);
 
         private IMenuSkin skin;
@@ -49,7 +54,21 @@ namespace RAGENativeUI.Menus
         }
 
         private int selectedIndex;
-        public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
+        public int SelectedIndex
+        {
+            get { return selectedIndex; }
+            set
+            {
+                int newIndex = MathHelper.Clamp(value, 0, Items.Count);
+
+                if (newIndex != selectedIndex)
+                {
+                    int oldIndex = selectedIndex;
+                    selectedIndex = newIndex;
+                    OnSelectedIndexChanged(oldIndex, newIndex);
+                }
+            }
+        }
         public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { selectedIndex = Items.IndexOf(value); } }
         
         public MenuControls Controls { get; set; }
@@ -303,6 +322,12 @@ namespace RAGENativeUI.Menus
             {
                 c?.Draw(graphics, ref x, ref y);
             }
+        }
+
+
+        protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
+        {
+            SelectedIndexChanged?.Invoke(this, oldIndex, newIndex);
         }
 
 
