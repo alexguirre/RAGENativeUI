@@ -87,6 +87,7 @@
     <Compile Include="Utility\DisplayItem.cs" />
     <Compile Include="Utility\Font.cs" />
     <Compile Include="Utility\GameScreenRectangle.cs" />
+    <Compile Include="Utility\FrontendSound.cs" />
     <Compile Include="Utility\UVCoords.cs" />
   </ItemGroup>
   <ItemGroup>

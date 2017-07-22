@@ -56,6 +56,10 @@ namespace RAGENativeUI.Menus
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public MenuControls Controls { get { return controls; } set { controls = value ?? throw new ArgumentNullException($"The menu {nameof(Controls)} can't be null."); } }
 
+        private MenuSoundsSet soundsSet;
+        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
+        public MenuSoundsSet SoundsSet { get { return soundsSet; } set { soundsSet = value ?? throw new ArgumentNullException($"The menu {nameof(SoundsSet)} can't be null."); } }
+
         private float width;
         public float Width
         {
@@ -102,6 +106,7 @@ namespace RAGENativeUI.Menus
         public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0; } }
         public bool IsVisible { get; set; } = false;
 
+
         public Menu(string title, string subtitle)
         {
             Skin = MenuSkin.DefaultSkin;
@@ -110,7 +115,9 @@ namespace RAGENativeUI.Menus
             Background = new MenuBackground(this);
             Items = new MenuItemsCollection(this);
             UpDownDisplay = new MenuUpDownDisplay(this);
+
             Controls = new MenuControls();
+            SoundsSet = new MenuSoundsSet();
 
             Banner.Title = title;
             Subtitle.Text = subtitle;
@@ -207,6 +214,8 @@ namespace RAGENativeUI.Menus
 
             SelectedIndex = newIndex;
             UpdateVisibleItemsIndices();
+
+            SoundsSet.Up.Play();
         }
 
         protected virtual void MoveDown()
@@ -218,22 +227,28 @@ namespace RAGENativeUI.Menus
 
             SelectedIndex = newIndex;
             UpdateVisibleItemsIndices();
+            
+            SoundsSet.Down.Play();
         }
 
         protected virtual void MoveRight()
         {
+            SoundsSet.Right.Play();
         }
 
         protected virtual void MoveLeft()
         {
+            SoundsSet.Left.Play();
         }
 
         protected virtual void Accept()
         {
+            SoundsSet.Accept.Play();
         }
 
         protected virtual void Cancel()
         {
+            SoundsSet.Cancel.Play();
         }
 
         internal void UpdateVisibleItemsIndices()
@@ -407,6 +422,17 @@ namespace RAGENativeUI.Menus
         public Control Left { get; set; } = new Control(GameControl.FrontendLeft);
         public Control Accept { get; set; } = new Control(GameControl.FrontendAccept);
         public Control Cancel { get; set; } = new Control(GameControl.FrontendCancel);
+    }
+
+    public class MenuSoundsSet
+    {
+        public FrontendSound Up { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_UP_DOWN");
+        public FrontendSound Down { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_UP_DOWN");
+        public FrontendSound Right { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_LEFT_RIGHT");
+        public FrontendSound Left { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_LEFT_RIGHT");
+        public FrontendSound Accept { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "SELECT");
+        public FrontendSound Cancel { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "BACK");
+        public FrontendSound Error { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "ERROR");
     }
 }
 
