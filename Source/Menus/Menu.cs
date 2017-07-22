@@ -51,14 +51,9 @@ namespace RAGENativeUI.Menus
         private int selectedIndex;
         public int SelectedIndex { get { return selectedIndex; } set { selectedIndex = MathHelper.Clamp(value, 0, Items.Count); } }
         public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { selectedIndex = Items.IndexOf(value); } }
-
-        private MenuControls controls;
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public MenuControls Controls { get { return controls; } set { controls = value ?? throw new ArgumentNullException($"The menu {nameof(Controls)} can't be null."); } }
-
-        private MenuSoundsSet soundsSet;
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public MenuSoundsSet SoundsSet { get { return soundsSet; } set { soundsSet = value ?? throw new ArgumentNullException($"The menu {nameof(SoundsSet)} can't be null."); } }
+        
+        public MenuControls Controls { get; set; }
+        public MenuSoundsSet SoundsSet { get; set; }
 
         private float width;
         public float Width
@@ -156,51 +151,54 @@ namespace RAGENativeUI.Menus
 
         protected virtual void ProcessInput()
         {
-            if (Controls.Up.IsHeld())
+            if (Controls != null)
             {
-                if (SelectedItem == null || SelectedItem.OnPreviewMoveUp(this))
+                if (Controls.Up != null && Controls.Up.IsHeld())
                 {
-                    MoveUp();
+                    if (SelectedItem == null || SelectedItem.OnPreviewMoveUp(this))
+                    {
+                        MoveUp();
+                    }
                 }
-            }
 
-            if (Controls.Down.IsHeld())
-            {
-                if (SelectedItem == null || SelectedItem.OnPreviewMoveDown(this))
+                if (Controls.Down != null && Controls.Down.IsHeld())
                 {
-                    MoveDown();
+                    if (SelectedItem == null || SelectedItem.OnPreviewMoveDown(this))
+                    {
+                        MoveDown();
+                    }
                 }
-            }
 
-            if (Controls.Right.IsHeld())
-            {
-                if (SelectedItem == null || SelectedItem.OnPreviewMoveRight(this))
+                if (Controls.Right != null && Controls.Right.IsHeld())
                 {
-                    MoveRight();
+                    if (SelectedItem == null || SelectedItem.OnPreviewMoveRight(this))
+                    {
+                        MoveRight();
+                    }
                 }
-            }
 
-            if (Controls.Left.IsHeld())
-            {
-                if (SelectedItem == null || SelectedItem.OnPreviewMoveLeft(this))
+                if (Controls.Left != null && Controls.Left.IsHeld())
                 {
-                    MoveLeft();
+                    if (SelectedItem == null || SelectedItem.OnPreviewMoveLeft(this))
+                    {
+                        MoveLeft();
+                    }
                 }
-            }
 
-            if (Controls.Accept.IsJustPressed())
-            {
-                if (SelectedItem == null || SelectedItem.OnPreviewAccept(this))
+                if (Controls.Accept != null && Controls.Accept.IsJustPressed())
                 {
-                    Accept();
+                    if (SelectedItem == null || SelectedItem.OnPreviewAccept(this))
+                    {
+                        Accept();
+                    }
                 }
-            }
 
-            if (Controls.Cancel.IsJustPressed())
-            {
-                if (SelectedItem == null || SelectedItem.OnPreviewCancel(this))
+                if (Controls.Cancel != null && Controls.Cancel.IsJustPressed())
                 {
-                    Cancel();
+                    if (SelectedItem == null || SelectedItem.OnPreviewCancel(this))
+                    {
+                        Cancel();
+                    }
                 }
             }
         }
@@ -215,7 +213,7 @@ namespace RAGENativeUI.Menus
             SelectedIndex = newIndex;
             UpdateVisibleItemsIndices();
 
-            SoundsSet.Up.Play();
+            SoundsSet?.Up?.Play();
         }
 
         protected virtual void MoveDown()
@@ -228,27 +226,27 @@ namespace RAGENativeUI.Menus
             SelectedIndex = newIndex;
             UpdateVisibleItemsIndices();
             
-            SoundsSet.Down.Play();
+            SoundsSet?.Down?.Play();
         }
 
         protected virtual void MoveRight()
         {
-            SoundsSet.Right.Play();
+            SoundsSet?.Right?.Play();
         }
 
         protected virtual void MoveLeft()
         {
-            SoundsSet.Left.Play();
+            SoundsSet?.Left?.Play();
         }
 
         protected virtual void Accept()
         {
-            SoundsSet.Accept.Play();
+            SoundsSet?.Accept?.Play();
         }
 
         protected virtual void Cancel()
         {
-            SoundsSet.Cancel.Play();
+            SoundsSet?.Cancel?.Play();
         }
 
         internal void UpdateVisibleItemsIndices()
