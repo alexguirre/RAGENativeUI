@@ -44,11 +44,15 @@ namespace Examples
                 if (menu.Items[idx] is MenuItemCheckbox)
                 {
                     (menu.Items[idx] as MenuItemCheckbox).StateChanged += (s, oldState, newState) => { Game.DisplayHelp($"Checkbox at index #{idx} state changed from {oldState} to {newState}"); };
+                    continue;
                 }
-                else
+
+                if(menu.Items[idx] is MenuItemScroller)
                 {
-                    menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+                    (menu.Items[idx] as MenuItemScroller).SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Scroller at index #{idx} selected index changed from #{oldIndex} to #{newIndex}"); };
                 }
+
+                menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
             }
 
             menusMgr.Menus.Add(menu);
