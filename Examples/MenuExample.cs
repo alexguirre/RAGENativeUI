@@ -40,7 +40,15 @@ namespace Examples
             for (int i = 0; i < menu.Items.Count; i++)
             {
                 int idx = i;
-                menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+
+                if (menu.Items[idx] is MenuItemCheckbox)
+                {
+                    (menu.Items[idx] as MenuItemCheckbox).StateChanged += (s, oldState, newState) => { Game.DisplayHelp($"Checkbox at index #{idx} state changed from {oldState} to {newState}"); };
+                }
+                else
+                {
+                    menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+                }
             }
 
             menusMgr.Menus.Add(menu);

@@ -13,7 +13,24 @@ namespace RAGENativeUI.Menus
 
     public class MenuItemCheckbox : MenuItem
     {
-        public MenuItemCheckboxState State { get; set; }
+        public delegate void MenuItemCheckboxStateChangedEventHandler(MenuItem sender, MenuItemCheckboxState oldState, MenuItemCheckboxState newState);
+
+        public event MenuItemCheckboxStateChangedEventHandler StateChanged;
+        
+        private MenuItemCheckboxState state;
+        public MenuItemCheckboxState State
+        {
+            get { return state; }
+            set
+            {
+                if (value == state)
+                    return;
+
+                MenuItemCheckboxState oldState = state;
+                state = value;
+                OnStateChanged(oldState, state);
+            }
+        }
 
         public MenuItemCheckbox(string text) : base(text)
         {
@@ -21,8 +38,8 @@ namespace RAGENativeUI.Menus
 
         protected internal override bool OnPreviewAccept(Menu menuSender)
         {
-            base.OnPreviewAccept(menuSender);
             State = (State == MenuItemCheckboxState.Empty) ? MenuItemCheckboxState.Tick : MenuItemCheckboxState.Empty;
+            base.OnPreviewAccept(menuSender);
             return true;
         }
 
@@ -65,6 +82,11 @@ namespace RAGENativeUI.Menus
             }
 
             y += Size.Height;
+        }
+
+        protected virtual void OnStateChanged(MenuItemCheckboxState oldState, MenuItemCheckboxState newState)
+        {
+            StateChanged?.Invoke(this, oldState, newState);
         }
     }
 }
