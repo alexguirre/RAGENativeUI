@@ -13,12 +13,12 @@ namespace RAGENativeUI.Menus
 
     public class Menu
     {
-        public delegate void MenuSelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
-        public delegate void MenuVisibleChangedEventHandler(Menu sender, bool visible);
+        public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
+        public delegate void VisibleChangedEventHandler(Menu sender, bool visible);
 
 
-        public event MenuSelectedIndexChangedEventHandler SelectedIndexChanged;
-        public event MenuVisibleChangedEventHandler VisibleChanged;
+        public event SelectedIndexChangedEventHandler SelectedIndexChanged;
+        public event VisibleChangedEventHandler VisibleChanged;
 
         public PointF Location { get; set; } = new PointF(30, 23);
 

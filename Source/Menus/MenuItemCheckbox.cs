@@ -13,9 +13,9 @@ namespace RAGENativeUI.Menus
 
     public class MenuItemCheckbox : MenuItem
     {
-        public delegate void MenuItemCheckboxStateChangedEventHandler(MenuItem sender, MenuItemCheckboxState oldState, MenuItemCheckboxState newState);
+        public delegate void StateChangedEventHandler(MenuItem sender, MenuItemCheckboxState oldState, MenuItemCheckboxState newState);
 
-        public event MenuItemCheckboxStateChangedEventHandler StateChanged;
+        public event StateChangedEventHandler StateChanged;
         
         private MenuItemCheckboxState state;
         public MenuItemCheckboxState State

@@ -6,10 +6,10 @@ namespace RAGENativeUI.Menus
 
     public class MenuItem
     {
-        public delegate void MenuItemActivatedEventHandler(MenuItem sender, Menu origin);
+        public delegate void ActivatedEventHandler(MenuItem sender, Menu origin);
 
 
-        public event MenuItemActivatedEventHandler Activated;
+        public event ActivatedEventHandler Activated;
 
         public string Text { get; set; }
         public SizeF Size { get; set; } = new SizeF(432f, 37f);
