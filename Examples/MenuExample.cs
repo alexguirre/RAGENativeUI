@@ -35,6 +35,7 @@ namespace Examples
             menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
 
             menu.SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Selected index changed from #{oldIndex} to #{newIndex}"); };
+            menu.VisibleChanged += (s, visible) => { Game.DisplayHelp($"Visible now: {visible}"); };
 
             menusMgr.Menus.Add(menu);
 

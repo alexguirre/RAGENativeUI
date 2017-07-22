@@ -14,9 +14,11 @@ namespace RAGENativeUI.Menus
     public class Menu
     {
         public delegate void MenuSelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
+        public delegate void MenuVisibleChangedEventHandler(Menu sender, bool visible);
 
 
         public event MenuSelectedIndexChangedEventHandler SelectedIndexChanged;
+        public event MenuVisibleChangedEventHandler VisibleChanged;
 
         public PointF Location { get; set; } = new PointF(30, 23);
 
@@ -118,7 +120,19 @@ namespace RAGENativeUI.Menus
             }
         }
         public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0; } }
-        public bool IsVisible { get; set; } = false;
+
+        private bool isVisible = false;
+        public bool IsVisible
+        {
+            get { return isVisible; }
+            set
+            {
+                if (value == isVisible)
+                    return;
+                isVisible = value;
+                OnVisibleChanged(isVisible);
+            }
+        }
 
 
         public Menu(string title, string subtitle)
@@ -324,10 +338,14 @@ namespace RAGENativeUI.Menus
             }
         }
 
-
         protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
         {
             SelectedIndexChanged?.Invoke(this, oldIndex, newIndex);
+        }
+
+        protected virtual void OnVisibleChanged(bool visible)
+        {
+            VisibleChanged?.Invoke(this, visible);
         }
 
 
