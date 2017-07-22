@@ -25,15 +25,10 @@ namespace RAGENativeUI.Menus
         private IMenuSkin skin;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public IMenuSkin Skin { get { return skin; } set { skin = value ?? throw new ArgumentNullException($"The menu {nameof(Skin)} can't be null."); } }
-
-        private MenuBanner banner;
-        public MenuBanner Banner { get { return banner; } set { banner = value; } }
-
-        private MenuSubtitle subtitle;
-        public MenuSubtitle Subtitle { get { return subtitle; } set { subtitle = value; } }
-
-        private MenuBackground background;
-        public MenuBackground Background { get { return background; } set { background = value; } }
+        
+        public MenuBanner Banner { get; set; }
+        public MenuSubtitle Subtitle { get; set; }
+        public MenuBackground Background { get; set; }
 
         private MenuItemsCollection items;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
