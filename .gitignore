@@ -15,6 +15,10 @@
 Dependencies/*
 !Dependencies/*/
 
+# Versioning
+PreBuild/last_build.txt
+Source/Properties/AssemblyInfo.cs
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

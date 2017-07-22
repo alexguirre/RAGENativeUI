@@ -79,7 +79,10 @@
     <Compile Include="Menus\MenuUpDownDisplay.cs" />
     <Compile Include="Menus\Rendering\IMenuSkin.cs" />
     <Compile Include="Menus\Rendering\MenuSkin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <AdditionalFiles Include="Properties\AssemblyInfo_template.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <InProject>false</InProject>
+    </Compile>
     <Compile Include="Rendering\ISkin.cs" />
     <Compile Include="Rendering\TextAligment.cs" />
     <Compile Include="Utility\BaseCollection.cs" />
@@ -101,4 +104,12 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>cd $(ProjectDir)
+powershell -ExecutionPolicy RemoteSigned -file ..\PreBuild\versioning.ps1 "$(ConfigurationName)"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
