@@ -6,6 +6,11 @@ namespace RAGENativeUI.Menus
 
     public class MenuItem
     {
+        public delegate void MenuItemActivated(MenuItem sender, Menu origin);
+
+
+        public event MenuItemActivated Activated;
+
         public string Text { get; set; }
         public SizeF Size { get; set; } = new SizeF(432f, 37f);
 
@@ -38,6 +43,7 @@ namespace RAGENativeUI.Menus
 
         protected internal virtual bool OnPreviewAccept(Menu menuSender)
         {
+            OnActivated(menuSender);
             return true;
         }
 
@@ -63,6 +69,11 @@ namespace RAGENativeUI.Menus
             }
 
             y += Size.Height;
+        }
+
+        protected virtual void OnActivated(Menu origin)
+        {
+            Activated?.Invoke(this, origin);
         }
     }
 }

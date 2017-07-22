@@ -37,6 +37,12 @@ namespace Examples
             menu.SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Selected index changed from #{oldIndex} to #{newIndex}"); };
             menu.VisibleChanged += (s, visible) => { Game.DisplayHelp($"Visible now: {visible}"); };
 
+            for (int i = 0; i < menu.Items.Count; i++)
+            {
+                int idx = i;
+                menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+            }
+
             menusMgr.Menus.Add(menu);
 
             MenuSkin redSkin = new MenuSkin(@"RAGENativeUI Resources\menu-red-skin.png");
