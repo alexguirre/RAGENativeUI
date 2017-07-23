@@ -10,7 +10,7 @@ namespace RAGENativeUI.Elements
 
     public class MissionPassedScreen : IDisposable
     {
-        public delegate void MissionPassedScreenContinuedEventHandler(MissionPassedScreen sender);
+        public delegate void ContinuedEventHandler(MissionPassedScreen sender);
 
         private const int MaxItemsOnScreenCount = 14;
 
@@ -54,7 +54,7 @@ namespace RAGENativeUI.Elements
 
         public string ScreenEffect { get; set; } = "SuccessMichael";
 
-        public event MissionPassedScreenContinuedEventHandler Continued;
+        public event ContinuedEventHandler Continued;
 
         public MissionPassedScreen(string title, string subtitle)
         {
