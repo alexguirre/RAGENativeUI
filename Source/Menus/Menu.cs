@@ -33,9 +33,8 @@ namespace RAGENativeUI.Menus
         private MenuItemsCollection items;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null."); } }
-
-        private MenuUpDownDisplay upDownDisplay;
-        public MenuUpDownDisplay UpDownDisplay { get { return upDownDisplay; } set { upDownDisplay = value; } }
+        
+        public MenuUpDownDisplay UpDownDisplay { get; set; }
 
         public IEnumerable<IMenuComponent> Components
         {
