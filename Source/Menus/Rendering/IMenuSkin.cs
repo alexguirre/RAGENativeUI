@@ -10,6 +10,7 @@ namespace RAGENativeUI.Menus.Rendering
         Font TitleFont { get; }
         Font SubtitleFont { get; }
         Font ItemTextFont { get; }
+        Font DescriptionFont { get; }
 
         void DrawBanner(Graphics graphics, float x, float y, float width, float height);
         void DrawBackground(Graphics graphics, float x, float y, float width, float height);

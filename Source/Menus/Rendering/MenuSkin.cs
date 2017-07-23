@@ -18,6 +18,7 @@ namespace RAGENativeUI.Menus.Rendering
         public virtual Font TitleFont { get; } = new Font("Arial", 35.0f);
         public virtual Font SubtitleFont { get; } = new Font("Arial", 20.0f);
         public virtual Font ItemTextFont { get; } = new Font("Arial", 20.0f);
+        public virtual Font DescriptionFont { get; } = new Font("Arial", 20.0f);
 
         public virtual UVCoords BannerCoords { get; } = new UVCoords(0f, 0f, 0.5f, 0.125f);
         public virtual UVCoords BackgroundCoords { get; } = new UVCoords(0.5f, 0f, 1f, 0.5f);

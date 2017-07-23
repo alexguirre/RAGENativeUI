@@ -68,6 +68,7 @@
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\MenuBackground.cs" />
     <Compile Include="Menus\MenuBanner.cs" />
+    <Compile Include="Menus\MenuDescription.cs" />
     <Compile Include="Menus\MenuItem.cs" />
     <Compile Include="Menus\MenuItemCheckbox.cs" />
     <Compile Include="Menus\MenuItemEnumScroller.cs" />

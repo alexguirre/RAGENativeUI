@@ -1,15 +1,13 @@
 namespace Examples
 {
+    using System;
     using System.Drawing;
 
     using Rage;
     using Rage.Attributes;
-    using Graphics = Rage.Graphics;
 
-    using RAGENativeUI;
     using RAGENativeUI.Menus;
     using RAGENativeUI.Menus.Rendering;
-    using RAGENativeUI.Utility;
 
     internal static class MenuExample
     {
@@ -21,9 +19,9 @@ namespace Examples
             Menu menu = new Menu("title", "SUBTITLE");
             menu.Location = new PointF(480, 17);
 
-            menu.Items.Add(new MenuItem("item #0"));
-            menu.Items.Add(new MenuItemCheckbox("cb #0") { State = MenuItemCheckboxState.Empty });
-            menu.Items.Add(new MenuItemCheckbox("cb #1") { State = MenuItemCheckboxState.Cross });
+            menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
+            menu.Items.Add(new MenuItemCheckbox("cb #0") { State = MenuItemCheckboxState.Empty, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
+            menu.Items.Add(new MenuItemCheckbox("cb #1") { State = MenuItemCheckboxState.Cross, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
             menu.Items.Add(new MenuItemCheckbox("cb #2") { State = MenuItemCheckboxState.Tick });
             menu.Items.Add(new MenuItemEnumScroller("enum scroller #0", typeof(GameControl)));
             menu.Items.Add(new MenuItemEnumScroller<GameControl>("enum scroller #1"));
@@ -47,7 +45,7 @@ namespace Examples
                     continue;
                 }
 
-                if(menu.Items[idx] is MenuItemScroller)
+                if (menu.Items[idx] is MenuItemScroller)
                 {
                     (menu.Items[idx] as MenuItemScroller).SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Scroller at index #{idx} selected index changed from #{oldIndex} to #{newIndex}"); };
                 }
@@ -63,8 +61,8 @@ namespace Examples
                 while (true)
                 {
                     GameFiber.Yield();
-                    
-                    if(Game.IsKeyDown(System.Windows.Forms.Keys.Y))
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         if (menu.Skin == MenuSkin.DefaultSkin)
                             menu.Skin = redSkin;
@@ -74,7 +72,7 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
                     {
-                        if(menusMgr.IsAnyMenuVisible)
+                        if (menusMgr.IsAnyMenuVisible)
                         {
                             menusMgr.HideAllMenus();
                         }
@@ -83,13 +81,49 @@ namespace Examples
                             menusMgr.ShowAllMenus();
                         }
                     }
-                    
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
-                        menu.MaxItemsOnScreen++;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract) && menu.MaxItemsOnScreen > 0)
+
+
+                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
+                    {
+                        menu.Width += 150f * Game.FrameTime;
+                    }
+                    else if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Subtract) && menu.MaxItemsOnScreen > 0)
+                    {
                         menu.MaxItemsOnScreen--;
+                    }
+
+
+                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.U))
+                    {
+                        menu.Items[0].Description = GetRandomString();
+                    }
                 }
             });
+
+
+
+            // gets a random alpha numeric string with whitespaces
+            string GetRandomString(int minLength = 10, int maxLenght = 600)
+            {
+                int length = MathHelper.GetRandomInteger(minLength, maxLenght);
+                char[] chars = new char[length];
+                int wordLenght = 0;
+                for (int i = 0; i < length; i++)
+                {
+                    chars[i] = MathHelper.GetRandomAlphaNumericCharacter();
+                    wordLenght++;
+                    if (wordLenght == MathHelper.GetRandomInteger(3, 7) || wordLenght >= 7)
+                    {
+                        i++;
+                        if (i < length)
+                        {
+                            chars[i] = ' ';
+                        }
+                        wordLenght = 0;
+                    }
+                }
+                return new String(chars);
+            }
         }
     }
 }

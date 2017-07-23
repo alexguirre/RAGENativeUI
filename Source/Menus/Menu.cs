@@ -35,6 +35,7 @@ namespace RAGENativeUI.Menus
         public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null."); } }
         
         public MenuUpDownDisplay UpDownDisplay { get; set; }
+        public MenuDescription Description { get; set; }
 
         public IEnumerable<IMenuComponent> Components
         {
@@ -46,6 +47,7 @@ namespace RAGENativeUI.Menus
                 yield return Background;
                 yield return Items;
                 yield return UpDownDisplay;
+                yield return Description;
             }
         }
 
@@ -137,6 +139,7 @@ namespace RAGENativeUI.Menus
             Background = new MenuBackground(this);
             Items = new MenuItemsCollection(this);
             UpDownDisplay = new MenuUpDownDisplay(this);
+            Description = new MenuDescription(this);
 
             Controls = new MenuControls();
             SoundsSet = new MenuSoundsSet();

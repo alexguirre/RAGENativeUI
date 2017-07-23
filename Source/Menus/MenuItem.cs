@@ -12,6 +12,7 @@ namespace RAGENativeUI.Menus
         public event ActivatedEventHandler Activated;
 
         public string Text { get; set; }
+        public string Description { get; set; }
         public SizeF Size { get; set; } = new SizeF(432f, 37f);
 
         public float BorderSafezone { get; set; } = 8.25f;
