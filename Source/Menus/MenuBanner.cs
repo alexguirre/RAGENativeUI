@@ -11,7 +11,7 @@ namespace RAGENativeUI.Menus
         public Menu Menu { get; }
 
         public string Title { get; set; }
-        public SizeF Size { get; set; } = new SizeF(432f, 109f);
+        public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 109f);
 
         public MenuBanner(Menu menu)
         {

@@ -8,7 +8,7 @@ namespace RAGENativeUI.Menus
     {
         public Menu Menu { get; }
 
-        public SizeF Size { get; set; } = new SizeF(432f, 38f);
+        public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 38f);
         private float ArrowsUpDownSize { get { return Size.Height; } }
         
         private bool ShouldBeVisible { get { return (Menu.MaxItemsOnScreen < Menu.Items.Count) && Menu.IsAnyItemOnScreen; } }

@@ -11,7 +11,7 @@ namespace RAGENativeUI.Menus
     {
         public Menu Menu { get; }
 
-        private SizeF size = new SizeF(432f, 0f);
+        private SizeF size = new SizeF(Menu.DefaultWidth, 0f);
         public SizeF Size
         {
             get { return size; }
@@ -77,7 +77,7 @@ namespace RAGENativeUI.Menus
                 y += 4f;
 
                 graphics.DrawRectangle(new RectangleF(x, y, Size.Width, 3.25f), Color.FromArgb(240, 0, 0, 0));
-                graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.FromArgb(95, 0, 0, 0)); // maybe replace with MenuSkin.DrawBackground?
+                graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.FromArgb(95, 0, 0, 0));
 
                 Menu.Skin.DrawText(graphics, currentText, Menu.Skin.DescriptionFont, new RectangleF(x + BorderSafezone, y + BorderSafezone, Size.Width - BorderSafezone * 2f, Size.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Top);
 

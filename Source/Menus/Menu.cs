@@ -13,6 +13,9 @@ namespace RAGENativeUI.Menus
 
     public class Menu
     {
+        public const float DefaultWidth = 432.0f;
+
+
         public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
         public delegate void VisibleChangedEventHandler(Menu sender, bool visible);
 
@@ -147,7 +150,7 @@ namespace RAGENativeUI.Menus
             Banner.Title = title;
             Subtitle.Text = subtitle;
 
-            Width = 432.0f;
+            Width = DefaultWidth;
         }
 
         public virtual void Process()

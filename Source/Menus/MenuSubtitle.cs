@@ -11,7 +11,7 @@ namespace RAGENativeUI.Menus
         public Menu Menu { get; }
 
         public string Text { get; set; }
-        public SizeF Size { get; set; } = new SizeF(432f, 37f);
+        public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
 
         protected bool ShowCounter { get { return Menu.IsAnyItemOnScreen && Menu.Items.Count > Menu.MaxItemsOnScreen; } }
 
