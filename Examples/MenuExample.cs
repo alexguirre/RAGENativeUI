@@ -97,6 +97,18 @@ namespace Examples
                     {
                         menu.Items[0].Description = GetRandomString();
                     }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.I))
+                    {
+                        if(menu.Description.TextOverride == null)
+                        {
+                            menu.Description.TextOverride = "Description override set! Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.";
+                        }
+                        else
+                        {
+                            menu.Description.TextOverride = null;
+                        }
+                    }
                 }
             });
 

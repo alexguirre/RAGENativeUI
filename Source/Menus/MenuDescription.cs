@@ -35,6 +35,34 @@ namespace RAGENativeUI.Menus
         private string currentOrigText;
         private string currentText;
 
+        public string Text { get { return currentOrigText; } }
+
+        private string textOverride = null;
+        public string TextOverride
+        {
+            get { return textOverride; }
+            set
+            {
+                if (value == textOverride)
+                    return;
+
+                textOverride = value;
+                if (textOverride != null)
+                {
+                    currentItem = null;
+                    currentOrigText = textOverride;
+                    currentText = currentOrigText;
+                    FormatCurrentText();
+                }
+                else
+                {
+                    currentItem = null;
+                    currentOrigText = null;
+                    currentText = null;
+                }
+            }
+        }
+
         public MenuDescription(Menu menu)
         {
             Menu = menu;
@@ -52,21 +80,24 @@ namespace RAGENativeUI.Menus
 
         public virtual void Process()
         {
-            MenuItem selectedItem = Menu.SelectedItem;
-            if (selectedItem != null)
+            if (textOverride == null)
             {
-                if (currentItem != selectedItem || selectedItem.Description != currentOrigText)
+                MenuItem selectedItem = Menu.SelectedItem;
+                if (selectedItem != null)
                 {
-                    currentItem = selectedItem;
-                    currentOrigText = selectedItem.Description;
-                    currentText = currentOrigText;
-                    FormatCurrentText();
+                    if (currentItem != selectedItem || selectedItem.Description != currentOrigText)
+                    {
+                        currentItem = selectedItem;
+                        currentOrigText = selectedItem.Description;
+                        currentText = currentOrigText;
+                        FormatCurrentText();
+                    }
                 }
-            }
-            else
-            {
-                currentItem = null;
-                currentText = null;
+                else
+                {
+                    currentItem = null;
+                    currentText = null;
+                }
             }
         }
 
@@ -74,7 +105,7 @@ namespace RAGENativeUI.Menus
         {
             if (currentText != null && Size.Height > 0f)
             {
-                y += 4f;
+                y += 3.5f;
 
                 graphics.DrawRectangle(new RectangleF(x, y, Size.Width, 3.25f), Color.FromArgb(240, 0, 0, 0));
                 graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.FromArgb(95, 0, 0, 0));
