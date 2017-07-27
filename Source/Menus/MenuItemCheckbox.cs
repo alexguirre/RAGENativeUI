@@ -45,6 +45,9 @@ namespace RAGENativeUI.Menus
 
         public override void Draw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
         {
+            if (!IsVisible)
+                return;
+
             if (selected)
             {
                 sender.Skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);

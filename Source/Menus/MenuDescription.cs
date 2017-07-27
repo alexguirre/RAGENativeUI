@@ -83,7 +83,7 @@ namespace RAGENativeUI.Menus
             if (textOverride == null)
             {
                 MenuItem selectedItem = Menu.SelectedItem;
-                if (selectedItem != null)
+                if (selectedItem != null && selectedItem.IsVisible)
                 {
                     if (currentItem != selectedItem || selectedItem.Description != currentOrigText)
                     {

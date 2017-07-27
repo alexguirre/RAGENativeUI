@@ -83,11 +83,11 @@ namespace Examples
                     }
 
 
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
-                        menu.Width += 150f * Game.FrameTime;
+                        menu.MaxItemsOnScreen++;
                     }
-                    else if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Subtract) && menu.MaxItemsOnScreen > 0)
+                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract) && menu.MaxItemsOnScreen > 0)
                     {
                         menu.MaxItemsOnScreen--;
                     }
@@ -107,6 +107,22 @@ namespace Examples
                         else
                         {
                             menu.Description.TextOverride = null;
+                        }
+                    }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.K))
+                    {
+                        foreach (MenuItem m in menu.Items)
+                        {
+                            m.IsVisible = true;
+                        }
+                    }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.L))
+                    {
+                        foreach (MenuItem m in menu.Items)
+                        {
+                            m.IsVisible = MathHelper.Choose(true, false);
                         }
                     }
                 }

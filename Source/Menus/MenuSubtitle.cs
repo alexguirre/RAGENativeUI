@@ -20,6 +20,12 @@ namespace RAGENativeUI.Menus
         public MenuSubtitle(Menu menu)
         {
             Menu = menu;
+            Menu.SelectedIndexChanged += OnMenuSelectedIndexChanged;
+        }
+
+        ~MenuSubtitle()
+        {
+            Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged;
         }
 
         public virtual void Process()
@@ -33,10 +39,41 @@ namespace RAGENativeUI.Menus
 
             if (ShowCounter)
             {
-                Menu.Skin.DrawText(graphics, $"{Menu.SelectedIndex + 1}/{Menu.Items.Count} ", Menu.Skin.SubtitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Right, TextVerticalAligment.Center);
+                // initial counter update
+                if (counterTotalCount == 0 && counterOnScreenSelectedIndex == 0)
+                    UpdateCounter();
+
+                Menu.Skin.DrawText(graphics, $"{counterOnScreenSelectedIndex}/{counterTotalCount} ", Menu.Skin.SubtitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Right, TextVerticalAligment.Center);
             }
 
             y += Size.Height;
+        }
+
+        int counterTotalCount = 0;
+        int counterOnScreenSelectedIndex = 0;
+        private void UpdateCounter()
+        {
+            counterTotalCount = 0;
+            counterOnScreenSelectedIndex = 0;
+
+            int realSelectedIndex = Menu.SelectedIndex;
+
+            for (int i = 0; i < Menu.Items.Count; i++)
+            {
+                MenuItem item = Menu.Items[i];
+
+                if (item != null && item.IsVisible)
+                {
+                    counterTotalCount++;
+                    if (i == realSelectedIndex)
+                        counterOnScreenSelectedIndex = counterTotalCount;
+                }
+            }
+        }
+
+        private void OnMenuSelectedIndexChanged(Menu sender, int oldIndex, int newIndex)
+        {
+            UpdateCounter();
         }
     }
 }

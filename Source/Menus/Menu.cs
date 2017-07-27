@@ -1,6 +1,7 @@
 namespace RAGENativeUI.Menus
 {
     using System;
+    using System.Linq;
     using System.Drawing;
     using System.Collections.Generic;
 
@@ -15,6 +16,7 @@ namespace RAGENativeUI.Menus
     {
         public const float DefaultWidth = 432.0f;
 
+        public delegate void ForEachOnScreenItemDelegate(MenuItem item, int index);
 
         public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
         public delegate void VisibleChangedEventHandler(Menu sender, bool visible);
@@ -104,8 +106,8 @@ namespace RAGENativeUI.Menus
         /// </value>
         public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls;
 
-        internal int MinVisibleItemIndex { get; private set; }
-        internal int MaxVisibleItemIndex { get; private set; }
+        protected int MinVisibleItemIndex { get; set; }
+        protected int MaxVisibleItemIndex { get; set; }
         private int maxItemsOnScreen = 10;
         public int MaxItemsOnScreen
         {
@@ -118,7 +120,7 @@ namespace RAGENativeUI.Menus
                 UpdateVisibleItemsIndices();
             }
         }
-        public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0; } }
+        public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible); } }
 
         private bool isVisible = false;
         public bool IsVisible
@@ -184,7 +186,7 @@ namespace RAGENativeUI.Menus
 
         protected virtual void ProcessInput()
         {
-            if (Controls != null)
+            if (Controls != null && IsAnyItemOnScreen)
             {
                 if (Controls.Up != null && Controls.Up.IsHeld())
                 {
@@ -240,8 +242,15 @@ namespace RAGENativeUI.Menus
         {
             int newIndex = SelectedIndex - 1;
 
-            if (newIndex < 0)
-                newIndex = Items.Count - 1;
+            int min = GetMinVisibleItemIndex();
+
+            // get previous if current isn't visible
+            while (newIndex >= min && !Items[newIndex].IsVisible)
+                newIndex--;
+
+            if (newIndex < min)
+                newIndex = GetMaxVisibleItemIndex();
+
 
             SelectedIndex = newIndex;
             UpdateVisibleItemsIndices();
@@ -252,9 +261,15 @@ namespace RAGENativeUI.Menus
         protected virtual void MoveDown()
         {
             int newIndex = SelectedIndex + 1;
+            
+            int max = GetMaxVisibleItemIndex();
 
-            if (newIndex > (Items.Count - 1))
-                newIndex = 0;
+            // get next if current isn't visible
+            while (newIndex <= max && !Items[newIndex].IsVisible)
+                newIndex++;
+
+            if (newIndex > max)
+                newIndex = GetMinVisibleItemIndex();
 
             SelectedIndex = newIndex;
             UpdateVisibleItemsIndices();
@@ -316,8 +331,32 @@ namespace RAGENativeUI.Menus
                 MaxVisibleItemIndex = MinVisibleItemIndex + MaxItemsOnScreen - 1;
             }
 
-            if (MaxVisibleItemIndex < 0)
-                MaxVisibleItemIndex = 0;
+            // check if any of the item between mix and max isn't visible, if so increase/reduce the max/min indices
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (i < MinVisibleItemIndex)
+                    continue;
+                if (i > MaxVisibleItemIndex)
+                    break;
+
+                MenuItem item = Items[i];
+                if (!item.IsVisible)
+                {
+                    int newMax = MaxVisibleItemIndex + 1;
+                    if(newMax >= Items.Count)
+                    {
+                        int newMin = MinVisibleItemIndex - 1;
+                        MinVisibleItemIndex = newMin;
+                    }
+                    else
+                    {
+                        MaxVisibleItemIndex = newMax;
+                    }
+                }
+            }
+            
+            if (MinVisibleItemIndex < 0)
+                MinVisibleItemIndex = 0;
             if (MaxVisibleItemIndex >= Items.Count)
                 MaxVisibleItemIndex = Items.Count - 1;
 
@@ -336,6 +375,58 @@ namespace RAGENativeUI.Menus
             {
                 c?.Draw(graphics, ref x, ref y);
             }
+        }
+
+        /// <summary>
+        /// Executes the specified action for each item that is currently on-screen.
+        /// An item is considered on-screen if the current menu is visible, its <see cref="MenuItem.IsVisible"/> property is <c>true</c> and is currently being drawn.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
+        public void ForEachItemOnScreen(ForEachOnScreenItemDelegate action)
+        {
+            if (Items.Count > 0 && IsAnyItemOnScreen)
+            {
+                for (int i = MinVisibleItemIndex; i <= MaxVisibleItemIndex; i++)
+                {
+                    MenuItem item = Items[i];
+
+                    if (item != null)
+                    {
+                        if (!item.IsVisible)
+                        {
+                            continue;
+                        }
+
+                        action?.Invoke(item, i);
+                    }
+                }
+            }
+        }
+
+        private int GetMinVisibleItemIndex()
+        {
+            int min = 0;
+            for (int i = 0; i < Items.Count; i++)
+            {
+                min = i;
+                if (Items[i].IsVisible)
+                    break;
+            }
+
+            return min;
+        }
+
+        private int GetMaxVisibleItemIndex()
+        {
+            int max = Items.Count;
+            for (int i = Items.Count - 1; i >= 0; i--)
+            {
+                max = i;
+                if (Items[i].IsVisible)
+                    break;
+            }
+
+            return max;
         }
 
         protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
@@ -377,18 +468,13 @@ namespace RAGENativeUI.Menus
             get
             {
                 float w = 0f, h = 0f;
-                if (Count > 0 && Menu.IsAnyItemOnScreen)
+                Menu.ForEachItemOnScreen((item, index) =>
                 {
-                    for (int i = Menu.MinVisibleItemIndex; i <= Menu.MaxVisibleItemIndex; i++)
-                    {
-                        MenuItem item = this[i];
+                    if (item.Size.Width > w)
+                        w = item.Size.Width;
 
-                        if (item.Size.Width > w)
-                            w = item.Size.Width;
-
-                        h += item.Size.Height;
-                    }
-                }
+                    h += item.Size.Height;
+                });
 
                 return new SizeF(w, h);
             }
@@ -429,15 +515,13 @@ namespace RAGENativeUI.Menus
 
         public void Draw(Graphics g, ref float x, ref float y)
         {
-            if (Menu.IsAnyItemOnScreen)
+            float currentX = x, currentY = y;
+            Menu.ForEachItemOnScreen((item, index) =>
             {
-                for (int i = Menu.MinVisibleItemIndex; i <= Menu.MaxVisibleItemIndex; i++)
-                {
-                    MenuItem item = this[i];
-
-                    item?.Draw(g, Menu, i == Menu.SelectedIndex, ref x, ref y);
-                }
-            }
+                item.Draw(g, Menu, index == Menu.SelectedIndex, ref currentX, ref currentY);
+            });
+            x = currentX;
+            y = currentY;
         }
 
         public override void Add(MenuItem item)

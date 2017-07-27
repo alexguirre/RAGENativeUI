@@ -14,6 +14,7 @@ namespace RAGENativeUI.Menus
         public string Text { get; set; }
         public string Description { get; set; }
         public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
+        public bool IsVisible { get; set; } = true;
 
         public float BorderSafezone { get; set; } = 8.25f;
 
@@ -59,6 +60,9 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
         {
+            if (!IsVisible)
+                return;
+
             if (selected)
             {
                 sender.Skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
