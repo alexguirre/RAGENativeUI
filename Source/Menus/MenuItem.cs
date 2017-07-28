@@ -59,7 +59,7 @@ namespace RAGENativeUI.Menus
             return true;
         }
 
-        protected internal virtual bool OnPreviewCancel(Menu menuSender)
+        protected internal virtual bool OnPreviewBack(Menu menuSender)
         {
             return true;
         }

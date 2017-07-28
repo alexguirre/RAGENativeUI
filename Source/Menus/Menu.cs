@@ -255,11 +255,11 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Cancel != null && Controls.Cancel.IsJustPressed())
+                if (Controls.Back != null && Controls.Back.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewCancel(this))
+                    if (SelectedItem == null || SelectedItem.OnPreviewBack(this))
                     {
-                        Cancel();
+                        Back();
                     }
                 }
             }
@@ -316,10 +316,10 @@ namespace RAGENativeUI.Menus
             SoundsSet?.Accept?.Play();
         }
 
-        protected virtual void Cancel()
+        protected virtual void Back()
         {
             Hide();
-            SoundsSet?.Cancel?.Play();
+            SoundsSet?.Back?.Play();
         }
 
         internal void UpdateVisibleItemsIndices()
@@ -588,7 +588,7 @@ namespace RAGENativeUI.Menus
         public Control Right { get; set; } = new Control(GameControl.FrontendRight);
         public Control Left { get; set; } = new Control(GameControl.FrontendLeft);
         public Control Accept { get; set; } = new Control(GameControl.FrontendAccept);
-        public Control Cancel { get; set; } = new Control(GameControl.FrontendCancel);
+        public Control Back { get; set; } = new Control(GameControl.FrontendCancel);
     }
 
     public class MenuSoundsSet
@@ -598,7 +598,7 @@ namespace RAGENativeUI.Menus
         public FrontendSound Right { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_LEFT_RIGHT");
         public FrontendSound Left { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_LEFT_RIGHT");
         public FrontendSound Accept { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "SELECT");
-        public FrontendSound Cancel { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "BACK");
+        public FrontendSound Back { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "BACK");
         public FrontendSound Error { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "ERROR");
     }
 }
