@@ -32,6 +32,16 @@ namespace Examples
             menu.Items.Add(new MenuItemListScroller("list scroller #0"));
             menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
 
+
+            Menu subMenu = new Menu("SubMenu", "SUB!");
+            subMenu.Location = menu.Location;
+            for (int i = 1; i <= 999; i++)
+            {
+                subMenu.Items.Add(new MenuItem("item #" + i));
+            }
+
+            menu.Items.Add(new MenuItem("item with binded menu #0") { BindedMenu = subMenu, Description = "If you click this item it opens a menu with a LOT of items." });
+
             menu.SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Selected index changed from #{oldIndex} to #{newIndex}"); };
             menu.VisibleChanged += (s, visible) => { Game.DisplayHelp($"Visible now: {visible}"); };
 
@@ -54,6 +64,7 @@ namespace Examples
             }
 
             menusMgr.Menus.Add(menu);
+            menusMgr.Menus.Add(subMenu);
 
             MenuSkin redSkin = new MenuSkin(@"RAGENativeUI Resources\menu-red-skin.png");
             GameFiber.StartNew(() =>
@@ -78,7 +89,7 @@ namespace Examples
                         }
                         else
                         {
-                            menusMgr.ShowAllMenus();
+                            menu.Show();
                         }
                     }
 

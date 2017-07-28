@@ -15,8 +15,14 @@ namespace RAGENativeUI.Menus
         public string Description { get; set; }
         public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
         public bool IsVisible { get; set; } = true;
-
         public float BorderSafezone { get; set; } = 8.25f;
+        /// <summary>
+        /// Gets or sets the <see cref="Menu"/> that will be opened when this item is activated.
+        /// </summary>
+        /// <value>
+        /// The binded <see cref="Menu"/> or <c>null</c> if no menu is binded.
+        /// </value>
+        public Menu BindedMenu { get; set; }
 
         public MenuItem(string text)
         {
@@ -46,6 +52,10 @@ namespace RAGENativeUI.Menus
         protected internal virtual bool OnPreviewAccept(Menu menuSender)
         {
             OnActivated(menuSender);
+            if (BindedMenu != null)
+            {
+                BindedMenu.Show(menuSender);
+            }
             return true;
         }
 

@@ -127,7 +127,7 @@ namespace RAGENativeUI.Menus
         public bool IsVisible
         {
             get { return isVisible; }
-            set
+            private set
             {
                 if (value == isVisible)
                     return;
@@ -136,6 +136,16 @@ namespace RAGENativeUI.Menus
             }
         }
 
+        /// <summary>
+        /// Gets the current owner.
+        /// <para>
+        /// Once this <see cref="Menu"/> is closed, it loses its owner. Use <see cref="Show(Menu)"/> to specify the owner.
+        /// </para>
+        /// </summary>
+        /// <value>
+        /// The owner <see cref="Menu"/> or <c>null</c> if it doesn't have an owner or is hidden.
+        /// </value>
+        public Menu Owner { get; private set; }
 
         public Menu(string title, string subtitle)
         {
@@ -154,6 +164,22 @@ namespace RAGENativeUI.Menus
             Subtitle.Text = subtitle;
 
             Width = DefaultWidth;
+        }
+
+        public void Show(Menu owner = null)
+        {
+            Owner = owner;
+            if (Owner != null)
+                Owner.isVisible = false;
+            IsVisible = true;
+        }
+
+        public void Hide(bool showOwner = true)
+        {
+            if (showOwner && Owner != null)
+                Owner.IsVisible = true;
+            Owner = null;
+            IsVisible = false;
         }
 
         public virtual void Process()
@@ -292,6 +318,7 @@ namespace RAGENativeUI.Menus
 
         protected virtual void Cancel()
         {
+            Hide();
             SoundsSet?.Cancel?.Play();
         }
 
