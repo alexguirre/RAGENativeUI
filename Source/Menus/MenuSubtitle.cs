@@ -1,5 +1,6 @@
 namespace RAGENativeUI.Menus
 {
+    using System.Linq;
     using System.Drawing;
     
     using Graphics = Rage.Graphics;
@@ -13,7 +14,7 @@ namespace RAGENativeUI.Menus
         public string Text { get; set; }
         public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
 
-        protected bool ShowCounter { get { return Menu.IsAnyItemOnScreen && Menu.Items.Count > Menu.MaxItemsOnScreen; } }
+        protected bool ShowCounter { get { return Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0); } }
 
         public float BorderSafezone { get; set; } = 8.5f;
 

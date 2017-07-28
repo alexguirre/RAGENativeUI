@@ -68,6 +68,7 @@ namespace RAGENativeUI.Menus
                 {
                     int oldIndex = selectedIndex;
                     selectedIndex = newIndex;
+                    UpdateVisibleItemsIndices();
                     OnSelectedIndexChanged(oldIndex, newIndex);
                 }
             }
@@ -251,9 +252,7 @@ namespace RAGENativeUI.Menus
             if (newIndex < min)
                 newIndex = GetMaxVisibleItemIndex();
 
-
             SelectedIndex = newIndex;
-            UpdateVisibleItemsIndices();
 
             SoundsSet?.Up?.Play();
         }
@@ -272,7 +271,6 @@ namespace RAGENativeUI.Menus
                 newIndex = GetMinVisibleItemIndex();
 
             SelectedIndex = newIndex;
-            UpdateVisibleItemsIndices();
             
             SoundsSet?.Down?.Play();
         }
@@ -313,52 +311,62 @@ namespace RAGENativeUI.Menus
             }
 
             int index = SelectedIndex;
-            if (MinVisibleItemIndex > index)
-            {
-                int diff = index - MinVisibleItemIndex;
-                MaxVisibleItemIndex += diff;
-                MinVisibleItemIndex += diff;
-            }
-            else if (MaxVisibleItemIndex < index)
-            {
-                int diff = index - MaxVisibleItemIndex;
-                MaxVisibleItemIndex += diff;
-                MinVisibleItemIndex += diff;
-            }
 
-            if ((MaxVisibleItemIndex - MinVisibleItemIndex) + 1 != MaxItemsOnScreen)
+            if (index < MinVisibleItemIndex)
             {
-                MaxVisibleItemIndex = MinVisibleItemIndex + MaxItemsOnScreen - 1;
-            }
-
-            // check if any of the item between mix and max isn't visible, if so increase/reduce the max/min indices
-            for (int i = 0; i < Items.Count; i++)
-            {
-                if (i < MinVisibleItemIndex)
-                    continue;
-                if (i > MaxVisibleItemIndex)
-                    break;
-
-                MenuItem item = Items[i];
-                if (!item.IsVisible)
+                MinVisibleItemIndex = index;
+                int count = 0;
+                for (int i = MinVisibleItemIndex; i < Items.Count; i++)
                 {
-                    int newMax = MaxVisibleItemIndex + 1;
-                    if(newMax >= Items.Count)
+                    if (Items[i].IsVisible)
                     {
-                        int newMin = MinVisibleItemIndex - 1;
-                        MinVisibleItemIndex = newMin;
-                    }
-                    else
-                    {
-                        MaxVisibleItemIndex = newMax;
+                        count++;
+                        if(count == MaxItemsOnScreen)
+                        {
+                            MaxVisibleItemIndex = i;
+                        }
                     }
                 }
             }
-            
-            if (MinVisibleItemIndex < 0)
-                MinVisibleItemIndex = 0;
-            if (MaxVisibleItemIndex >= Items.Count)
-                MaxVisibleItemIndex = Items.Count - 1;
+            else if (index > MaxVisibleItemIndex)
+            {
+                MaxVisibleItemIndex = index;
+                int count = 0;
+                for (int i = MaxVisibleItemIndex; i >= 0; i--)
+                {
+                    if (Items[i].IsVisible)
+                    {
+                        count++;
+                        if (count == MaxItemsOnScreen)
+                        {
+                            MinVisibleItemIndex = i;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int count = 0;
+                for (int i = MinVisibleItemIndex; i < Items.Count; i++)
+                {
+                    if (Items[i].IsVisible)
+                    {
+                        count++;
+                        if (count == MaxItemsOnScreen)
+                        {
+                            MaxVisibleItemIndex = i;
+                        }
+                    }
+                }
+            }
+
+            int min = GetMinVisibleItemIndex();
+            int max = GetMaxVisibleItemIndex();
+
+            if (MinVisibleItemIndex < min)
+                MinVisibleItemIndex = min;
+            if (MaxVisibleItemIndex > max)
+                MaxVisibleItemIndex = max;
 
             if (MaxVisibleItemIndex < MinVisibleItemIndex)
                 throw new InvalidOperationException($"MaxVisibleItemIndex({MaxVisibleItemIndex}) < MinVisibleItemIndex({MinVisibleItemIndex}): this shouldn't happen!");
@@ -403,6 +411,13 @@ namespace RAGENativeUI.Menus
             }
         }
 
+        public int GetOnScreenItemsCount()
+        {
+            int count = 0;
+            ForEachItemOnScreen((item, index) => { count++; });
+            return count;
+        }
+
         private int GetMinVisibleItemIndex()
         {
             int min = 0;
@@ -418,7 +433,7 @@ namespace RAGENativeUI.Menus
 
         private int GetMaxVisibleItemIndex()
         {
-            int max = Items.Count;
+            int max = 0;
             for (int i = Items.Count - 1; i >= 0; i--)
             {
                 max = i;

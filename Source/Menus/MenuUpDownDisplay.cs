@@ -1,5 +1,6 @@
 namespace RAGENativeUI.Menus
 {
+    using System.Linq;
     using System.Drawing;
     
     using Graphics = Rage.Graphics;
@@ -11,7 +12,7 @@ namespace RAGENativeUI.Menus
         public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 38f);
         private float ArrowsUpDownSize { get { return Size.Height; } }
         
-        private bool ShouldBeVisible { get { return (Menu.MaxItemsOnScreen < Menu.Items.Count) && Menu.IsAnyItemOnScreen; } }
+        private bool ShouldBeVisible { get { return Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0); } }
 
         public MenuUpDownDisplay(Menu menu)
         {
