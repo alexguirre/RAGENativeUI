@@ -62,49 +62,43 @@ namespace RAGENativeUI.Elements
 
             foreach (object arg in arguments)
             {
-                if (arg is int)
+                switch (arg)
                 {
-                    NativeFunction.Natives.xC3D0841A0CC546A6((int)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
-                }
-                else if (arg is uint)
-                {
-                    NativeFunction.Natives.xC3D0841A0CC546A6((uint)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
-                }
-                else if (arg is string || arg is char)
-                {
-                    NativeFunction.Natives.xBA7148484BD90365(arg.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
-                }
-                else if (arg is float)
-                {
-                    NativeFunction.Natives.xD69736AAE04DB51A((float)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
-                }
-                else if (arg is double)
-                {
-                    NativeFunction.Natives.xD69736AAE04DB51A((float)(double)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
-                }
-                else if (arg is bool)
-                {
-                    NativeFunction.Natives.xC58424BA936EB458((bool)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_BOOL
-                }
-                else if (arg is ushort)
-                {
-                    NativeFunction.Natives.xC3D0841A0CC546A6((uint)(ushort)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
-                }
-                else if (arg is short)
-                {
-                    NativeFunction.Natives.xC3D0841A0CC546A6((int)(short)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
-                }
-                else if (arg is byte)
-                {
-                    NativeFunction.Natives.xC3D0841A0CC546A6((uint)(byte)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
-                }
-                else if (arg is sbyte)
-                {
-                    NativeFunction.Natives.xC3D0841A0CC546A6((int)(sbyte)arg); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
-                }
-                else
-                {
-                    throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}'.", nameof(arguments));
+                    case int intValue:
+                        NativeFunction.Natives.xC3D0841A0CC546A6(intValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                        break;
+                    case uint uintValue:
+                        NativeFunction.Natives.xC3D0841A0CC546A6(uintValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                        break;
+                    case short shortValue:
+                        NativeFunction.Natives.xC3D0841A0CC546A6(shortValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                        break;
+                    case ushort ushortValue:
+                        NativeFunction.Natives.xC3D0841A0CC546A6(ushortValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                        break;
+                    case sbyte sbyteValue:
+                        NativeFunction.Natives.xC3D0841A0CC546A6(sbyteValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                        break;
+                    case byte byteValue:
+                        NativeFunction.Natives.xC3D0841A0CC546A6(byteValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                        break;
+                    case bool boolValue:
+                        NativeFunction.Natives.xC58424BA936EB458(boolValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_BOOL
+                        break;
+                    case float floatValue:
+                        NativeFunction.Natives.xD69736AAE04DB51A(floatValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
+                        break;
+                    case double doubleValue:
+                        NativeFunction.Natives.xD69736AAE04DB51A((float)doubleValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
+                        break;
+                    case string stringValue:
+                        NativeFunction.Natives.xBA7148484BD90365(stringValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
+                        break;
+                    case char charValue:
+                        NativeFunction.Natives.xBA7148484BD90365(charValue.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
+                        break;
+
+                    default: throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.", nameof(arguments));
                 }
             }
 
