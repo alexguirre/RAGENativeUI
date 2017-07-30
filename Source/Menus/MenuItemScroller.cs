@@ -38,28 +38,38 @@ namespace RAGENativeUI.Menus
         protected abstract string GetSelectedOptionText();
         protected abstract int GetOptionsCount();
         
-        protected internal override bool OnPreviewMoveLeft(Menu menuSender)
+        protected internal override bool OnPreviewMoveLeft(Menu origin)
         {
-            int newIndex = SelectedIndex - 1;
+            if (base.OnPreviewMoveLeft(origin))
+            {
+                int newIndex = SelectedIndex - 1;
 
-            if (newIndex < 0)
-                newIndex = GetOptionsCount() - 1;
+                if (newIndex < 0)
+                    newIndex = GetOptionsCount() - 1;
 
-            SelectedIndex = newIndex;
+                SelectedIndex = newIndex;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
-        protected internal override bool OnPreviewMoveRight(Menu menuSender)
+        protected internal override bool OnPreviewMoveRight(Menu origin)
         {
-            int newIndex = SelectedIndex + 1;
+            if (base.OnPreviewMoveRight(origin))
+            {
+                int newIndex = SelectedIndex + 1;
 
-            if (newIndex > (GetOptionsCount() - 1))
-                newIndex = 0;
+                if (newIndex > (GetOptionsCount() - 1))
+                    newIndex = 0;
 
-            SelectedIndex = newIndex;
+                SelectedIndex = newIndex;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         public override void Draw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)

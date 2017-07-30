@@ -36,11 +36,15 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal override bool OnPreviewAccept(Menu menuSender)
+        protected internal override bool OnPreviewAccept(Menu origin)
         {
-            State = (State == MenuItemCheckboxState.Empty) ? MenuItemCheckboxState.Tick : MenuItemCheckboxState.Empty;
-            base.OnPreviewAccept(menuSender);
-            return true;
+            if (base.OnPreviewAccept(origin))
+            {
+                State = (State == MenuItemCheckboxState.Empty) ? MenuItemCheckboxState.Tick : MenuItemCheckboxState.Empty;
+                return true;
+            }
+
+            return false;
         }
 
         public override void Draw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)

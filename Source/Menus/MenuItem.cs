@@ -7,9 +7,16 @@ namespace RAGENativeUI.Menus
     public class MenuItem
     {
         public delegate void ActivatedEventHandler(MenuItem sender, Menu origin);
-
+        public delegate bool PreviewControlEventHandler(MenuItem sender, Menu origin); // TODO: PreviewControlEventHandler replace returned bool with property in custom EventArgs?
 
         public event ActivatedEventHandler Activated;
+
+        public event PreviewControlEventHandler PreviewMoveDown;
+        public event PreviewControlEventHandler PreviewMoveUp;
+        public event PreviewControlEventHandler PreviewMoveRight;
+        public event PreviewControlEventHandler PreviewMoveLeft;
+        public event PreviewControlEventHandler PreviewAccept;
+        public event PreviewControlEventHandler PreviewBack;
 
         public string Text { get; set; }
         public string Description { get; set; }
@@ -29,39 +36,44 @@ namespace RAGENativeUI.Menus
             Text = text;
         }
 
-        protected internal virtual bool OnPreviewMoveDown(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveDown(Menu origin)
         {
-            return true;
+            return PreviewMoveDown == null || PreviewMoveDown.Invoke(this, origin);
         }
 
-        protected internal virtual bool OnPreviewMoveUp(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveUp(Menu origin)
         {
-            return true;
+            return PreviewMoveUp == null || PreviewMoveUp.Invoke(this, origin);
         }
 
-        protected internal virtual bool OnPreviewMoveRight(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveRight(Menu origin)
         {
-            return true;
+            return PreviewMoveRight == null || PreviewMoveRight.Invoke(this, origin);
         }
 
-        protected internal virtual bool OnPreviewMoveLeft(Menu menuSender)
+        protected internal virtual bool OnPreviewMoveLeft(Menu origin)
         {
-            return true;
+            return PreviewMoveLeft == null || PreviewMoveLeft.Invoke(this, origin);
         }
 
-        protected internal virtual bool OnPreviewAccept(Menu menuSender)
+        protected internal virtual bool OnPreviewAccept(Menu origin)
         {
-            OnActivated(menuSender);
-            if (BindedMenu != null)
+            if (PreviewAccept == null || PreviewAccept.Invoke(this, origin))
             {
-                BindedMenu.Show(menuSender);
+                OnActivated(origin);
+                if (BindedMenu != null)
+                {
+                    BindedMenu.Show(origin);
+                }
+                return true;
             }
-            return true;
+
+            return false;
         }
 
-        protected internal virtual bool OnPreviewBack(Menu menuSender)
+        protected internal virtual bool OnPreviewBack(Menu origin)
         {
-            return true;
+            return PreviewBack == null || PreviewBack.Invoke(this, origin);
         }
 
         public virtual void Process(Menu sender, bool selected)
