@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RAGENativeUI")]
-[assembly: AssemblyCopyright("Copyright ©  2017 alexguirre")]
+[assembly: AssemblyCopyright("Copyright ©  $YEAR$ alexguirre")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
