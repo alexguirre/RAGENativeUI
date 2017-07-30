@@ -4,7 +4,7 @@ namespace RAGENativeUI.Menus
 
     public class MenuItemEnumScroller<TEnum> : MenuItemEnumScroller where TEnum : struct
     {
-        public TEnum SelectEnumValue { get { return (TEnum)Values.GetValue(SelectedIndex); } set { SelectedIndex = Array.IndexOf(Values, value); } }
+        public TEnum SelectedEnumValue { get { return (TEnum)Values.GetValue(SelectedIndex); } set { SelectedIndex = Array.IndexOf(Values, value); } }
 
         public MenuItemEnumScroller(string text) : base(text, typeof(TEnum))
         {
@@ -14,7 +14,7 @@ namespace RAGENativeUI.Menus
     public class MenuItemEnumScroller : MenuItemScroller
     {
         public Type EnumType { get; }
-        public object SelectValue { get { return Values.GetValue(SelectedIndex); } set { SelectedIndex = Array.IndexOf(Values, value); } }
+        public object SelectedValue { get { return Values.GetValue(SelectedIndex); } set { SelectedIndex = Array.IndexOf(Values, value); } }
         protected Array Values { get; }
 
         public MenuItemEnumScroller(string text, Type enumType) : base(text)

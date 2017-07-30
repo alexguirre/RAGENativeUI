@@ -4,6 +4,7 @@ namespace RAGENativeUI.Menus
     using System.Linq;
     using System.Drawing;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     using Rage;
     using Rage.Native;
@@ -14,8 +15,6 @@ namespace RAGENativeUI.Menus
 
     public class Menu
     {
-        public const float DefaultWidth = 432.0f;
-
         public delegate void ForEachOnScreenItemDelegate(MenuItem item, int index);
 
         public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
@@ -105,7 +104,7 @@ namespace RAGENativeUI.Menus
         /// <value>
         /// A <see cref="GameControl"/>s array.
         /// </value>
-        public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls;
+        public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls.ToArray();
 
         protected int MinVisibleItemIndex { get; set; }
         protected int MaxVisibleItemIndex { get; set; }
@@ -441,7 +440,7 @@ namespace RAGENativeUI.Menus
         public int GetOnScreenItemsCount()
         {
             int count = 0;
-            ForEachItemOnScreen((item, index) => { count++; });
+            ForEachItemOnScreen((item, index) => count++);
             return count;
         }
 
@@ -482,7 +481,8 @@ namespace RAGENativeUI.Menus
         }
 
 
-        protected static readonly GameControl[] DefaultAllowedControls =
+        public const float DefaultWidth = 432.0f;
+        public static readonly ReadOnlyCollection<GameControl> DefaultAllowedControls = Array.AsReadOnly(new[]
         {
             GameControl.MoveUpDown,
             GameControl.MoveLeftRight,
@@ -498,7 +498,7 @@ namespace RAGENativeUI.Menus
             GameControl.ScriptedFlyUpDown,
             GameControl.VehicleFlyYawRight,
             GameControl.VehicleHandbrake,
-        };
+        });
     }
 
 

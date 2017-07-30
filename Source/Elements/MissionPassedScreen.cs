@@ -17,7 +17,7 @@ namespace RAGENativeUI.Elements
         public BigMessage BigMessage { get; private set; }
         public InstructionalButtons InstructionalButtons { get; private set; }
 
-        private int instructionalButtonContinueIndex, instructionalButtonExpandIndex;
+        private readonly int instructionalButtonContinueIndex, instructionalButtonExpandIndex;
 
         private State state;
 
@@ -211,7 +211,7 @@ namespace RAGENativeUI.Elements
                 Color white = HudColor.WHITE.GetColor();
                 Rectangle.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
 
-                // TODO: show items as the background rolls down, instead of showing them at once
+                // TODO: show items as the background rolls down, instead of showing them all at once
                 float y = 0.3387495f;
                 for (int i = 0; i < Math.Min(Items.Count, MaxItemsOnScreenCount - (IsCompletionVisible ? 1 : 0)); i++)
                 {

@@ -65,11 +65,9 @@ namespace RAGENativeUI.Utility
         {
             get
             {
-                if (displayText != null && displayText.Length > 0)
+                if (!String.IsNullOrEmpty(displayText))
                     return displayText;
-                if (Value == null)
-                    return NullValueDisplayText;
-                return Value.ToString();
+                return Value == null ? NullValueDisplayText : Value.ToString();
             }
         }
 
@@ -103,11 +101,12 @@ namespace RAGENativeUI.Utility
         /// </returns>
         public bool Equals(IDisplayItem other)
         {
+            if (other == null)
+                return false;
+
             if (Value == null)
                 return other.Value == null;
-            if (other.Value == null)
-                return false;
-            return Value.Equals(other.Value);
+            return other.Value != null && Value.Equals(other.Value);
         }
 
         /// <summary>
