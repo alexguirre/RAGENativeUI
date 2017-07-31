@@ -65,21 +65,12 @@ namespace Examples
 
             menusMgr.Menus.Add(menu);
             menusMgr.Menus.Add(subMenu);
-
-            MenuSkin redSkin = new MenuSkin(@"RAGENativeUI Resources\menu-red-skin.png");
+            
             GameFiber.StartNew(() =>
             {
                 while (true)
                 {
                     GameFiber.Yield();
-
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
-                    {
-                        if (menu.Skin == MenuSkin.DefaultSkin)
-                            menu.Skin = redSkin;
-                        else
-                            menu.Skin = MenuSkin.DefaultSkin;
-                    }
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
                     {
