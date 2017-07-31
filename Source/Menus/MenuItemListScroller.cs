@@ -31,7 +31,7 @@ namespace RAGENativeUI.Menus
 
         public MenuItemListScroller(string text, IEnumerable<IDisplayItem> items) : base(text)
         {
-            Items = items.ToCollection();
+            Items = new DisplayItemsCollection(items);
         }
 
         public MenuItemListScroller(string text, IEnumerable<object> items) : this(text, items.Select(o => new DisplayItem(o)))
