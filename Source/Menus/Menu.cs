@@ -72,7 +72,7 @@ namespace RAGENativeUI.Menus
                 }
             }
         }
-        public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { selectedIndex = Items.IndexOf(value); } }
+        public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { SelectedIndex = Items.IndexOf(value); } }
         
         public MenuControls Controls { get; set; }
         public MenuSoundsSet SoundsSet { get; set; }
