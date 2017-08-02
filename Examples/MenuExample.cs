@@ -32,7 +32,6 @@ namespace Examples
             menu.Items.Add(new MenuItemListScroller("list scroller #0"));
             menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
 
-
             Menu subMenu = new Menu("SubMenu", "SUB!");
             subMenu.Location = menu.Location;
             for (int i = 1; i <= 999; i++)
@@ -62,6 +61,16 @@ namespace Examples
 
                 menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
             }
+
+            menu.Metadata.Test = new Vector3(50f, 75f, 100f);
+            menu.Items[0].Metadata.Test = 100;
+            menu.Items[0].Activated += (sender, origin) => 
+            {
+                Game.DisplayNotification(menu.Items[0].Metadata.Test.ToString());
+                Game.DisplayNotification(menu.Metadata.Test.ToString());
+                menu.Items[0].Metadata.Test++;
+                menu.Metadata.Test += new Vector3(1f, 1f, 1f);
+            };
 
             menusMgr.Menus.Add(menu);
             menusMgr.Menus.Add(subMenu);
