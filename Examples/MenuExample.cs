@@ -62,13 +62,13 @@ namespace Examples
                 menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
             }
 
-            menu.Metadata.Test = new Vector3(50f, 75f, 100f);
+            menu.Metadata["Test"] = new Vector3(50f, 75f, 100f);
             menu.Items[0].Metadata.Test = 100;
             menu.Items[0].Activated += (sender, origin) => 
             {
                 Game.DisplayNotification(menu.Items[0].Metadata.Test.ToString());
                 Game.DisplayNotification(menu.Metadata.Test.ToString());
-                menu.Items[0].Metadata.Test++;
+                menu.Items[0].Metadata["Test"]++;
                 menu.Metadata.Test += new Vector3(1f, 1f, 1f);
             };
 
