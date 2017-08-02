@@ -1,10 +1,12 @@
 namespace RAGENativeUI.Menus
 {
     using System;
+    using System.Text;
     using System.Linq;
     using System.Drawing;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Text.RegularExpressions;
 
     using Rage;
     using Rage.Native;
@@ -579,6 +581,56 @@ namespace RAGENativeUI.Menus
             base.Insert(index, item);
             item.Size = new SizeF(Menu.Width, item.Size.Height);
             Menu.UpdateVisibleItemsIndices();
+        }
+
+        public MenuItem FindByText(string regexSearchPattern) => FindByText(regexSearchPattern, 0, Count - 1); 
+        public MenuItem FindByText(string regexSearchPattern, int startIndex, int endIndex)
+        {
+            return FindByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Text);
+        }
+
+        public MenuItem FindByDescription(string regexSearchPattern) => FindByText(regexSearchPattern, 0, Count - 1);
+        public MenuItem FindByDescription(string regexSearchPattern, int startIndex, int endIndex)
+        {
+            return FindByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Description);
+        }
+
+        private MenuItem FindByInternal(string regexSearchPattern, int startIndex, int endIndex, Func<MenuItem, string> getInput)
+        {
+            return FindAllByInternal(regexSearchPattern, startIndex, endIndex, getInput).FirstOrDefault();
+        }
+
+        public IEnumerable<MenuItem> FindAllByText(string regexSearchPattern) => FindAllByText(regexSearchPattern, 0, Count - 1);
+        public IEnumerable<MenuItem> FindAllByText(string regexSearchPattern, int startIndex, int endIndex)
+        {
+            return FindAllByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Text);
+        }
+
+        public IEnumerable<MenuItem> FindAllByDescription(string regexSearchPattern) => FindAllByText(regexSearchPattern, 0, Count - 1);
+        public IEnumerable<MenuItem> FindAllByDescription(string regexSearchPattern, int startIndex, int endIndex)
+        {
+            return FindAllByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Description);
+        }
+
+        private IEnumerable<MenuItem> FindAllByInternal(string regexSearchPattern, int startIndex, int endIndex, Func<MenuItem, string> getInput)
+        {
+            if (regexSearchPattern == null)
+                throw new ArgumentNullException(nameof(regexSearchPattern));
+            if (getInput == null)
+                throw new ArgumentNullException(nameof(getInput));
+
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                if (i > 0 && i < Count)
+                {
+                    MenuItem item = this[i];
+                    string input = getInput(item);
+                    if (input != null && Regex.IsMatch(getInput(item), regexSearchPattern, RegexOptions.IgnoreCase))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
     }
 
