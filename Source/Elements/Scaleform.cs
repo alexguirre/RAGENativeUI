@@ -16,6 +16,9 @@ namespace RAGENativeUI.Elements
         private int handle;
         public int Handle { get { return handle; } }
         public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
+        /// <summary>
+        /// Gets the memory address of this instance.
+        /// </summary>
         public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GetMovieRoot() : IntPtr.Zero; } }
 
         public Scaleform(string name)

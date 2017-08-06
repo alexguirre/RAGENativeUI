@@ -41,8 +41,9 @@ namespace RAGENativeUI.Memory.GFx
         {
             if (arrayInstance == null)
             {
-                // TODO: ScaleformData1.GetArrayInstance use FindPattern
-                arrayInstance = (CArray_ScaleformData1*)(System.Diagnostics.Process.GetCurrentProcess().MainModule.BaseAddress + 0x244EAF0);
+                IntPtr address = Game.FindPattern("48 8D 35 ?? ?? ?? ?? 48 8D 3C C0 8B 4C FE B8 E8 ?? ?? ?? ?? 84 C0 74 15");
+                address = address + *(int*)(address + 3) + 7;
+                arrayInstance = (CArray_ScaleformData1*)address;
             }
 
             return arrayInstance;
@@ -75,8 +76,9 @@ namespace RAGENativeUI.Memory.GFx
         {
             if (arrayInstance == null)
             {
-                // TODO: ScaleformData2.GetArrayInstance use FindPattern
-                arrayInstance = (CSimpleArray_ScaleformData2*)(System.Diagnostics.Process.GetCurrentProcess().MainModule.BaseAddress + 0x1F91E70);
+                IntPtr address = Game.FindPattern("48 8B 0D ?? ?? ?? ?? 48 69 D2 ?? ?? ?? ?? 83 BC 0A ?? ?? ?? ?? ?? 0F 94 C0 C3");
+                address = address + *(int*)(address + 3) + 7;
+                arrayInstance = (CSimpleArray_ScaleformData2*)address;
             }
 
             return arrayInstance;
