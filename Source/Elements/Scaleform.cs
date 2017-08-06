@@ -7,15 +7,16 @@ namespace RAGENativeUI.Elements
     using Rage.Native;
 
     using RAGENativeUI.Utility;
+    using RAGENativeUI.Memory.GFx;
 
-    public class Scaleform
+    public class Scaleform : IAddressable
     {
         public string Name { get; }
 
         private int handle;
         public int Handle { get { return handle; } }
-
         public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
+        public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GetMovieRoot() : IntPtr.Zero; } }
 
         public Scaleform(string name)
         {
@@ -131,6 +132,16 @@ namespace RAGENativeUI.Elements
                 LoadAndWait();
 
             NativeFunction.Natives.x1CE592FDC749D6F5(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
+        }
+
+
+        internal unsafe GFxMovieRoot* GetMovieRoot()
+        {
+            int index = Handle - 1;
+            short data2Index = ScaleformData1.GetArrayInstance()->Get(index)->ScaleformIndex;
+            int storeIndex = ScaleformData2.GetArrayInstance()->Get(data2Index)->ScaleformStorePoolIndex;
+            GFxMovieRoot* movieRoot = CScaleformStore.GetInstance()->GetPoolItem(storeIndex)->MovieObject->GetMovieRoot();
+            return movieRoot;
         }
     }
 }

@@ -24,6 +24,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <LangVersion>7</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\bin\</OutputPath>
@@ -34,6 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\bin\RAGENativeUI.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
@@ -64,6 +66,11 @@
     <Compile Include="Elements\TextureDictionary.cs" />
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\TimerBarsManager.cs" />
+    <Compile Include="Memory\CPool.cs" />
+    <Compile Include="Memory\GFx\CScaleformDef.cs" />
+    <Compile Include="Memory\GFx\CScaleformMovieObject.cs" />
+    <Compile Include="Memory\GFx\CScaleformStore.cs" />
+    <Compile Include="Memory\GFx\GFxMovieRoot.cs" />
     <Compile Include="Menus\IMenuComponent.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\MenuBackground.cs" />

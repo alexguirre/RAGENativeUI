@@ -29,7 +29,8 @@ namespace Examples
                 while (true)
                 {
                     GameFiber.Yield();
-                    
+
+                    Game.DisplayHelp(sc.MemoryAddress.ToString("X"));
                     sc.Draw(rect);
                     sc.Draw();
                     sc.Draw3D(Game.LocalPlayer.Character.GetOffsetPositionUp(5.45f), Rotator.Zero, new Vector3(12.0f, 9.0f, 1.0f));
