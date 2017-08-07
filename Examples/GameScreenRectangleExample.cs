@@ -1,16 +1,10 @@
 namespace Examples
 {
-    using System.Drawing;
-
     using Rage;
     using Rage.Native;
     using Rage.Attributes;
-    using Graphics = Rage.Graphics;
 
     using RAGENativeUI;
-    using RAGENativeUI.Menus;
-    using RAGENativeUI.Menus.Rendering;
-    using RAGENativeUI.Utility;
 
     internal static class GameScreenRectangleExample
     {

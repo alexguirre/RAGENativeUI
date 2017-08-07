@@ -1,10 +1,9 @@
-namespace RAGENativeUI.Utility
+namespace RAGENativeUI
 {
-    using System;
     using System.Dynamic;
     using System.Collections.Generic;
 
-    public class Metadata : DynamicObject
+    public sealed class Metadata : DynamicObject
     {
         Dictionary<string, object> dictionary;
 

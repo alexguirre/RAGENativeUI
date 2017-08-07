@@ -7,7 +7,6 @@ namespace Examples
     using Rage.Attributes;
 
     using RAGENativeUI.Menus;
-    using RAGENativeUI.Menus.Rendering;
 
     internal static class MenuExample
     {

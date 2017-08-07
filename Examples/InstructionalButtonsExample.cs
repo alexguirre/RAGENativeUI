@@ -4,13 +4,9 @@ namespace Examples
     using System.Drawing;
 
     using Rage;
-    using Rage.Native;
     using Rage.Attributes;
-    using Graphics = Rage.Graphics;
-
-    using RAGENativeUI;
-    using RAGENativeUI.Elements;
-    using RAGENativeUI.Utility;
+    
+    using RAGENativeUI.Scaleforms;
 
     internal static class InstructionalButtonsExample
     {

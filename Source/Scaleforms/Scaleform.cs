@@ -1,12 +1,11 @@
-namespace RAGENativeUI.Elements
+namespace RAGENativeUI.Scaleforms
 {
     using System;
     using System.Drawing;
 
     using Rage;
     using Rage.Native;
-
-    using RAGENativeUI.Utility;
+    
     using RAGENativeUI.Memory.GFx;
 
     public class Scaleform : IAddressable

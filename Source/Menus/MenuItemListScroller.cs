@@ -4,8 +4,6 @@ namespace RAGENativeUI.Menus
     using System.Linq;
     using System.Collections.Generic;
 
-    using RAGENativeUI.Utility;
-
     public class MenuItemListScroller : MenuItemScroller
     {
         private DisplayItemsCollection items;

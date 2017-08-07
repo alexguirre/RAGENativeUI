@@ -4,8 +4,6 @@ namespace RAGENativeUI.Menus
     
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Utility;
-
     public class MenuItem
     {
         public delegate void ActivatedEventHandler(MenuItem sender, Menu origin);

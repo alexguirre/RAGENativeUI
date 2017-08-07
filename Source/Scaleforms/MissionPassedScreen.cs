@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Elements
+namespace RAGENativeUI.Scaleforms
 {
     using System;
     using System.Drawing;
@@ -6,7 +6,7 @@ namespace RAGENativeUI.Elements
     using Rage;
     using Rage.Native;
 
-    using RAGENativeUI.Utility;
+    using RAGENativeUI.Elements;
 
     public class MissionPassedScreen : IDisposable
     {
@@ -209,7 +209,7 @@ namespace RAGENativeUI.Elements
             if(state == State.WaitForInputExpanded)
             {
                 Color white = HudColor.WHITE.GetColor();
-                Rectangle.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
+                Box.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
 
                 // TODO: show items as the background rolls down, instead of showing them all at once
                 float y = 0.3387495f;
@@ -235,7 +235,7 @@ namespace RAGENativeUI.Elements
 
                 y += 27.5f * 0.2f * 0.001388889f;
 
-                Rectangle.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
+                Box.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
 
                 if (IsCompletionVisible)
                 {

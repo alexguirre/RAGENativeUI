@@ -5,8 +5,6 @@ namespace RAGENativeUI.Elements
 
     using Rage;
     using Rage.Native;
-    
-    using RAGENativeUI.Utility;
 
     public abstract class TimerBarBase
     {
@@ -97,13 +95,13 @@ namespace RAGENativeUI.Elements
         public Color BackColor { get { return BackRectangleElement.Color; } set { BackRectangleElement.Color = value; } }
         public Color ForeColor { get { return ForeRectangleElement.Color; } set { ForeRectangleElement.Color = value; } }
 
-        protected Rectangle BackRectangleElement { get; set; }
-        protected Rectangle ForeRectangleElement { get; set; }
+        protected Box BackRectangleElement { get; set; }
+        protected Box ForeRectangleElement { get; set; }
 
         public ProgressTimerBar(string label, Color backColor, Color foreColor) : base(label)
         {
-            BackRectangleElement = new Rectangle(GameScreenRectangle.FromRelativeCoords(BarX, -1.0f, BarW, BarH), backColor) { IsVisible = true };
-            ForeRectangleElement = new Rectangle(GameScreenRectangle.FromRelativeCoords(BarX, -1.0f, BarW, BarH), foreColor) { IsVisible = true };
+            BackRectangleElement = new Box(GameScreenRectangle.FromRelativeCoords(BarX, -1.0f, BarW, BarH), backColor) { IsVisible = true };
+            ForeRectangleElement = new Box(GameScreenRectangle.FromRelativeCoords(BarX, -1.0f, BarW, BarH), foreColor) { IsVisible = true };
         }
 
         public ProgressTimerBar(string label) : this(label, Color.DarkRed, Color.Red)
@@ -119,11 +117,11 @@ namespace RAGENativeUI.Elements
             float rectY = y;
             base.Draw(ref y);
 
-            BackRectangleElement.ScreenRectangle = GameScreenRectangle.FromRelativeCoords(BarX, rectY, BarW, BarH);
+            BackRectangleElement.Rectangle = GameScreenRectangle.FromRelativeCoords(BarX, rectY, BarW, BarH);
             BackRectangleElement.Draw();
             float x = BarX - BarW / 2f + BarW / 2f * percentage;
             float w = BarW * percentage;
-            ForeRectangleElement.ScreenRectangle = GameScreenRectangle.FromRelativeCoords(x, rectY, w, BarH);
+            ForeRectangleElement.Rectangle = GameScreenRectangle.FromRelativeCoords(x, rectY, w, BarH);
             ForeRectangleElement.Draw();
         }
     }

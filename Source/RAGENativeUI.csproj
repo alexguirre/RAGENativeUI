@@ -55,15 +55,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
-    <Compile Include="Elements\BigMessage.cs" />
-    <Compile Include="Elements\HudColor.cs" />
-    <Compile Include="Elements\InstructionalButtons.cs" />
-    <Compile Include="Elements\MissionPassedScreen.cs" />
-    <Compile Include="Elements\Rectangle.cs" />
-    <Compile Include="Elements\Scaleform.cs" />
+    <Compile Include="Scaleforms\BigMessage.cs" />
+    <Compile Include="HudColor.cs" />
+    <Compile Include="Scaleforms\InstructionalButtons.cs" />
+    <Compile Include="Scaleforms\MissionPassedScreen.cs" />
+    <Compile Include="Elements\Box.cs" />
+    <Compile Include="Scaleforms\Scaleform.cs" />
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="Elements\Text.cs" />
-    <Compile Include="Elements\TextureDictionary.cs" />
+    <Compile Include="TextureDictionary.cs" />
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\TimerBarsManager.cs" />
     <Compile Include="Memory\CPool.cs" />
@@ -96,14 +96,14 @@
     </Compile>
     <Compile Include="Rendering\ISkin.cs" />
     <Compile Include="Rendering\TextAligment.cs" />
-    <Compile Include="Utility\BaseCollection.cs" />
-    <Compile Include="Utility\Control.cs" />
-    <Compile Include="Utility\DisplayItem.cs" />
-    <Compile Include="Utility\Font.cs" />
-    <Compile Include="Utility\GameScreenRectangle.cs" />
-    <Compile Include="Utility\FrontendSound.cs" />
-    <Compile Include="Utility\Metadata.cs" />
-    <Compile Include="Utility\UVCoords.cs" />
+    <Compile Include="BaseCollection.cs" />
+    <Compile Include="Control.cs" />
+    <Compile Include="DisplayItem.cs" />
+    <Compile Include="Rendering\Font.cs" />
+    <Compile Include="GameScreenCoords.cs" />
+    <Compile Include="FrontendSound.cs" />
+    <Compile Include="Metadata.cs" />
+    <Compile Include="UVCoords.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="RAGENativeUI Resources\menu-default-skin.PNG">

@@ -1,25 +1,18 @@
 namespace Examples
 {
-    using System;
     using System.Drawing;
 
     using Rage;
-    using Rage.Native;
     using Rage.Attributes;
-    using Graphics = Rage.Graphics;
 
     using RAGENativeUI;
     using RAGENativeUI.Elements;
-    using RAGENativeUI.Utility;
 
     internal static class TextExample
     {
         [ConsoleCommand(Name = "TextExample", Description = "Example showing the Text class.")]
         private static void Command()
         {
-            GameScreenRectangle fromAbsolute = GameScreenRectangle.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
-            GameScreenRectangle fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
-
             Text text1 = new Text("Left", GameScreenPosition.FromRelativeCoords(0.5f, 0.25f), 1.0f) { IsVisible = true, Alignment = TextAlignment.Left };
             Text text2 = new Text("Center", GameScreenPosition.FromRelativeCoords(0.5f, 0.5f), 1.0f) { IsVisible = true, Alignment = TextAlignment.Center };
             Text text3 = new Text("Right", GameScreenPosition.FromRelativeCoords(0.5f, 0.75f), 1.0f) { IsVisible = true, Alignment = TextAlignment.Right };

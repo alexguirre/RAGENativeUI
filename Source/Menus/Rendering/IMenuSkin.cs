@@ -3,7 +3,6 @@ namespace RAGENativeUI.Menus.Rendering
     using Rage;
 
     using RAGENativeUI.Rendering;
-    using RAGENativeUI.Utility;
 
     public interface IMenuSkin : ISkin
     {

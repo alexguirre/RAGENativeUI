@@ -1,25 +1,18 @@
 namespace Examples
 {
-    using System;
     using System.Drawing;
 
     using Rage;
-    using Rage.Native;
     using Rage.Attributes;
-    using Graphics = Rage.Graphics;
 
     using RAGENativeUI;
     using RAGENativeUI.Elements;
-    using RAGENativeUI.Utility;
 
     internal static class SpriteExample
     {
         [ConsoleCommand(Name = "SpriteExample", Description = "Example showing the Sprite class.")]
         private static void Command()
         {
-            GameScreenRectangle fromAbsolute = GameScreenRectangle.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
-            GameScreenRectangle fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
-
             TextureDictionary dict = new TextureDictionary("gtav_online");
             Game.LogTrivial(dict.Name);
             foreach (string name in dict.Textures)

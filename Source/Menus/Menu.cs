@@ -13,7 +13,6 @@ namespace RAGENativeUI.Menus
     using Graphics = Rage.Graphics;
 
     using RAGENativeUI.Menus.Rendering;
-    using RAGENativeUI.Utility;
 
     public class Menu
     {

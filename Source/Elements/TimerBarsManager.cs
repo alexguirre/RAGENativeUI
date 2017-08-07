@@ -4,9 +4,6 @@ namespace RAGENativeUI.Elements
     using System.Linq;
 
     using Rage;
-    using Rage.Native;
-
-    using RAGENativeUI.Utility;
 
     public class TimerBarsManager : IDisposable
     {

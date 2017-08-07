@@ -6,8 +6,6 @@ namespace RAGENativeUI.Elements
     using Rage;
     using Rage.Native;
 
-    using RAGENativeUI.Utility;
-
     public class Sprite
     {
         public TextureDictionary TextureDictionary { get; set; }

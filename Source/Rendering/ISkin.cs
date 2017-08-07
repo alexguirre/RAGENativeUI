@@ -5,9 +5,6 @@ namespace RAGENativeUI.Rendering
     using Rage;
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Utility;
-    using Font = RAGENativeUI.Utility.Font;
-
     public interface ISkin
     {
         Texture Image { get; }

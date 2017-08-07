@@ -1,11 +1,9 @@
-namespace RAGENativeUI.Elements
+namespace RAGENativeUI.Scaleforms
 {
     using System;
     using System.Drawing;
 
     using Rage;
-
-    using RAGENativeUI.Utility;
 
     public class BigMessage : Scaleform
     {

@@ -1,9 +1,8 @@
-namespace RAGENativeUI.Utility
+namespace RAGENativeUI
 {
     using System.Drawing;
 
     using Rage;
-    using Rage.Native;
     
     public struct GameScreenRectangle
     {

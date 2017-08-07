@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Utility
+namespace RAGENativeUI
 {
     public struct UVCoords
     {

@@ -1,9 +1,8 @@
-namespace RAGENativeUI.Utility
+namespace RAGENativeUI.Rendering
 {
     using System;
     using System.Drawing;
-
-    using Rage;
+    
     using Graphics = Rage.Graphics;
 
     public struct Font

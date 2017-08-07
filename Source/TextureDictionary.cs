@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Elements
+namespace RAGENativeUI
 {
     using System.Collections.Generic;
 

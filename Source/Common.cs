@@ -9,8 +9,6 @@ namespace RAGENativeUI
     using Rage;
     using Rage.Native;
 
-    using RAGENativeUI.Utility;
-
     internal static class Common
     {
         public const string ResourcesFolder = @"RAGENativeUI Resources\";
@@ -35,7 +33,7 @@ namespace RAGENativeUI
             NativeFunction.Natives.PlaySoundFrontend(-1, soundName, soundSet, false);
         }
 
-        public static string WrapText(string text, Font font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
+        public static string WrapText(string text, Rendering.Font font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
         public static string WrapText(string text, string fontName, float fontSize, float widthLimit)
         {
             float GetTextWidth(string str)

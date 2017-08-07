@@ -5,8 +5,6 @@ namespace RAGENativeUI.Menus
 
     using Rage;
 
-    using RAGENativeUI.Utility;
-
     public class MenusManager : IDisposable
     {
         private MenusCollection menus;

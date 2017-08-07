@@ -1,13 +1,11 @@
-namespace RAGENativeUI.Elements
+namespace RAGENativeUI.Scaleforms
 {
     using System;
     using System.Drawing;
 
     using Rage;
     using Rage.Native;
-
-    using RAGENativeUI.Utility;
-
+    
     public class InstructionalButtons : Scaleform
     {
         private InstructionalButtonsSlots slots;

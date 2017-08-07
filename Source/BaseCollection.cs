@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Utility
+namespace RAGENativeUI
 {
     using System;
     using System.Collections;

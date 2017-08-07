@@ -8,8 +8,7 @@ namespace RAGENativeUI.Menus.Rendering
     using Graphics = Rage.Graphics;
 
     using RAGENativeUI.Rendering;
-    using RAGENativeUI.Utility;
-    using Font = RAGENativeUI.Utility.Font;
+    using Font = RAGENativeUI.Rendering.Font;
 
     public class MenuSkin : IMenuSkin
     {

@@ -1,22 +1,18 @@
 namespace RAGENativeUI.Elements
 {
-    using System;
     using System.Drawing;
-
-    using Rage;
+    
     using Rage.Native;
 
-    using RAGENativeUI.Utility;
-
-    public class Rectangle
+    public class Box
     {
         public bool IsVisible { get; set; }
-        public GameScreenRectangle ScreenRectangle { get; set; }
+        public GameScreenRectangle Rectangle { get; set; }
         public Color Color { get; set; }
 
-        public Rectangle(GameScreenRectangle rectangle, Color color)
+        public Box(GameScreenRectangle rectangle, Color color)
         {
-            ScreenRectangle = rectangle;
+            Rectangle = rectangle;
             Color = color;
         }
 
@@ -25,7 +21,7 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            Draw(ScreenRectangle, Color);
+            Draw(Rectangle, Color);
         }
 
 
