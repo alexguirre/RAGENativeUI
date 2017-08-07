@@ -12,39 +12,41 @@ namespace RAGENativeUI.Memory
         public struct TxdNameHash
         {
             public uint Hash;
-            public ushort Index;
+            public ushort PoolIndex;
+            public ushort NextIndex;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Size = 2)]
+        public struct TxdIndex
+        {
+            public ushort HashIndex;
         }
 
         [FieldOffset(0x0038)] public CPool Pool;
 
         [FieldOffset(0x0070)] public TxdNameHash* HashesArray;
+        [FieldOffset(0x0078)] public TxdIndex* IndicesArray;
+        [FieldOffset(0x0080)] public ushort IndicesArraySize;
         [FieldOffset(0x0082)] public ushort HashesArraySize;
-
-        public fwTxdDef* GetPoolItem(int index)
-        {
-            return (fwTxdDef*)Pool.Get(unchecked((uint)index));
-        }
 
         public pgDictionary_grcTexture* GetDictionaryByName(string name) => GetDictionaryByHash(Game.GetHashKey(name));
         public pgDictionary_grcTexture* GetDictionaryByHash(uint hash)
         {
-            for (uint i = 0; i < HashesArraySize; i++)
+            ushort index = IndicesArray[hash % IndicesArraySize].HashIndex;
+
+            if (index == 0xFFFF)
+                return null;
+
+            while (HashesArray[index].Hash != hash)
             {
-                TxdNameHash h = HashesArray[i];
-
-                if (h.Hash != hash)
-                    continue;
-
-                ushort index = h.Index;
-
+                index = HashesArray[index].NextIndex;
                 if (index == 0xFFFF)
-                    break;
-
-                fwTxdDef* def = GetPoolItem(index);
-                return def->TexturesDictionary;
+                    return null;
             }
 
-            return null;
+            uint poolIndex = HashesArray[index].PoolIndex;
+            fwTxdDef* def = (fwTxdDef*)Pool.Get(poolIndex);
+            return def == null ? null : def->TexturesDictionary;
         }
 
         private static fwTxdStore* instance;
