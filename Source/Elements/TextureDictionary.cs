@@ -11,7 +11,7 @@ namespace RAGENativeUI.Elements
     {
         public string Name { get; }
         public bool IsLoaded { get { return NativeFunction.Natives.HasStreamedTextureDictLoaded<bool>(Name); } }
-        public string[] TextureNames { get { return GetTextureNames(this); } }
+        public string[] Textures { get { return GetTextureNames(this); } }
 
         public TextureDictionary(string name)
         {

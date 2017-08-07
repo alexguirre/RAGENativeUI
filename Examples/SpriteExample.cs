@@ -22,7 +22,7 @@ namespace Examples
 
             TextureDictionary dict = new TextureDictionary("gtav_online");
             Game.LogTrivial(dict.Name);
-            foreach (string name in dict.TextureNames)
+            foreach (string name in dict.Textures)
             {
                 Game.LogTrivial("   " + name);
             }
