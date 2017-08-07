@@ -16,7 +16,7 @@ namespace RAGENativeUI.Scaleforms
         public int Handle { get { return handle; } }
         public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
         /// <summary>
-        /// Gets the memory address of this instance.
+        /// Gets the memory address of this instance. If this <see cref="Scaleform"/> isn't loaded, returns <see cref="IntPtr.Zero"/>.
         /// </summary>
         public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GetMovieRoot() : IntPtr.Zero; } }
 

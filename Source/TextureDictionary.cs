@@ -1,5 +1,6 @@
 namespace RAGENativeUI
 {
+    using System;
     using System.Collections.Generic;
 
     using Rage;
@@ -7,15 +8,19 @@ namespace RAGENativeUI
 
     using RAGENativeUI.Memory;
 
-    public struct TextureDictionary : INamedAsset
+    public struct TextureDictionary : INamedAsset, IAddressable
     {
         public string Name { get; }
         public bool IsLoaded { get { return NativeFunction.Natives.HasStreamedTextureDictLoaded<bool>(Name); } }
         public string[] Textures { get { return GetTextureNames(this); } }
+        /// <summary>
+        /// Gets the memory address of this instance. If this <see cref="TextureDictionary"/> isn't loaded, returns <see cref="IntPtr.Zero"/>.
+        /// </summary>
+        public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)fwTxdStore.GetInstance()->GetDictionaryByName(Name) : IntPtr.Zero; } }
 
         public TextureDictionary(string name)
         {
-            Name = name ?? throw new System.ArgumentNullException($"{nameof(Name)} can't be null.");
+            Name = name ?? throw new ArgumentNullException($"{nameof(Name)} can't be null.");
         }
 
         public void Dismiss()
@@ -32,8 +37,8 @@ namespace RAGENativeUI
         {
             Load();
 
-            int endTime = System.Environment.TickCount + 5000;
-            while (!IsLoaded && endTime > System.Environment.TickCount)
+            int endTime = Environment.TickCount + 5000;
+            while (!IsLoaded && endTime > Environment.TickCount)
                 GameFiber.Yield();
         }
 
