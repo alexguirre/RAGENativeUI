@@ -67,10 +67,13 @@
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\TimerBarsManager.cs" />
     <Compile Include="Memory\CPool.cs" />
+    <Compile Include="Memory\fwTxdDef.cs" />
+    <Compile Include="Memory\fwTxdStore.cs" />
     <Compile Include="Memory\GFx\CScaleformDef.cs" />
     <Compile Include="Memory\GFx\CScaleformMovieObject.cs" />
     <Compile Include="Memory\GFx\CScaleformStore.cs" />
     <Compile Include="Memory\GFx\GFxMovieRoot.cs" />
+    <Compile Include="Memory\grcTexture.cs" />
     <Compile Include="Menus\IMenuComponent.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\MenuBackground.cs" />

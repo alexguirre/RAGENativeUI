@@ -20,6 +20,13 @@ namespace Examples
             GameScreenRectangle fromAbsolute = GameScreenRectangle.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
             GameScreenRectangle fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
 
+            TextureDictionary dict = new TextureDictionary("gtav_online");
+            Game.LogTrivial(dict.Name);
+            foreach (string name in dict.TextureNames)
+            {
+                Game.LogTrivial("   " + name);
+            }
+
             Sprite sprite = new Sprite("3dtextures", "mpgroundlogo_cops", GameScreenRectangle.FromAbsoluteCoords(1920f / 2f - 64f, 1080f / 2f - 64f, 128f, 128f));
             Game.LogTrivial($"TextureDictionary: {sprite.TextureDictionary.Name}");
             Game.LogTrivial($"TextureName: {sprite.TextureName}");

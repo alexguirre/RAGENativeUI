@@ -12,7 +12,7 @@ namespace RAGENativeUI.Memory
         [FieldOffset(0x14)] private uint itemSize;
         [FieldOffset(0x18)] private uint nextEmptyItemSlotIndex; // 0xFFFFFFFF == pool full
         [FieldOffset(0x1C)] private uint lastInvalidatedItemSlotIndex;
-        [FieldOffset(0x20)] private uint count; // real count = (unchecked(4 * count >> 2))  or  (count & 0x3FFFFFFF)
+        [FieldOffset(0x20)] private uint count;
         [FieldOffset(0x24)] private uint unk;
 
         public uint Size => size;
