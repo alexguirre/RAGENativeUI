@@ -76,6 +76,8 @@ namespace RAGENativeUI
 
             return resultText.ToString().TrimEnd();
         }
+
+        public static void Log(object o) => Game.LogTrivial($"[RAGENativeUI] {o}");
     }
 }
 

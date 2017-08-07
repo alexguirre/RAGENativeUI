@@ -21,6 +21,12 @@ namespace RAGENativeUI.Memory.GFx
             if (instance == null)
             {
                 IntPtr address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 84 C0 74 18");
+                if(address == IntPtr.Zero)
+                {
+                    Common.Log($"Incompatible game version, couldn't find {nameof(CScaleformStore)} instance.");
+                    return null;
+                }
+
                 address = address + *(int*)(address + 3) + 7;
                 instance = (CScaleformStore*)address;
             }
@@ -42,6 +48,12 @@ namespace RAGENativeUI.Memory.GFx
             if (arrayInstance == null)
             {
                 IntPtr address = Game.FindPattern("48 8D 35 ?? ?? ?? ?? 48 8D 3C C0 8B 4C FE B8 E8 ?? ?? ?? ?? 84 C0 74 15");
+                if (address == IntPtr.Zero)
+                {
+                    Common.Log($"Incompatible game version, couldn't find {nameof(CArray_ScaleformData1)} instance.");
+                    return null;
+                }
+
                 address = address + *(int*)(address + 3) + 7;
                 arrayInstance = (CArray_ScaleformData1*)address;
             }
@@ -77,6 +89,12 @@ namespace RAGENativeUI.Memory.GFx
             if (arrayInstance == null)
             {
                 IntPtr address = Game.FindPattern("48 8B 0D ?? ?? ?? ?? 48 69 D2 ?? ?? ?? ?? 83 BC 0A ?? ?? ?? ?? ?? 0F 94 C0 C3");
+                if (address == IntPtr.Zero)
+                {
+                    Common.Log($"Incompatible game version, couldn't find {nameof(CSimpleArray_ScaleformData2)} instance.");
+                    return null;
+                }
+
                 address = address + *(int*)(address + 3) + 7;
                 arrayInstance = (CSimpleArray_ScaleformData2*)address;
             }
