@@ -8,30 +8,35 @@ namespace RAGENativeUI.Elements
 
     public abstract class TimerBarBase
     {
+        protected const float DefaultWidth = 0.157f, DefaultHeight = 0.036f;
+
         public bool IsVisible { get; set; }
 
         protected Sprite Background { get; set; }
 
+        // in relative coords
+        public float Width { get; set; } = DefaultWidth;
+        public float Height { get; set; } = DefaultHeight;
+
         public TimerBarBase()
         {
-            Background = new Sprite("timerbars", "all_black_bg", GameScreenRectangle.FromRelativeCoords(-1.0f, -1.0f, W, H), Color.FromArgb(140, 255, 255, 255)) { IsVisible = true };
+            Background = new Sprite("timerbars", "all_black_bg", GameScreenRectangle.FromRelativeCoords(-1.0f, -1.0f, Width, Height), Color.FromArgb(140, 255, 255, 255)) { IsVisible = true };
         }
 
 
-        protected const float W = 0.157f, H = 0.036f;
         public virtual void Draw(ref float y, float x) // y and x are where the bottom-right corner should be located, y should be set to the next timerbar bottom-right corner
         {
             if (!IsVisible)
                 return;
             
-            Background.Rectangle = GameScreenRectangle.FromRelativeCoords(x - W * 0.5f, y - H * 0.5f, W, H);
+            Background.Rectangle = GameScreenRectangle.FromRelativeCoords(x - Width * 0.5f, y - Height * 0.5f, Width, Height);
             Background.Draw();
 
             NativeFunction.Natives.HideHudComponentThisFrame(6); // VehicleName
             NativeFunction.Natives.HideHudComponentThisFrame(7); // AreaName
             NativeFunction.Natives.HideHudComponentThisFrame(9); // StreetName
 
-            y -= H + 0.003f;
+            y -= Height + 0.003f;
         }
     }
 
@@ -52,8 +57,8 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            float labelX = (x - W * 0.5f) - 0.01f;
-            float labelY = (y - H * 0.5f) - 0.01f;
+            float labelX = (x - Width * 0.5f) - 0.01f;
+            float labelY = (y - Height * 0.5f) - 0.01f;
             base.Draw(ref y, x);
 
             LabelElement.Position = GameScreenPosition.FromRelativeCoords(labelX, labelY);
@@ -78,8 +83,8 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            float textX = (x - W * 0.5f) + 0.0755f;
-            float textY = (y - H * 0.5f) - H / 2f;
+            float textX = (x - Width * 0.5f) + 0.0755f;
+            float textY = (y - Height * 0.5f) - Height * 0.5f;
             base.Draw(ref y, x);
 
             TextElement.Position = GameScreenPosition.FromRelativeCoords(textX, textY);
@@ -100,29 +105,30 @@ namespace RAGENativeUI.Elements
 
         public ProgressTimerBar(string label, Color backColor, Color foreColor) : base(label)
         {
-            BackRectangleElement = new Box(GameScreenRectangle.FromRelativeCoords(-1.0f, -1.0f, BarW, BarH), backColor) { IsVisible = true };
-            ForeRectangleElement = new Box(GameScreenRectangle.FromRelativeCoords(-1.0f, -1.0f, BarW, BarH), foreColor) { IsVisible = true };
+            BackRectangleElement = new Box(GameScreenRectangle.FromRelativeCoords(-1.0f, -1.0f, 0f, 0f), backColor) { IsVisible = true };
+            ForeRectangleElement = new Box(GameScreenRectangle.FromRelativeCoords(-1.0f, -1.0f, 0f, 0f), foreColor) { IsVisible = true };
         }
 
         public ProgressTimerBar(string label) : this(label, Color.DarkRed, Color.Red)
         {
         }
-
-        protected const float BarW = W / 2.25f, BarH = H / 3f; // TODO: set bar size the same as the game real timer bars
+        
         public override void Draw(ref float y, float x)
         {
             if (!IsVisible)
                 return;
 
-            float barX = (x - W * 0.5f) + 0.04f;
-            float barY = (y - H * 0.5f);
+            float barX = (x - Width * 0.5f) + 0.04f;
+            float barY = (y - Height * 0.5f);
+            float barW = Width / 2.25f;
+            float barH = Height / 3f;
             base.Draw(ref y, x);
 
-            BackRectangleElement.Rectangle = GameScreenRectangle.FromRelativeCoords(barX, barY, BarW, BarH);
+            BackRectangleElement.Rectangle = GameScreenRectangle.FromRelativeCoords(barX, barY, barW, barH);
             BackRectangleElement.Draw();
-            float x2 = barX - BarW / 2f + BarW / 2f * percentage;
-            float w = BarW * percentage;
-            ForeRectangleElement.Rectangle = GameScreenRectangle.FromRelativeCoords(x2, barY, w, BarH);
+            float x2 = barX - barW * 0.5f + barW * 0.5f * percentage;
+            float w = barW * percentage;
+            ForeRectangleElement.Rectangle = GameScreenRectangle.FromRelativeCoords(x2, barY, w, barH);
             ForeRectangleElement.Draw();
         }
     }
