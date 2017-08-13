@@ -55,6 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Memory\CScreenEffect.cs" />
+    <Compile Include="Memory\CScreenEffectsManager.cs" />
+    <Compile Include="Memory\GameFunctions.cs" />
+    <Compile Include="Memory\GameMemory.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Scaleforms\InstructionalButtons.cs" />
@@ -63,6 +67,7 @@
     <Compile Include="Scaleforms\Scaleform.cs" />
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="Elements\Text.cs" />
+    <Compile Include="ScreenEffect.cs" />
     <Compile Include="TextureDictionary.cs" />
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\TimerBarsManager.cs" />

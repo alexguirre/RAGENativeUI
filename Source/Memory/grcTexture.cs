@@ -38,32 +38,31 @@ namespace RAGENativeUI.Memory
         {
             return depth;
         }
-    }
 
-    [StructLayout(LayoutKind.Sequential)]
-    internal unsafe struct CSimpleArrayPtr_grcTexture
-    {
-        public grcTexture** Offset;
-        public ushort Count;
-        public ushort Size;
-
-        public grcTexture* Get(ushort index)
+        [StructLayout(LayoutKind.Sequential)]
+        internal unsafe struct CSimpleArrayPtr
         {
-            if (index >= Size)
+            public grcTexture** Offset;
+            public ushort Count;
+            public ushort Size;
+
+            public grcTexture* Get(ushort index)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CSimpleArrayPtr_grcTexture)} is {Size}, the index {index} is out of range.");
+                if (index >= Size)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(grcTexture)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
+                }
+
+                return Offset[index];
             }
-
-            return Offset[index];
         }
-    }
 
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct pgDictionary_grcTexture
-    {
-        //[FieldOffset(0x0020)] public CSimpleArray_UInt32 Keys;
-        [FieldOffset(0x0030)] public CSimpleArrayPtr_grcTexture Values;
+        [StructLayout(LayoutKind.Explicit)]
+        internal unsafe struct pgDictionary
+        {
+            //[FieldOffset(0x0020)] public CSimpleArray_UInt32 Keys;
+            [FieldOffset(0x0030)] public CSimpleArrayPtr Values;
+        }
     }
 }
 

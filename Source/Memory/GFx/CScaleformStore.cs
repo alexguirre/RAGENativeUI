@@ -14,25 +14,6 @@ namespace RAGENativeUI.Memory.GFx
         {
             return (CScaleformDef*)Pool.Get(unchecked((uint)index));
         }
-
-        private static CScaleformStore* instance;
-        public static CScaleformStore* GetInstance()
-        {
-            if (instance == null)
-            {
-                IntPtr address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 84 C0 74 18");
-                if(address == IntPtr.Zero)
-                {
-                    Common.Log($"Incompatible game version, couldn't find {nameof(CScaleformStore)} instance.");
-                    return null;
-                }
-
-                address = address + *(int*)(address + 3) + 7;
-                instance = (CScaleformStore*)address;
-            }
-
-            return instance;
-        }
     }
 
 
@@ -42,28 +23,8 @@ namespace RAGENativeUI.Memory.GFx
         [FieldOffset(0x0000)] public short ScaleformIndex; // in ScaleformData2 array
 
 
-        private static CArray_ScaleformData1* arrayInstance;
-        public static CArray_ScaleformData1* GetArrayInstance()
-        {
-            if (arrayInstance == null)
-            {
-                IntPtr address = Game.FindPattern("48 8D 35 ?? ?? ?? ?? 48 8D 3C C0 8B 4C FE B8 E8 ?? ?? ?? ?? 84 C0 74 15");
-                if (address == IntPtr.Zero)
-                {
-                    Common.Log($"Incompatible game version, couldn't find {nameof(CArray_ScaleformData1)} instance.");
-                    return null;
-                }
-
-                address = address + *(int*)(address + 3) + 7;
-                arrayInstance = (CArray_ScaleformData1*)address;
-            }
-
-            return arrayInstance;
-        }
-
-
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CArray_ScaleformData1
+        public unsafe struct CArray
         {
             private ScaleformData1 start;
 
@@ -83,28 +44,8 @@ namespace RAGENativeUI.Memory.GFx
         [FieldOffset(0x00B0)] public int ScaleformStorePoolIndex;
 
 
-        private static CSimpleArray_ScaleformData2* arrayInstance;
-        public static CSimpleArray_ScaleformData2* GetArrayInstance()
-        {
-            if (arrayInstance == null)
-            {
-                IntPtr address = Game.FindPattern("48 8B 0D ?? ?? ?? ?? 48 69 D2 ?? ?? ?? ?? 83 BC 0A ?? ?? ?? ?? ?? 0F 94 C0 C3");
-                if (address == IntPtr.Zero)
-                {
-                    Common.Log($"Incompatible game version, couldn't find {nameof(CSimpleArray_ScaleformData2)} instance.");
-                    return null;
-                }
-
-                address = address + *(int*)(address + 3) + 7;
-                arrayInstance = (CSimpleArray_ScaleformData2*)address;
-            }
-
-            return arrayInstance;
-        }
-
-
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CSimpleArray_ScaleformData2
+        public unsafe struct CSimpleArray
         {
             public ScaleformData2* Offset;
             public short Count;
@@ -114,7 +55,7 @@ namespace RAGENativeUI.Memory.GFx
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CSimpleArray_ScaleformData2)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(ScaleformData2)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
                 }
 
                 return &Offset[index];

@@ -16,7 +16,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets the memory address of this instance. If this <see cref="TextureDictionary"/> isn't loaded, returns <see cref="IntPtr.Zero"/>.
         /// </summary>
-        public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)fwTxdStore.GetInstance()->GetDictionaryByName(Name) : IntPtr.Zero; } }
+        public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GameMemory.TxdStore->GetDictionaryByName(Name) : IntPtr.Zero; } }
 
         public TextureDictionary(string name)
         {
@@ -56,7 +56,7 @@ namespace RAGENativeUI
                 if (!dict.IsLoaded)
                     return null;
 
-                pgDictionary_grcTexture* txd = fwTxdStore.GetInstance()->GetDictionaryByName(dict.Name);
+                grcTexture.pgDictionary* txd = GameMemory.TxdStore->GetDictionaryByName(dict.Name);
                 if (txd != null)
                 {
                     string[] names = new string[txd->Values.Count];
