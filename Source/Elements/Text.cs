@@ -35,14 +35,14 @@ namespace RAGENativeUI.Elements
             }
         }
         public Color Color { get; set; }
-        public GameScreenPosition Position { get; set; }
+        public ScreenPosition Position { get; set; }
         public TextFont Font { get; set; }
         public TextAlignment Alignment { get; set; } = TextAlignment.Left;
         public float WrapWidth { get; set; }
         public bool DropShadow { get; set; }
         public bool Outline { get; set; }
 
-        public Text(string caption, GameScreenPosition position, float scale, Color color)
+        public Text(string caption, ScreenPosition position, float scale, Color color)
         {
             Caption = caption;
             Position = position;
@@ -50,7 +50,7 @@ namespace RAGENativeUI.Elements
             Color = color;
         }
 
-        public Text(string caption, GameScreenPosition position, float scale) : this(caption, position, scale, Color.White)
+        public Text(string caption, ScreenPosition position, float scale) : this(caption, position, scale, Color.White)
         {
         }
 
@@ -63,7 +63,7 @@ namespace RAGENativeUI.Elements
         }
 
 
-        public static void Draw(GameScreenPosition position, string caption, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(ScreenPosition position, string caption, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
             const int MaxStringLenth = 99;
             List<string> captionSplitted = new List<string>((int)Math.Ceiling(caption.Length / (double)MaxStringLenth));
@@ -77,7 +77,7 @@ namespace RAGENativeUI.Elements
             Draw(position, captionSplitted, scale, color, font, alignment, wrapWidth, dropShadow, outline);
         }
 
-        public static void Draw(GameScreenPosition position, List<string> captionSplitted, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(ScreenPosition position, List<string> captionSplitted, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
             NativeFunction.Natives.SetTextFont((int)font);
             NativeFunction.Natives.SetTextScale(1.0f, scale);

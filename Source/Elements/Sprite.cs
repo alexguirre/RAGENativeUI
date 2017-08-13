@@ -20,12 +20,12 @@ namespace RAGENativeUI.Elements
                 return new SizeF(tmp.X, tmp.Y);
             }
         }
-        public GameScreenRectangle Rectangle { get; set; }
+        public ScreenRectangle Rectangle { get; set; }
         public float Rotation { get; set; }
         public Color Color { get; set; }
         public bool IsVisible { get; set; }
 
-        public Sprite(TextureDictionary textureDictionary, string textureName, GameScreenRectangle rectangle, Color color)
+        public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
         {
             TextureDictionary = textureDictionary;
             TextureName = textureName;
@@ -33,7 +33,7 @@ namespace RAGENativeUI.Elements
             Color = color;
         }
 
-        public Sprite(TextureDictionary textureDictionary, string textureName, GameScreenRectangle rectangle) : this(textureDictionary, textureName, rectangle, Color.White)
+        public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle) : this(textureDictionary, textureName, rectangle, Color.White)
         {
         }
 
@@ -47,7 +47,7 @@ namespace RAGENativeUI.Elements
         }
 
 
-        public static void Draw(TextureDictionary textureDictionary, string textureName, GameScreenRectangle rectangle, float rotation, Color color)
+        public static void Draw(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, float rotation, Color color)
         {
             if (!textureDictionary.IsLoaded)
                 textureDictionary.Load();

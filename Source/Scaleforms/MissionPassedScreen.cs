@@ -209,33 +209,33 @@ namespace RAGENativeUI.Scaleforms
             if(state == State.WaitForInputExpanded)
             {
                 Color white = HudColor.WHITE.GetColor();
-                Box.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
+                Box.Draw(ScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
 
                 // TODO: show items as the background rolls down, instead of showing them all at once
                 float y = 0.3387495f;
                 for (int i = 0; i < Math.Min(Items.Count, MaxItemsOnScreenCount - (IsCompletionVisible ? 1 : 0)); i++)
                 {
                     MissionPassedScreenItem item = Items[i];
-                    Text.Draw(GameScreenPosition.FromRelativeCoords(0.37f, y), item.Label, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                    Text.Draw(ScreenPosition.FromRelativeCoords(0.37f, y), item.Label, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
                     if (item.Tickbox == MissionPassedScreenItem.TickboxState.None)
                     {
-                        Text.Draw(GameScreenPosition.FromRelativeCoords(0.63f, y), item.Status, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        Text.Draw(ScreenPosition.FromRelativeCoords(0.63f, y), item.Status, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
                     }
                     else
                     {
-                        Text.Draw(GameScreenPosition.FromRelativeCoords(0.614f, y), item.Status, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        Text.Draw(ScreenPosition.FromRelativeCoords(0.614f, y), item.Status, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
 
                         const float w = 0.00078125f * 24f * 2f * 0.65f;
                         const float h = 0.001388889f * 24f * 2f * 0.65f;
                         float spriteY = y + 0.014f;
-                        Sprite.Draw("commonmenu", GetTickboxTextureName(item.Tickbox), GameScreenRectangle.FromRelativeCoords(0.622f, spriteY, w, h), 0f, Color.White);
+                        Sprite.Draw("commonmenu", GetTickboxTextureName(item.Tickbox), ScreenRectangle.FromRelativeCoords(0.622f, spriteY, w, h), 0f, Color.White);
                     }
                     y += 125f * 0.2f * 0.001388889f;
                 }
 
                 y += 27.5f * 0.2f * 0.001388889f;
 
-                Box.Draw(GameScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
+                Box.Draw(ScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
 
                 if (IsCompletionVisible)
                 {
@@ -243,15 +243,15 @@ namespace RAGENativeUI.Scaleforms
 
                     if (CompletionText != null)
                     {
-                        Text.Draw(GameScreenPosition.FromRelativeCoords(0.4175f, y), CompletionText, 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                        Text.Draw(ScreenPosition.FromRelativeCoords(0.4175f, y), CompletionText, 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
                     }
-                    Text.Draw(GameScreenPosition.FromRelativeCoords(0.56895f, y), $"{CompletionPercentage}%", 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                    Text.Draw(ScreenPosition.FromRelativeCoords(0.56895f, y), $"{CompletionPercentage}%", 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
 
                     y += 0.015715f;
 
                     const float w = 0.00078125f * 16f * 2f * 0.65f;
                     const float h = 0.001388889f * 16f * 2f * 0.65f;
-                    Sprite.Draw("mphud", "missionpassedmedal", GameScreenRectangle.FromRelativeCoords(0.57875f, y, w, h), 0f, CompletionMedalColor);
+                    Sprite.Draw("mphud", "missionpassedmedal", ScreenRectangle.FromRelativeCoords(0.57875f, y, w, h), 0f, CompletionMedalColor);
                 }
             }
         }

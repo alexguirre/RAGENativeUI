@@ -11,7 +11,7 @@ namespace Examples
         [ConsoleCommand(Name = "ScaleformExample", Description = "Example showing the Scaleform class.")]
         private static void Command()
         {
-            GameScreenRectangle rect = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
+            ScreenRectangle rect = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
             Scaleform sc = new Scaleform("mp_car_stats_01");
             while (!sc.IsLoaded)
             {

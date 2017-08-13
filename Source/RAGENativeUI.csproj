@@ -106,7 +106,7 @@
     <Compile Include="Control.cs" />
     <Compile Include="DisplayItem.cs" />
     <Compile Include="Rendering\Font.cs" />
-    <Compile Include="GameScreenCoords.cs" />
+    <Compile Include="ScreenCoords.cs" />
     <Compile Include="FrontendSound.cs" />
     <Compile Include="Metadata.cs" />
     <Compile Include="UVCoords.cs" />

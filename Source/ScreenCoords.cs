@@ -4,14 +4,15 @@ namespace RAGENativeUI
 
     using Rage;
     
-    public struct GameScreenRectangle
+    public struct ScreenRectangle
     {
+        // relative coords
         public float X { get; }
         public float Y { get; }
         public float Width{ get; }
         public float Height { get; }
 
-        private GameScreenRectangle(RectangleF coords, bool absolute)
+        private ScreenRectangle(RectangleF coords, bool absolute)
         {
             if (absolute)
             {
@@ -45,21 +46,22 @@ namespace RAGENativeUI
             return $"X: {X} Y: {Y} Width: {Width} Height: {Height}";
         }
 
-        public static GameScreenRectangle FromAbsoluteCoords(float x, float y, float width, float height) => FromAbsoluteCoords(new RectangleF(x, y, width, height));
-        public static GameScreenRectangle FromAbsoluteCoords(PointF position, SizeF size) => FromAbsoluteCoords(new RectangleF(position.X, position.Y, size.Width, size.Height));
-        public static GameScreenRectangle FromAbsoluteCoords(RectangleF rectangle) => new GameScreenRectangle(rectangle, true);
+        public static ScreenRectangle FromAbsoluteCoords(float x, float y, float width, float height) => FromAbsoluteCoords(new RectangleF(x, y, width, height));
+        public static ScreenRectangle FromAbsoluteCoords(PointF position, SizeF size) => FromAbsoluteCoords(new RectangleF(position.X, position.Y, size.Width, size.Height));
+        public static ScreenRectangle FromAbsoluteCoords(RectangleF rectangle) => new ScreenRectangle(rectangle, true);
 
-        public static GameScreenRectangle FromRelativeCoords(float x, float y, float width, float height) => FromRelativeCoords(new RectangleF(x, y, width, height));
-        public static GameScreenRectangle FromRelativeCoords(PointF position, SizeF size) => FromRelativeCoords(new RectangleF(position.X, position.Y, size.Width, size.Height));
-        public static GameScreenRectangle FromRelativeCoords(RectangleF rectangle) => new GameScreenRectangle(rectangle, false);
+        public static ScreenRectangle FromRelativeCoords(float x, float y, float width, float height) => FromRelativeCoords(new RectangleF(x, y, width, height));
+        public static ScreenRectangle FromRelativeCoords(PointF position, SizeF size) => FromRelativeCoords(new RectangleF(position.X, position.Y, size.Width, size.Height));
+        public static ScreenRectangle FromRelativeCoords(RectangleF rectangle) => new ScreenRectangle(rectangle, false);
     }
 
-    public struct GameScreenPosition
+    public struct ScreenPosition
     {
+        // relative coords
         public float X { get; }
         public float Y { get; }
 
-        private GameScreenPosition(PointF coords, bool absolute)
+        private ScreenPosition(PointF coords, bool absolute)
         {
             if (absolute)
             {
@@ -87,11 +89,11 @@ namespace RAGENativeUI
             return $"X: {X} Y: {Y}";
         }
 
-        public static GameScreenPosition FromAbsoluteCoords(float x, float y) => FromAbsoluteCoords(new PointF(x, y));
-        public static GameScreenPosition FromAbsoluteCoords(PointF position) => new GameScreenPosition(position, true);
+        public static ScreenPosition FromAbsoluteCoords(float x, float y) => FromAbsoluteCoords(new PointF(x, y));
+        public static ScreenPosition FromAbsoluteCoords(PointF position) => new ScreenPosition(position, true);
 
-        public static GameScreenPosition FromRelativeCoords(float x, float y) => FromRelativeCoords(new PointF(x, y));
-        public static GameScreenPosition FromRelativeCoords(PointF position) => new GameScreenPosition(position, false);
+        public static ScreenPosition FromRelativeCoords(float x, float y) => FromRelativeCoords(new PointF(x, y));
+        public static ScreenPosition FromRelativeCoords(PointF position) => new ScreenPosition(position, false);
     }
 }
 

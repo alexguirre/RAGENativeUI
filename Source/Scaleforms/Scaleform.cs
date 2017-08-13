@@ -119,9 +119,9 @@ namespace RAGENativeUI.Scaleforms
             NativeFunction.Natives.DrawScaleformMovieFullscreen(handle, color.R, color.G, color.B, color.A, 0);
         }
 
-        public virtual void Draw(GameScreenRectangle rectangle) => Draw(rectangle, Color.White);
+        public virtual void Draw(ScreenRectangle rectangle) => Draw(rectangle, Color.White);
 
-        public virtual void Draw(GameScreenRectangle rectangle, Color color)
+        public virtual void Draw(ScreenRectangle rectangle, Color color)
         {
             if (!IsLoaded)
                 LoadAndWait();

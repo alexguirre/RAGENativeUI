@@ -11,8 +11,8 @@ namespace Examples
         [ConsoleCommand(Name = "GameScreenRectangleExample", Description = "Example showing GameScreenCoords struct.")]
         private static void Command()
         {
-            GameScreenRectangle fromAbsolute = GameScreenRectangle.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
-            GameScreenRectangle fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
+            ScreenRectangle fromAbsolute = ScreenRectangle.FromAbsoluteCoords(1920f / 4f, 1080f / 4f, 1920f / 2f, 1080f / 2f);
+            ScreenRectangle fromRelative = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, 0.5f, 0.5f);
 
             Game.LogTrivial("from absolute: " + fromAbsolute);
             Game.LogTrivial("from relative: " + fromRelative);
@@ -25,7 +25,7 @@ namespace Examples
                 {
                     GameFiber.Yield();
 
-                    fromRelative = GameScreenRectangle.FromRelativeCoords(0.5f, 0.5f, w, h);
+                    fromRelative = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, w, h);
 
                     if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
                     {
