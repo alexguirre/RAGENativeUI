@@ -15,7 +15,7 @@ namespace RAGENativeUI.Memory
         public static ScaleformData1.CArray* ScaleformData1Array { get; private set; }
         public static ScaleformData2.CSimpleArray* ScaleformData2Array { get; private set; }
 
-        static GameMemory()
+        internal static bool Init()
         {
             IntPtr address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B 45 EC 4C 8D 45 F0 48 8D 55 EC 48 8D 0D");
             if (AssertAddress(address, nameof(fwTxdStore)))
@@ -51,13 +51,17 @@ namespace RAGENativeUI.Memory
                 address = address + *(int*)(address + 3) + 7;
                 ScaleformData2Array = (ScaleformData2.CSimpleArray*)address;
             }
+
+            return !anyAssertFailed;
         }
-        
+
+        private static bool anyAssertFailed = false;
         private static bool AssertAddress(IntPtr address, string name)
         {
             if (address == IntPtr.Zero)
             {
                 Game.LogTrivial($"Incompatible game version, couldn't find {name} instance.");
+                anyAssertFailed = true;
                 return false;
             }
 

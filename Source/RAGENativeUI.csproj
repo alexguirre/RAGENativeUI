@@ -59,6 +59,7 @@
     <Compile Include="Memory\CScreenEffectsManager.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
+    <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Scaleforms\InstructionalButtons.cs" />
@@ -117,8 +118,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>cd $(ProjectDir)
+..\PostBuild\InjectModuleInitializer.exe "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>cd $(ProjectDir)

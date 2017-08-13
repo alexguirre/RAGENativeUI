@@ -17,7 +17,7 @@ namespace RAGENativeUI.Memory
         public static IsScreenEffectActiveDelegate IsScreenEffectActive { get; private set; }
         public static GetScreenEffectByHashDelegate GetScreenEffectByHash { get; private set; }
 
-        static GameFunctions()
+        internal static bool Init()
         {
             IntPtr address = Game.FindPattern("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 56 48 83 EC 20 8B 02 48 8B DA 48 8D 54 24 ??");
             if (AssertAddress(address, nameof(StartScreenEffect)))
@@ -42,13 +42,17 @@ namespace RAGENativeUI.Memory
             {
                 GetScreenEffectByHash = Marshal.GetDelegateForFunctionPointer<GetScreenEffectByHashDelegate>(address);
             }
+
+            return !anyAssertFailed;
         }
 
+        private static bool anyAssertFailed = false;
         private static bool AssertAddress(IntPtr address, string name)
         {
             if (address == IntPtr.Zero)
             {
                 Common.Log($"Incompatible game version, couldn't find {name} function address.");
+                anyAssertFailed = true;
                 return false;
             }
 
