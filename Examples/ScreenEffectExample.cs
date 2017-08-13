@@ -6,7 +6,6 @@ namespace Examples
     using Rage.Attributes;
 
     using RAGENativeUI;
-    using RAGENativeUI.Elements;
 
     internal static class ScreenEffectExample
     {
@@ -32,7 +31,9 @@ namespace Examples
                         }
                     }
 
-                    Game.DisplayHelp($"Name: {effect.Name}~n~Idx: {i}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}");
+                    ScreenEffect current = ScreenEffect.CurrentActive;
+                    ScreenEffect last = ScreenEffect.LastActive;
+                    Game.DisplayHelp($"Name: {effect.Name}~n~Idx: {i}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         if (effect.IsActive)
