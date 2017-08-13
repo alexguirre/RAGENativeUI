@@ -229,6 +229,11 @@ namespace RAGENativeUI
             { 0xA38FD6BA, "RampageOut" },
             { 0x99BE14C5, "Rampage" },
             { 0xB766CC15, "Dont_tazeme_bro" },
+            { 0x10493196, "SwitchHUDMichaelIn" },
+            { 0x7E17B1A, "SwitchHUDFranklinIn" },
+            { 0xEE33C206, "SwitchHUDTrevorIn" },
+            { 0x19035B64, "SwitchShortNeutralMid"},
+            { 0xE5CAFC5B, "SwitchOpenNeutralIn" },
         };
     }
 }

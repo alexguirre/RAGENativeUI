@@ -47,14 +47,12 @@ namespace Examples
                         i = MathHelper.Clamp(i + 1, 0, effects.Length - 1);
                         effect.Stop();
                         effect = effects[i];
-                        Game.DisplayHelp(effect.Name);
                     }
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         i = MathHelper.Clamp(i - 1, 0, effects.Length - 1);
                         effect.Stop();
                         effect = effects[i];
-                        Game.DisplayHelp(effect.Name);
                     }
                 }
             });
