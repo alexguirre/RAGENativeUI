@@ -155,7 +155,7 @@ namespace RAGENativeUI
             return effects;
         }
         
-        public static PostFxAnimation LastActive
+        public static PostFxAnimation LastAnimation
         {
             get
             {
@@ -169,7 +169,7 @@ namespace RAGENativeUI
             }
         }
 
-        public static PostFxAnimation CurrentActive
+        public static PostFxAnimation CurrentAnimation
         {
             get
             {

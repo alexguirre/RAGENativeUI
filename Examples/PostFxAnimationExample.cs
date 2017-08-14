@@ -14,7 +14,7 @@ namespace Examples
         {
             PostFxAnimation[] effects = PostFxAnimation.GetAll();
 
-            int i = PostFxAnimation.LastActive == null ? 0 : PostFxAnimation.LastActive.Index;
+            int i = PostFxAnimation.LastAnimation == null ? 0 : PostFxAnimation.LastAnimation.Index;
             PostFxAnimation effect = effects[i];
             
             GameFiber.StartNew(() =>
@@ -31,8 +31,8 @@ namespace Examples
                         }
                     }
 
-                    PostFxAnimation current = PostFxAnimation.CurrentActive;
-                    PostFxAnimation last = PostFxAnimation.LastActive;
+                    PostFxAnimation current = PostFxAnimation.CurrentAnimation;
+                    PostFxAnimation last = PostFxAnimation.LastAnimation;
                     Game.DisplayHelp($"Name: {effect.Name}~n~Index: {effect.Index}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
