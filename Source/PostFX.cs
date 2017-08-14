@@ -138,9 +138,13 @@ namespace RAGENativeUI
         {
             get
             {
-                PostFX e = LastActive;
+                CPostFX* e = GameMemory.PostFXManager->GetCurrentActiveEffect();
+                if (e != null)
+                {
+                    return GetByHash(e->Name);
+                }
 
-                return (e == null || !e.IsActive) ? null : e;
+                return null;
             }
         }
 
