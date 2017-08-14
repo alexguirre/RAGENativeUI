@@ -14,6 +14,8 @@ namespace RAGENativeUI.Memory
         public static CScaleformStore* ScaleformStore { get; private set; }
         public static ScaleformData1.CArray* ScaleformData1Array { get; private set; }
         public static ScaleformData2.CSimpleArray* ScaleformData2Array { get; private set; }
+        public static CPostFXModifiersManager* PostFXModifiersManager { get; private set; }
+        public static int* CurrentPostFXModifierIndex { get; private set; }
 
         internal static bool Init()
         {
@@ -50,6 +52,21 @@ namespace RAGENativeUI.Memory
             {
                 address = address + *(int*)(address + 3) + 7;
                 ScaleformData2Array = (ScaleformData2.CSimpleArray*)address;
+            }
+
+            address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 45 33 C9 89 44 24 38 E8 ?? ?? ?? ?? 83 0D");
+            if (AssertAddress(address, nameof(CPostFXModifiersManager)))
+            {
+                address = address + *(int*)(address + 3) + 7;
+                PostFXModifiersManager = (CPostFXModifiersManager*)address;
+            }
+
+            address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 45 33 C9 89 44 24 38 E8 ?? ?? ?? ?? 83 0D");
+            if (AssertAddress(address, nameof(CurrentPostFXModifierIndex)))
+            {
+                address += 0x24;
+                address = address + *(int*)(address + 2) + 6;
+                CurrentPostFXModifierIndex = (int*)address;
             }
 
             return !anyAssertFailed;
