@@ -15,6 +15,7 @@ namespace RAGENativeUI
     {
         private uint hash;
         private IntPtr memAddress;
+        private int index = -1;
 
         public uint Hash { get { return hash; } }
         public string Name
@@ -42,11 +43,16 @@ namespace RAGENativeUI
         }
 
         public IntPtr MemoryAddress { get { return memAddress; } }
+        public int Index { get { return index; } }
 
-        private PostFX(uint hash)
+        private PostFX(CPostFX* native)
         {
-            this.hash = hash;
-            memAddress = (IntPtr)GameFunctions.GetPostFXByHash(GameMemory.PostFXManager, &hash);
+            hash = native->Name;
+            memAddress = (IntPtr)native;
+            if(IsValid())
+            {
+                index = unchecked((int)(memAddress.ToInt64() - (long)GameMemory.PostFXManager->Effects.Offset) / sizeof(CPostFX));
+            }
         }
 
         public bool IsValid()
@@ -97,10 +103,39 @@ namespace RAGENativeUI
             }
             else
             {
-                PostFX e = new PostFX(hash);
-                if (e.IsValid())
+                CPostFX* native = GameFunctions.GetPostFXByHash(GameMemory.PostFXManager, &hash);
+
+                if (native != null)
                 {
+                    PostFX e = new PostFX(native);
                     cache[hash] = e;
+                    return e;
+                }
+            }
+
+            return null;
+        }
+
+        public static PostFX GetByIndex(int index)
+        {
+            if (index < 0 || index >= EffectsCount)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            short i = (short)index;
+            CPostFX* native = GameMemory.PostFXManager->Effects.Get(i);
+
+            if (native != null)
+            {
+                if (cache.TryGetValue(native->Name, out PostFX p))
+                {
+                    return p;
+                }
+                else
+                {
+                    PostFX e = new PostFX(native);
+                    cache[native->Name] = e;
                     return e;
                 }
             }
@@ -145,6 +180,14 @@ namespace RAGENativeUI
                 }
 
                 return null;
+            }
+        }
+
+        public static int EffectsCount
+        {
+            get
+            {
+                return GameMemory.PostFXManager->Effects.Count;
             }
         }
 

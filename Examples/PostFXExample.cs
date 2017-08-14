@@ -33,7 +33,7 @@ namespace Examples
 
                     PostFX current = PostFX.CurrentActive;
                     PostFX last = PostFX.LastActive;
-                    Game.DisplayHelp($"Name: {effect.Name}~n~Idx: {i}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
+                    Game.DisplayHelp($"Name: {effect.Name}~n~Index: {effect.Index}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         if (effect.IsActive)
