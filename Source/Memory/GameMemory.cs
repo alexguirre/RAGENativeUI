@@ -10,7 +10,7 @@ namespace RAGENativeUI.Memory
     internal static unsafe class GameMemory
     {
         public static fwTxdStore* TxdStore { get; private set; }
-        public static CScreenEffectsManager* ScreenEffectsManager { get; private set; }
+        public static CPostFXManager* PostFXManager { get; private set; }
         public static CScaleformStore* ScaleformStore { get; private set; }
         public static ScaleformData1.CArray* ScaleformData1Array { get; private set; }
         public static ScaleformData2.CSimpleArray* ScaleformData2Array { get; private set; }
@@ -25,10 +25,10 @@ namespace RAGENativeUI.Memory
             }
 
             address = Game.FindPattern("48 8B 0D ?? ?? ?? ?? C7 44 24 ?? ?? ?? ?? ?? 89 44 24 68 33 C0 89 44 24 30");
-            if (AssertAddress(address, nameof(CScreenEffectsManager)))
+            if (AssertAddress(address, nameof(CPostFXManager)))
             {
                 address = address + *(int*)(address + 3) + 7;
-                ScreenEffectsManager = *(CScreenEffectsManager**)address;
+                PostFXManager = *(CPostFXManager**)address;
             }
 
             address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 84 C0 74 18");

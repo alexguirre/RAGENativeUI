@@ -1,20 +1,22 @@
 namespace Examples
 {
+    using System.Diagnostics;
     using System.Drawing;
 
     using Rage;
+    using Rage.Native;
     using Rage.Attributes;
 
     using RAGENativeUI;
 
-    internal static class ScreenEffectExample
+    internal static class PostFXExample
     {
-        [ConsoleCommand(Name = "ScreenEffectExample", Description = "Example showing the ScreenEffect class.")]
+        [ConsoleCommand(Name = "PostFXExample", Description = "Example showing the PostFX class.")]
         private static void Command()
         {
-            ScreenEffect[] effects = ScreenEffect.GetAll();
+            PostFX[] effects = PostFX.GetAll();
             int i = 0;
-            ScreenEffect effect = effects[i];
+            PostFX effect = effects[i];
             
             GameFiber.StartNew(() =>
             {
@@ -22,17 +24,16 @@ namespace Examples
                 {
                     GameFiber.Yield();
 
-
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
                     {
-                        foreach (ScreenEffect e in effects)
+                        foreach (PostFX e in effects)
                         {
                             Game.Console.Print(e.Name);
                         }
                     }
 
-                    ScreenEffect current = ScreenEffect.CurrentActive;
-                    ScreenEffect last = ScreenEffect.LastActive;
+                    PostFX current = PostFX.CurrentActive;
+                    PostFX last = PostFX.LastActive;
                     Game.DisplayHelp($"Name: {effect.Name}~n~Idx: {i}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {

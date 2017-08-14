@@ -7,40 +7,40 @@ namespace RAGENativeUI.Memory
 
     internal static unsafe class GameFunctions
     {
-        public delegate bool StartScreenEffectDelegate(CScreenEffectsManager* effectMgr, uint* effectNameHashPtr, int duration, bool looped, byte a5, int a6, int a7);
-        public delegate void StopScreenEffectDelegate(CScreenEffectsManager* effectMgr, uint* effectNameHashPtr);
-        public delegate long IsScreenEffectActiveDelegate(CScreenEffectsManager* effectMgr, uint* effectNameHashPtr);
-        public delegate CScreenEffect* GetScreenEffectByHashDelegate(CScreenEffectsManager* effectMgr, uint* effectNameHashPtr);
+        public delegate bool StartPostFXDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr, int duration, bool looped, byte a5, int a6, int a7);
+        public delegate void StopPostFXDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr);
+        public delegate long IsPostFXActiveDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr);
+        public delegate CPostFX* GetPostFXByHashDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr);
         
-        public static StartScreenEffectDelegate StartScreenEffect { get; private set; }
-        public static StopScreenEffectDelegate StopScreenEffect { get; private set; }
-        public static IsScreenEffectActiveDelegate IsScreenEffectActive { get; private set; }
-        public static GetScreenEffectByHashDelegate GetScreenEffectByHash { get; private set; }
+        public static StartPostFXDelegate StartPostFX { get; private set; }
+        public static StopPostFXDelegate StopPostFX { get; private set; }
+        public static IsPostFXActiveDelegate IsPostFXActive { get; private set; }
+        public static GetPostFXByHashDelegate GetPostFXByHash { get; private set; }
 
         internal static bool Init()
         {
             IntPtr address = Game.FindPattern("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 56 48 83 EC 20 8B 02 48 8B DA 48 8D 54 24 ??");
-            if (AssertAddress(address, nameof(StartScreenEffect)))
+            if (AssertAddress(address, nameof(StartPostFX)))
             {
-                StartScreenEffect = Marshal.GetDelegateForFunctionPointer<StartScreenEffectDelegate>(address);
+                StartPostFX = Marshal.GetDelegateForFunctionPointer<StartPostFXDelegate>(address);
             }
             
             address = Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 38 E8 ?? ?? ?? ?? 48 8B D0 48 85 C0");
-            if (AssertAddress(address, nameof(StopScreenEffect)))
+            if (AssertAddress(address, nameof(StopPostFX)))
             {
-                StopScreenEffect = Marshal.GetDelegateForFunctionPointer<StopScreenEffectDelegate>(address);
+                StopPostFX = Marshal.GetDelegateForFunctionPointer<StopPostFXDelegate>(address);
             }
 
             address = Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 89 44 24 38");
-            if (AssertAddress(address, nameof(IsScreenEffectActive)))
+            if (AssertAddress(address, nameof(IsPostFXActive)))
             {
-                IsScreenEffectActive = Marshal.GetDelegateForFunctionPointer<IsScreenEffectActiveDelegate>(address);
+                IsPostFXActive = Marshal.GetDelegateForFunctionPointer<IsPostFXActiveDelegate>(address);
             }
 
             address = Game.FindPattern("0F B7 41 08 45 33 C0 45 8B C8 44 8B D0 85 C0 7E 1A 8B 12");
-            if (AssertAddress(address, nameof(GetScreenEffectByHash)))
+            if (AssertAddress(address, nameof(GetPostFXByHash)))
             {
-                GetScreenEffectByHash = Marshal.GetDelegateForFunctionPointer<GetScreenEffectByHashDelegate>(address);
+                GetPostFXByHash = Marshal.GetDelegateForFunctionPointer<GetPostFXByHashDelegate>(address);
             }
 
             return !anyAssertFailed;

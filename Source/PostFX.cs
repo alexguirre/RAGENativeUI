@@ -10,7 +10,8 @@ namespace RAGENativeUI
 
     using RAGENativeUI.Memory;
 
-    public unsafe sealed class ScreenEffect : IAddressable
+    // PostFXs are defined in animpostfx.ymt
+    public unsafe sealed class PostFX : IAddressable
     {
         private uint hash;
         private IntPtr memAddress;
@@ -35,17 +36,17 @@ namespace RAGENativeUI
             {
                 fixed (uint* hashPtr = &hash)
                 {
-                    return IsValid() && (GameFunctions.IsScreenEffectActive(GameMemory.ScreenEffectsManager, hashPtr) & 1) != 0;
+                    return IsValid() && (GameFunctions.IsPostFXActive(GameMemory.PostFXManager, hashPtr) & 1) != 0;
                 }
             }
         }
 
         public IntPtr MemoryAddress { get { return memAddress; } }
 
-        private ScreenEffect(uint hash)
+        private PostFX(uint hash)
         {
             this.hash = hash;
-            memAddress = (IntPtr)GameFunctions.GetScreenEffectByHash(GameMemory.ScreenEffectsManager, &hash);
+            memAddress = (IntPtr)GameFunctions.GetPostFXByHash(GameMemory.PostFXManager, &hash);
         }
 
         public bool IsValid()
@@ -60,7 +61,7 @@ namespace RAGENativeUI
 
             fixed (uint* hashPtr = &hash)
             {
-                GameFunctions.StartScreenEffect(GameMemory.ScreenEffectsManager, hashPtr, duration, looped, 0, 0, 0);
+                GameFunctions.StartPostFX(GameMemory.PostFXManager, hashPtr, duration, looped, 0, 0, 0);
             }
         }
 
@@ -71,7 +72,7 @@ namespace RAGENativeUI
 
             fixed (uint* hashPtr = &hash)
             {
-                GameFunctions.StopScreenEffect(GameMemory.ScreenEffectsManager, hashPtr);
+                GameFunctions.StopPostFX(GameMemory.PostFXManager, hashPtr);
             }
         }
 
@@ -81,22 +82,22 @@ namespace RAGENativeUI
             NativeFunction.Natives.xB4EDDC19532BFB85(); // _STOP_ALL_SCREEN_EFFECTS
         }
 
-        public static ScreenEffect GetByName(string name)
+        public static PostFX GetByName(string name)
         {
             uint hash = Game.GetHashKey(name);
             knownNames[hash] = name;
             return GetByHash(hash);
         }
 
-        public static ScreenEffect GetByHash(uint hash)
+        public static PostFX GetByHash(uint hash)
         {
-            if (cache.TryGetValue(hash, out ScreenEffect se))
+            if (cache.TryGetValue(hash, out PostFX se))
             {
                 return se;
             }
             else
             {
-                ScreenEffect e = new ScreenEffect(hash);
+                PostFX e = new PostFX(hash);
                 if (e.IsValid())
                 {
                     cache[hash] = e;
@@ -107,43 +108,43 @@ namespace RAGENativeUI
             return null;
         }
 
-        public static ScreenEffect[] GetAll()
+        public static PostFX[] GetAll()
         {
-            ScreenEffect[] effects = new ScreenEffect[GameMemory.ScreenEffectsManager->Effects.Count];
-            for (short i = 0; i < GameMemory.ScreenEffectsManager->Effects.Count; i++)
+            PostFX[] effects = new PostFX[GameMemory.PostFXManager->Effects.Count];
+            for (short i = 0; i < GameMemory.PostFXManager->Effects.Count; i++)
             {
-                CScreenEffect* e = GameMemory.ScreenEffectsManager->Effects.Get(i);
-                effects[i] = GetByHash(e->NameHash);
+                CPostFX* e = GameMemory.PostFXManager->Effects.Get(i);
+                effects[i] = GetByHash(e->Name);
             }
 
             return effects;
         }
         
-        public static ScreenEffect LastActive
+        public static PostFX LastActive
         {
             get
             {
-                CScreenEffect* e = GameMemory.ScreenEffectsManager->GetLastActiveEffect();
+                CPostFX* e = GameMemory.PostFXManager->GetLastActiveEffect();
                 if(e != null)
                 {
-                    return GetByHash(e->NameHash);
+                    return GetByHash(e->Name);
                 }
 
                 return null;
             }
         }
 
-        public static ScreenEffect CurrentActive
+        public static PostFX CurrentActive
         {
             get
             {
-                ScreenEffect e = LastActive;
+                PostFX e = LastActive;
 
                 return (e == null || !e.IsActive) ? null : e;
             }
         }
 
-        private static Dictionary<uint, ScreenEffect> cache = new Dictionary<uint, ScreenEffect>();
+        private static Dictionary<uint, PostFX> cache = new Dictionary<uint, PostFX>();
 
         // TODO: find if ScreenEffects names can be retrieved from memory
         private static Dictionary<uint, string> knownNames = new Dictionary<uint, string>()

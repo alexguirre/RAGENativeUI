@@ -56,7 +56,7 @@
     <Compile Include="MissionPassedScreenExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScaleformExample.cs" />
-    <Compile Include="ScreenEffectExample.cs" />
+    <Compile Include="PostFXExample.cs" />
     <Compile Include="SpriteExample.cs" />
     <Compile Include="TextExample.cs" />
     <Compile Include="TimerBarsExample.cs" />

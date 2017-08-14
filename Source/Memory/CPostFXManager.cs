@@ -6,15 +6,15 @@ namespace RAGENativeUI.Memory
     using Rage;
 
     [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct CScreenEffectsManager
+    internal unsafe struct CPostFXManager
     {
-        [FieldOffset(0x0000)] public CScreenEffect.CSimpleArray Effects;
+        [FieldOffset(0x0000)] public CPostFX.CSimpleArray Effects;
 
         [FieldOffset(0x0070)] private IntPtr lastActiveEffectPtr;
 
-        public CScreenEffect* GetLastActiveEffect()
+        public CPostFX* GetLastActiveEffect()
         {
-            CScreenEffect* e = *(CScreenEffect**)lastActiveEffectPtr;
+            CPostFX* e = *(CPostFX**)lastActiveEffectPtr;
             return e;
         }
     }
