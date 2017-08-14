@@ -7,40 +7,40 @@ namespace RAGENativeUI.Memory
 
     internal static unsafe class GameFunctions
     {
-        public delegate bool StartPostFXDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr, int duration, bool looped, byte a5, int a6, int a7);
-        public delegate void StopPostFXDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr);
-        public delegate long IsPostFXActiveDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr);
-        public delegate CPostFX* GetPostFXByHashDelegate(CPostFXManager* effectMgr, uint* effectNameHashPtr);
+        public delegate bool StartAnimPostFXDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr, int duration, bool looped, byte a5, int a6, int a7);
+        public delegate void StopAnimPostFXDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
+        public delegate long IsAnimPostFXActiveDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
+        public delegate CAnimPostFX* GetAnimPostFXByHashDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
         
-        public static StartPostFXDelegate StartPostFX { get; private set; }
-        public static StopPostFXDelegate StopPostFX { get; private set; }
-        public static IsPostFXActiveDelegate IsPostFXActive { get; private set; }
-        public static GetPostFXByHashDelegate GetPostFXByHash { get; private set; }
+        public static StartAnimPostFXDelegate StartAnimPostFX { get; private set; }
+        public static StopAnimPostFXDelegate StopAnimPostFX { get; private set; }
+        public static IsAnimPostFXActiveDelegate IsAnimPostFXActive { get; private set; }
+        public static GetAnimPostFXByHashDelegate GetAnimPostFXByHash { get; private set; }
 
         internal static bool Init()
         {
             IntPtr address = Game.FindPattern("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 56 48 83 EC 20 8B 02 48 8B DA 48 8D 54 24 ??");
-            if (AssertAddress(address, nameof(StartPostFX)))
+            if (AssertAddress(address, nameof(StartAnimPostFX)))
             {
-                StartPostFX = Marshal.GetDelegateForFunctionPointer<StartPostFXDelegate>(address);
+                StartAnimPostFX = Marshal.GetDelegateForFunctionPointer<StartAnimPostFXDelegate>(address);
             }
             
             address = Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 38 E8 ?? ?? ?? ?? 48 8B D0 48 85 C0");
-            if (AssertAddress(address, nameof(StopPostFX)))
+            if (AssertAddress(address, nameof(StopAnimPostFX)))
             {
-                StopPostFX = Marshal.GetDelegateForFunctionPointer<StopPostFXDelegate>(address);
+                StopAnimPostFX = Marshal.GetDelegateForFunctionPointer<StopAnimPostFXDelegate>(address);
             }
 
             address = Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 89 44 24 38");
-            if (AssertAddress(address, nameof(IsPostFXActive)))
+            if (AssertAddress(address, nameof(IsAnimPostFXActive)))
             {
-                IsPostFXActive = Marshal.GetDelegateForFunctionPointer<IsPostFXActiveDelegate>(address);
+                IsAnimPostFXActive = Marshal.GetDelegateForFunctionPointer<IsAnimPostFXActiveDelegate>(address);
             }
 
             address = Game.FindPattern("0F B7 41 08 45 33 C0 45 8B C8 44 8B D0 85 C0 7E 1A 8B 12");
-            if (AssertAddress(address, nameof(GetPostFXByHash)))
+            if (AssertAddress(address, nameof(GetAnimPostFXByHash)))
             {
-                GetPostFXByHash = Marshal.GetDelegateForFunctionPointer<GetPostFXByHashDelegate>(address);
+                GetAnimPostFXByHash = Marshal.GetDelegateForFunctionPointer<GetAnimPostFXByHashDelegate>(address);
             }
 
             return !anyAssertFailed;

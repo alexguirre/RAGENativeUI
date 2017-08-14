@@ -4,7 +4,7 @@ namespace RAGENativeUI.Memory
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Size = 416)]
-    internal unsafe struct CPostFX
+    internal unsafe struct CAnimPostFX
     {
         [FieldOffset(0x0000)] public uint Name;
 
@@ -13,15 +13,15 @@ namespace RAGENativeUI.Memory
         [StructLayout(LayoutKind.Sequential)]
         public unsafe struct CSimpleArray
         {
-            public CPostFX* Offset;
+            public CAnimPostFX* Offset;
             public short Count;
             public short Size;
 
-            public CPostFX* Get(short index)
+            public CAnimPostFX* Get(short index)
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CPostFX)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CAnimPostFX)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
                 }
 
                 return &Offset[index];

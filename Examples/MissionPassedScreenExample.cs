@@ -46,7 +46,7 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.J))
                     {
-                        missionPassedScreen.ShownEffect = PostFX.GetByName(MathHelper.Choose("SuccessFranklin", "SuccessTrevor", "SuccessMichael", "SuccessNeutral"));
+                        missionPassedScreen.ShownEffect = PostFxAnimation.GetByName(MathHelper.Choose("SuccessFranklin", "SuccessTrevor", "SuccessMichael", "SuccessNeutral"));
                         Game.DisplayNotification(missionPassedScreen.ShownEffect.Name);
                     }
 

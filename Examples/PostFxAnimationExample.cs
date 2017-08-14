@@ -7,15 +7,15 @@ namespace Examples
 
     using RAGENativeUI;
 
-    internal static class PostFXExample
+    internal static class PostFxAnimationExample
     {
-        [ConsoleCommand(Name = "PostFXExample", Description = "Example showing the PostFX class.")]
+        [ConsoleCommand(Name = "PostFxAnimationExample", Description = "Example showing the PostFxAnimation class.")]
         private static void Command()
         {
-            PostFX[] effects = PostFX.GetAll();
+            PostFxAnimation[] effects = PostFxAnimation.GetAll();
 
-            int i = PostFX.LastActive == null ? 0 : Array.IndexOf(effects, PostFX.LastActive);
-            PostFX effect = effects[i];
+            int i = PostFxAnimation.LastActive == null ? 0 : Array.IndexOf(effects, PostFxAnimation.LastActive);
+            PostFxAnimation effect = effects[i];
             
             GameFiber.StartNew(() =>
             {
@@ -25,14 +25,14 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
                     {
-                        foreach (PostFX e in effects)
+                        foreach (PostFxAnimation e in effects)
                         {
-                            Game.Console.Print(e.Name);
+                            Game.Console.Print($"{e.Index}. {e.Name}");
                         }
                     }
 
-                    PostFX current = PostFX.CurrentActive;
-                    PostFX last = PostFX.LastActive;
+                    PostFxAnimation current = PostFxAnimation.CurrentActive;
+                    PostFxAnimation last = PostFxAnimation.LastActive;
                     Game.DisplayHelp($"Name: {effect.Name}~n~Index: {effect.Index}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {

@@ -52,7 +52,7 @@ namespace RAGENativeUI.Scaleforms
         public int CompletionPercentage { get; set; } = 100;
         public Color CompletionMedalColor { get; set; } = HudColor.GOLD.GetColor();
 
-        public PostFX ShownEffect { get; set; } = PostFX.GetByName("SuccessNeutral");
+        public PostFxAnimation ShownEffect { get; set; } = PostFxAnimation.GetByName("SuccessNeutral");
         public FrontendSound ButtonPressedSound { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "CONTINUE");
 
         public event ContinuedEventHandler Continued;

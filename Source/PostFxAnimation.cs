@@ -10,8 +10,8 @@ namespace RAGENativeUI
 
     using RAGENativeUI.Memory;
 
-    // PostFXs are defined in animpostfx.ymt
-    public unsafe sealed class PostFX : IAddressable
+    // defined in animpostfx.ymt
+    public unsafe sealed class PostFxAnimation : IAddressable
     {
         private uint hash;
         private IntPtr memAddress;
@@ -37,7 +37,7 @@ namespace RAGENativeUI
             {
                 fixed (uint* hashPtr = &hash)
                 {
-                    return IsValid() && (GameFunctions.IsPostFXActive(GameMemory.PostFXManager, hashPtr) & 1) != 0;
+                    return IsValid() && (GameFunctions.IsAnimPostFXActive(GameMemory.AnimPostFXManager, hashPtr) & 1) != 0;
                 }
             }
         }
@@ -45,13 +45,13 @@ namespace RAGENativeUI
         public IntPtr MemoryAddress { get { return memAddress; } }
         public int Index { get { return index; } }
 
-        private PostFX(CPostFX* native)
+        private PostFxAnimation(CAnimPostFX* native)
         {
             hash = native->Name;
             memAddress = (IntPtr)native;
             if(IsValid())
             {
-                index = unchecked((int)(memAddress.ToInt64() - (long)GameMemory.PostFXManager->Effects.Offset) / sizeof(CPostFX));
+                index = unchecked((int)(memAddress.ToInt64() - (long)GameMemory.AnimPostFXManager->Effects.Offset) / sizeof(CAnimPostFX));
             }
         }
 
@@ -67,7 +67,7 @@ namespace RAGENativeUI
 
             fixed (uint* hashPtr = &hash)
             {
-                GameFunctions.StartPostFX(GameMemory.PostFXManager, hashPtr, duration, looped, 0, 0, 0);
+                GameFunctions.StartAnimPostFX(GameMemory.AnimPostFXManager, hashPtr, duration, looped, 0, 0, 0);
             }
         }
 
@@ -78,7 +78,7 @@ namespace RAGENativeUI
 
             fixed (uint* hashPtr = &hash)
             {
-                GameFunctions.StopPostFX(GameMemory.PostFXManager, hashPtr);
+                GameFunctions.StopAnimPostFX(GameMemory.AnimPostFXManager, hashPtr);
             }
         }
 
@@ -88,26 +88,26 @@ namespace RAGENativeUI
             NativeFunction.Natives.xB4EDDC19532BFB85(); // _STOP_ALL_SCREEN_EFFECTS
         }
 
-        public static PostFX GetByName(string name)
+        public static PostFxAnimation GetByName(string name)
         {
             uint hash = Game.GetHashKey(name);
             knownNames[hash] = name;
             return GetByHash(hash);
         }
 
-        public static PostFX GetByHash(uint hash)
+        public static PostFxAnimation GetByHash(uint hash)
         {
-            if (cache.TryGetValue(hash, out PostFX p))
+            if (cache.TryGetValue(hash, out PostFxAnimation p))
             {
                 return p;
             }
             else
             {
-                CPostFX* native = GameFunctions.GetPostFXByHash(GameMemory.PostFXManager, &hash);
+                CAnimPostFX* native = GameFunctions.GetAnimPostFXByHash(GameMemory.AnimPostFXManager, &hash);
 
                 if (native != null)
                 {
-                    PostFX e = new PostFX(native);
+                    PostFxAnimation e = new PostFxAnimation(native);
                     cache[hash] = e;
                     return e;
                 }
@@ -116,25 +116,25 @@ namespace RAGENativeUI
             return null;
         }
 
-        public static PostFX GetByIndex(int index)
+        public static PostFxAnimation GetByIndex(int index)
         {
-            if (index < 0 || index >= EffectsCount)
+            if (index < 0 || index >= Count)
             {
                 throw new IndexOutOfRangeException();
             }
 
             short i = (short)index;
-            CPostFX* native = GameMemory.PostFXManager->Effects.Get(i);
+            CAnimPostFX* native = GameMemory.AnimPostFXManager->Effects.Get(i);
 
             if (native != null)
             {
-                if (cache.TryGetValue(native->Name, out PostFX p))
+                if (cache.TryGetValue(native->Name, out PostFxAnimation p))
                 {
                     return p;
                 }
                 else
                 {
-                    PostFX e = new PostFX(native);
+                    PostFxAnimation e = new PostFxAnimation(native);
                     cache[native->Name] = e;
                     return e;
                 }
@@ -143,37 +143,23 @@ namespace RAGENativeUI
             return null;
         }
 
-        public static PostFX[] GetAll()
+        public static PostFxAnimation[] GetAll()
         {
-            PostFX[] effects = new PostFX[GameMemory.PostFXManager->Effects.Count];
-            for (short i = 0; i < GameMemory.PostFXManager->Effects.Count; i++)
+            PostFxAnimation[] effects = new PostFxAnimation[GameMemory.AnimPostFXManager->Effects.Count];
+            for (short i = 0; i < GameMemory.AnimPostFXManager->Effects.Count; i++)
             {
-                CPostFX* e = GameMemory.PostFXManager->Effects.Get(i);
+                CAnimPostFX* e = GameMemory.AnimPostFXManager->Effects.Get(i);
                 effects[i] = GetByHash(e->Name);
             }
 
             return effects;
         }
         
-        public static PostFX LastActive
+        public static PostFxAnimation LastActive
         {
             get
             {
-                CPostFX* e = GameMemory.PostFXManager->GetLastActiveEffect();
-                if(e != null)
-                {
-                    return GetByHash(e->Name);
-                }
-
-                return null;
-            }
-        }
-
-        public static PostFX CurrentActive
-        {
-            get
-            {
-                CPostFX* e = GameMemory.PostFXManager->GetCurrentActiveEffect();
+                CAnimPostFX* e = GameMemory.AnimPostFXManager->GetLastActiveEffect();
                 if (e != null)
                 {
                     return GetByHash(e->Name);
@@ -183,15 +169,29 @@ namespace RAGENativeUI
             }
         }
 
-        public static int EffectsCount
+        public static PostFxAnimation CurrentActive
         {
             get
             {
-                return GameMemory.PostFXManager->Effects.Count;
+                CAnimPostFX* e = GameMemory.AnimPostFXManager->GetCurrentActiveEffect();
+                if (e != null)
+                {
+                    return GetByHash(e->Name);
+                }
+
+                return null;
             }
         }
 
-        private static Dictionary<uint, PostFX> cache = new Dictionary<uint, PostFX>();
+        public static int Count
+        {
+            get
+            {
+                return GameMemory.AnimPostFXManager->Effects.Count;
+            }
+        }
+
+        private static Dictionary<uint, PostFxAnimation> cache = new Dictionary<uint, PostFxAnimation>();
         
         private static Dictionary<uint, string> knownNames = new Dictionary<uint, string>()
         {

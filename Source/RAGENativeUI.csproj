@@ -55,8 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
-    <Compile Include="Memory\CPostFX.cs" />
-    <Compile Include="Memory\CPostFXManager.cs" />
+    <Compile Include="Memory\CAnimPostFX.cs" />
+    <Compile Include="Memory\CAnimPostFXManager.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
     <Compile Include="ModuleInitializer.cs" />
@@ -68,7 +68,7 @@
     <Compile Include="Scaleforms\Scaleform.cs" />
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="Elements\Text.cs" />
-    <Compile Include="PostFX.cs" />
+    <Compile Include="PostFxAnimation.cs" />
     <Compile Include="TextureDictionary.cs" />
     <Compile Include="Elements\TimerBars.cs" />
     <Compile Include="Elements\TimerBarsManager.cs" />
