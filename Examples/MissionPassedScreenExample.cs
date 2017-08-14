@@ -5,6 +5,7 @@ namespace Examples
     using Rage;
     using Rage.Attributes;
 
+    using RAGENativeUI;
     using RAGENativeUI.Scaleforms;
 
     internal static class MissionPassedScreenExample
@@ -45,8 +46,8 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.J))
                     {
-                        missionPassedScreen.ScreenEffect = MathHelper.Choose("SuccessFranklin", "SuccessTrevor", "SuccessMichael", null);
-                        Game.DisplayNotification(missionPassedScreen.ScreenEffect ?? "null");
+                        missionPassedScreen.ShownEffect = PostFX.GetByName(MathHelper.Choose("SuccessFranklin", "SuccessTrevor", "SuccessMichael", "SuccessNeutral"));
+                        Game.DisplayNotification(missionPassedScreen.ShownEffect.Name);
                     }
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))

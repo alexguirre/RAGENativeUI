@@ -5,7 +5,7 @@ namespace RAGENativeUI.Memory
 
     using Rage;
 
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Explicit, Size = 760)]
     internal unsafe struct CPostFXManager
     {
         [FieldOffset(0x0000)] public CPostFX.CSimpleArray Effects;

@@ -1,10 +1,8 @@
 namespace Examples
 {
-    using System.Diagnostics;
-    using System.Drawing;
+    using System;
 
     using Rage;
-    using Rage.Native;
     using Rage.Attributes;
 
     using RAGENativeUI;
@@ -15,7 +13,8 @@ namespace Examples
         private static void Command()
         {
             PostFX[] effects = PostFX.GetAll();
-            int i = 0;
+
+            int i = PostFX.LastActive == null ? 0 : Array.IndexOf(effects, PostFX.LastActive);
             PostFX effect = effects[i];
             
             GameFiber.StartNew(() =>

@@ -91,9 +91,9 @@ namespace RAGENativeUI
 
         public static PostFX GetByHash(uint hash)
         {
-            if (cache.TryGetValue(hash, out PostFX se))
+            if (cache.TryGetValue(hash, out PostFX p))
             {
-                return se;
+                return p;
             }
             else
             {
@@ -145,8 +145,7 @@ namespace RAGENativeUI
         }
 
         private static Dictionary<uint, PostFX> cache = new Dictionary<uint, PostFX>();
-
-        // TODO: find if ScreenEffects names can be retrieved from memory
+        
         private static Dictionary<uint, string> knownNames = new Dictionary<uint, string>()
         {
             { 0xB2895E1B, "SwitchHUDIn" },
@@ -292,6 +291,7 @@ namespace RAGENativeUI
             { 0x166FF30B, "BeastLaunch"},
             { 0x6B66A555, "CrossLine"},
             { 0x5AAE758F, "PennedIn"},
+            { 0xE26BE615, "InchPickup"},
         };
     }
 }

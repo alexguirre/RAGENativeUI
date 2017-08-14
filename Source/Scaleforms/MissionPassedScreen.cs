@@ -52,7 +52,8 @@ namespace RAGENativeUI.Scaleforms
         public int CompletionPercentage { get; set; } = 100;
         public Color CompletionMedalColor { get; set; } = HudColor.GOLD.GetColor();
 
-        public string ScreenEffect { get; set; } = "SuccessMichael";
+        public PostFX ShownEffect { get; set; } = PostFX.GetByName("SuccessNeutral");
+        public FrontendSound ButtonPressedSound { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "CONTINUE");
 
         public event ContinuedEventHandler Continued;
 
@@ -77,10 +78,8 @@ namespace RAGENativeUI.Scaleforms
             InstructionalButtons.Slots[instructionalButtonExpandIndex].IsVisible = true;
                                         // 277 hours, I guess nobody will stay with this screen open for that long :P
             BigMessage.CallMethodAndShow(999999999, "SHOW_MISSION_PASSED_MESSAGE", Title, Subtitle, 100, true, GetBigMessageNumStats(), true);
-            if(ScreenEffect != null)
-            {
-                NativeFunction.Natives.x2206BF9A37B7F724(ScreenEffect, 1000, false); // _START_SCREEN_EFFECT
-            }
+            // TODO: play some mission complete sound
+            ShownEffect?.Start(1000, false);
             timer = 0;
             state = State.WaitForInputClosed;
         }
@@ -124,11 +123,13 @@ namespace RAGENativeUI.Scaleforms
                     {
                         if (Game.IsControlJustPressed(0, ExpandControl))
                         {
+                            ButtonPressedSound?.Play();
                             InstructionalButtons.Slots[instructionalButtonExpandIndex].IsVisible = false;
                             state = State.StartExpand;
                         }
                         else if (Game.IsControlJustPressed(0, ContinueControl))
                         {
+                            ButtonPressedSound?.Play();
                             Hide();
                         }
                         break;
@@ -157,6 +158,7 @@ namespace RAGENativeUI.Scaleforms
                     {
                         if (Game.IsControlJustPressed(0, ContinueControl))
                         {
+                            ButtonPressedSound?.Play();
                             Hide();
                         }
                         break;
