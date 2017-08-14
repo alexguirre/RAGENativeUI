@@ -16,19 +16,30 @@ namespace RAGENativeUI.Memory
         public CAnimPostFX* GetCurrentActiveEffect()
         {
             long v = *(long*)currentActiveEffectPtr;
+            CAnimPostFX* p = null;
+            int index = unchecked((int)(v - (long)Effects.Offset) / sizeof(CAnimPostFX));
 
-            if (v == 0 || v == 0x0000800000000200)
-                return null;
+            if(index >= 0 && index < Effects.Count)
+            {
+                p = (CAnimPostFX*)v;
+            }
 
-            CAnimPostFX* p = (CAnimPostFX*)v;
             return p;
         }
 
         public CAnimPostFX* GetLastActiveEffect()
         {
             CAnimPostFX* p = GetCurrentActiveEffect();
-            if(p == null)
-                p = *(CAnimPostFX**)lastActiveEffectPtr;
+            if (p == null)
+            {
+                long v = *(long*)lastActiveEffectPtr;
+                int index = unchecked((int)(v - (long)Effects.Offset) / sizeof(CAnimPostFX));
+
+                if (index >= 0 && index < Effects.Count)
+                {
+                    p = (CAnimPostFX*)v;
+                }
+            }
             return p;
         }
     }

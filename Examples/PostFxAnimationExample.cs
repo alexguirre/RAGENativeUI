@@ -14,7 +14,7 @@ namespace Examples
         {
             PostFxAnimation[] effects = PostFxAnimation.GetAll();
 
-            int i = PostFxAnimation.LastActive == null ? 0 : Array.IndexOf(effects, PostFxAnimation.LastActive);
+            int i = PostFxAnimation.LastActive == null ? 0 : PostFxAnimation.LastActive.Index;
             PostFxAnimation effect = effects[i];
             
             GameFiber.StartNew(() =>
