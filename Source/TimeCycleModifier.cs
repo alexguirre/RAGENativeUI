@@ -146,6 +146,18 @@ namespace RAGENativeUI
             }
         }
 
+        public static float CurrentModifierStrength
+        {
+            get
+            {
+                return *GameMemory.CurrentTimeCycleModifierStrength;
+            }
+            set
+            {
+                *GameMemory.CurrentTimeCycleModifierStrength = value;
+            }
+        }
+
         private static Dictionary<uint, TimeCycleModifier> cache = new Dictionary<uint, TimeCycleModifier>();
 
         private static Dictionary<uint, string> knownNames = new Dictionary<uint, string>()

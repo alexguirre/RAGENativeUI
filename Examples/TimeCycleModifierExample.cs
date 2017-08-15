@@ -30,7 +30,7 @@ namespace Examples
                     }
 
                     TimeCycleModifier current = TimeCycleModifier.CurrentModifier;
-                    Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}");
+                    Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}~n~Strength: {TimeCycleModifier.CurrentModifierStrength}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         mod.IsActive = !mod.IsActive;
@@ -47,6 +47,16 @@ namespace Examples
                         i = MathHelper.Clamp(i - 1, 0, modifiers.Length - 1);
                         mod.IsActive = false;
                         mod = modifiers[i];
+                    }
+
+
+                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Multiply))
+                    {
+                        TimeCycleModifier.CurrentModifierStrength += 1.0f * Game.FrameTime;
+                    }
+                    else if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Divide))
+                    {
+                        TimeCycleModifier.CurrentModifierStrength -= 1.0f * Game.FrameTime;
                     }
                 }
             });
