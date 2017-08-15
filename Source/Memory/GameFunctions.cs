@@ -11,14 +11,14 @@ namespace RAGENativeUI.Memory
         public delegate void StopAnimPostFXDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
         public delegate long IsAnimPostFXActiveDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
         public delegate CAnimPostFX* GetAnimPostFXByHashDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
-        public delegate int GetPostFXModifierIndexDelegate(CPostFXModifiersManager* modsMgr, uint* nameHashPtr);
+        public delegate int GetTimeCycleModifierIndexDelegate(CTimeCycleModifiersManager* modsMgr, uint* nameHashPtr);
 
 
         public static StartAnimPostFXDelegate StartAnimPostFX { get; private set; }
         public static StopAnimPostFXDelegate StopAnimPostFX { get; private set; }
         public static IsAnimPostFXActiveDelegate IsAnimPostFXActive { get; private set; }
         public static GetAnimPostFXByHashDelegate GetAnimPostFXByHash { get; private set; }
-        public static GetPostFXModifierIndexDelegate GetPostFXModifierIndex { get; private set; }
+        public static GetTimeCycleModifierIndexDelegate GetTimeCycleModifierIndex { get; private set; }
 
         internal static bool Init()
         {
@@ -47,9 +47,9 @@ namespace RAGENativeUI.Memory
             }
 
             address = Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 30 E8 ?? ?? ?? ?? 0F B7 53 48");
-            if (AssertAddress(address, nameof(GetPostFXModifierIndex)))
+            if (AssertAddress(address, nameof(GetTimeCycleModifierIndex)))
             {
-                GetPostFXModifierIndex = Marshal.GetDelegateForFunctionPointer<GetPostFXModifierIndexDelegate>(address);
+                GetTimeCycleModifierIndex = Marshal.GetDelegateForFunctionPointer<GetTimeCycleModifierIndexDelegate>(address);
             }
 
             return !anyAssertFailed;

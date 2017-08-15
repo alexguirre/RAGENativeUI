@@ -4,7 +4,7 @@ namespace RAGENativeUI.Memory
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Size = 48)]
-    internal unsafe struct CPostFXModifier
+    internal unsafe struct CTimeCycleModifier
     {
         [FieldOffset(0x0000)] public Mod.CSimpleArray Mods;
 
@@ -16,15 +16,15 @@ namespace RAGENativeUI.Memory
         [StructLayout(LayoutKind.Sequential)]
         public unsafe struct CSimpleArrayPtr
         {
-            public CPostFXModifier** Offset;
+            public CTimeCycleModifier** Offset;
             public short Count;
             public short Size;
 
-            public CPostFXModifier* Get(short index)
+            public CTimeCycleModifier* Get(short index)
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CPostFXModifier)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
                 }
 
                 return Offset[index];
@@ -50,7 +50,7 @@ namespace RAGENativeUI.Memory
                 {
                     if (index >= Size)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CPostFXModifier)}.{nameof(Mod)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
+                        throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(Mod)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
                     }
 
                     return &Offset[index];

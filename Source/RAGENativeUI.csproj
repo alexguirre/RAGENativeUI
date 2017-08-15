@@ -57,12 +57,12 @@
     <Compile Include="Common.cs" />
     <Compile Include="Memory\CAnimPostFX.cs" />
     <Compile Include="Memory\CAnimPostFXManager.cs" />
-    <Compile Include="Memory\CPostFXModifier.cs" />
-    <Compile Include="Memory\CPostFXModifiersManager.cs" />
+    <Compile Include="Memory\CTimeCycleModifier.cs" />
+    <Compile Include="Memory\CTimeCycleModifiersManager.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
     <Compile Include="ModuleInitializer.cs" />
-    <Compile Include="PostFxModifier.cs" />
+    <Compile Include="TimeCycleModifier.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Scaleforms\InstructionalButtons.cs" />

@@ -6,11 +6,11 @@ namespace RAGENativeUI.Memory
     using Rage;
 
     [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct CPostFXModifiersManager
+    internal unsafe struct CTimeCycleModifiersManager
     {
         [FieldOffset(0x0004)] public float Version;
 
-        [FieldOffset(0x0040)] public CPostFXModifier.CSimpleArrayPtr Modifiers;
+        [FieldOffset(0x0040)] public CTimeCycleModifier.CSimpleArrayPtr Modifiers;
     }
 }
 

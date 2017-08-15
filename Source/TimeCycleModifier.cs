@@ -11,7 +11,7 @@ namespace RAGENativeUI
     using RAGENativeUI.Memory;
 
     // defined in timecycle_mods_x.xml
-    public unsafe sealed class PostFxModifier : IAddressable
+    public unsafe sealed class TimeCycleModifier : IAddressable
     {
         private uint hash;
         private IntPtr memAddress;
@@ -35,17 +35,17 @@ namespace RAGENativeUI
         {
             get
             {
-                return *GameMemory.CurrentPostFXModifierIndex == index;
+                return *GameMemory.CurrentTimeCycleModifierIndex == index;
             }
             set
             {
                 if (value)
                 {
-                    *GameMemory.CurrentPostFXModifierIndex = index;
+                    *GameMemory.CurrentTimeCycleModifierIndex = index;
                 }
                 else if (IsActive)
                 {
-                    *GameMemory.CurrentPostFXModifierIndex = -1;
+                    *GameMemory.CurrentTimeCycleModifierIndex = -1;
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace RAGENativeUI
         public IntPtr MemoryAddress { get { return memAddress; } }
         public int Index { get { return index; } }
 
-        private PostFxModifier(CPostFXModifier* native, int idx)
+        private TimeCycleModifier(CTimeCycleModifier* native, int idx)
         {
             hash = native->Name;
             memAddress = (IntPtr)native;
@@ -65,22 +65,22 @@ namespace RAGENativeUI
             return memAddress != IntPtr.Zero;
         }
 
-        public static PostFxModifier GetByName(string name)
+        public static TimeCycleModifier GetByName(string name)
         {
             uint hash = Game.GetHashKey(name);
             knownNames[hash] = name;
             return GetByHash(hash);
         }
 
-        public static PostFxModifier GetByHash(uint hash)
+        public static TimeCycleModifier GetByHash(uint hash)
         {
-            if (cache.TryGetValue(hash, out PostFxModifier p))
+            if (cache.TryGetValue(hash, out TimeCycleModifier p))
             {
                 return p;
             }
             else
             {
-                int index= GameFunctions.GetPostFXModifierIndex(GameMemory.PostFXModifiersManager, &hash);
+                int index= GameFunctions.GetPostFXModifierIndex(GameMemory.TimeCycleModifiersManager, &hash);
 
                 if (index != -1)
                 {
@@ -91,7 +91,7 @@ namespace RAGENativeUI
             return null;
         }
 
-        public static PostFxModifier GetByIndex(int index)
+        public static TimeCycleModifier GetByIndex(int index)
         {
             if (index < 0 || index >= Count)
             {
@@ -99,17 +99,17 @@ namespace RAGENativeUI
             }
 
             short i = (short)index;
-            CPostFXModifier* native = GameMemory.PostFXModifiersManager->Modifiers.Get(i);
+            CTimeCycleModifier* native = GameMemory.TimeCycleModifiersManager->Modifiers.Get(i);
 
             if (native != null)
             {
-                if (cache.TryGetValue(native->Name, out PostFxModifier p))
+                if (cache.TryGetValue(native->Name, out TimeCycleModifier p))
                 {
                     return p;
                 }
                 else
                 {
-                    PostFxModifier m = new PostFxModifier(native, index);
+                    TimeCycleModifier m = new TimeCycleModifier(native, index);
                     cache[native->Name] = m;
                     return m;
                 }
@@ -118,10 +118,10 @@ namespace RAGENativeUI
             return null;
         }
 
-        public static PostFxModifier[] GetAll()
+        public static TimeCycleModifier[] GetAll()
         {
-            PostFxModifier[] mods = new PostFxModifier[GameMemory.PostFXModifiersManager->Modifiers.Count];
-            for (short i = 0; i < GameMemory.PostFXModifiersManager->Modifiers.Count; i++)
+            TimeCycleModifier[] mods = new TimeCycleModifier[GameMemory.TimeCycleModifiersManager->Modifiers.Count];
+            for (short i = 0; i < GameMemory.TimeCycleModifiersManager->Modifiers.Count; i++)
             {
                 mods[i] = GetByIndex(i);
             }
@@ -133,20 +133,20 @@ namespace RAGENativeUI
         {
             get
             {
-                return GameMemory.PostFXModifiersManager->Modifiers.Count;
+                return GameMemory.TimeCycleModifiersManager->Modifiers.Count;
             }
         }
 
-        public static PostFxModifier CurrentModifier
+        public static TimeCycleModifier CurrentModifier
         {
             get
             {
-                int index = *GameMemory.CurrentPostFXModifierIndex;
+                int index = *GameMemory.CurrentTimeCycleModifierIndex;
                 return index == -1 ? null : GetByIndex(index);
             }
         }
 
-        private static Dictionary<uint, PostFxModifier> cache = new Dictionary<uint, PostFxModifier>();
+        private static Dictionary<uint, TimeCycleModifier> cache = new Dictionary<uint, TimeCycleModifier>();
 
         private static Dictionary<uint, string> knownNames = new Dictionary<uint, string>()
         {

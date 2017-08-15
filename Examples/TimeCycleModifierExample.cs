@@ -5,15 +5,15 @@ namespace Examples
 
     using RAGENativeUI;
 
-    internal static class PostFxModifierExample
+    internal static class TimeCycleModifierExample
     {
-        [ConsoleCommand(Name = "PostFxModifierExample", Description = "Example showing the PostFxModifier class.")]
+        [ConsoleCommand(Name = "TimeCycleModifierExample", Description = "Example showing the TimeCycleModifier class.")]
         private static void Command()
         {
-            PostFxModifier[] modifiers = PostFxModifier.GetAll();
+            TimeCycleModifier[] modifiers = TimeCycleModifier.GetAll();
 
             int i = 0;
-            PostFxModifier mod = modifiers[i];
+            TimeCycleModifier mod = modifiers[i];
 
             GameFiber.StartNew(() =>
             {
@@ -23,13 +23,13 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
                     {
-                        foreach (PostFxModifier e in modifiers)
+                        foreach (TimeCycleModifier e in modifiers)
                         {
                             Game.Console.Print($"{e.Index}. {e.Name}");
                         }
                     }
 
-                    PostFxModifier current = PostFxModifier.CurrentModifier;
+                    TimeCycleModifier current = TimeCycleModifier.CurrentModifier;
                     Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
