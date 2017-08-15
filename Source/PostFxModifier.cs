@@ -39,7 +39,14 @@ namespace RAGENativeUI
             }
             set
             {
-                *GameMemory.CurrentPostFXModifierIndex = value ? index : -1;
+                if (value)
+                {
+                    *GameMemory.CurrentPostFXModifierIndex = index;
+                }
+                else if (IsActive)
+                {
+                    *GameMemory.CurrentPostFXModifierIndex = -1;
+                }
             }
         }
 
