@@ -33,7 +33,39 @@ namespace Examples
 
                     PostFxAnimation current = PostFxAnimation.CurrentAnimation;
                     PostFxAnimation last = PostFxAnimation.LastAnimation;
-                    Game.DisplayHelp($"Name: {effect.Name}~n~Index: {effect.Index}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
+                    string s = "";
+                    if (current != null)
+                    {
+                        s += $" Blend~n~";
+                        s += $"     Disabled: {current.Blend.Disabled}~n~";
+                        if (current.Blend.LayerA == null)
+                        {
+                            s += $"     LayerA: null~n~";
+                        }
+                        else
+                        {
+                            s += $"     LayerA:~n~";
+                            s += $"         Mem: {current.Blend.LayerA.MemoryAddress.ToString("X8")}~n~";
+                            s += $"         Mod: {(current.Blend.LayerA.Modifier == null ? "null" : current.Blend.LayerA.Modifier.Name)}~n~";
+                            s += $"         AnimMode: {current.Blend.LayerA.AnimationMode}~n~";
+                            s += $"         LoopMode: {current.Blend.LayerA.LoopMode}~n~";
+                        }
+                        s += "~n~";
+                        if (current.Blend.LayerB == null)
+                        {
+                            s += $"     LayerB: null~n~";
+                        }
+                        else
+                        {
+                            s += $"     LayerB:~n~";
+                            s += $"         Mem: {current.Blend.LayerB.MemoryAddress.ToString("X8")}~n~";
+                            s += $"         Mod: {(current.Blend.LayerB.Modifier == null ? "null" : current.Blend.LayerB.Modifier.Name)}~n~";
+                            s += $"         AnimMode: {current.Blend.LayerB.AnimationMode}~n~";
+                            s += $"         LoopMode: {current.Blend.LayerB.LoopMode}~n~";
+                        }
+                        s += "~n~";
+                    }
+                    Game.DisplayHelp($"Name: {effect.Name}~n~Index: {effect.Index}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~{s}Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         if (effect.IsActive)

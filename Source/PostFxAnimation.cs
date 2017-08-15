@@ -14,7 +14,7 @@ namespace RAGENativeUI
     public unsafe sealed class PostFxAnimation : IAddressable
     {
         private uint hash;
-        private IntPtr memAddress;
+        private CAnimPostFX* native;
         private int index = -1;
 
         public uint Hash { get { return hash; } }
@@ -42,22 +42,26 @@ namespace RAGENativeUI
             }
         }
 
-        public IntPtr MemoryAddress { get { return memAddress; } }
+        public IntPtr MemoryAddress { get { return (IntPtr)native; } }
         public int Index { get { return index; } }
+        public LayerBlend Blend { get; }
+        public LayersWrapper Layers { get; }
 
         private PostFxAnimation(CAnimPostFX* native)
         {
             hash = native->Name;
-            memAddress = (IntPtr)native;
+            this.native = native;
             if(IsValid())
             {
-                index = unchecked((int)(memAddress.ToInt64() - (long)GameMemory.AnimPostFXManager->Effects.Offset) / sizeof(CAnimPostFX));
+                index = unchecked((int)((long)native - (long)GameMemory.AnimPostFXManager->Effects.Offset) / sizeof(CAnimPostFX));
             }
+            Blend = new LayerBlend(this);
+            Layers = new LayersWrapper(this);
         }
 
         public bool IsValid()
         {
-            return memAddress != IntPtr.Zero;
+            return MemoryAddress != IntPtr.Zero;
         }
 
         public void Start(int duration, bool looped)
@@ -193,6 +197,176 @@ namespace RAGENativeUI
 
         private static Dictionary<uint, PostFxAnimation> cache = new Dictionary<uint, PostFxAnimation>();
         
+        public sealed class LayerBlend : IAddressable
+        {
+            private PostFxAnimation animation;
+            private CAnimPostFX.LayerBlend* native;
+
+            public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+
+            private Layer layerA;
+            public Layer LayerA
+            {
+                get
+                {
+                    if(native->LayerA == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        if(layerA != null)
+                        {
+                            return layerA;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < animation.Layers.Count; i++)
+                            {
+                                if(animation.Layers[i].MemoryAddress == (IntPtr)native->LayerA)
+                                {
+                                    layerA = animation.Layers[i];
+                                    break;
+                                }
+                            }
+
+                            return layerA;
+                        }
+                    }
+                }
+            }
+
+            private Layer layerB;
+            public Layer LayerB
+            {
+                get
+                {
+                    if (native->LayerB == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        if (layerB != null)
+                        {
+                            return layerB;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < animation.Layers.Count; i++)
+                            {
+                                if (animation.Layers[i].MemoryAddress == (IntPtr)native->LayerB)
+                                {
+                                    layerB = animation.Layers[i];
+                                    break;
+                                }
+                            }
+
+                            return layerB;
+                        }
+                    }
+                }
+            }
+
+            public float FrequencyNoise { get { return native->FrequencyNoise; } }
+            public float AmplitudeNoise { get { return native->AmplitudeNoise; } }
+            public float Frequency { get { return native->Frequency; } }
+            public float Bias { get { return native->Bias; } }
+
+            public bool Disabled { get { return native->Disabled == 1; } }
+            
+            internal LayerBlend(PostFxAnimation anim)
+            {
+                animation = anim;
+                native = &animation.native->FXStack.LayerBlend;
+            }
+
+            public bool IsValid()
+            {
+                return MemoryAddress != IntPtr.Zero;
+            }
+        }
+
+        public sealed class LayersWrapper
+        {
+            private PostFxAnimation animation;
+            private Layer[] layers;
+
+            public int Count { get { return animation.native->FXStack.LayersCount; } }
+            public Layer this[int index]
+            {
+                get
+                {
+                    if (index < 0 || index >= Count)
+                        throw new IndexOutOfRangeException();
+
+                    if(layers[index] == null)
+                    {
+                        Layer l = new Layer(animation.native->FXStack.GetLayer(index));
+                        layers[index] = l;
+                        return l;
+                    }
+                    else
+                    {
+                        return layers[index];
+                    }
+                }
+            }
+
+            internal LayersWrapper(PostFxAnimation anim)
+            {
+                animation = anim;
+                layers = new Layer[Count];
+            }
+        }
+
+        public sealed class Layer : IAddressable
+        {
+            private CAnimPostFX.Layer* native;
+
+            public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+
+            public TimeCycleModifier Modifier
+            {
+                get
+                {
+                    return native->ModifierName == 0 ? null : TimeCycleModifier.GetByHash(native->ModifierName);
+                }
+            }
+
+            public uint StartDelayDuration { get { return native->StartDelayDuration; } }
+            public uint InDuration { get { return native->InDuration; } }
+            public uint HoldDuration { get { return native->HoldDuration; } }
+            public uint OutDuration { get { return native->OutDuration; } }
+
+            public AnimationMode AnimationMode { get { return (AnimationMode)native->AnimMode; } }
+
+            public LoopMode LoopMode { get { return (LoopMode)native->LoopMode; } }
+
+            internal Layer(CAnimPostFX.Layer* native)
+            {
+                this.native = native;
+            }
+
+            public bool IsValid()
+            {
+                return MemoryAddress != IntPtr.Zero;
+            }
+        }
+
+        public enum AnimationMode : uint
+        {
+            InHoldOut = 0, // POSTFX_IN_HOLD_OUT
+            EaseInHoldEaseOut = 1, // POSTFX_EASE_IN_HOLD_EASE_OUT
+            EaseIn = 2, // POSTFX_EASE_IN
+        }
+
+        public enum LoopMode : uint
+        { 
+            HoldOnly = 1, // POSTFX_LOOP_HOLD_ONLY
+            None = 2, // POSTFX_LOOP_NONE
+        }
+
         private static Dictionary<uint, string> knownNames = new Dictionary<uint, string>()
         {
             { 0xB2895E1B, "SwitchHUDIn" },
