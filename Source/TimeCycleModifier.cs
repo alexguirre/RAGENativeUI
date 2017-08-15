@@ -41,11 +41,11 @@ namespace RAGENativeUI
             {
                 if (value)
                 {
-                    *GameMemory.CurrentTimeCycleModifierIndex = index;
+                    CurrentModifier = this;
                 }
                 else if (IsActive)
                 {
-                    *GameMemory.CurrentTimeCycleModifierIndex = -1;
+                    CurrentModifier = null;
                 }
             }
         }
@@ -143,6 +143,19 @@ namespace RAGENativeUI
             {
                 int index = *GameMemory.CurrentTimeCycleModifierIndex;
                 return index == -1 ? null : GetByIndex(index);
+            }
+            set
+            {
+                if(value == null || !value.IsValid())
+                {
+                    *GameMemory.CurrentTimeCycleModifierIndex = -1;
+                    // set strength to 1.0 to have the same behaviour as the CLEAR_TIMECYCLE_MODIFIER native
+                    *GameMemory.CurrentTimeCycleModifierStrength = 1.0f;
+                }
+                else
+                {
+                    *GameMemory.CurrentTimeCycleModifierIndex = value.Index;
+                }
             }
         }
 
