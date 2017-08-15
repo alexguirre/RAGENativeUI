@@ -11,8 +11,7 @@ namespace RAGENativeUI
         {
             if(indexes.Length == 1)
             {
-                string name = indexes[0] as string;
-                if(name != null)
+                if (indexes[0] is string name)
                 {
                     GetValue(name, out result);
                     return true;
@@ -27,8 +26,7 @@ namespace RAGENativeUI
         {
             if (indexes.Length == 1)
             {
-                string name = indexes[0] as string;
-                if (name != null)
+                if (indexes[0] is string name)
                 {
                     SetValue(name, value);
                     return true;

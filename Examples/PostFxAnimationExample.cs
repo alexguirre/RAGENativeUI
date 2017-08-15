@@ -37,6 +37,10 @@ namespace Examples
                     if (current != null)
                     {
                         s += $" Blend~n~";
+                        s += $"     FrequencyNoise: {current.Blend.FrequencyNoise}~n~";
+                        s += $"     AmplitudeNoise: {current.Blend.AmplitudeNoise}~n~";
+                        s += $"     Frequency: {current.Blend.Frequency}~n~";
+                        s += $"     Bias: {current.Blend.Bias}~n~";
                         s += $"     Disabled: {current.Blend.Disabled}~n~";
                         if (current.Blend.LayerA == null)
                         {

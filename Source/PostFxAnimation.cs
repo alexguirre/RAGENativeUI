@@ -338,9 +338,7 @@ namespace RAGENativeUI
             public uint InDuration { get { return native->InDuration; } }
             public uint HoldDuration { get { return native->HoldDuration; } }
             public uint OutDuration { get { return native->OutDuration; } }
-
             public AnimationMode AnimationMode { get { return (AnimationMode)native->AnimMode; } }
-
             public LoopMode LoopMode { get { return (LoopMode)native->LoopMode; } }
 
             internal Layer(CAnimPostFX.Layer* native)
