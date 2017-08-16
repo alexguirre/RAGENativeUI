@@ -1,0 +1,51 @@
+<D>
+    <Menu>
+        <Doc>
+            <summary/>
+        </Doc>
+        <Member name="AllowedControls">  
+            <summary>
+            Gets or sets the controls that aren't disabled when <see cref="DisableControlsActions"/> is <c>true</c>.
+            </summary>
+            <value>
+            A <see cref="GameControl"/>s array.
+            </value>
+        </Member>
+        <Member name="Owner">  
+            <summary>
+            Gets the current owner.
+            <para>
+            Once this <see cref="Menu"/> is closed, it loses its owner. Use <see cref="Show(Menu)"/> to specify the owner.
+            </para>
+            </summary>
+            <value>
+            The owner <see cref="Menu"/> or <c>null</c> if it doesn't have an owner or is hidden.
+            </value>
+        </Member>
+        <Member name="ForEachItemOnScreen">  
+            <summary>
+            Executes the specified action for each item that is currently on-screen.
+            An item is considered on-screen if the current menu is visible, its <see cref="MenuItem.IsVisible"/> property is <c>true</c> and is currently being drawn.
+            </summary>
+            <param name="action">The action to execute.</param>
+        </Member>
+    </Menu>
+
+    <MenuItemsCollection>
+        <Doc>
+            <summary/>
+        </Doc>
+    </MenuItemsCollection>
+
+    <MenuControls>
+        <Doc>
+            <summary/>
+        </Doc>
+    </MenuControls>
+
+    <MenuSoundsSet>
+        <Doc>
+            <summary/>
+        </Doc>
+    </MenuSoundsSet>
+</D>

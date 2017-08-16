@@ -14,6 +14,7 @@ namespace RAGENativeUI.Menus
 
     using RAGENativeUI.Menus.Rendering;
 
+    /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Doc/*' />
     public class Menu
     {
         public delegate void ForEachOnScreenItemDelegate(MenuItem item, int index);
@@ -99,12 +100,7 @@ namespace RAGENativeUI.Menus
         }
         
         public bool DisableControlsActions { get; set; } = true;
-        /// <summary>
-        /// Gets or sets the controls that aren't disabled when <see cref="DisableControlsActions"/> is <c>true</c>.
-        /// </summary>
-        /// <value>
-        /// A <see cref="GameControl"/>s array.
-        /// </value>
+        /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="AllowedControls"]/*' />
         public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls.ToArray();
 
         protected int MinVisibleItemIndex { get; set; }
@@ -136,15 +132,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        /// <summary>
-        /// Gets the current owner.
-        /// <para>
-        /// Once this <see cref="Menu"/> is closed, it loses its owner. Use <see cref="Show(Menu)"/> to specify the owner.
-        /// </para>
-        /// </summary>
-        /// <value>
-        /// The owner <see cref="Menu"/> or <c>null</c> if it doesn't have an owner or is hidden.
-        /// </value>
+        /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="Owner"]/*' />
         public Menu Owner { get; private set; }
         public dynamic Metadata { get; } = new Metadata();
 
@@ -413,11 +401,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        /// <summary>
-        /// Executes the specified action for each item that is currently on-screen.
-        /// An item is considered on-screen if the current menu is visible, its <see cref="MenuItem.IsVisible"/> property is <c>true</c> and is currently being drawn.
-        /// </summary>
-        /// <param name="action">The action to execute.</param>
+        /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="ForEachItemOnScreen"]/*' />
         public void ForEachItemOnScreen(ForEachOnScreenItemDelegate action)
         {
             if (Items.Count > 0 && IsAnyItemOnScreen)
@@ -504,6 +488,7 @@ namespace RAGENativeUI.Menus
     }
 
 
+    /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/MenuItemsCollection/Doc/*' />
     public class MenuItemsCollection : BaseCollection<MenuItem>, IMenuComponent
     {
         public Menu Menu { get; }
@@ -633,6 +618,7 @@ namespace RAGENativeUI.Menus
         }
     }
 
+    /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/MenuControls/Doc/*' />
     public class MenuControls
     {
         public Control Up { get; set; } = new Control(GameControl.FrontendUp);
@@ -643,6 +629,7 @@ namespace RAGENativeUI.Menus
         public Control Back { get; set; } = new Control(GameControl.FrontendCancel);
     }
 
+    /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/MenuSoundsSet/Doc/*' />
     public class MenuSoundsSet
     {
         public FrontendSound Up { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_UP_DOWN");

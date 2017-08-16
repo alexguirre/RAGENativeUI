@@ -4,6 +4,7 @@ namespace RAGENativeUI
 
     using Rage.Native;
 
+    /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Doc/*' />
     public static class HudColorExtensions
     {
         public static Color GetColor(this HudColor hudColor)
@@ -17,22 +18,14 @@ namespace RAGENativeUI
             NativeFunction.Natives.xF314CF4F0211894E((int)hudColor, color.R, color.G, color.B, color.A); // _SET_HUD_COLOUR
         }
 
-        /// <summary>
-        /// Gets the name of the specified HUD color. For example, for <see cref="HudColor.WHITE"/> it will return "HUD_COLOUR_WHITE".
-        /// </summary>
-        /// <remarks>
-        /// One of the uses of the returned name is changing the color of the text from notifications, help messages or subtitles.
-        /// <code>
-        /// Game.DisplayHelp($"~{HudColor.RED.GetName()}~Now this text is red!");
-        /// </code>
-        /// </remarks>
-        /// <param name="hudColor">The HUD color id.</param>
+        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="GetName"]/*' />
         public static string GetName(this HudColor hudColor)
         {
             return $"HUD_COLOUR_{hudColor}";
         }
     }
 
+    /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Doc/*' />
     public enum HudColor
     {
         PURE_WHITE = 0,

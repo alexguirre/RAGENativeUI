@@ -38,13 +38,17 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
-                        i = MathHelper.Clamp(i + 1, 0, modifiers.Length - 1);
+                        i++;
+                        if (i >= modifiers.Length)
+                            i = 0;
                         TimeCycleModifier.CurrentModifier = null;
                         mod = modifiers[i];
                     }
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
-                        i = MathHelper.Clamp(i - 1, 0, modifiers.Length - 1);
+                        i--;
+                        if (i < 0)
+                            i = modifiers.Length - 1;
                         TimeCycleModifier.CurrentModifier = null;
                         mod = modifiers[i];
                     }
