@@ -163,7 +163,7 @@ namespace RAGENativeUI.Menus
 #else
                 catch (OverflowException)
                 {
-                    newValue = minimun;
+                    newValue = minimum;
                 }
 #endif
                 Value = newValue;
@@ -198,7 +198,7 @@ namespace RAGENativeUI.Menus
 #else
             catch (OverflowException)
             {
-                newValue = maximun;
+                newValue = maximum;
             }
 #endif
                 Value = newValue;
