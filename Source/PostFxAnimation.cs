@@ -27,7 +27,7 @@ namespace RAGENativeUI
                     return n;
                 }
 
-                return $"0x{hash.ToString("X")}";
+                return $"0x{hash.ToString("X8")}";
             }
         }
 
