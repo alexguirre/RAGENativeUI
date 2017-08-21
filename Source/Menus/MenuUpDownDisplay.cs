@@ -9,7 +9,7 @@ namespace RAGENativeUI.Menus
     {
         public Menu Menu { get; }
 
-        public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 38f);
+        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 38f);
         private float ArrowsUpDownSize { get { return Size.Height; } }
         
         private bool ShouldBeVisible { get { return Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0); } }

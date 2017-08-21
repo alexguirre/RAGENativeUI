@@ -8,7 +8,7 @@ namespace RAGENativeUI.Menus
     {
         public Menu Menu { get; }
         
-        public SizeF Size { get { return Menu.Items.Size; } set { Menu.Items.Size = value; } }
+        public virtual SizeF Size { get { return Menu.Items.Size; } set { Menu.Items.Size = value; } }
 
         public MenuBackground(Menu menu)
         {

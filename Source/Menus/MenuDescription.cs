@@ -12,7 +12,7 @@ namespace RAGENativeUI.Menus
         public Menu Menu { get; }
 
         private SizeF size = new SizeF(Menu.DefaultWidth, 0f);
-        public SizeF Size
+        public virtual SizeF Size
         {
             get { return size; }
             set
@@ -29,16 +29,16 @@ namespace RAGENativeUI.Menus
             }
         } 
 
-        public float BorderSafezone { get; set; } = 8.5f;
+        public virtual float BorderSafezone { get; set; } = 8.5f;
 
         private MenuItem currentItem;
         private string currentOrigText;
         private string currentText;
 
-        public string Text { get { return currentOrigText; } }
+        public virtual string Text { get { return currentOrigText; } }
 
         private string textOverride = null;
-        public string TextOverride
+        public virtual string TextOverride
         {
             get { return textOverride; }
             set

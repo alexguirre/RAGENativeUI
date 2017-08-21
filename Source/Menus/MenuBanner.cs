@@ -10,8 +10,8 @@ namespace RAGENativeUI.Menus
     {
         public Menu Menu { get; }
 
-        public string Title { get; set; }
-        public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 109f);
+        public virtual string Title { get; set; }
+        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 109f);
 
         public MenuBanner(Menu menu)
         {
@@ -25,7 +25,10 @@ namespace RAGENativeUI.Menus
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
             Menu.Skin.DrawBanner(graphics, x, y, Size.Width, Size.Height);
-            Menu.Skin.DrawText(graphics, Title, Menu.Skin.TitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Center, TextVerticalAligment.Center);
+            if (Title != null)
+            {
+                Menu.Skin.DrawText(graphics, Title, Menu.Skin.TitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Center, TextVerticalAligment.Center);
+            }
 
             y += Size.Height;
         }

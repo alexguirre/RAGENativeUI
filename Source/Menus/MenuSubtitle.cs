@@ -11,12 +11,12 @@ namespace RAGENativeUI.Menus
     {
         public Menu Menu { get; }
 
-        public string Text { get; set; }
-        public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
+        public virtual string Text { get; set; }
+        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
 
         protected bool ShowCounter { get { return Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0); } }
 
-        public float BorderSafezone { get; set; } = 8.5f;
+        public virtual float BorderSafezone { get; set; } = 8.5f;
 
         public MenuSubtitle(Menu menu)
         {
