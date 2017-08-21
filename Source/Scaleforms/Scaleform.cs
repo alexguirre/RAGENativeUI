@@ -9,7 +9,7 @@ namespace RAGENativeUI.Scaleforms
     using RAGENativeUI.Memory;
     using RAGENativeUI.Memory.GFx;
 
-    public class Scaleform : IAddressable
+    public unsafe class Scaleform : IAddressable
     {
         public string Name { get; }
 
@@ -19,7 +19,33 @@ namespace RAGENativeUI.Scaleforms
         /// <summary>
         /// Gets the memory address of this instance. If this <see cref="Scaleform"/> isn't loaded, returns <see cref="IntPtr.Zero"/>.
         /// </summary>
-        public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GetMovieRoot() : IntPtr.Zero; } }
+        public IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GetMovieRoot() : IntPtr.Zero; } }
+
+        public Color BoundingBoxColor
+        {
+            get
+            {
+                if (!IsLoaded)
+                    return Color.Empty;
+                GFxMovieRoot* movie = GetMovieRoot();
+
+                return movie != null ? Color.FromArgb(movie->BackgroundColorAlpha, movie->BackgroundColorRed, movie->BackgroundColorGreen, movie->BackgroundColorBlue) : Color.Empty;
+            }
+            set
+            {
+                if (!IsLoaded)
+                    return;
+                GFxMovieRoot* movie = GetMovieRoot();
+
+                if (movie == null)
+                    return;
+
+                movie->BackgroundColorAlpha = value.A;
+                movie->BackgroundColorRed = value.R;
+                movie->BackgroundColorGreen = value.G;
+                movie->BackgroundColorBlue = value.B;
+            }
+        }
 
         public Scaleform(string name)
         {
@@ -138,7 +164,7 @@ namespace RAGENativeUI.Scaleforms
         }
 
 
-        internal unsafe GFxMovieRoot* GetMovieRoot()
+        internal GFxMovieRoot* GetMovieRoot()
         {
             int index = Handle - 1;
             short data2Index = GameMemory.ScaleformData1Array->Get(index)->ScaleformIndex;
