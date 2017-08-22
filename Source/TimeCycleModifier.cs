@@ -64,6 +64,37 @@ namespace RAGENativeUI
             Mods = new TimeCycleModifierModsCollection(this);
         }
 
+        public TimeCycleModifier(string name, TimeCycleModifier template)
+        {
+            uint hash = Game.GetHashKey(name);
+            knownNames[hash] = name;
+            if (GameMemory.TimeCycleModifiersManager->IsNameUsed(hash))
+                throw new InvalidOperationException($"The name '{name}' is already in use.");
+
+
+            this.hash = hash;
+            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (CTimeCycleModifier.ModType)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray(), template.Flags);
+            index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
+            Mods = new TimeCycleModifierModsCollection(this);
+            cache[hash] = this;
+        }
+
+        // TODO: maybe change Tuple<TimeCycleModifierModType, float, float> to a custom struct
+        public TimeCycleModifier(string name, uint flags, params Tuple<TimeCycleModifierModType, float, float>[] modsTemplate)
+        {
+            uint hash = Game.GetHashKey(name);
+            knownNames[hash] = name;
+            if (GameMemory.TimeCycleModifiersManager->IsNameUsed(hash))
+                throw new InvalidOperationException($"The name '{name}' is already in use.");
+
+
+            this.hash = hash;
+            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, modsTemplate.Select(m => new CTimeCycleModifier.Mod { ModType = (CTimeCycleModifier.ModType)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray(), flags);
+            index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
+            Mods = new TimeCycleModifierModsCollection(this);
+            cache[hash] = this;
+        }
+
         public bool IsValid()
         {
             return memAddress != IntPtr.Zero;

@@ -1,5 +1,7 @@
 namespace Examples
 {
+    using System;
+
     using Rage;
     using Rage.Attributes;
 
@@ -11,10 +13,8 @@ namespace Examples
         [ConsoleCommand(Name = "TimeCycleModifierExample", Description = "Example showing the TimeCycleModifier class.")]
         private static void Command()
         {
-            TimeCycleModifier[] modifiers = TimeCycleModifier.GetAll();
-
             int i = 0;
-            TimeCycleModifier mod = modifiers[i];
+            TimeCycleModifier mod = TimeCycleModifier.GetByIndex(i);
 
             GameFiber.StartNew(() =>
             {
@@ -24,7 +24,7 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
                     {
-                        foreach (TimeCycleModifier e in modifiers)
+                        foreach (TimeCycleModifier e in TimeCycleModifier.GetAll())
                         {
                             Game.Console.Print($"{e.Index}. {e.Name}");
                         }
@@ -48,7 +48,7 @@ namespace Examples
                     }
 
                     TimeCycleModifier current = TimeCycleModifier.CurrentModifier;
-                    Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Flags: {mod.Flags}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}~n~Strength: {TimeCycleModifier.CurrentModifierStrength}");
+                    Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Flags: {mod.Flags}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}~n~Strength: {TimeCycleModifier.CurrentModifierStrength}~n~Count: {TimeCycleModifier.Count}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         mod.IsActive = !mod.IsActive;
@@ -57,18 +57,18 @@ namespace Examples
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
                         i++;
-                        if (i >= modifiers.Length)
+                        if (i >= TimeCycleModifier.Count)
                             i = 0;
                         TimeCycleModifier.CurrentModifier = null;
-                        mod = modifiers[i];
+                        mod = TimeCycleModifier.GetByIndex(i);
                     }
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         i--;
                         if (i < 0)
-                            i = modifiers.Length - 1;
+                            i = TimeCycleModifier.Count - 1;
                         TimeCycleModifier.CurrentModifier = null;
-                        mod = modifiers[i];
+                        mod = TimeCycleModifier.GetByIndex(i);
                     }
 
 
@@ -79,6 +79,28 @@ namespace Examples
                     else if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Divide))
                     {
                         TimeCycleModifier.CurrentModifierStrength -= 1.0f * Game.FrameTime;
+                    }
+
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.J))
+                    {
+                        Game.DisplayNotification("Creating new CUSTOMCLONE" + TimeCycleModifier.Count);
+                        Game.LogTrivial("Creating new CUSTOMCLONE" + TimeCycleModifier.Count);
+                        System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+                        TimeCycleModifier m = new TimeCycleModifier("CUSTOMCLONE" + TimeCycleModifier.Count, TimeCycleModifier.GetByIndex(4));
+                        sw.Stop();
+                        Game.LogTrivial($"It took {sw.ElapsedMilliseconds}ms/{sw.ElapsedTicks}ticks/{sw.Elapsed} to create TimeCycleModifier");
+                    }
+                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.I))
+                    {
+                        Game.DisplayNotification("Creating new CUSTOM" + TimeCycleModifier.Count);
+                        Game.LogTrivial("Creating new CUSTOM" + TimeCycleModifier.Count);
+                        System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+                        TimeCycleModifier m = new TimeCycleModifier("CUSTOM" + TimeCycleModifier.Count, 0, 
+                           Tuple.Create(TimeCycleModifierModType.postfx_desaturation, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
+                           Tuple.Create(TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
+                        sw.Stop();
+                        Game.LogTrivial($"It took {sw.ElapsedMilliseconds}ms/{sw.ElapsedTicks}ticks/{sw.Elapsed} to create TimeCycleModifier");
                     }
                 }
             });

@@ -9,9 +9,28 @@ namespace RAGENativeUI.Memory
         [FieldOffset(0x0000)] public Mod.CSimpleArray Mods;
 
         [FieldOffset(0x0010)] public uint Name;
-
+        [FieldOffset(0x0018)] public long unk18;
         [FieldOffset(0x0020)] public uint Flags;
+        [FieldOffset(0x0024)] public int unk24;
 
+        // call after adding new mods, to maintain the array in the correct order
+        public void SortMods()
+        {
+            // https://en.wikipedia.org/wiki/Bubble_sort
+            short count = Mods.Count;
+            for (short write = 0; write < count; write++)
+            {
+                for (short sort = 0; sort < count - 1; sort++)
+                {
+                    if (Mods.Get(sort)->ModType > Mods.Get(unchecked((short)(sort + 1)))->ModType)
+                    {
+                        Mod temp = Mods.Offset[unchecked((short)(sort + 1))];
+                        Mods.Offset[sort + 1] = Mods.Offset[sort];
+                        Mods.Offset[sort] = temp;
+                    }
+                }
+            }
+        }
 
         [StructLayout(LayoutKind.Explicit, Size = 12)]
         public struct Mod
