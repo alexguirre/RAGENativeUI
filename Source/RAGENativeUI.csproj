@@ -61,6 +61,7 @@
     <Compile Include="Memory\CTimeCycleModifiersManager.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
+    <Compile Include="Memory\sysMemAllocator.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="TimeCycleModifier.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />

@@ -17,6 +17,7 @@ namespace RAGENativeUI.Memory
         public static CTimeCycleModifiersManager* TimeCycleModifiersManager { get; private set; }
         public static int* CurrentTimeCycleModifierIndex { get; private set; }
         public static float* CurrentTimeCycleModifierStrength { get; private set; }
+        public static sysMemAllocator* Allocator { get; private set; }
 
         internal static bool Init()
         {
@@ -69,6 +70,13 @@ namespace RAGENativeUI.Memory
                 address = address + *(int*)(address + 2) + 6;
                 CurrentTimeCycleModifierIndex = (int*)address;
                 CurrentTimeCycleModifierStrength = (float*)(address + 4);
+            }
+
+            address = Game.FindPattern("48 8D 1D ?? ?? ?? ?? A8 08 75 1D 83 C8 08 48 8B CB 89 05 ?? ?? ?? ??");
+            if (AssertAddress(address, nameof(sysMemAllocator)))
+            {
+                address = address + *(int*)(address + 3) + 7;
+                Allocator = (sysMemAllocator*)address;
             }
 
             return !anyAssertFailed;
