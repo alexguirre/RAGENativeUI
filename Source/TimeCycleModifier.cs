@@ -11,14 +11,17 @@ namespace RAGENativeUI
 
     using RAGENativeUI.Memory;
 
-    // defined in timecycle_mods_x.xml
+    // defined in timecycle_mods_*.xml
+    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Doc/*' />
     public unsafe sealed class TimeCycleModifier : IAddressable
     {
         private uint hash;
         private IntPtr memAddress;
         private int index = -1;
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Hash"]/*' />
         public uint Hash { get { return hash; } }
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Name"]/*' />
         public string Name
         {
             get
@@ -32,6 +35,7 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="IsActive"]/*' />
         public bool IsActive
         {
             get
@@ -51,9 +55,16 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="MemoryAddress"]/*' />
         public IntPtr MemoryAddress { get { return memAddress; } }
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Index"]/*' />
         public int Index { get { return index; } }
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Flags"]/*' />
         public uint Flags { get { return ((CTimeCycleModifier*)memAddress)->Flags; } }
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Mods"]/*' />
         public TimeCycleModifierModsCollection Mods { get; }
 
         private TimeCycleModifier(CTimeCycleModifier* native, int idx)
@@ -64,6 +75,7 @@ namespace RAGENativeUI
             Mods = new TimeCycleModifierModsCollection(this);
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor1"]/*' />
         public TimeCycleModifier(string name, TimeCycleModifier template)
         {
             uint hash = Game.GetHashKey(name);
@@ -80,7 +92,8 @@ namespace RAGENativeUI
         }
 
         // TODO: maybe change Tuple<TimeCycleModifierModType, float, float> to a custom struct
-        public TimeCycleModifier(string name, uint flags, params Tuple<TimeCycleModifierModType, float, float>[] modsTemplate)
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor2"]/*' />
+        public TimeCycleModifier(string name, uint flags, params Tuple<TimeCycleModifierModType, float, float>[] mods)
         {
             uint hash = Game.GetHashKey(name);
             knownNames[hash] = name;
@@ -89,17 +102,21 @@ namespace RAGENativeUI
 
 
             this.hash = hash;
-            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, modsTemplate.Select(m => new CTimeCycleModifier.Mod { ModType = (CTimeCycleModifier.ModType)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray(), flags);
+            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, mods.Select(m => new CTimeCycleModifier.Mod { ModType = (CTimeCycleModifier.ModType)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray(), flags);
             index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
             Mods = new TimeCycleModifierModsCollection(this);
             cache[hash] = this;
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="IsValid"]/*' />
         public bool IsValid()
         {
             return memAddress != IntPtr.Zero;
         }
 
+
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByName"]/*' />
         public static TimeCycleModifier GetByName(string name)
         {
             uint hash = Game.GetHashKey(name);
@@ -107,6 +124,7 @@ namespace RAGENativeUI
             return GetByHash(hash);
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByHash"]/*' />
         public static TimeCycleModifier GetByHash(uint hash)
         {
             if (cache.TryGetValue(hash, out TimeCycleModifier p))
@@ -126,11 +144,12 @@ namespace RAGENativeUI
             return null;
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByIndex"]/*' />
         public static TimeCycleModifier GetByIndex(int index)
         {
             if (index < 0 || index >= Count)
             {
-                throw new IndexOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             short i = (short)index;
@@ -153,6 +172,7 @@ namespace RAGENativeUI
             return null;
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetAll"]/*' />
         public static TimeCycleModifier[] GetAll()
         {
             TimeCycleModifier[] mods = new TimeCycleModifier[GameMemory.TimeCycleModifiersManager->Modifiers.Count];
@@ -164,6 +184,7 @@ namespace RAGENativeUI
             return mods;
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Count"]/*' />
         public static int Count
         {
             get
@@ -172,6 +193,7 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="CurrentModifier"]/*' />
         public static TimeCycleModifier CurrentModifier
         {
             get
@@ -194,6 +216,7 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="CurrentModifierStrength"]/*' />
         public static float CurrentModifierStrength
         {
             get
@@ -950,12 +973,14 @@ namespace RAGENativeUI
         };
     }
 
+    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Doc/*' />
     public sealed unsafe class TimeCycleModifierModsCollection : IEnumerable<TimeCycleModifierMod>
     {
         private readonly TimeCycleModifier modifier;
         private readonly Dictionary<TimeCycleModifierModType, short> indexByType;
         private readonly Dictionary<short, TimeCycleModifierMod> modByindex;
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Count"]/*' />
         public int Count
         {
             get
@@ -965,6 +990,7 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Indexer1"]/*' />
         public TimeCycleModifierMod this[int index]
         {
             get
@@ -985,6 +1011,7 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Indexer2"]/*' />
         public TimeCycleModifierMod this[TimeCycleModifierModType type]
         {
             get
@@ -1027,6 +1054,8 @@ namespace RAGENativeUI
             }
         }
 
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Has"]/*' />
         public bool Has(TimeCycleModifierModType type)
         {
             if (indexByType.TryGetValue(type, out short idx))
@@ -1053,6 +1082,7 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="GetEnumerator"]/*' />
         public IEnumerator<TimeCycleModifierMod> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
@@ -1061,19 +1091,28 @@ namespace RAGENativeUI
             }
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="GetEnumerator"]/*' />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
     }
 
+    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Doc/*' />
     public sealed unsafe class TimeCycleModifierMod : IAddressable
     {
         private readonly CTimeCycleModifier.Mod* native;
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="MemoryAddress"]/*' />
         public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Type"]/*' />
         public TimeCycleModifierModType Type { get { return (TimeCycleModifierModType)native->ModType; } }
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Value1"]/*' />
         public float Value1 { get { return native->Value1; } set { native->Value1 = value; } }
+
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Value2"]/*' />
         public float Value2 { get { return native->Value2; } set { native->Value2 = value; } }
 
         internal TimeCycleModifierMod(CTimeCycleModifier.Mod* native)
@@ -1082,6 +1121,7 @@ namespace RAGENativeUI
         }
     }
 
+    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModType/Doc/*' />
     public enum TimeCycleModifierModType
     {
         light_dir_col_r = 0,

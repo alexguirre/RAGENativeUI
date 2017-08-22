@@ -1,0 +1,229 @@
+<D>
+    <TimeCycleModifier>
+        <Doc>
+            <summary>
+            Represents a time cycle modifier.
+            <para>
+            The default time cycle modifiers are defined in the "timecycle_mods_*.xml" from the game files. 
+            </para>
+            </summary>
+        </Doc>
+        <Member name="Hash">  
+            <summary>
+            Gets the hash of the <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Member>
+        <Member name="Name">  
+            <summary>
+            Gets the name of the <see cref="TimeCycleModifier"/>.
+            </summary>
+            <returns>
+            The name of the <see cref="TimeCycleModifier"/>, or if it's unknown, the hash in hexadecimal.
+            </returns>
+        </Member>
+        <Member name="IsActive">  
+            <summary>
+            Gets or sets whether the <see cref="TimeCycleModifier"/> is currently active.
+            </summary>
+        </Member>
+        <Member name="MemoryAddress">  
+            <summary>
+            Gets the memory address of the <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Member>
+        <Member name="Index">  
+            <summary>
+            Gets the index of the <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Member>
+        <Member name="Flags">  
+            <summary>
+            Gets the flags of the <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Member>
+        <Member name="Mods">  
+            <summary>
+            Gets a collection representing the mods of the <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Member>
+        <Member name="Ctor1">  
+            <summary>
+            Initializes a new instance of the <see cref="TimeCycleModifier"/> class using other <see cref="TimeCycleModifier"/> as template.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="template">The template from which the flags and mods will be copied to the new instance.</param>
+            <exception cref="InvalidOperationException"><paramref name="name"/> is already used by other <see cref="TimeCycleModifier"/>.</exception>
+        </Member>
+        <Member name="Ctor2">  
+            <summary>
+            Initializes a new instance of the <see cref="TimeCycleModifier"/> class with the specified flags and mods.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="flags">The flags.</param>
+            <param name="mods">The mods.</param>
+            <exception cref="InvalidOperationException"><paramref name="name"/> is already used by other <see cref="TimeCycleModifier"/>.</exception>
+        </Member>
+        <Member name="IsValid">  
+            <summary>
+            Checks whether the <see cref="TimeCycleModifier"/> is valid.
+            </summary>
+            <returns>
+            <c>true</c> if this instance is valid; otherwise, <c>false</c>.
+            </returns>
+        </Member>
+        <Member name="GetByName">  
+            <summary>
+            Gets a <see cref="TimeCycleModifier"/> instance by its name.
+            </summary>
+            <param name="name">The case insensitive name of the instance to get.</param>
+            <returns>
+            If an instance of <see cref="TimeCycleModifier"/> matches the specified name, returns that instance; otherwise, returns <c>null</c>.
+            </returns>
+        </Member>
+        <Member name="GetByHash">  
+            <summary>
+            Gets a <see cref="TimeCycleModifier"/> instance by its hash.
+            </summary>
+            <param name="hash">The hash of the instance to get.</param>
+            <returns>
+            If an instance of <see cref="TimeCycleModifier"/> matches the specified hash, returns that instance; otherwise, returns <c>null</c>.
+            </returns>
+        </Member>
+        <Member name="GetByIndex">  
+            <summary>
+            Gets a <see cref="TimeCycleModifier"/> instance by its index.
+            <para>
+            Indices are between 0, inclusive, and <see cref="Count"/>, exclusive.
+            </para>
+            </summary>
+            <param name="hash">The index of the instance to get.</param>
+            <returns>
+            If an instance of <see cref="TimeCycleModifier"/> matches the specified hash, returns that instance; otherwise, returns <c>null</c>.
+            </returns>
+            <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.</exception>
+            <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is equal to or greater than <see cref="Count"/>.</exception>
+        </Member>
+        <Member name="GetAll">  
+            <summary>
+            Gets all <see cref="TimeCycleModifier"/> instances currently in memory.
+            </summary>
+            <returns>
+            An array that contains all <see cref="TimeCycleModifier"/> instances currently in memory.
+            </returns>
+        </Member>
+        <Member name="Count">  
+            <summary>
+            Gets the number of <see cref="TimeCycleModifier"/> instances currently in memory.
+            </summary>
+            <returns>
+            The number of <see cref="TimeCycleModifier"/> instances currently in memory.
+            </returns>
+        </Member>
+        <Member name="CurrentModifier">  
+            <summary>
+            Gets or sets the <see cref="TimeCycleModifier"/> instance that is currently active.
+            </summary>
+            <returns>
+            The <see cref="TimeCycleModifier"/> instance that is currently active.
+            </returns>
+        </Member>
+        <Member name="CurrentModifierStrength">  
+            <summary/>
+        </Member>
+    </TimeCycleModifier>
+    
+    <TimeCycleModifierModsCollection>
+        <Doc>
+            <summary>
+            Represents the mods collection of a <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Doc>
+        <Member name="Count">  
+            <summary>
+            Gets the number of mods contained in the <see cref="TimeCycleModifierModsCollection"/>.
+            </summary>
+            <returns>
+            The number of mods contained in the <see cref="TimeCycleModifierModsCollection"/>.
+            </returns>
+        </Member>
+        <Member name="Indexer1">  
+            <summary>
+            Gets the <see cref="TimeCycleModifierMod"/> at the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns>
+            The <see cref="TimeCycleModifierMod"/> at the specified index.
+            </returns>
+            <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.</exception>
+            <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is equal to or greater than <see cref="Count"/>.</exception>
+        </Member>
+        <Member name="Indexer2">  
+            <summary>
+            Gets the <see cref="TimeCycleModifierMod"/> with the specified type.
+            <para>
+            If the <see cref="TimeCycleModifierModsCollection"/> doesn't contain a mod with the specified type, 
+            a <see cref="InvalidOperationException"/> will be thrown.
+            Use the <see cref="Has"/> method to ensure a mod with the specified type is contained in the <see cref="TimeCycleModifierModsCollection"/>.
+            </para>
+            </summary>
+            <param name="type">The mod type.</param>
+            <returns>
+            The <see cref="TimeCycleModifierMod"/> with the specified type.
+            </returns>
+            <exception cref="InvalidOperationException">The <see cref="TimeCycleModifierModsCollection"/> doesn't contain a mod with the specified <paramref name="type"/>.</exception>
+        </Member>
+        <Member name="Has">  
+            <summary>
+            Determines whether the <see cref="TimeCycleModifierModsCollection"/> contains a mod with the specified type.
+            </summary>
+            <param name="type">The type to check.</param>
+            <returns>
+            <c>true</c> if the <see cref="TimeCycleModifierModsCollection"/> contains a mod with the specified type; otherwise, <c>false</c>.
+            </returns>
+        </Member>
+        <Member name="GetEnumerator">  
+            <summary>
+            Returns an enumerator that iterates through the <see cref="TimeCycleModifierModsCollection"/>.
+            </summary>
+            <returns>
+            An enumerator that can be used to iterate through the <see cref="TimeCycleModifierModsCollection"/>.
+            </returns>
+        </Member>
+    </TimeCycleModifierModsCollection>
+    
+    <TimeCycleModifierMod>
+        <Doc>
+            <summary>
+            Represents a mod of a <see cref="TimeCycleModifier"/>.
+            </summary>
+        </Doc>
+        <Member name="MemoryAddress">  
+            <summary>
+            Gets the memory address of the <see cref="TimeCycleModifierMod"/>.
+            </summary>
+        </Member>
+        <Member name="Type">  
+            <summary>
+            Gets the type of the <see cref="TimeCycleModifierMod"/>.
+            </summary>
+        </Member>
+        <Member name="Value1">  
+            <summary>
+            Gets the first value of the <see cref="TimeCycleModifierMod"/>.
+            </summary>
+        </Member>
+        <Member name="Value2">  
+            <summary>
+            Gets the second value of the <see cref="TimeCycleModifierMod"/>.
+            </summary>
+        </Member>
+    </TimeCycleModifierMod>
+    
+    <TimeCycleModifierModType>
+        <Doc>
+            <summary>
+            Represents the various <see cref="TimeCycleModifier"/> mod types.
+            </summary>
+        </Doc>
+    </TimeCycleModifierModType>
+</D>
