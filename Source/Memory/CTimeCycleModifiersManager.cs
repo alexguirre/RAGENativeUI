@@ -86,7 +86,7 @@ namespace RAGENativeUI.Memory
         }
 
 
-        private CTimeCycleModifier** GetModifiersArrayEntry(short increaseCountIfFull = 1)
+        private CTimeCycleModifier** GetModifiersArrayEntry(short increaseCountIfFull = 5)
         {
             if (Modifiers.Count == Modifiers.Size)
             {
@@ -106,7 +106,7 @@ namespace RAGENativeUI.Memory
             return &Modifiers.Offset[last];
         }
 
-        private CTimeCycleModifier.CSortedArray.Entry* GetSortedModifiersArrayEntry(short increaseCountIfFull = 1)
+        private CTimeCycleModifier.CSortedArray.Entry* GetSortedModifiersArrayEntry(short increaseCountIfFull = 5)
         {
             if (SortedModifiers.Count == SortedModifiers.Size)
             {

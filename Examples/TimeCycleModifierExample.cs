@@ -87,7 +87,7 @@ namespace Examples
                         Game.DisplayNotification("Creating new CUSTOMCLONE" + TimeCycleModifier.Count);
                         Game.LogTrivial("Creating new CUSTOMCLONE" + TimeCycleModifier.Count);
                         System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-                        TimeCycleModifier m = new TimeCycleModifier("CUSTOMCLONE" + TimeCycleModifier.Count, TimeCycleModifier.GetByIndex(4));
+                        TimeCycleModifier m = new TimeCycleModifier("CUSTOMCLONE" + TimeCycleModifier.Count, mod);
                         sw.Stop();
                         Game.LogTrivial($"It took {sw.ElapsedMilliseconds}ms/{sw.ElapsedTicks}ticks/{sw.Elapsed} to create TimeCycleModifier");
                     }
