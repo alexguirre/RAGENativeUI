@@ -4,6 +4,7 @@ namespace Examples
     using Rage.Attributes;
 
     using RAGENativeUI;
+    using RAGENativeUI.Elements;
 
     internal static class TimeCycleModifierExample
     {
@@ -29,8 +30,25 @@ namespace Examples
                         }
                     }
 
+                    float y = 0.005f;
+                    foreach (TimeCycleModifierMod m in mod.Mods)
+                    {
+                        string s = $"{m.Type}: {m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}~n~";
+                        Text.Draw(ScreenPosition.FromRelativeCoords(0.98f, y), s, 0.3f, System.Drawing.Color.White, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, true);
+                        y += 0.0165f;
+                    }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.U))
+                    {
+                        foreach (TimeCycleModifierMod m in mod.Mods)
+                        {
+                            m.Value1 = MathHelper.GetRandomSingle(0.0f, 15.0f);
+                            m.Value2 = MathHelper.GetRandomSingle(0.0f, 15.0f);
+                        }
+                    }
+
                     TimeCycleModifier current = TimeCycleModifier.CurrentModifier;
-                    Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}~n~Strength: {TimeCycleModifier.CurrentModifierStrength}");
+                    Game.DisplayHelp($"Name: {mod.Name}~n~Index: {mod.Index}~n~Flags: {mod.Flags}~n~Active: {mod.IsActive.ToString()}~n~Valid: {mod.IsValid()}~n~MemAddress: {mod.MemoryAddress.ToString("X")}~n~Current: {(current == null ? "null" : current.Name)}~n~CurrentIndex: {(current == null ? "-1" : current.Index.ToString())}~n~Strength: {TimeCycleModifier.CurrentModifierStrength}");
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
                         mod.IsActive = !mod.IsActive;

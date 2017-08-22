@@ -13,25 +13,6 @@ namespace RAGENativeUI.Memory
         [FieldOffset(0x0020)] public uint Flags;
 
 
-        [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CSimpleArrayPtr
-        {
-            public CTimeCycleModifier** Offset;
-            public short Count;
-            public short Size;
-
-            public CTimeCycleModifier* Get(short index)
-            {
-                if (index >= Size)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
-                }
-
-                return Offset[index];
-            }
-        }
-
-
         [StructLayout(LayoutKind.Explicit, Size = 12)]
         public struct Mod
         {
@@ -55,6 +36,49 @@ namespace RAGENativeUI.Memory
 
                     return &Offset[index];
                 }
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CSimpleArrayPtr
+        {
+            public CTimeCycleModifier** Offset;
+            public short Count;
+            public short Size;
+
+            public CTimeCycleModifier* Get(short index)
+            {
+                if (index >= Size)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
+                }
+
+                return Offset[index];
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CSortedArray
+        {
+            [StructLayout(LayoutKind.Explicit, Size = 16)]
+            public struct Entry
+            {
+                [FieldOffset(0x0000)] public uint Name;
+                [FieldOffset(0x0008)] public CTimeCycleModifier* Modifier;
+            }
+
+            public Entry* Offset;
+            public short Count;
+            public short Size;
+
+            public Entry* Get(short index)
+            {
+                if (index >= Size)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(CSortedArray)} is {Size}, the index {index} is out of range.");
+                }
+
+                return &Offset[index];
             }
         }
 
