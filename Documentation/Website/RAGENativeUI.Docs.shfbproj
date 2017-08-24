@@ -35,7 +35,7 @@
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>False</Preliminary>
-    <NamingMethod>HashedMemberName</NamingMethod>
+    <NamingMethod>MemberName</NamingMethod>
     <HelpTitle>RAGENativeUI Documentation</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
