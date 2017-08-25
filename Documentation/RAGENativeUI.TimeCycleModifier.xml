@@ -96,7 +96,7 @@
             Indices are between 0, inclusive, and <see cref="Count"/>, exclusive.
             </para>
             </summary>
-            <param name="hash">The index of the instance to get.</param>
+            <param name="index">The index of the instance to get.</param>
             <returns>
             If an instance of <see cref="TimeCycleModifier"/> matches the specified hash, returns that instance; otherwise, returns <c>null</c>.
             </returns>
