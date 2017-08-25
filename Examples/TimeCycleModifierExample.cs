@@ -31,6 +31,8 @@ namespace Examples
                     }
 
                     float y = 0.005f;
+                    Text.Draw(ScreenPosition.FromRelativeCoords(0.98f, y), $"Mods Count: {mod.Mods.Count}", 0.45f, System.Drawing.Color.White, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, true);
+                    y += 0.027f;
                     foreach (TimeCycleModifierMod m in mod.Mods)
                     {
                         string s = $"{m.Type}: {m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}~n~";
@@ -101,6 +103,27 @@ namespace Examples
                            Tuple.Create(TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
                         sw.Stop();
                         Game.LogTrivial($"It took {sw.ElapsedMilliseconds}ms/{sw.ElapsedTicks}ticks/{sw.Elapsed} to create TimeCycleModifier");
+                    }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad5))
+                    {
+                        if (mod.Mods.Has(TimeCycleModifierModType.screen_blur_intensity))
+                        {
+                            mod.Mods.Remove(TimeCycleModifierModType.screen_blur_intensity);
+                        }
+                        else
+                        {
+                            mod.Mods.Add(TimeCycleModifierModType.screen_blur_intensity, 5.0f, 0.0f);
+                        }
+
+                        if (mod.Mods.Has(TimeCycleModifierModType.light_dynamic_bake_tweak))
+                        {
+                            mod.Mods.Remove(TimeCycleModifierModType.light_dynamic_bake_tweak);
+                        }
+                        else
+                        {
+                            mod.Mods.Add(TimeCycleModifierModType.light_dynamic_bake_tweak, 1.0f, 0.0f);
+                        }
                     }
                 }
             });

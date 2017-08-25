@@ -168,7 +168,7 @@
             </summary>
             <param name="type">The mod type.</param>
             <returns>
-            The <see cref="TimeCycleModifierMod"/> with the specified type.
+            The <see cref="TimeCycleModifierMod"/> with the specified <paramref name="type"/>.
             </returns>
             <exception cref="InvalidOperationException">The <see cref="TimeCycleModifierModsCollection"/> doesn't contain a mod with the specified <paramref name="type"/>.</exception>
         </Member>
@@ -176,10 +176,32 @@
             <summary>
             Determines whether the <see cref="TimeCycleModifierModsCollection"/> contains a mod with the specified type.
             </summary>
-            <param name="type">The type to check.</param>
+            <param name="type">The type.</param>
             <returns>
             <c>true</c> if the <see cref="TimeCycleModifierModsCollection"/> contains a mod with the specified type; otherwise, <c>false</c>.
             </returns>
+        </Member>
+        <Member name="Add">  
+            <summary>
+            Adds a mod with the specified type.
+            <para>
+            Note, when adding new mods the collection gets sorted by the <see cref="TimeCycleModifierMod.Type"/> value, so indices may vary.
+            </para>
+            </summary>
+            <param name="type">The type.</param>
+            <param name="value1">The mod first value.</param>
+            <param name="value2">The mod second value.</param>
+            <returns>
+            The new <see cref="TimeCycleModifierMod"/>.
+            </returns>
+            <exception cref="InvalidOperationException">The <see cref="TimeCycleModifierModsCollection"/> already contains a mod with the specified <paramref name="type"/>.</exception>
+        </Member>
+        <Member name="Remove">  
+            <summary>
+            Removes the mod with the specified type.
+            </summary>
+            <param name="type">The type.</param>
+            <exception cref="InvalidOperationException">The <see cref="TimeCycleModifierModsCollection"/> doesn't contain a mod with the specified <paramref name="type"/>.</exception>
         </Member>
         <Member name="GetEnumerator">  
             <summary>
@@ -197,6 +219,11 @@
             Represents a mod of a <see cref="TimeCycleModifier"/>.
             </summary>
         </Doc>
+        <Member name="Index">  
+            <summary>
+            Gets the index of the <see cref="TimeCycleModifierMod"/>. If the <see cref="TimeCycleModifierMod"/> is invalid, returns -1.
+            </summary>
+        </Member>
         <Member name="MemoryAddress">  
             <summary>
             Gets the memory address of the <see cref="TimeCycleModifierMod"/>.
@@ -216,6 +243,15 @@
             <summary>
             Gets the second value of the <see cref="TimeCycleModifierMod"/>.
             </summary>
+        </Member>
+        <Member name="IsValid">  
+            <summary>
+            Gets whether the <see cref="TimeCycleModifierMod"/> is valid. 
+            A <see cref="TimeCycleModifierMod"/> becomes invalid when the mod has been removed with <see cref="TimeCycleModifierModsCollection.Remove"/>.
+            </summary>
+            <returns>
+            <c>true</c> if the <see cref="TimeCycleModifierMod"/> is valid; otherwise, <c>false</c>.
+            </returns>
         </Member>
     </TimeCycleModifierMod>
     

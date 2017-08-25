@@ -13,6 +13,36 @@ namespace RAGENativeUI.Memory
         [FieldOffset(0x0020)] public uint Flags;
         [FieldOffset(0x0024)] public int unk24;
 
+        public Mod* GetUnusedModEntry(short increaseCountIfFull = 5)
+        {
+            if (Mods.Count == Mods.Size)
+            {
+                short newSize = unchecked((short)(Mods.Size + increaseCountIfFull));
+                Mods.Size = newSize;
+                Mod* newOffset = (Mod*)GameMemory.Allocator->Allocate(sizeof(Mod) * newSize, 16, 0);
+                for (short i = 0; i < Mods.Count; i++)
+                {
+                    newOffset[i] = *Mods.Get(i);
+                }
+                GameMemory.Allocator->Free((IntPtr)Mods.Offset);
+                Mods.Offset = newOffset;
+            }
+
+            short last = Mods.Count;
+            Mods.Count++;
+            return Mods.Get(last);
+        }
+
+        public void RemoveModEntry(short index)
+        {
+            for (short i = index; i < (Mods.Count - 1); i++)
+            {
+                Mods.Offset[i] = Mods.Offset[i + 1];
+            }
+
+            Mods.Count--;
+        }
+
         // call after adding new mods, to maintain the array in the correct order
         public void SortMods()
         {
