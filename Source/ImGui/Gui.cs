@@ -169,7 +169,7 @@ namespace RAGENativeUI.ImGui
 
         private static void DrawText(RectangleF rectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Center, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
-            SizeF textSize = Graphics.MeasureText(text, "", fontSize);
+            SizeF textSize = Graphics.MeasureText(text, "Consolas", fontSize);
             float x = 0.0f, y = 0.0f;
 
             switch (hAlign)
@@ -198,7 +198,7 @@ namespace RAGENativeUI.ImGui
                     break;
             }
 
-            graphics.DrawText(text, "", fontSize, new PointF(x, y), Color.White, rectangle);
+            graphics.DrawText(text, "Consolas", fontSize, new PointF(x, y), Color.White, rectangle);
         }
     }
 }

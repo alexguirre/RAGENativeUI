@@ -9,6 +9,7 @@ namespace Examples
     using RAGENativeUI;
     using RAGENativeUI.Elements;
     using RAGENativeUI.ImGui;
+    using RAGENativeUI.Rendering;
 
     internal static class TimeCycleModifierExample
     {
@@ -19,7 +20,7 @@ namespace Examples
             TimeCycleModifier mod = TimeCycleModifier.GetByIndex(i);
 
             RectangleF mainWindowRect = new RectangleF(10, 10, 350, 500);
-            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 320, 10, 310, 1000);
+            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 420, 10, 410, 1000);
             bool showCurrentModsValues = false;
 
             Gui.Do += () =>
@@ -99,13 +100,14 @@ namespace Examples
                     Gui.Mouse();
                     modsValuesWindowRect = Gui.Window(modsValuesWindowRect, "Mods Values");
 
-                    Gui.Label(new RectangleF(3, 3, 300, 25), $"Mods Count: {mod.Mods.Count}");
+                    Gui.Label(new RectangleF(3, 3, 404, 25), "Mods Count:");
+                    Gui.Label(new RectangleF(3, 3, 404, 25), $"{mod.Mods.Count}", 15.0f, TextHorizontalAligment.Right);
 
                     float y = 30;
                     foreach (TimeCycleModifierMod m in mod.Mods)
                     {
-                        string s = $"{m.Type}: {m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}";
-                        Gui.Label(new RectangleF(3, y, 300, 25), s);
+                        Gui.Label(new RectangleF(3, y, 404, 25), $"{m.Type}:");
+                        Gui.Label(new RectangleF(3, y, 404, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
                         y += 26;
                     }
                 }
