@@ -19,10 +19,11 @@ namespace Examples
             int i = 0;
             TimeCycleModifier mod = TimeCycleModifier.GetByIndex(i);
 
-            RectangleF mainWindowRect = new RectangleF(10, 10, 350, 500);
-            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 420, 10, 410, 1000);
+            RectangleF mainWindowRect = new RectangleF(10, 10, 350, 520);
+            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 455, 10, 445, 1000);
             bool showCurrentModsValues = false;
 
+            TimeCycleModifier.CurrentModifierStrength = 1.0f;
             Gui.Do += () =>
             {
                 Gui.Mouse();
@@ -55,19 +56,21 @@ namespace Examples
                 Gui.Label(new RectangleF(15, 30 + 25 * 5, 350, 20), $"Memory Address: {mod.MemoryAddress.ToString("X")}");
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 7, 350, 20), $"Current Strength: {TimeCycleModifier.CurrentModifierStrength}");
-                Gui.Label(new RectangleF(5, 30 + 25 * 8, 350, 20), $"Total Count: {TimeCycleModifier.Count}");
+                TimeCycleModifier.CurrentModifierStrength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.CurrentModifierStrength, -1.0f, 10.0f);
 
-                if (Gui.Button(new RectangleF(5, 30 * 10, 250, 25), mod.IsActive ? "Deactivate Current" : "Activate Current"))
+                Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.Count}");
+
+                if (Gui.Button(new RectangleF(5, 30 * 11, 250, 25), mod.IsActive ? "Deactivate Current" : "Activate Current"))
                 {
                     mod.IsActive = !mod.IsActive;
                 }
 
-                if (Gui.Button(new RectangleF(5, 30 * 11, 250, 25),  $"{(showCurrentModsValues ? "Hide" : "Show")} Current Mods Values"))
+                if (Gui.Button(new RectangleF(5, 30 * 12, 250, 25),  $"{(showCurrentModsValues ? "Hide" : "Show")} Current Mods Values"))
                 {
                     showCurrentModsValues = !showCurrentModsValues;
                 }
 
-                if (Gui.Button(new RectangleF(5, 30 * 12, 250, 25), "Randomize Current Mods Values"))
+                if (Gui.Button(new RectangleF(5, 30 * 13, 250, 25), "Randomize Current Mods Values"))
                 {
                     foreach (TimeCycleModifierMod m in mod.Mods)
                     {
@@ -76,14 +79,14 @@ namespace Examples
                     }
                 }
 
-                if (Gui.Button(new RectangleF(5, 30 * 13, 250, 25), "Clone Current"))
+                if (Gui.Button(new RectangleF(5, 30 * 14, 250, 25), "Clone Current"))
                 {
                     Game.DisplayNotification("Creating new CLONE" + TimeCycleModifier.Count);
                     Game.LogTrivial("Creating new CLONE" + TimeCycleModifier.Count);
                     TimeCycleModifier m = new TimeCycleModifier("CLONE" + TimeCycleModifier.Count, mod);
                 }
 
-                if (Gui.Button(new RectangleF(5, 30 * 14, 250, 25), "New Modifier"))
+                if (Gui.Button(new RectangleF(5, 30 * 15, 250, 25), "New Modifier"))
                 {
                     Game.DisplayNotification("Creating new CUSTOM" + TimeCycleModifier.Count);
                     Game.LogTrivial("Creating new CUSTOM" + TimeCycleModifier.Count);
@@ -100,14 +103,14 @@ namespace Examples
                     Gui.Mouse();
                     modsValuesWindowRect = Gui.Window(modsValuesWindowRect, "Mods Values");
 
-                    Gui.Label(new RectangleF(3, 3, 404, 25), "Mods Count:");
-                    Gui.Label(new RectangleF(3, 3, 404, 25), $"{mod.Mods.Count}", 15.0f, TextHorizontalAligment.Right);
+                    Gui.Label(new RectangleF(3, 3, 434, 25), "Mods Count:");
+                    Gui.Label(new RectangleF(3, 3, 434, 25), $"{mod.Mods.Count}", 15.0f, TextHorizontalAligment.Right);
 
                     float y = 30;
                     foreach (TimeCycleModifierMod m in mod.Mods)
                     {
-                        Gui.Label(new RectangleF(3, y, 404, 25), $"{m.Type}:");
-                        Gui.Label(new RectangleF(3, y, 404, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
+                        Gui.Label(new RectangleF(3, y, 434, 25), $"{m.Type}:");
+                        Gui.Label(new RectangleF(3, y, 434, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
                         y += 26;
                     }
                 }

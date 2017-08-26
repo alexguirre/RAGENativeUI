@@ -164,6 +164,46 @@ namespace RAGENativeUI.ImGui
             DrawText(rectangle, text, fontSize, hAlign, vAlign);
         }
 
+        public static float HorizontalSlider(RectangleF rectangle, float value, float minValue, float maxValue)
+        {
+            EnsureCall();
+
+            rectangle.Location = new PointF(rectangle.Location.X + currentParentContainer.X, rectangle.Location.Y + currentParentContainer.Y);
+            float handleSize = rectangle.Height - 6;
+            float handleRelativePos = (value - minValue) / (maxValue - minValue);
+            RectangleF handleRect = new RectangleF(handleRelativePos * (rectangle.Width - handleSize - 6) + 3 + rectangle.Location.X, rectangle.Location.Y + 3, handleSize, handleSize);
+
+            bool hovered = false;
+            bool down = false;
+
+            if (isMouseEnabled)
+            {
+                hovered = handleRect.Contains(mousePosition.X, mousePosition.Y);
+                if (hovered)
+                {
+                    if (currentMouseState.IsLeftButtonDown)
+                    {
+                        down = true;
+
+                        float handlePos = handleRect.X;
+
+                        float offset = currentMouseState.X - lastMouseState.X;
+
+                        if (offset != 0)
+                        {
+                            // TODO: improve slider dragging
+                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / rectangle.Height * 0.2f), minValue, maxValue);
+                        }
+                    }
+                }
+            }
+
+            graphics.DrawRectangle(rectangle, Color.FromArgb(230, 10, 10, 10));
+            graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
+
+            return value;
+        }
+
 
 
 
