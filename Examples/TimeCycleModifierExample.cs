@@ -22,11 +22,14 @@ namespace Examples
             RectangleF mainWindowRect = new RectangleF(10, 10, 350, 520);
             RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 455, 10, 445, 1000);
             bool showCurrentModsValues = false;
-
-            TimeCycleModifier.CurrentModifierStrength = 1.0f;
+            
             Gui.Do += () =>
             {
-                Gui.Mouse();
+                if (Game.IsControlKeyDownRightNow)
+                {
+                    Gui.Mouse();
+                }
+
                 mainWindowRect = Gui.Window(mainWindowRect, "Time Cycle Modifiers Example");
 
                 if(Gui.Button(new RectangleF(5, 3, 122, 25), "Previous"))
@@ -100,7 +103,11 @@ namespace Examples
             {
                 if (showCurrentModsValues)
                 {
-                    Gui.Mouse();
+                    if (Game.IsControlKeyDownRightNow)
+                    {
+                        Gui.Mouse();
+                    }
+
                     modsValuesWindowRect = Gui.Window(modsValuesWindowRect, "Mods Values");
 
                     Gui.Label(new RectangleF(3, 3, 434, 25), "Mods Count:");
