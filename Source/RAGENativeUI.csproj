@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="ImGui\Gui.cs" />
     <Compile Include="Memory\CAnimPostFX.cs" />
     <Compile Include="Memory\CAnimPostFXManager.cs" />
     <Compile Include="Memory\CTimeCycleModifier.cs" />

@@ -51,6 +51,7 @@
     <Compile Include="BigMessageExample.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="GameScreenRectangleExample.cs" />
+    <Compile Include="ImGuiExample.cs" />
     <Compile Include="InstructionalButtonsExample.cs" />
     <Compile Include="MenuExample.cs" />
     <Compile Include="MissionPassedScreenExample.cs" />
