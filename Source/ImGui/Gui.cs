@@ -3,6 +3,7 @@ namespace RAGENativeUI.ImGui
     using System;
     using System.Drawing;
     using System.Diagnostics;
+    using System.Windows.Forms;
     using System.Runtime.CompilerServices;
 
     using Rage;
@@ -124,7 +125,7 @@ namespace RAGENativeUI.ImGui
                         position.Location = new PointF(newX, newY);
                     }
                 }
-                else if(!state.IsDraggingAny() && titleBarRect.Contains(state.MousePosition.X, state.MousePosition.Y) && state.CurrentMouseState.IsLeftButtonDown)
+                else if(!state.IsDraggingAny() && titleBarRect.Contains(state.MousePosition.X, state.MousePosition.Y) && Game.IsKeyDown(Keys.LButton))
                 {
                     state.Drag(id);
                 }
@@ -152,7 +153,7 @@ namespace RAGENativeUI.ImGui
                 hovered = position.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if(hovered)
                 {
-                    down = Game.IsKeyDown(System.Windows.Forms.Keys.LButton);
+                    down = Game.IsKeyDown(Keys.LButton);
                 }
             }
 
@@ -185,7 +186,7 @@ namespace RAGENativeUI.ImGui
                 hovered = position.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if (hovered)
                 {
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.LButton))
+                    if (Game.IsKeyDown(Keys.LButton))
                     {
                         down = true;
                         value = !value;
@@ -263,7 +264,7 @@ namespace RAGENativeUI.ImGui
                 else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
                     hovered = true;
-                    if (state.CurrentMouseState.IsLeftButtonDown)
+                    if (Game.IsKeyDown(Keys.LButton))
                     {
                         down = true;
                         state.Drag(id);
@@ -318,7 +319,7 @@ namespace RAGENativeUI.ImGui
                 else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
                     hovered = true;
-                    if (state.CurrentMouseState.IsLeftButtonDown)
+                    if (Game.IsKeyDown(Keys.LButton))
                     {
                         down = true;
                         state.Drag(id);
