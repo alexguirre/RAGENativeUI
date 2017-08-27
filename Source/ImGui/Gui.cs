@@ -133,7 +133,7 @@ namespace RAGENativeUI.ImGui
 
             state.CurrentParentContainer = windRect;
 
-            DrawTextDebug(windRect.Location, $"Window {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(titleBarRect.Location, $"Window {id.ToString("X8")}", 18.0f);
 
             return position;
         }
@@ -375,7 +375,10 @@ namespace RAGENativeUI.ImGui
         [Conditional("DEBUG")]
         private static void DrawTextDebug(PointF position, string text, float fontSize = 15.0f)
         {
-            state.Graphics.DrawText(text, "Consolas", fontSize, position, Color.Red);
+            if (Game.IsShiftKeyDownRightNow)
+            {
+                state.Graphics.DrawText(text, "Consolas", fontSize, position, Color.Red);
+            }
         }
     }
 }
