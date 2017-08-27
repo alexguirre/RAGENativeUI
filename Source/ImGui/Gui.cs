@@ -335,7 +335,15 @@ namespace RAGENativeUI.ImGui
             return value;
         }
 
+        public static int HorizontalSlider(RectangleF rectangle, int value, int minValue, int maxValue)
+        {
+            return (int)HorizontalSlider(rectangle, (float)value, (float)minValue, (float)maxValue);
+        }
 
+        public static int VerticalSlider(RectangleF rectangle, int value, int minValue, int maxValue)
+        {
+            return (int)VerticalSlider(rectangle, (float)value, (float)minValue, (float)maxValue);
+        }
 
 
         private static void DrawText(RectangleF rectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Center, TextVerticalAligment vAlign = TextVerticalAligment.Center)
