@@ -17,6 +17,7 @@ namespace Examples
             RectangleF windowRect1 = new RectangleF(10, 10, 350, 585);
             float slider1Value = 5.0f;
             float slider2Value = 50.0f;
+            bool toggleValue = false;
             Gui.Do += () =>
             {
                 Gui.Mouse();
@@ -35,6 +36,8 @@ namespace Examples
 
                 Gui.Label(new RectangleF(5, 180, 300, 25), $"{slider2Value.ToString("0.0000")}");
                 slider2Value = Gui.VerticalSlider(new RectangleF(5, 215, 30, 320), slider2Value, -1000.0f, 1000.0f);
+
+                toggleValue = Gui.Toggle(new RectangleF(180, 200, 140, 25), $"Toggle: {toggleValue}", toggleValue);
             };
 
 

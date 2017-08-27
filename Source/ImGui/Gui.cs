@@ -170,6 +170,48 @@ namespace RAGENativeUI.ImGui
             return down;
         }
 
+        public static bool Toggle(RectangleF position, string text, bool value)
+        {
+            EnsureCall();
+            uint id = state.Id();
+
+            position.Location = new PointF(position.Location.X + state.CurrentParentContainer.X, position.Location.Y + state.CurrentParentContainer.Y);
+
+            bool hovered = false;
+            bool down = false;
+
+            if (state.IsMouseEnabled)
+            {
+                hovered = position.Contains(state.MousePosition.X, state.MousePosition.Y);
+                if (hovered)
+                {
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.LButton))
+                    {
+                        down = true;
+                        value = !value;
+                    }
+                }
+            }
+
+            RectangleF boxRect = new RectangleF(position.X, position.Y, position.Height, position.Height);
+            state.Graphics.DrawRectangle(boxRect, Color.FromArgb(230, 10, 10, 10));
+            if (value)
+            {
+                state.Graphics.DrawRectangle(new RectangleF(boxRect.X + 3f, boxRect.Y + 3f, boxRect.Width - 6f, boxRect.Height - 6f), hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
+            }
+
+            state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y), new Vector2(boxRect.X + boxRect.Width, boxRect.Y), Color.Black);
+            state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y), new Vector2(boxRect.X, boxRect.Y + boxRect.Height), Color.Black);
+            state.Graphics.DrawLine(new Vector2(boxRect.X + boxRect.Width, boxRect.Y), new Vector2(boxRect.X + boxRect.Width, boxRect.Y + boxRect.Height), Color.Black);
+            state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y + boxRect.Height), new Vector2(boxRect.X + boxRect.Width, boxRect.Y + boxRect.Height), Color.Black);
+
+            DrawText(position, text, 15.0f, TextHorizontalAligment.Right, TextVerticalAligment.Center);
+
+            DrawTextDebug(position.Location, $"Toggle {id.ToString("X8")}", 18.0f);
+
+            return value;
+        }
+
         public static void Label(RectangleF rectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Left, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
             EnsureCall();
@@ -218,11 +260,14 @@ namespace RAGENativeUI.ImGui
                         }
                     }
                 }
-                else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y) && state.CurrentMouseState.IsLeftButtonDown)
+                else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
-                    down = true;
                     hovered = true;
-                    state.Drag(id);
+                    if (state.CurrentMouseState.IsLeftButtonDown)
+                    {
+                        down = true;
+                        state.Drag(id);
+                    }
                 }
             }
 
@@ -270,11 +315,14 @@ namespace RAGENativeUI.ImGui
                         }
                     }
                 }
-                else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y) && state.CurrentMouseState.IsLeftButtonDown)
+                else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
-                    down = true;
                     hovered = true;
-                    state.Drag(id);
+                    if (state.CurrentMouseState.IsLeftButtonDown)
+                    {
+                        down = true;
+                        state.Drag(id);
+                    }
                 }
             }
 
