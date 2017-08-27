@@ -65,10 +65,7 @@ namespace Examples
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.Count}");
 
-                if (Gui.Button(new RectangleF(5, 30 * 11, 250, 25), mod.IsActive ? "Deactivate Current" : "Activate Current"))
-                {
-                    mod.IsActive = !mod.IsActive;
-                }
+                mod.IsActive = Gui.Toggle(new RectangleF(5, 30 * 11, 150, 25), $"Active: {mod.IsActive}", mod.IsActive);
 
                 if (Gui.Button(new RectangleF(5, 30 * 12, 250, 25),  $"{(showCurrentModsValues ? "Hide" : "Show")} Current Mods Values"))
                 {
