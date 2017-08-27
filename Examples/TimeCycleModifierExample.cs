@@ -19,7 +19,7 @@ namespace Examples
             int i = 0;
             TimeCycleModifier mod = TimeCycleModifier.GetByIndex(i);
 
-            RectangleF mainWindowRect = new RectangleF(10, 10, 350, 520);
+            RectangleF mainWindowRect = new RectangleF(10, 10, 350, 540);
             RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 455, 10, 445, 1000);
             bool showCurrentModsValues = false;
             
@@ -31,6 +31,8 @@ namespace Examples
                 }
 
                 mainWindowRect = Gui.Window(mainWindowRect, "Time Cycle Modifiers Example");
+
+                Gui.Label(new RectangleF(3, mainWindowRect.Height - 50, 340, 20), "Hold down the CTRL key to enable the mouse", 11.5f, TextHorizontalAligment.Left, TextVerticalAligment.Top);
 
                 if(Gui.Button(new RectangleF(5, 3, 122, 25), "Previous"))
                 {
@@ -59,7 +61,7 @@ namespace Examples
                 Gui.Label(new RectangleF(15, 30 + 25 * 5, 350, 20), $"Memory Address: {mod.MemoryAddress.ToString("X")}");
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 7, 350, 20), $"Current Strength: {TimeCycleModifier.CurrentModifierStrength}");
-                TimeCycleModifier.CurrentModifierStrength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.CurrentModifierStrength, -1.0f, 10.0f);
+                TimeCycleModifier.CurrentModifierStrength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.CurrentModifierStrength, -1.0f, 5.0f);
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.Count}");
 
