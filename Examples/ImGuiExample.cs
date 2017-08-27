@@ -14,7 +14,9 @@ namespace Examples
         [ConsoleCommand(Name = "ImGuiExample", Description = "Example showing the ImGui.Gui class.")]
         private static void Command()
         {
-            RectangleF windowRect1 = new RectangleF(10, 10, 350, 500);
+            RectangleF windowRect1 = new RectangleF(10, 10, 350, 585);
+            float slider1Value = 5.0f;
+            float slider2Value = 50.0f;
             Gui.Do += () =>
             {
                 Gui.Mouse();
@@ -27,6 +29,12 @@ namespace Examples
                 {
                     Game.DisplayNotification("Button Pressed!");
                 }
+
+                Gui.Label(new RectangleF(5, 110, 300, 25), $"{slider1Value.ToString("0.0000")}");
+                slider1Value = Gui.HorizontalSlider(new RectangleF(5, 145, 320, 30), slider1Value, 0.0f, 10.0f);
+
+                Gui.Label(new RectangleF(5, 180, 300, 25), $"{slider2Value.ToString("0.0000")}");
+                slider2Value = Gui.VerticalSlider(new RectangleF(5, 215, 30, 320), slider2Value, -1000.0f, 1000.0f);
             };
 
 

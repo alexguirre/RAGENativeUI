@@ -197,19 +197,6 @@ namespace RAGENativeUI.ImGui
 
             if (state.IsMouseEnabled)
             {
-                hovered = handleRect.Contains(state.MousePosition.X, state.MousePosition.Y);
-                if (hovered)
-                {
-                    if (state.CurrentMouseState.IsLeftButtonDown)
-                    {
-                        down = true;
-                    }
-                }
-            }
-
-
-            if (state.IsMouseEnabled)
-            {
                 if (state.IsDragging(id))
                 {
                     if (state.CurrentMouseState.IsLeftButtonUp)
@@ -243,6 +230,58 @@ namespace RAGENativeUI.ImGui
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
             DrawTextDebug(rectangle.Location, $"HSlider {id.ToString("X8")}", 18.0f);
+
+            return value;
+        }
+
+        public static float VerticalSlider(RectangleF rectangle, float value, float minValue, float maxValue)
+        {
+            EnsureCall();
+            uint id = state.Id();
+
+            rectangle.Location = new PointF(rectangle.Location.X + state.CurrentParentContainer.X, rectangle.Location.Y + state.CurrentParentContainer.Y);
+            float handleSize = rectangle.Width - 6;
+            float handleRelativePos = (value - minValue) / (maxValue - minValue);
+            RectangleF handleRect = new RectangleF(rectangle.Location.X + 3, handleRelativePos * (rectangle.Height - handleSize - 6) + 3 + rectangle.Location.Y, handleSize, handleSize);
+
+            bool hovered = false;
+            bool down = false;
+
+            if (state.IsMouseEnabled)
+            {
+                if (state.IsDragging(id))
+                {
+                    if (state.CurrentMouseState.IsLeftButtonUp)
+                    {
+                        state.Drop();
+                    }
+                    else
+                    {
+                        down = true;
+                        hovered = true;
+
+                        float handlePos = handleRect.Y;
+
+                        float offset = state.DragOffset().Y;
+
+                        if (offset != 0)
+                        {
+                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / rectangle.Height), minValue, maxValue);
+                        }
+                    }
+                }
+                else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y) && state.CurrentMouseState.IsLeftButtonDown)
+                {
+                    down = true;
+                    hovered = true;
+                    state.Drag(id);
+                }
+            }
+
+            state.Graphics.DrawRectangle(rectangle, Color.FromArgb(230, 10, 10, 10));
+            state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
+
+            DrawTextDebug(rectangle.Location, $"VSlider {id.ToString("X8")}", 18.0f);
 
             return value;
         }
