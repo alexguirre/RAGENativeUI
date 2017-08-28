@@ -85,7 +85,7 @@ namespace RAGENativeUI
 
 
             this.hash = hash;
-            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (CTimeCycleModifier.ModType)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray(), template.Flags);
+            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray(), template.Flags);
             index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
             Mods = new TimeCycleModifierModsCollection(this);
             cache[hash] = this;
@@ -102,7 +102,7 @@ namespace RAGENativeUI
 
 
             this.hash = hash;
-            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, mods.Select(m => new CTimeCycleModifier.Mod { ModType = (CTimeCycleModifier.ModType)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray(), flags);
+            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray(), flags);
             index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
             Mods = new TimeCycleModifierModsCollection(this);
             cache[hash] = this;
@@ -1046,12 +1046,12 @@ namespace RAGENativeUI
             for (short i = 0; i < native->Mods.Count; i++)
             {
                 CTimeCycleModifier.Mod* mod = native->Mods.Get(i);
-                if (mod->ModType == (CTimeCycleModifier.ModType)type)
+                if (mod->ModType == (int)type)
                 {
                     return i;
                 }
-                else if (i >= (short)type) // the mods array is sorted by type value, if current index is equal to or greater than type value,
-                                           // we can safely assume the array doesn't contain a mod of that type and break out of it
+                else if (i >= (int)type) // the mods array is sorted by type value, if current index is equal to or greater than type value,
+                                         // we can safely assume the array doesn't contain a mod of that type and break out of it
                 {
                     break;
                 }
@@ -1076,7 +1076,7 @@ namespace RAGENativeUI
             CTimeCycleModifier* native = (CTimeCycleModifier*)Modifier.MemoryAddress;
 
             CTimeCycleModifier.Mod* newMod = native->GetUnusedModEntry();
-            newMod->ModType = (CTimeCycleModifier.ModType)type;
+            newMod->ModType = (int)type;
             newMod->Value1 = value1;
             newMod->Value2 = value2;
 
@@ -1223,7 +1223,7 @@ namespace RAGENativeUI
     }
 
     /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModType/Doc/*' />
-    public enum TimeCycleModifierModType : short
+    public enum TimeCycleModifierModType
     {
         light_dir_col_r = 0,
         light_dir_col_g = 1,
@@ -1296,9 +1296,10 @@ namespace RAGENativeUI
         light_ray_col_b = 68,
         light_ray_mult = 69,
         light_ray_underwater_mult = 70,
-
         light_ray_dist = 71,
-
+        light_ray_heightfalloff = 72,
+        light_ray_height_falloff_start = 73,
+        light_ray_add_reducer = 74,
         light_ray_blit_size = 75,
         light_ray_length = 76,
         postfx_exposure = 77,
@@ -1374,7 +1375,7 @@ namespace RAGENativeUI
         environmental_blur_size = 147,
         bokeh_brightness_min = 148,
         bokeh_brightness_max = 149,
-
+        bokeh_fade_min = 150,
         bokeh_fade_max = 151,
         nv_light_dir_mult = 152,
         nv_light_amb_down_mult = 153,
@@ -1431,18 +1432,101 @@ namespace RAGENativeUI
         blur_vignetting_radius = 204,
         blur_vignetting_intensity = 205,
         screen_blur_intensity = 206,
-
+        sky_zenith_transition_position = 207,
+        sky_zenith_transition_east_blend = 208,
+        sky_zenith_transition_west_blend = 209,
+        sky_zenith_blend_start = 210,
+        sky_zenith_col_r = 211,
+        sky_zenith_col_g = 212,
+        sky_zenith_col_b = 213,
+        sky_zenith_col_inten = 214,
+        sky_zenith_transition_col_r = 215,
+        sky_zenith_transition_col_g = 216,
+        sky_zenith_transition_col_b = 217,
+        sky_zenith_transition_col_inten = 218,
+        sky_azimuth_transition_position = 219,
+        sky_azimuth_east_col_r = 220,
+        sky_azimuth_east_col_g = 221,
+        sky_azimuth_east_col_b = 222,
+        sky_azimuth_east_col_inten = 223,
+        sky_azimuth_transition_col_r = 224,
+        sky_azimuth_transition_col_g = 225,
+        sky_azimuth_transition_col_b = 226,
+        sky_azimuth_transition_col_inten = 227,
+        sky_azimuth_west_col_r = 228,
+        sky_azimuth_west_col_g = 229,
+        sky_azimuth_west_col_b = 230,
+        sky_azimuth_west_col_inten = 231,
         sky_hdr = 232,
-
+        sky_plane_r = 233,
+        sky_plane_g = 234,
+        sky_plane_b = 235,
+        sky_plane_inten = 236,
+        sky_sun_col_r = 237,
+        sky_sun_col_g = 238,
+        sky_sun_col_b = 239,
+        sky_sun_disc_col_r = 240,
+        sky_sun_disc_col_g = 241,
+        sky_sun_disc_col_b = 242,
+        sky_sun_disc_size = 243,
+        sky_sun_hdr = 244,
+        sky_sun_miephase = 245,
+        sky_sun_miescatter = 246,
+        sky_sun_mie_intensity_mult = 247,
+        sky_sun_influence_radius = 248,
+        sky_sun_scatter_inten = 249,
+        sky_moon_col_r = 250,
+        sky_moon_col_g = 251,
+        sky_moon_col_b = 252,
+        sky_moon_disc_size = 253,
+        sky_moon_iten = 254,
+        sky_stars_iten = 255,
+        sky_moon_influence_radius = 256,
+        sky_moon_scatter_inten = 257,
+        sky_cloud_gen_frequency = 258,
+        sky_cloud_gen_scale = 259,
+        sky_cloud_gen_threshold = 260,
+        sky_cloud_gen_softness = 261,
+        sky_cloud_density_mult = 262,
+        sky_cloud_density_bias = 263,
+        sky_cloud_mid_col_r = 264,
+        sky_cloud_mid_col_g = 265,
+        sky_cloud_mid_col_b = 266,
+        sky_cloud_base_col_r = 267,
+        sky_cloud_base_col_g = 268,
+        sky_cloud_base_col_b = 269,
+        sky_cloud_base_strength = 270,
+        sky_cloud_shadow_col_r = 271,
+        sky_cloud_shadow_col_g = 272,
+        sky_cloud_shadow_col_b = 273,
+        sky_cloud_shadow_strength = 274,
+        sky_cloud_gen_density_offset = 275,
+        sky_cloud_offset = 276,
+        sky_cloud_overall_strength = 277,
+        sky_cloud_overall_color = 278,
+        sky_cloud_edge_strength = 279,
+        sky_cloud_fadeout = 280,
+        sky_cloud_hdr = 281,
+        sky_cloud_dither_strength = 282,
+        sky_small_cloud_col_r = 283,
+        sky_small_cloud_col_g = 284,
+        sky_small_cloud_col_b = 285,
+        sky_small_cloud_detail_strength = 286,
+        sky_small_cloud_detail_scale = 287,
+        sky_small_cloud_density_mult = 288,
+        sky_small_cloud_density_bias = 289,
+        cloud_shadow_density = 290,
+        cloud_shadow_softness = 291,
+        cloud_shadow_opacity = 292,
         dir_shadow_num_cascades = 293,
         dir_shadow_distance_multiplier = 294,
         dir_shadow_softness = 295,
         dir_shadow_cascade0_scale = 296,
         sprite_brightness = 297,
         sprite_size = 298,
-
+        sprite_corona_screenspace_expansion = 299,
         Lensflare_visibility = 300,
-
+        sprite_distant_light_twinkle = 301,
         water_reflection = 302,
         water_reflection_far_clip = 303,
         water_reflection_lod = 304,
@@ -1462,15 +1546,18 @@ namespace RAGENativeUI
         water_reflection_lod_range_slod3_end = 318,
         water_reflection_lod_range_slod4_start = 319,
         water_reflection_lod_range_slod4_end = 320,
-
+        water_reflection_height_offset = 321,
         water_reflection_height_override = 322,
         water_reflection_height_override_amount = 323,
-
+        water_reflection_distant_light_intensity = 324,
+        water_reflection_corona_intensity = 325,
         water_foglight = 326,
         water_interior = 327,
         water_fogstreaming = 328,
         water_foam_intensity_mult = 329,
-
+        water_drying_speed_mult = 330,
+        water_specular_intensity = 331,
+        mirror_reflection_local_light_intensity = 332,
         fog_start = 333,
         fog_near_col_r = 334,
         fog_near_col_g = 335,
@@ -1480,10 +1567,12 @@ namespace RAGENativeUI
         fog_col_g = 339,
         fog_col_b = 340,
         fog_col_a = 341,
+        fog_sun_lighting_calc_pow = 342,
         fog_moon_col_r = 343,
         fog_moon_col_g = 344,
         fog_moon_col_b = 345,
         fog_moon_col_a = 346,
+        fog_moon_lighting_calc_pow = 347,
         fog_east_col_r = 348,
         fog_east_col_g = 349,
         fog_east_col_b = 350,
@@ -1532,7 +1621,9 @@ namespace RAGENativeUI
         reflection_hdr_mult = 393,
         far_clip = 394,
         temperature = 395,
-
+        particle_emissive_intensity_mult = 396,
+        vfxlightning_intensity_mult = 397,
+        vfxlightning_visibility = 398,
         particle_light_intensity_mult = 399,
         natural_ambient_multiplier = 400,
         artificial_int_ambient_multiplier = 401,
@@ -1540,11 +1631,17 @@ namespace RAGENativeUI
         no_weather_fx = 403,
         no_gpu_fx = 404,
         no_rain = 405,
-
+        no_rain_ripples = 406,
+        fogvolume_density_scalar = 407,
+        fogvolume_density_scalar_interior = 408,
+        fogvolume_fog_scaler = 409,
+        time_offset = 410,
+        vehicle_dirt_mod = 411,
         wind_speed_mult = 412,
         entity_reject = 413,
         lod_mult = 414,
-
+        enable_occlusion = 415,
+        enable_shadow_occlusion = 416,
         render_exterior = 417,
         portal_weight = 418,
         light_falloff_mult = 419,
