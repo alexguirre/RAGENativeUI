@@ -40,13 +40,14 @@ namespace RAGENativeUI.ImGui
                 Delegate[] delegates = Do.GetInvocationList();
                 for (int i = 0; i < delegates.Length; i++)
                 {
+                    state.IsMouseEnabled = false;
+                    state.ScreenContainer = new Container(null, new RectangleF(0f, 0f, Game.Resolution.Width, Game.Resolution.Height));
+                    state.CurrentContainer = state.ScreenContainer;
+
                     ((GuiEventHandler)delegates[i]).Invoke();
 
                     if (state.IsMouseEnabled)
                         drawMouse = true;
-
-                    state.IsMouseEnabled = false;
-                    state.CurrentParentContainer = new RectangleF(0f, 0f, Game.Resolution.Width, Game.Resolution.Height);
                 }
 
                 if (drawMouse)
@@ -89,23 +90,29 @@ namespace RAGENativeUI.ImGui
 
             return state.MousePosition;
         }
-
-        public static RectangleF Window(RectangleF position, string title)
+        
+        public static RectangleF BeginWindow(RectangleF position, string title)
         {
             EnsureCall();
             uint id = state.Id(true, false);
 
             const float TitleBarHeight = 30f;
 
-            Vector2 drawPos = new Vector2(position.Location.X + state.CurrentParentContainer.X, position.Location.Y + state.CurrentParentContainer.Y);
 
-            RectangleF windRect = new RectangleF(drawPos.X, drawPos.Y + TitleBarHeight, position.Width, position.Height - TitleBarHeight);
+            Container container = state.CurrentContainer;
+            Vector2 drawPos = container.ConvertToRootCoords(new Vector2(position.Location.X, position.Location.Y));
+
+            state.PushContainer(new RectangleF(position.X, position.Y + TitleBarHeight, position.Width, position.Height - TitleBarHeight));
+
             RectangleF titleBarRect = new RectangleF(drawPos.X, drawPos.Y, position.Width, TitleBarHeight);
+            RectangleF windRect = new RectangleF(drawPos.X, drawPos.Y + TitleBarHeight, position.Width, position.Height - TitleBarHeight);
 
             state.Graphics.DrawRectangle(titleBarRect, Color.FromArgb(215, 15, 15, 15));
             state.Graphics.DrawRectangle(windRect, Color.FromArgb(150, 45, 45, 45));
 
             DrawText(titleBarRect, title, 20f);
+
+            DrawTextDebug(titleBarRect.Location, $"Window {id.ToString("X8")}", 18.0f);
 
             if (state.IsMouseEnabled)
             {
@@ -120,8 +127,8 @@ namespace RAGENativeUI.ImGui
                         Vector2 offset = state.DragOffset();
                         float newX = position.Location.X + offset.X;
                         float newY = position.Location.Y + offset.Y;
-                        newX = MathHelper.Clamp(newX + state.CurrentParentContainer.X, state.CurrentParentContainer.X, state.CurrentParentContainer.Right - position.Width) - state.CurrentParentContainer.X;
-                        newY = MathHelper.Clamp(newY + state.CurrentParentContainer.Y, state.CurrentParentContainer.Y, state.CurrentParentContainer.Bottom - position.Height) - state.CurrentParentContainer.Y;
+                        newX = MathHelper.Clamp(newX, 0f, container.DrawArea.Width - position.Width);
+                        newY = MathHelper.Clamp(newY, 0f, container.DrawArea.Height - position.Height);
                         position.Location = new PointF(newX, newY);
                     }
                 }
@@ -131,11 +138,12 @@ namespace RAGENativeUI.ImGui
                 }
             }
 
-            state.CurrentParentContainer = windRect;
-
-            DrawTextDebug(titleBarRect.Location, $"Window {id.ToString("X8")}", 18.0f);
-
             return position;
+        }
+
+        public static void EndWindow()
+        {
+            state.PopContainer();
         }
 
         public static bool Button(RectangleF position, string text)
@@ -143,30 +151,30 @@ namespace RAGENativeUI.ImGui
             EnsureCall();
             uint id = state.Id();
 
-            position.Location = new PointF(position.Location.X + state.CurrentParentContainer.X, position.Location.Y + state.CurrentParentContainer.Y);
+            RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(position);
 
             bool hovered = false;
             bool down = false;
 
             if (state.IsMouseEnabled)
             {
-                hovered = position.Contains(state.MousePosition.X, state.MousePosition.Y);
+                hovered = drawPos.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if(hovered)
                 {
                     down = Game.IsKeyDown(Keys.LButton);
                 }
             }
 
-            state.Graphics.DrawRectangle(position, hovered ? down ? Color.FromArgb(200, 10, 10, 10) : Color.FromArgb(175, 20, 20, 20) : Color.FromArgb(160, 25, 25, 25));
+            state.Graphics.DrawRectangle(drawPos, hovered ? down ? Color.FromArgb(200, 10, 10, 10) : Color.FromArgb(175, 20, 20, 20) : Color.FromArgb(160, 25, 25, 25));
 
-            state.Graphics.DrawLine(new Vector2(position.X, position.Y), new Vector2(position.X + position.Width, position.Y), Color.Black);
-            state.Graphics.DrawLine(new Vector2(position.X, position.Y), new Vector2(position.X , position.Y + position.Height), Color.Black);
-            state.Graphics.DrawLine(new Vector2(position.X + position.Width, position.Y), new Vector2(position.X + position.Width, position.Y + position.Height), Color.Black);
-            state.Graphics.DrawLine(new Vector2(position.X, position.Y + position.Height), new Vector2(position.X + position.Width, position.Y + position.Height), Color.Black);
+            state.Graphics.DrawLine(new Vector2(drawPos.X, drawPos.Y), new Vector2(drawPos.X + drawPos.Width, drawPos.Y), Color.Black);
+            state.Graphics.DrawLine(new Vector2(drawPos.X, drawPos.Y), new Vector2(drawPos.X , drawPos.Y + drawPos.Height), Color.Black);
+            state.Graphics.DrawLine(new Vector2(drawPos.X + drawPos.Width, drawPos.Y), new Vector2(drawPos.X + drawPos.Width, drawPos.Y + drawPos.Height), Color.Black);
+            state.Graphics.DrawLine(new Vector2(drawPos.X, drawPos.Y + drawPos.Height), new Vector2(drawPos.X + drawPos.Width, drawPos.Y + drawPos.Height), Color.Black);
 
-            DrawText(position, text);
+            DrawText(drawPos, text);
 
-            DrawTextDebug(position.Location, $"Button {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(drawPos.Location, $"Button {id.ToString("X8")}", 18.0f);
 
             return down;
         }
@@ -176,14 +184,14 @@ namespace RAGENativeUI.ImGui
             EnsureCall();
             uint id = state.Id();
 
-            position.Location = new PointF(position.Location.X + state.CurrentParentContainer.X, position.Location.Y + state.CurrentParentContainer.Y);
+            RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(position);
 
             bool hovered = false;
             bool down = false;
 
             if (state.IsMouseEnabled)
             {
-                hovered = position.Contains(state.MousePosition.X, state.MousePosition.Y);
+                hovered = drawPos.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if (hovered)
                 {
                     if (Game.IsKeyDown(Keys.LButton))
@@ -194,7 +202,7 @@ namespace RAGENativeUI.ImGui
                 }
             }
 
-            RectangleF boxRect = new RectangleF(position.X, position.Y, position.Height, position.Height);
+            RectangleF boxRect = new RectangleF(drawPos.X, drawPos.Y, drawPos.Height, drawPos.Height);
             state.Graphics.DrawRectangle(boxRect, Color.FromArgb(230, 10, 10, 10));
             if (value)
             {
@@ -206,9 +214,9 @@ namespace RAGENativeUI.ImGui
             state.Graphics.DrawLine(new Vector2(boxRect.X + boxRect.Width, boxRect.Y), new Vector2(boxRect.X + boxRect.Width, boxRect.Y + boxRect.Height), Color.Black);
             state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y + boxRect.Height), new Vector2(boxRect.X + boxRect.Width, boxRect.Y + boxRect.Height), Color.Black);
 
-            DrawText(position, text, 15.0f, TextHorizontalAligment.Right, TextVerticalAligment.Center);
+            DrawText(drawPos, text, 15.0f, TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
-            DrawTextDebug(position.Location, $"Toggle {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(drawPos.Location, $"Toggle {id.ToString("X8")}", 18.0f);
 
             return value;
         }
@@ -218,11 +226,11 @@ namespace RAGENativeUI.ImGui
             EnsureCall();
             uint id = state.Id();
 
-            rectangle.Location = new PointF(rectangle.Location.X + state.CurrentParentContainer.X, rectangle.Location.Y + state.CurrentParentContainer.Y);
+            RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(rectangle);
 
-            DrawText(rectangle, text, fontSize, hAlign, vAlign);
+            DrawText(drawPos, text, fontSize, hAlign, vAlign);
 
-            DrawTextDebug(rectangle.Location, $"Label {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(drawPos.Location, $"Label {id.ToString("X8")}", 18.0f);
         }
 
         public static float HorizontalSlider(RectangleF rectangle, float value, float minValue, float maxValue)
@@ -230,10 +238,10 @@ namespace RAGENativeUI.ImGui
             EnsureCall();
             uint id = state.Id();
 
-            rectangle.Location = new PointF(rectangle.Location.X + state.CurrentParentContainer.X, rectangle.Location.Y + state.CurrentParentContainer.Y);
-            float handleSize = rectangle.Height - 6;
+            RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(rectangle);
+            float handleSize = drawPos.Height - 6;
             float handleRelativePos = (value - minValue) / (maxValue - minValue);
-            RectangleF handleRect = new RectangleF(handleRelativePos * (rectangle.Width - handleSize - 6) + 3 + rectangle.Location.X, rectangle.Location.Y + 3, handleSize, handleSize);
+            RectangleF handleRect = new RectangleF(handleRelativePos * (drawPos.Width - handleSize - 6) + 3 + drawPos.Location.X, drawPos.Location.Y + 3, handleSize, handleSize);
 
             bool hovered = false;
             bool down = false;
@@ -257,7 +265,7 @@ namespace RAGENativeUI.ImGui
 
                         if (offset != 0)
                         {
-                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / rectangle.Width), minValue, maxValue);
+                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / drawPos.Width), minValue, maxValue);
                         }
                     }
                 }
@@ -272,10 +280,10 @@ namespace RAGENativeUI.ImGui
                 }
             }
 
-            state.Graphics.DrawRectangle(rectangle, Color.FromArgb(230, 10, 10, 10));
+            state.Graphics.DrawRectangle(drawPos, Color.FromArgb(230, 10, 10, 10));
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
-            DrawTextDebug(rectangle.Location, $"HSlider {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(drawPos.Location, $"HSlider {id.ToString("X8")}", 18.0f);
 
             return value;
         }
@@ -285,10 +293,10 @@ namespace RAGENativeUI.ImGui
             EnsureCall();
             uint id = state.Id();
 
-            rectangle.Location = new PointF(rectangle.Location.X + state.CurrentParentContainer.X, rectangle.Location.Y + state.CurrentParentContainer.Y);
-            float handleSize = rectangle.Width - 6;
+            RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(rectangle);
+            float handleSize = drawPos.Width - 6;
             float handleRelativePos = (value - minValue) / (maxValue - minValue);
-            RectangleF handleRect = new RectangleF(rectangle.Location.X + 3, handleRelativePos * (rectangle.Height - handleSize - 6) + 3 + rectangle.Location.Y, handleSize, handleSize);
+            RectangleF handleRect = new RectangleF(drawPos.Location.X + 3, handleRelativePos * (drawPos.Height - handleSize - 6) + 3 + drawPos.Location.Y, handleSize, handleSize);
 
             bool hovered = false;
             bool down = false;
@@ -312,7 +320,7 @@ namespace RAGENativeUI.ImGui
 
                         if (offset != 0)
                         {
-                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / rectangle.Height), minValue, maxValue);
+                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / drawPos.Height), minValue, maxValue);
                         }
                     }
                 }
@@ -327,10 +335,10 @@ namespace RAGENativeUI.ImGui
                 }
             }
 
-            state.Graphics.DrawRectangle(rectangle, Color.FromArgb(230, 10, 10, 10));
+            state.Graphics.DrawRectangle(drawPos, Color.FromArgb(230, 10, 10, 10));
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
-            DrawTextDebug(rectangle.Location, $"VSlider {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(drawPos.Location, $"VSlider {id.ToString("X8")}", 18.0f);
 
             return value;
         }

@@ -22,13 +22,27 @@ namespace RAGENativeUI.ImGui
             public bool IsMouseEnabled;
             public bool HasMouseBeenCalled;
 
-            public RectangleF CurrentParentContainer;
+            public Container ScreenContainer;
+            public Container CurrentContainer;
 
             public ushort ParentId;
             public ushort ElementId;
 
             public uint DragId;
             public Vector2 DragPosition;
+
+            public void PushContainer(RectangleF drawArea)
+            {
+                Container c = new Container(CurrentContainer, drawArea);
+                CurrentContainer = c;
+            }
+
+            public void PopContainer()
+            {
+                CurrentContainer = CurrentContainer.Parent;
+                if (CurrentContainer == null)
+                    CurrentContainer = ScreenContainer;
+            }
 
             public bool IsDraggingAny() => DragId != 0;
             public bool IsDragging(uint elementId) => DragId == elementId;
@@ -73,6 +87,42 @@ namespace RAGENativeUI.ImGui
                 uint id = unchecked((uint)((ParentId << 16) | (ElementId)));
 
                 return id;
+            }
+        }
+
+        internal class Container
+        {
+            public readonly Container Parent;
+            public readonly RectangleF DrawArea;
+
+            public Container(Container parent, RectangleF drawArea)
+            {
+                Parent = parent;
+                DrawArea = drawArea;
+            }
+
+            public Vector2 ConvertToRootCoords(Vector2 localPosition)
+            {
+                Vector2 p = new Vector2(localPosition.X + DrawArea.X, localPosition.Y + DrawArea.Y);
+                if(Parent != null)
+                {
+                    p = Parent.ConvertToRootCoords(p);
+                }
+
+                return p;
+            }
+
+            public PointF ConvertToRootCoords(PointF localPosition)
+            {
+                Vector2 p = ConvertToRootCoords(new Vector2(localPosition.X, localPosition.Y));
+                return new PointF(p.X, p.Y);
+            }
+
+            public RectangleF ConvertToRootCoords(RectangleF localPosition)
+            {
+                RectangleF r = localPosition;
+                r.Location = ConvertToRootCoords(r.Location);
+                return r;
             }
         }
     }

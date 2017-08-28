@@ -30,7 +30,7 @@ namespace Examples
                     Gui.Mouse();
                 }
 
-                mainWindowRect = Gui.Window(mainWindowRect, "Time Cycle Modifiers Example");
+                mainWindowRect = Gui.BeginWindow(mainWindowRect, "Time Cycle Modifiers Example");
 
                 Gui.Label(new RectangleF(3, mainWindowRect.Height - 50, 340, 20), "Hold down the CTRL key to enable the mouse", 11.5f, TextHorizontalAligment.Left, TextVerticalAligment.Top);
 
@@ -96,6 +96,8 @@ namespace Examples
                        Tuple.Create(TimeCycleModifierModType.postfx_desaturation, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
                        Tuple.Create(TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
                 }
+
+                Gui.EndWindow();
             };
 
             Gui.Do += () =>
@@ -107,7 +109,7 @@ namespace Examples
                         Gui.Mouse();
                     }
 
-                    modsValuesWindowRect = Gui.Window(modsValuesWindowRect, "Mods Values");
+                    modsValuesWindowRect = Gui.BeginWindow(modsValuesWindowRect, "Mods Values");
 
                     Gui.Label(new RectangleF(3, 3, 434, 25), "Mods Count:");
                     Gui.Label(new RectangleF(3, 3, 434, 25), $"{mod.Mods.Count}", 15.0f, TextHorizontalAligment.Right);
@@ -119,6 +121,8 @@ namespace Examples
                         Gui.Label(new RectangleF(3, y, 434, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
                         y += 26;
                     }
+
+                    Gui.EndWindow();
                 }
             };
         }
