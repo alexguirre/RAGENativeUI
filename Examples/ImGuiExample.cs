@@ -22,6 +22,7 @@ namespace Examples
             float slider2Value = 50.0f;
             int slider3Value = 100;
             bool toggleValue = false;
+            Vector2 scrollViewPos = new Vector2(0f, 0f);
             Gui.Do += () =>
             {
                 Gui.Mouse(); // enable mouse
@@ -46,6 +47,11 @@ namespace Examples
                 slider3Value = Gui.HorizontalSlider(new RectangleF(110, 260, 160, 20), slider3Value, 0, 255);
 
                 toggleValue = Gui.Toggle(new RectangleF(180, 200, 140, 25), $"Toggle: {toggleValue}", toggleValue);
+
+                scrollViewPos = Gui.BeginScrollView(new RectangleF(80, 300, 250, 250), scrollViewPos, new SizeF(400, 400));
+                Gui.Label(new RectangleF(5f, 5f, 200f, 20f), "Scroll View");
+                Gui.Button(new RectangleF(5f, 30f, 200f, 20f), "Button");
+                Gui.EndScrollView();
 
                 Gui.EndWindow();
 

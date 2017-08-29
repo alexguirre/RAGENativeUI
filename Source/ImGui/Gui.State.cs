@@ -33,8 +33,12 @@ namespace RAGENativeUI.ImGui
 
             public void PushContainer(RectangleF drawArea)
             {
-                Container c = new Container(CurrentContainer, drawArea);
-                CurrentContainer = c;
+                CurrentContainer = new Container(CurrentContainer, drawArea);
+            }
+
+            public void PushContainer(RectangleF drawArea, PointF clipOffset)
+            {
+                CurrentContainer = new Container(CurrentContainer, drawArea, clipOffset);
             }
 
             public void PopContainer()
@@ -94,16 +98,27 @@ namespace RAGENativeUI.ImGui
         {
             public readonly Container Parent;
             public readonly RectangleF DrawArea;
+            public readonly PointF? OffsetOverride;
 
-            public Container(Container parent, RectangleF drawArea)
+            public Container(Container parent, RectangleF drawArea, PointF? offsetOverride = null)
             {
                 Parent = parent;
                 DrawArea = drawArea;
+                OffsetOverride = offsetOverride;
             }
 
             public Vector2 ConvertToRootCoords(Vector2 localPosition)
             {
-                Vector2 p = new Vector2(localPosition.X + DrawArea.X, localPosition.Y + DrawArea.Y);
+                float x = 0.0f;
+                float y = 0.0f;
+                if (OffsetOverride.HasValue)
+                {
+                    x = OffsetOverride.Value.X;
+                    y = OffsetOverride.Value.Y;
+                }
+
+
+                Vector2 p = new Vector2(localPosition.X + DrawArea.X + x, localPosition.Y + DrawArea.Y + y);
                 if(Parent != null)
                 {
                     p = Parent.ConvertToRootCoords(p);
@@ -123,6 +138,19 @@ namespace RAGENativeUI.ImGui
                 RectangleF r = localPosition;
                 r.Location = ConvertToRootCoords(r.Location);
                 return r;
+            }
+
+            public RectangleF ClipLocalRectangle(RectangleF localPosition)
+            {
+                float x = 0.0f;
+                float y = 0.0f;
+                if (OffsetOverride.HasValue)
+                {
+                    x = OffsetOverride.Value.X;
+                    y = OffsetOverride.Value.Y;
+                }
+
+                return RectangleF.Intersect(new RectangleF(-x, -y, DrawArea.Width, DrawArea.Height), localPosition);
             }
         }
     }

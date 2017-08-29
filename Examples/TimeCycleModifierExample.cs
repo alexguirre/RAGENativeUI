@@ -20,7 +20,8 @@ namespace Examples
             TimeCycleModifier mod = TimeCycleModifier.GetByIndex(i);
 
             RectangleF mainWindowRect = new RectangleF(10, 10, 350, 540);
-            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 455, 10, 445, 1000);
+            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 465, 10, 455, 650);
+            Vector2 modsValuesScrollViewPos = new Vector2(0f, 0f);
             bool showCurrentModsValues = false;
             
             Gui.Do += () =>
@@ -98,10 +99,8 @@ namespace Examples
                 }
 
                 Gui.EndWindow();
-            };
 
-            Gui.Do += () =>
-            {
+
                 if (showCurrentModsValues)
                 {
                     if (Game.IsControlKeyDownRightNow)
@@ -111,16 +110,25 @@ namespace Examples
 
                     modsValuesWindowRect = Gui.BeginWindow(modsValuesWindowRect, "Mods Values");
 
-                    Gui.Label(new RectangleF(3, 3, 434, 25), "Mods Count:");
-                    Gui.Label(new RectangleF(3, 3, 434, 25), $"{mod.Mods.Count}", 15.0f, TextHorizontalAligment.Right);
+                    Gui.Label(new RectangleF(3, 3, 444, 25), "Mods Count:");
+                    Gui.Label(new RectangleF(3, 3, 444, 25), $"{mod.Mods.Count}", 15.0f, TextHorizontalAligment.Right);
 
-                    float y = 30;
+                    float height = mod.Mods.Count * 26;
+                    modsValuesScrollViewPos = Gui.BeginScrollView(new RectangleF(3, 30, 450, 550), modsValuesScrollViewPos, new SizeF(418, height), false);
+
+                    float y = 3;
                     foreach (TimeCycleModifierMod m in mod.Mods)
                     {
-                        Gui.Label(new RectangleF(3, y, 434, 25), $"{m.Type}:");
-                        Gui.Label(new RectangleF(3, y, 434, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
+                        if (y > modsValuesScrollViewPos.Y - 30.0f && y < 550.0f + modsValuesScrollViewPos.Y) // only call Label if it's currently visible, for reducing flickering
+                        {
+                            Gui.Label(new RectangleF(3, y, 428, 25), $"{m.Type}:");
+                            Gui.Label(new RectangleF(3, y, 428, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
+                        }
+
                         y += 26;
                     }
+
+                    Gui.EndScrollView();
 
                     Gui.EndWindow();
                 }

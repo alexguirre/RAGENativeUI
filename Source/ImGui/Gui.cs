@@ -34,7 +34,6 @@ namespace RAGENativeUI.ImGui
                 state.ResetIds();
                 
                 state.HasMouseBeenCalled = false;
-                bool drawMouse = false;
                 state.Graphics = e.Graphics;
 
                 Delegate[] delegates = Do.GetInvocationList();
@@ -45,12 +44,9 @@ namespace RAGENativeUI.ImGui
                     state.CurrentContainer = state.ScreenContainer;
 
                     ((GuiEventHandler)delegates[i]).Invoke();
-
-                    if (state.IsMouseEnabled)
-                        drawMouse = true;
                 }
 
-                if (drawMouse)
+                if (state.HasMouseBeenCalled)
                 {
                     if (mouseTexture == null)
                     {
@@ -227,10 +223,12 @@ namespace RAGENativeUI.ImGui
             uint id = state.Id();
 
             RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(rectangle);
+            RectangleF clip = state.CurrentContainer.ConvertToRootCoords(state.CurrentContainer.ClipLocalRectangle(rectangle));
 
-            DrawText(drawPos, text, fontSize, hAlign, vAlign);
+            DrawText(drawPos, clip, text, fontSize, hAlign, vAlign);
 
             DrawTextDebug(drawPos.Location, $"Label {id.ToString("X8")}", 18.0f);
+            DrawRectangleDebug(drawPos);
         }
 
         public static float HorizontalSlider(RectangleF rectangle, float value, float minValue, float maxValue)
@@ -353,8 +351,33 @@ namespace RAGENativeUI.ImGui
             return (int)VerticalSlider(rectangle, (float)value, (float)minValue, (float)maxValue);
         }
 
+        // TODO: implement clipping on other controls, currently only implemented on the Label, mainly to allow them to be used in the ScrollView
+        public static Vector2 BeginScrollView(RectangleF position, Vector2 scrollPosition, SizeF viewSize, bool horizontalScrollbar = true, bool verticalScrollbar = true)
+        {
+            const float ScrollbarsSize = 17.0f;
+
+            float x = horizontalScrollbar ? HorizontalSlider(new RectangleF(position.X, position.Bottom - ScrollbarsSize, position.Width - ScrollbarsSize, ScrollbarsSize), scrollPosition.X, 0f, viewSize.Width) : scrollPosition.X;
+            float y = verticalScrollbar ? VerticalSlider(new RectangleF(position.Right - ScrollbarsSize, position.Y, ScrollbarsSize, position.Height - ScrollbarsSize), scrollPosition.Y, 0f, viewSize.Height) : scrollPosition.Y;
+
+            state.Graphics.DrawRectangle(state.CurrentContainer.ConvertToRootCoords(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f))), Color.FromArgb(180, 25, 25, 25));
+            
+            state.PushContainer(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f)), new PointF(-scrollPosition.X, -scrollPosition.Y));
+
+            return new Vector2(x, y);
+        }
+
+        public static void EndScrollView()
+        {
+            state.PopContainer();
+        }
+
 
         private static void DrawText(RectangleF rectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Center, TextVerticalAligment vAlign = TextVerticalAligment.Center)
+        {
+            DrawText(rectangle, rectangle, text, fontSize, hAlign, vAlign);
+        }
+
+        private static void DrawText(RectangleF rectangle, RectangleF clipRectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Center, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
             SizeF textSize = Graphics.MeasureText(text, "Consolas", fontSize);
             float x = 0.0f, y = 0.0f;
@@ -385,7 +408,7 @@ namespace RAGENativeUI.ImGui
                     break;
             }
 
-            state.Graphics.DrawText(text, "Consolas", fontSize, new PointF(x, y), Color.White, rectangle);
+            state.Graphics.DrawText(text, "Consolas", fontSize, new PointF(x, y), Color.White, clipRectangle);
         }
 
         [Conditional("DEBUG")]
@@ -394,6 +417,15 @@ namespace RAGENativeUI.ImGui
             if (Game.IsShiftKeyDownRightNow)
             {
                 state.Graphics.DrawText(text, "Consolas", fontSize, position, Color.Red);
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private static void DrawRectangleDebug(RectangleF position)
+        {
+            if (Game.IsShiftKeyDownRightNow)
+            {
+                state.Graphics.DrawRectangle(position, Color.FromArgb(50, 255, 0, 0));
             }
         }
     }
