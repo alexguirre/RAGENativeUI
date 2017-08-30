@@ -970,6 +970,12 @@ namespace RAGENativeUI
             { 0x75D83DB6, "BleepYellow02" },
             { 0x6110928D, "TinyRacerMoBlur" },
             { 0x0001B512, "WeaponUpgrade" },
+            { 0xC8C008A6, "AirRaceBoost01" },
+            { 0x12041B2D, "AirRaceBoost02" },
+            { 0x93953450, "TransformRaceFlash" },
+            { 0x889B892E, "BombCamFlash" },
+            { 0xCA702997, "BombCam01" },
+            { 0x0733A4F3, "WarpCheckpoint" },
         };
     }
 
