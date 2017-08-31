@@ -80,13 +80,17 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
-                        i = MathHelper.Clamp(i + 1, 0, effects.Length - 1);
+                        i++;
+                        if (i >= effects.Length)
+                            i = 0;
                         effect.Stop();
                         effect = effects[i];
                     }
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
-                        i = MathHelper.Clamp(i - 1, 0, effects.Length - 1);
+                        i--;
+                        if (i < 0)
+                            i = effects.Length - 1;
                         effect.Stop();
                         effect = effects[i];
                     }
