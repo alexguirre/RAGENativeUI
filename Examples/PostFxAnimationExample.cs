@@ -1,11 +1,14 @@
 namespace Examples
 {
     using System;
+    using System.Drawing;
 
     using Rage;
     using Rage.Attributes;
 
     using RAGENativeUI;
+    using RAGENativeUI.ImGui;
+    using RAGENativeUI.Rendering;
 
     internal static class PostFxAnimationExample
     {
@@ -16,86 +19,126 @@ namespace Examples
 
             int i = PostFxAnimation.LastAnimation == null ? 0 : PostFxAnimation.LastAnimation.Index;
             PostFxAnimation effect = effects[i];
-            
-            GameFiber.StartNew(() =>
+
+            RectangleF mainWindowRect = new RectangleF(10, 10, 360, 270);
+            RectangleF effectInfoWindowRect = new RectangleF(Game.Resolution.Width - 400, 10, 360, 650);
+
+            int duration = 1000;
+            bool looped = false;
+
+            bool showEffectInfo = false;
+
+            Gui.Do += () =>
             {
-                while (true)
+                if (Game.IsControlKeyDownRightNow)
                 {
-                    GameFiber.Yield();
-
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
-                    {
-                        foreach (PostFxAnimation e in effects)
-                        {
-                            Game.Console.Print($"{e.Index}. {e.Name}");
-                        }
-                    }
-
-                    PostFxAnimation current = PostFxAnimation.CurrentAnimation;
-                    PostFxAnimation last = PostFxAnimation.LastAnimation;
-                    string s = "";
-                    if (current != null)
-                    {
-                        s += $" Blend~n~";
-                        s += $"     FrequencyNoise: {current.Blend.FrequencyNoise}~n~";
-                        s += $"     AmplitudeNoise: {current.Blend.AmplitudeNoise}~n~";
-                        s += $"     Frequency: {current.Blend.Frequency}~n~";
-                        s += $"     Bias: {current.Blend.Bias}~n~";
-                        s += $"     Disabled: {current.Blend.Disabled}~n~";
-                        if (current.Blend.LayerA == null)
-                        {
-                            s += $"     LayerA: null~n~";
-                        }
-                        else
-                        {
-                            s += $"     LayerA:~n~";
-                            s += $"         Mem: {current.Blend.LayerA.MemoryAddress.ToString("X8")}~n~";
-                            s += $"         Mod: {(current.Blend.LayerA.Modifier == null ? "null" : current.Blend.LayerA.Modifier.Name)}~n~";
-                            s += $"         AnimMode: {current.Blend.LayerA.AnimationMode}~n~";
-                            s += $"         LoopMode: {current.Blend.LayerA.LoopMode}~n~";
-                        }
-                        s += "~n~";
-                        if (current.Blend.LayerB == null)
-                        {
-                            s += $"     LayerB: null~n~";
-                        }
-                        else
-                        {
-                            s += $"     LayerB:~n~";
-                            s += $"         Mem: {current.Blend.LayerB.MemoryAddress.ToString("X8")}~n~";
-                            s += $"         Mod: {(current.Blend.LayerB.Modifier == null ? "null" : current.Blend.LayerB.Modifier.Name)}~n~";
-                            s += $"         AnimMode: {current.Blend.LayerB.AnimationMode}~n~";
-                            s += $"         LoopMode: {current.Blend.LayerB.LoopMode}~n~";
-                        }
-                        s += "~n~";
-                    }
-                    Game.DisplayHelp($"Name: {effect.Name}~n~Index: {effect.Index}~n~Active: {effect.IsActive.ToString()}~n~Valid: {effect.IsValid()}~n~MemAddress: {effect.MemoryAddress.ToString("X")}~n~Current: {(current != null ? current.MemoryAddress.ToString("X") : "null")}~n~{s}Last: {(last != null ? last.MemoryAddress.ToString("X") : "null")}");
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
-                    {
-                        if (effect.IsActive)
-                            effect.Stop();
-                        else
-                            effect.Start(500, false);
-                    }
-
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
-                    {
-                        i++;
-                        if (i >= effects.Length)
-                            i = 0;
-                        effect.Stop();
-                        effect = effects[i];
-                    }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
-                    {
-                        i--;
-                        if (i < 0)
-                            i = effects.Length - 1;
-                        effect.Stop();
-                        effect = effects[i];
-                    }
+                    Gui.Mouse();
                 }
-            });
+
+                mainWindowRect = Gui.BeginWindow(mainWindowRect, "Post Fx Animations Example");
+
+                Gui.Label(new RectangleF(3, mainWindowRect.Height - 50, 340, 20), "Hold down the CTRL key to enable the mouse", 11.5f, TextHorizontalAligment.Left, TextVerticalAligment.Top);
+
+                if (Gui.Button(new RectangleF(5, 3, 122, 25), "Previous"))
+                {
+                    i--;
+                    if (i < 0)
+                        i = effects.Length - 1;
+                    effect.Stop();
+                    effect = effects[i];
+                }
+
+                if (Gui.Button(new RectangleF(5 + 3 + 122, 3, 122, 25), "Next"))
+                {
+                    i++;
+                    if (i >= effects.Length)
+                        i = 0;
+                    effect.Stop();
+                    effect = effects[i];
+                }
+
+                Gui.Label(new RectangleF(5, 30, 350, 20), $"Name: {effect.Name}");
+                Gui.Label(new RectangleF(5, 55, 350, 20), $"Index: {effect.Index}");
+
+                Gui.Label(new RectangleF(5, 90, 350, 20), $"Duration: {(duration == 0 ? "Default" : duration.ToString())}");
+                duration = Gui.HorizontalSlider(new RectangleF(5, 115, 350, 20), duration, 0, 15000);
+
+                looped = Gui.Toggle(new RectangleF(5, 140, 60, 20), $"Loop", looped);
+
+                bool active = effect.IsActive;
+                if (Gui.Button(new RectangleF(5, 165, 350, 20), active ? "Stop" : "Start"))
+                {
+                    if (active)
+                        effect.Stop();
+                    else
+                        effect.Start(duration, looped);
+                }
+                
+
+                if (Gui.Button(new RectangleF(5, 190, 350, 20), showEffectInfo ? "Hide Info" : "Show Info"))
+                {
+                    showEffectInfo = !showEffectInfo;
+                }
+
+                Gui.EndWindow();
+
+                if (showEffectInfo)
+                {
+                    effectInfoWindowRect = Gui.BeginWindow(effectInfoWindowRect, "Current Post Fx Animation Info");
+                    
+                    string s = "";
+                    s += $"Name: {effect.Name}\r\n";
+                    s += $"Hash: 0x{effect.Hash.ToString("X8")}\r\n";
+                    s += $"Index: {effect.Index}\r\n";
+                    s += $"Active: {effect.IsActive}\r\n";
+                    s += $"Valid: {effect.IsValid()}\r\n";
+                    s += $"Memory Address: {effect.MemoryAddress.ToString("X")}\r\n";
+                    s += $"Layers Count: {effect.Layers.Count}\r\n";
+                    s += $"Blend:\r\n";
+                    s += $" FrequencyNoise: {effect.Blend.FrequencyNoise}\r\n";
+                    s += $" AmplitudeNoise: {effect.Blend.AmplitudeNoise}\r\n";
+                    s += $" Frequency: {effect.Blend.Frequency}\r\n";
+                    s += $" Bias: {effect.Blend.Bias}\r\n";
+                    s += $" Disabled: {effect.Blend.Disabled}\r\n";
+                    if (effect.Blend.LayerA == null)
+                    {
+                        s += $" LayerA: null\r\n";
+                    }
+                    else
+                    {
+                        s += $" Layer A:\r\n";
+                        s += $"   Memory Address: {effect.Blend.LayerA.MemoryAddress.ToString("X")}\r\n";
+                        s += $"   TimeCycle Modifier: {(effect.Blend.LayerA.Modifier == null ? "null" : effect.Blend.LayerA.Modifier.Name)}\r\n";
+                        s += $"   Animation Mode: {effect.Blend.LayerA.AnimationMode}\r\n";
+                        s += $"   Loop Mode: {effect.Blend.LayerA.LoopMode}\r\n";
+                        s += $"   Start Delay Duration: {effect.Blend.LayerA.StartDelayDuration}\r\n";
+                        s += $"   In Duration: {effect.Blend.LayerA.InDuration}\r\n";
+                        s += $"   Hold Duration: {effect.Blend.LayerA.HoldDuration}\r\n";
+                        s += $"   Out Duration: {effect.Blend.LayerA.OutDuration}\r\n";
+                    }
+                    s += "\r\n";
+                    if (effect.Blend.LayerB == null)
+                    {
+                        s += $" LayerB: null\r\n";
+                    }
+                    else
+                    {
+                        s += $" Layer B:\r\n";
+                        s += $"   Memory Address: {effect.Blend.LayerB.MemoryAddress.ToString("X")}\r\n";
+                        s += $"   TimeCycle Modifier: {(effect.Blend.LayerB.Modifier == null ? "null" : effect.Blend.LayerB.Modifier.Name)}\r\n";
+                        s += $"   Animation Mode: {effect.Blend.LayerB.AnimationMode}\r\n";
+                        s += $"   Loop Mode: {effect.Blend.LayerB.LoopMode}\r\n";
+                        s += $"   Start Delay Duration: {effect.Blend.LayerB.StartDelayDuration}\r\n";
+                        s += $"   In Duration: {effect.Blend.LayerB.InDuration}\r\n";
+                        s += $"   Hold Duration: {effect.Blend.LayerB.HoldDuration}\r\n";
+                        s += $"   Out Duration: {effect.Blend.LayerB.OutDuration}\r\n";
+                    }
+
+                    Gui.Label(new RectangleF(5, 5, 350, 640), s, 15.0f, TextHorizontalAligment.Left, TextVerticalAligment.Top);
+
+                    Gui.EndWindow();
+                }
+            };
         }
     }
 }
