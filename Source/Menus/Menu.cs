@@ -136,6 +136,8 @@ namespace RAGENativeUI.Menus
         public Menu Owner { get; private set; }
         public dynamic Metadata { get; } = new Metadata();
 
+        public bool JustOpened { get; private set; }
+
         public Menu(string title, string subtitle)
         {
             Skin = MenuSkin.DefaultSkin;
@@ -161,6 +163,7 @@ namespace RAGENativeUI.Menus
             if (Owner != null)
                 Owner.isVisible = false;
             IsVisible = true;
+            JustOpened = true;
         }
 
         public void Hide(bool showOwner = true)
@@ -175,6 +178,13 @@ namespace RAGENativeUI.Menus
         {
             if (!IsVisible)
                 return;
+
+            // don't process in the tick the menu was opened
+            if (JustOpened)
+            {
+                JustOpened = false;
+                return;
+            }
 
             if (DisableControlsActions)
             {
