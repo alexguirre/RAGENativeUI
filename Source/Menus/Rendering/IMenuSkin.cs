@@ -1,29 +1,24 @@
 namespace RAGENativeUI.Menus.Rendering
 {
+    using System.Drawing;
+
     using Rage;
+    using Graphics = Rage.Graphics;
 
     using RAGENativeUI.Rendering;
 
     public interface IMenuSkin : ISkin
     {
-        Font TitleFont { get; }
-        Font SubtitleFont { get; }
-        Font ItemTextFont { get; }
-        Font DescriptionFont { get; }
+        void DrawBackground(Graphics graphics, MenuBackground background, float x, float y);
+        void DrawBanner(Graphics graphics, MenuBanner banner, float x, float y);
+        void DrawDescription(Graphics graphics, MenuDescription description, float x, float y);
+        void DrawSubtitle(Graphics graphics, MenuSubtitle subtitle, float x, float y);
+        void DrawUpDownDisplay(Graphics graphics, MenuUpDownDisplay upDownDisplay, float x, float y);
+        void DrawItem(Graphics graphics, MenuItem item, float x, float y, bool selected);
+        void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, float x, float y, bool selected);
+        void DrawItemScroller(Graphics graphics, MenuItemScroller item, float x, float y, bool selected);
 
-        void DrawBanner(Graphics graphics, float x, float y, float width, float height);
-        void DrawBackground(Graphics graphics, float x, float y, float width, float height);
-        void DrawSelectedGradient(Graphics graphics, float x, float y, float width, float height);
-        void DrawCheckboxEmptyWhite(Graphics graphics, float x, float y, float width, float height);
-        void DrawCheckboxEmptyBlack(Graphics graphics, float x, float y, float width, float height);
-        void DrawCheckboxCrossWhite(Graphics graphics, float x, float y, float width, float height);
-        void DrawCheckboxCrossBlack(Graphics graphics, float x, float y, float width, float height);
-        void DrawCheckboxTickWhite(Graphics graphics, float x, float y, float width, float height);
-        void DrawCheckboxTickBlack(Graphics graphics, float x, float y, float width, float height);
-        void DrawArrowLeft(Graphics graphics, float x, float y, float width, float height);
-        void DrawArrowRight(Graphics graphics, float x, float y, float width, float height);
-        void DrawArrowsUpDown(Graphics graphics, float x, float y, float width, float height);
-        void DrawArrowsUpDownBackground(Graphics graphics, float x, float y, float width, float height);
+        string FormatDescriptionText(MenuDescription description, string text, out SizeF textMeasurement);
     }
 }
 

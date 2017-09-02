@@ -28,14 +28,13 @@ namespace RAGENativeUI.Menus
                 }
             }
         } 
-
-        public virtual float BorderSafezone { get; set; } = 8.5f;
-
+        
         private MenuItem currentItem;
         private string currentOrigText;
-        private string currentText;
+        private string currentFormattedText;
 
         public virtual string Text { get { return currentOrigText; } }
+        public virtual string FormattedText { get { return currentFormattedText; } }
 
         private string textOverride = null;
         public virtual string TextOverride
@@ -51,14 +50,14 @@ namespace RAGENativeUI.Menus
                 {
                     currentItem = null;
                     currentOrigText = textOverride;
-                    currentText = currentOrigText;
+                    currentFormattedText = currentOrigText;
                     FormatCurrentText();
                 }
                 else
                 {
                     currentItem = null;
                     currentOrigText = null;
-                    currentText = null;
+                    currentFormattedText = null;
                 }
             }
         }
@@ -70,11 +69,20 @@ namespace RAGENativeUI.Menus
 
         private void FormatCurrentText()
         {
-            if (currentText != null)
+            if (currentOrigText != null)
             {
-                currentText = String.IsNullOrWhiteSpace(currentText) ? null : Common.WrapText(currentText.Replace('\n', ' '), Menu.Skin.DescriptionFont, Size.Width - BorderSafezone * 2f);
+                float height = 0.0f;
+                if (!String.IsNullOrWhiteSpace(currentOrigText))
+                {
+                    currentFormattedText = Menu.Skin.FormatDescriptionText(this, currentOrigText, out SizeF textSize);
+                    height = textSize.Height;
+                }
+                else
+                {
+                    currentFormattedText = null;
+                }
 
-                Size = new SizeF(Size.Width, Menu.Skin.DescriptionFont.Measure(currentText).Height + BorderSafezone * 3f);
+                Size = new SizeF(Size.Width, height);
             }
         }
 
@@ -89,31 +97,23 @@ namespace RAGENativeUI.Menus
                     {
                         currentItem = selectedItem;
                         currentOrigText = selectedItem.Description;
-                        currentText = currentOrigText;
+                        currentFormattedText = currentOrigText;
                         FormatCurrentText();
                     }
                 }
                 else
                 {
                     currentItem = null;
-                    currentText = null;
+                    currentOrigText = null;
+                    currentFormattedText = null;
                 }
             }
         }
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            if (currentText != null && Size.Height > 0f)
-            {
-                y += 3.5f;
-
-                graphics.DrawRectangle(new RectangleF(x, y, Size.Width, 3.25f), Color.FromArgb(240, 0, 0, 0));
-                graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.FromArgb(95, 0, 0, 0));
-
-                Menu.Skin.DrawText(graphics, currentText, Menu.Skin.DescriptionFont, new RectangleF(x + BorderSafezone, y + BorderSafezone, Size.Width - BorderSafezone * 2f, Size.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Top);
-
-                y += Size.Height;
-            }
+            Menu.Skin.DrawDescription(graphics, this, x, y);
+            y += currentFormattedText == null ? 0.0f : Size.Height;
         }
     }
 }

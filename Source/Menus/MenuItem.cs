@@ -22,7 +22,6 @@ namespace RAGENativeUI.Menus
         public string Description { get; set; }
         public SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
         public bool IsVisible { get; set; } = true;
-        public float BorderSafezone { get; set; } = 8.25f;
         /// <summary>
         /// Gets or sets the <see cref="Menu"/> that will be opened when this item is activated.
         /// </summary>
@@ -83,16 +82,7 @@ namespace RAGENativeUI.Menus
             if (!IsVisible)
                 return;
 
-            if (selected)
-            {
-                sender.Skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
-                sender.Skin.DrawText(graphics, Text, sender.Skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(225, 10, 10, 10));
-            }
-            else
-            {
-                sender.Skin.DrawText(graphics, Text, sender.Skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
-            }
-
+            sender.Skin.DrawItem(graphics, this, x, y, selected);
             y += Size.Height;
         }
 

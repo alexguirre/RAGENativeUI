@@ -118,12 +118,12 @@ namespace RAGENativeUI.Menus
             SelectedIndex = (int)((currentValue - Minimum) / Increment);
         }
 
-        protected override int GetOptionsCount()
+        protected internal override int GetOptionsCount()
         {
             return (int)((Maximum - Minimum) / Increment) + 1;
         }
 
-        protected override string GetSelectedOptionText()
+        protected internal override string GetSelectedOptionText()
         {
             string text;
 

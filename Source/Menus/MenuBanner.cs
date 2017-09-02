@@ -4,8 +4,6 @@ namespace RAGENativeUI.Menus
     
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Rendering;
-
     public class MenuBanner : IMenuComponent
     {
         public Menu Menu { get; }
@@ -24,12 +22,7 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            Menu.Skin.DrawBanner(graphics, x, y, Size.Width, Size.Height);
-            if (Title != null)
-            {
-                Menu.Skin.DrawText(graphics, Title, Menu.Skin.TitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Center, TextVerticalAligment.Center);
-            }
-
+            Menu.Skin.DrawBanner(graphics, this, x, y);
             y += Size.Height;
         }
     }

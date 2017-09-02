@@ -14,9 +14,7 @@ namespace RAGENativeUI.Menus
         public virtual string Text { get; set; }
         public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
 
-        protected bool ShowCounter { get { return Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0); } }
-
-        public virtual float BorderSafezone { get; set; } = 8.5f;
+        private int counterTotalCount = 0, counterOnScreenSelectedIndex = 0;
 
         public MenuSubtitle(Menu menu)
         {
@@ -29,29 +27,24 @@ namespace RAGENativeUI.Menus
             Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged;
         }
 
+        protected internal virtual bool ShouldShowItemsCounter() => Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0);
+        protected internal virtual string GetItemsCounterText()
+        {
+            if (counterTotalCount == 0 && counterOnScreenSelectedIndex == 0)
+                UpdateCounter();
+            return $"{counterOnScreenSelectedIndex}/{counterTotalCount} ";
+        }
+
         public virtual void Process()
         {
         }
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            graphics.DrawRectangle(new RectangleF(x, y, Size.Width, Size.Height), Color.Black);
-            Menu.Skin.DrawText(graphics, Text, Menu.Skin.SubtitleFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Center);
-
-            if (ShowCounter)
-            {
-                // initial counter update
-                if (counterTotalCount == 0 && counterOnScreenSelectedIndex == 0)
-                    UpdateCounter();
-
-                Menu.Skin.DrawText(graphics, $"{counterOnScreenSelectedIndex}/{counterTotalCount} ", Menu.Skin.SubtitleFont, new RectangleF(x, y, Size.Width, Size.Height), Color.White, TextHorizontalAligment.Right, TextVerticalAligment.Center);
-            }
-
+            Menu.Skin.DrawSubtitle(graphics, this, x, y);
             y += Size.Height;
         }
 
-        int counterTotalCount = 0;
-        int counterOnScreenSelectedIndex = 0;
         private void UpdateCounter()
         {
             counterTotalCount = 0;

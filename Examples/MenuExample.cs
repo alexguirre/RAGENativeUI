@@ -5,8 +5,12 @@ namespace Examples
 
     using Rage;
     using Rage.Attributes;
+    using Graphics = Rage.Graphics;
 
+    using RAGENativeUI.Rendering;
     using RAGENativeUI.Menus;
+    using RAGENativeUI.Menus.Rendering;
+    using Font = RAGENativeUI.Rendering.Font;
 
     internal static class MenuExample
     {
@@ -135,6 +139,18 @@ namespace Examples
                             m.IsVisible = MathHelper.Choose(true, false);
                         }
                     }
+
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
+                    {
+                        if(menu.Skin is MyCustomMenuSkin)
+                        {
+                            menu.Skin = MenuSkin.DefaultSkin;
+                        }
+                        else
+                        {
+                            menu.Skin = new MyCustomMenuSkin();
+                        }
+                    }
                 }
             });
 
@@ -161,6 +177,111 @@ namespace Examples
                     }
                 }
                 return new String(chars);
+            }
+        }
+
+
+        private class MyCustomMenuSkin : IMenuSkin
+        {
+            public Font BigFont { get; } = new Font("Consolas", 32.5f);
+            public Font SmallFont { get; } = new Font("Consolas", 22.5f);
+
+            public void DrawBackground(Graphics graphics, MenuBackground background, float x, float y)
+            {
+                // no background
+            }
+
+            public void DrawBanner(Graphics graphics, MenuBanner banner, float x, float y)
+            {
+                DrawText(graphics, banner.Title.ToUpper(), BigFont, new RectangleF(x, y, banner.Size.Width, banner.Size.Height), Color.Red, TextHorizontalAligment.Center);
+            }
+
+            public void DrawDescription(Graphics graphics, MenuDescription description, float x, float y)
+            {
+                // no description
+            }
+
+            public void DrawSubtitle(Graphics graphics, MenuSubtitle subtitle, float x, float y)
+            {
+                DrawText(graphics, subtitle.Text, SmallFont, new RectangleF(x, y, subtitle.Size.Width, subtitle.Size.Height), Color.Red, TextHorizontalAligment.Right);
+                // no counter
+            }
+
+            public void DrawUpDownDisplay(Graphics graphics, MenuUpDownDisplay upDownDisplay, float x, float y)
+            {
+                // no up down display
+            }
+
+            public void DrawItem(Graphics graphics, MenuItem item, float x, float y, bool selected)
+            {
+                RectangleF r = new RectangleF(x, y, item.Size.Width, item.Size.Height);
+
+                if (selected)
+                {
+                    graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
+                }
+
+                DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Center, TextVerticalAligment.Center);
+            }
+
+            public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, float x, float y, bool selected)
+            {
+                DrawItem(graphics, item, x, y, selected);
+                // no checkbox implementation
+            }
+
+            public void DrawItemScroller(Graphics graphics, MenuItemScroller item, float x, float y, bool selected)
+            {
+                DrawItem(graphics, item, x, y, selected);
+                // no scroller implementation
+            }
+
+            public string FormatDescriptionText(MenuDescription description, string text, out SizeF textMeasurement)
+            {
+                textMeasurement = SmallFont.Measure(text);
+                return text;
+            }
+
+
+
+            private void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
+            {
+                DrawText(graphics, text, new Font(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);
+            }
+
+            private void DrawText(Graphics graphics, string text, Font font, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
+            {
+                SizeF textSize = font.Measure(text);
+                textSize.Height = font.Height;
+                float x = 0.0f, y = 0.0f;
+
+                switch (horizontalAligment)
+                {
+                    case TextHorizontalAligment.Left:
+                        x = rectangle.X;
+                        break;
+                    case TextHorizontalAligment.Center:
+                        x = rectangle.X + rectangle.Width * 0.5f - textSize.Width * 0.5f;
+                        break;
+                    case TextHorizontalAligment.Right:
+                        x = rectangle.Right - textSize.Width - 2.0f;
+                        break;
+                }
+
+                switch (verticalAligment)
+                {
+                    case TextVerticalAligment.Top:
+                        y = rectangle.Y;
+                        break;
+                    case TextVerticalAligment.Center:
+                        y = rectangle.Y + rectangle.Height * 0.5f - textSize.Height * 0.8f;
+                        break;
+                    case TextVerticalAligment.Down:
+                        y = rectangle.Y + rectangle.Height - textSize.Height * 1.6f;
+                        break;
+                }
+
+                graphics.DrawText(text, font.Name, font.Size, new PointF(x, y), color, rectangle);
             }
         }
     }

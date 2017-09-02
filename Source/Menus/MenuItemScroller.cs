@@ -35,8 +35,8 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected abstract string GetSelectedOptionText();
-        protected abstract int GetOptionsCount();
+        protected internal abstract string GetSelectedOptionText();
+        protected internal abstract int GetOptionsCount();
         
         protected internal override bool OnPreviewMoveLeft(Menu origin)
         {
@@ -77,21 +77,7 @@ namespace RAGENativeUI.Menus
             if (!IsVisible)
                 return;
 
-            if (selected)
-            {
-                sender.Skin.DrawSelectedGradient(graphics, x, y, Size.Width, Size.Height);
-                sender.Skin.DrawText(graphics, Text, sender.Skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width , Size.Height), Color.FromArgb(225, 10, 10, 10));
-                sender.Skin.DrawArrowRight(graphics, x + Size.Width - Size.Height, y + BorderSafezone * 0.5f, Size.Height - BorderSafezone, Size.Height - BorderSafezone);
-                sender.Skin.DrawText(graphics, GetSelectedOptionText(), sender.Skin.ItemTextFont, new RectangleF(x, y, Size.Width - Size.Height / 1.5f - BorderSafezone, Size.Height), Color.FromArgb(225, 10, 10, 10), TextHorizontalAligment.Right);
-                SizeF textSize = sender.Skin.ItemTextFont.Measure(GetSelectedOptionText());
-                sender.Skin.DrawArrowLeft(graphics, x + Size.Width - Size.Height - textSize.Width - BorderSafezone * 2.5f, y + BorderSafezone * 0.5f, Size.Height - BorderSafezone, Size.Height - BorderSafezone);
-            }
-            else
-            {
-                sender.Skin.DrawText(graphics, Text, sender.Skin.ItemTextFont, new RectangleF(x + BorderSafezone, y, Size.Width, Size.Height), Color.FromArgb(240, 240, 240, 240));
-                sender.Skin.DrawText(graphics, GetSelectedOptionText(), sender.Skin.ItemTextFont, new RectangleF(x, y, Size.Width - BorderSafezone, Size.Height), Color.FromArgb(240, 240, 240, 240), TextHorizontalAligment.Right);
-            }
-
+            sender.Skin.DrawItemScroller(graphics, this, x, y, selected);
             y += Size.Height;
         }
 

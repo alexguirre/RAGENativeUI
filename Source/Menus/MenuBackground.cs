@@ -21,11 +21,7 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            if (Menu.IsAnyItemOnScreen)
-            {
-                SizeF s = Size;
-                Menu.Skin.DrawBackground(graphics, x, y - 1, s.Width, s.Height);
-            }
+            Menu.Skin.DrawBackground(graphics, this, x, y);
         }
     }
 }
