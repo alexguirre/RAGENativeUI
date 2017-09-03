@@ -26,12 +26,12 @@ namespace RAGENativeUI.Menus
             Values = Enum.GetValues(enumType);
         }
 
-        protected internal override int GetOptionsCount()
+        public override int GetOptionsCount()
         {
             return Values.Length;
         }
 
-        protected internal override string GetSelectedOptionText()
+        public override string GetSelectedOptionText()
         {
             return Values.GetValue(SelectedIndex).ToString();
         }

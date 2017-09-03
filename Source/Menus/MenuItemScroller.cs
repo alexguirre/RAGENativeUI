@@ -35,8 +35,8 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal abstract string GetSelectedOptionText();
-        protected internal abstract int GetOptionsCount();
+        public abstract string GetSelectedOptionText();
+        public abstract int GetOptionsCount();
         
         protected internal override bool OnPreviewMoveLeft(Menu origin)
         {

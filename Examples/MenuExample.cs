@@ -226,14 +226,28 @@ namespace Examples
 
             public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, float x, float y, bool selected)
             {
-                DrawItem(graphics, item, x, y, selected);
-                // no checkbox implementation
+                RectangleF r = new RectangleF(x, y, item.Size.Width, item.Size.Height);
+
+                if (selected)
+                {
+                    graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
+                }
+
+                DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
+                DrawText(graphics, $"[{(item.State == MenuItemCheckboxState.Empty ? " " : "X")}] ", SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
             }
 
             public void DrawItemScroller(Graphics graphics, MenuItemScroller item, float x, float y, bool selected)
             {
-                DrawItem(graphics, item, x, y, selected);
-                // no scroller implementation
+                RectangleF r = new RectangleF(x, y, item.Size.Width, item.Size.Height);
+
+                if (selected)
+                {
+                    graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
+                }
+
+                DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
+                DrawText(graphics, selected ? $"<{item.GetSelectedOptionText()}> " : item.GetSelectedOptionText(), SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
             }
 
             public string FormatDescriptionText(MenuDescription description, string text, out SizeF textMeasurement)
