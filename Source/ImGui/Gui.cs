@@ -148,27 +148,25 @@ namespace RAGENativeUI.ImGui
             uint id = state.Id();
 
             RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(position);
+            RectangleF clip = state.CurrentContainer.ConvertToRootCoords(state.CurrentContainer.ClipLocalRectangle(position));
 
             bool hovered = false;
             bool down = false;
 
+            RectangleF buttonRect = RectangleF.Intersect(drawPos, clip);
+
             if (state.IsMouseEnabled)
             {
-                hovered = drawPos.Contains(state.MousePosition.X, state.MousePosition.Y);
+                hovered = buttonRect.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if(hovered)
                 {
                     down = Game.IsKeyDown(Keys.LButton);
                 }
             }
 
-            state.Graphics.DrawRectangle(drawPos, hovered ? down ? Color.FromArgb(200, 10, 10, 10) : Color.FromArgb(175, 20, 20, 20) : Color.FromArgb(160, 25, 25, 25));
-
-            state.Graphics.DrawLine(new Vector2(drawPos.X, drawPos.Y), new Vector2(drawPos.X + drawPos.Width, drawPos.Y), Color.Black);
-            state.Graphics.DrawLine(new Vector2(drawPos.X, drawPos.Y), new Vector2(drawPos.X , drawPos.Y + drawPos.Height), Color.Black);
-            state.Graphics.DrawLine(new Vector2(drawPos.X + drawPos.Width, drawPos.Y), new Vector2(drawPos.X + drawPos.Width, drawPos.Y + drawPos.Height), Color.Black);
-            state.Graphics.DrawLine(new Vector2(drawPos.X, drawPos.Y + drawPos.Height), new Vector2(drawPos.X + drawPos.Width, drawPos.Y + drawPos.Height), Color.Black);
-
-            DrawText(drawPos, text);
+            state.Graphics.DrawRectangle(buttonRect, hovered ? down ? Color.FromArgb(245, 45, 45, 45) : Color.FromArgb(240, 25, 25, 25) : Color.FromArgb(230, 10, 10, 10));
+            
+            DrawText(drawPos, clip, text);
 
             DrawTextDebug(drawPos.Location, $"Button {id.ToString("X8")}", 18.0f);
 
@@ -181,13 +179,17 @@ namespace RAGENativeUI.ImGui
             uint id = state.Id();
 
             RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(position);
+            RectangleF clip = state.CurrentContainer.ConvertToRootCoords(state.CurrentContainer.ClipLocalRectangle(position));
 
             bool hovered = false;
             bool down = false;
 
+
+            RectangleF bgRect = RectangleF.Intersect(new RectangleF(drawPos.X, drawPos.Y, drawPos.Height, drawPos.Height), clip);
+
             if (state.IsMouseEnabled)
             {
-                hovered = drawPos.Contains(state.MousePosition.X, state.MousePosition.Y);
+                hovered = bgRect.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if (hovered)
                 {
                     if (Game.IsKeyDown(Keys.LButton))
@@ -197,20 +199,15 @@ namespace RAGENativeUI.ImGui
                     }
                 }
             }
-
-            RectangleF boxRect = new RectangleF(drawPos.X, drawPos.Y, drawPos.Height, drawPos.Height);
-            state.Graphics.DrawRectangle(boxRect, Color.FromArgb(230, 10, 10, 10));
+            
+            state.Graphics.DrawRectangle(bgRect, Color.FromArgb(230, 10, 10, 10));
             if (value)
             {
-                state.Graphics.DrawRectangle(new RectangleF(boxRect.X + 3f, boxRect.Y + 3f, boxRect.Width - 6f, boxRect.Height - 6f), hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
+                RectangleF rect = RectangleF.Intersect(new RectangleF(drawPos.X + 3f, drawPos.Y + 3f, drawPos.Height - 6f, drawPos.Height - 6f), clip);
+                state.Graphics.DrawRectangle(rect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
             }
-
-            state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y), new Vector2(boxRect.X + boxRect.Width, boxRect.Y), Color.Black);
-            state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y), new Vector2(boxRect.X, boxRect.Y + boxRect.Height), Color.Black);
-            state.Graphics.DrawLine(new Vector2(boxRect.X + boxRect.Width, boxRect.Y), new Vector2(boxRect.X + boxRect.Width, boxRect.Y + boxRect.Height), Color.Black);
-            state.Graphics.DrawLine(new Vector2(boxRect.X, boxRect.Y + boxRect.Height), new Vector2(boxRect.X + boxRect.Width, boxRect.Y + boxRect.Height), Color.Black);
-
-            DrawText(drawPos, text, 15.0f, TextHorizontalAligment.Right, TextVerticalAligment.Center);
+            
+            DrawText(drawPos, clip, text, 15.0f, TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
             DrawTextDebug(drawPos.Location, $"Toggle {id.ToString("X8")}", 18.0f);
 
@@ -237,9 +234,11 @@ namespace RAGENativeUI.ImGui
             uint id = state.Id();
 
             RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(rectangle);
+            RectangleF clip = state.CurrentContainer.ConvertToRootCoords(state.CurrentContainer.ClipLocalRectangle(rectangle));
             float handleSize = drawPos.Height - 6;
             float handleRelativePos = (value - minValue) / (maxValue - minValue);
             RectangleF handleRect = new RectangleF(handleRelativePos * (drawPos.Width - handleSize - 6) + 3 + drawPos.Location.X, drawPos.Location.Y + 3, handleSize, handleSize);
+            handleRect = RectangleF.Intersect(handleRect, clip);
 
             bool hovered = false;
             bool down = false;
@@ -278,7 +277,7 @@ namespace RAGENativeUI.ImGui
                 }
             }
 
-            state.Graphics.DrawRectangle(drawPos, Color.FromArgb(230, 10, 10, 10));
+            state.Graphics.DrawRectangle(RectangleF.Intersect(drawPos, clip), Color.FromArgb(230, 10, 10, 10));
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
             DrawTextDebug(drawPos.Location, $"HSlider {id.ToString("X8")}", 18.0f);
@@ -292,9 +291,11 @@ namespace RAGENativeUI.ImGui
             uint id = state.Id();
 
             RectangleF drawPos = state.CurrentContainer.ConvertToRootCoords(rectangle);
+            RectangleF clip = state.CurrentContainer.ConvertToRootCoords(state.CurrentContainer.ClipLocalRectangle(rectangle));
             float handleSize = drawPos.Width - 6;
             float handleRelativePos = (value - minValue) / (maxValue - minValue);
             RectangleF handleRect = new RectangleF(drawPos.Location.X + 3, handleRelativePos * (drawPos.Height - handleSize - 6) + 3 + drawPos.Location.Y, handleSize, handleSize);
+            handleRect = RectangleF.Intersect(handleRect, clip);
 
             bool hovered = false;
             bool down = false;
@@ -333,7 +334,7 @@ namespace RAGENativeUI.ImGui
                 }
             }
 
-            state.Graphics.DrawRectangle(drawPos, Color.FromArgb(230, 10, 10, 10));
+            state.Graphics.DrawRectangle(RectangleF.Intersect(drawPos, clip), Color.FromArgb(230, 10, 10, 10));
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
             DrawTextDebug(drawPos.Location, $"VSlider {id.ToString("X8")}", 18.0f);
@@ -351,16 +352,22 @@ namespace RAGENativeUI.ImGui
             return (int)VerticalSlider(rectangle, (float)value, (float)minValue, (float)maxValue);
         }
 
-        // TODO: implement clipping on other controls, currently only implemented on the Label, mainly to allow them to be used in the ScrollView
+
         public static Vector2 BeginScrollView(RectangleF position, Vector2 scrollPosition, SizeF viewSize, bool horizontalScrollbar = true, bool verticalScrollbar = true)
         {
+            EnsureCall();
+            uint id = state.Id(true, false);
+
             const float ScrollbarsSize = 17.0f;
 
             float x = horizontalScrollbar ? HorizontalSlider(new RectangleF(position.X, position.Bottom - ScrollbarsSize, position.Width - ScrollbarsSize, ScrollbarsSize), scrollPosition.X, 0f, viewSize.Width) : scrollPosition.X;
             float y = verticalScrollbar ? VerticalSlider(new RectangleF(position.Right - ScrollbarsSize, position.Y, ScrollbarsSize, position.Height - ScrollbarsSize), scrollPosition.Y, 0f, viewSize.Height) : scrollPosition.Y;
 
-            state.Graphics.DrawRectangle(state.CurrentContainer.ConvertToRootCoords(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f))), Color.FromArgb(180, 25, 25, 25));
-            
+            RectangleF bgRect = state.CurrentContainer.ConvertToRootCoords(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f)));
+            state.Graphics.DrawRectangle(bgRect, Color.FromArgb(180, 25, 25, 25));
+
+            DrawTextDebug(bgRect.Location, $"ScrollView {id.ToString("X8")}", 18.0f);
+
             state.PushContainer(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f)), new PointF(-scrollPosition.X, -scrollPosition.Y));
 
             return new Vector2(x, y);

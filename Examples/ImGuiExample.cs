@@ -21,8 +21,12 @@ namespace Examples
             float slider1Value = 5.0f;
             float slider2Value = 50.0f;
             int slider3Value = 100;
-            bool toggleValue = false;
-            Vector2 scrollViewPos = new Vector2(0f, 0f);
+            float slider4Value = 0.5f;
+            bool toggle1Value = false;
+            bool toggle2Value = false;
+            Vector2 scrollView1Pos = new Vector2(0f, 0f);
+            Vector2 scrollView2Pos = new Vector2(0f, 0f);
+            string[] modelNames = { "RHINO", "POLICE", "FBI", "ZENTORNO", "ADDER" };
             Gui.Do += () =>
             {
                 Gui.Mouse(); // enable mouse
@@ -46,11 +50,14 @@ namespace Examples
                 Gui.Label(new RectangleF(110, 225, 200, 30), $"{slider3Value}");
                 slider3Value = Gui.HorizontalSlider(new RectangleF(110, 260, 160, 20), slider3Value, 0, 255);
 
-                toggleValue = Gui.Toggle(new RectangleF(180, 200, 140, 25), $"Toggle: {toggleValue}", toggleValue);
+                toggle1Value = Gui.Toggle(new RectangleF(180, 200, 140, 25), $"Toggle: {toggle1Value}", toggle1Value);
 
-                scrollViewPos = Gui.BeginScrollView(new RectangleF(80, 300, 250, 250), scrollViewPos, new SizeF(400, 400));
+                scrollView1Pos = Gui.BeginScrollView(new RectangleF(80, 300, 250, 250), scrollView1Pos, new SizeF(400, 400));
                 Gui.Label(new RectangleF(5f, 5f, 200f, 20f), "Scroll View");
                 Gui.Button(new RectangleF(5f, 30f, 200f, 20f), "Button");
+                toggle2Value = Gui.Toggle(new RectangleF(5f, 55f, 200f, 20f), "Toggle", toggle2Value);
+                slider4Value = Gui.HorizontalSlider(new RectangleF(5f, 80f, 200f, 20f), slider4Value, 0.0f, 1.0f);
+                slider4Value = Gui.VerticalSlider(new RectangleF(5f, 105f, 20f, 200f), slider4Value, 0.0f, 1.0f);
                 Gui.EndScrollView();
 
                 Gui.EndWindow();
@@ -63,6 +70,17 @@ namespace Examples
                 {
                     Game.DisplayNotification("First button pressed from second window!");
                 }
+
+                scrollView2Pos = Gui.BeginScrollView(new RectangleF(5, 130, 200, 250), scrollView2Pos, new SizeF(200, 400));
+                for (int i = 0; i < modelNames.Length; i++)
+                {
+                    if (Gui.Button(new RectangleF(1, 1 + 20 * i, 198, 20), modelNames[i]))
+                    {
+                        string model = modelNames[i];
+                        GameFiber.StartNew(() => { new Vehicle(model, Game.LocalPlayer.Character.Position).IsPersistent = false; });
+                    }
+                }
+                Gui.EndScrollView();
 
                 windowRect3 = Gui.BeginWindow(windowRect3, "Winception");
                 if (Gui.Button(new RectangleF(5, 45, 120, 35), "Button 2"))
