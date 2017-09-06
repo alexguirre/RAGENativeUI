@@ -17,8 +17,6 @@ namespace Examples
         [ConsoleCommand(Name = "MenuExample", Description = "Example showing RAGENativeUI menu API")]
         private static void Command()
         {
-            MenusManager menusMgr = new MenusManager();
-
             Menu menu = new Menu("title", "SUBTITLE");
             menu.Location = new PointF(480, 17);
 
@@ -74,9 +72,6 @@ namespace Examples
                 menu.Items[0].Metadata["Test"]++;
                 menu.Metadata.Test += new Vector3(1f, 1f, 1f);
             };
-
-            menusMgr.Menus.Add(menu);
-            menusMgr.Menus.Add(subMenu);
             
             GameFiber.StartNew(() =>
             {
@@ -86,9 +81,9 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
                     {
-                        if (menusMgr.IsAnyMenuVisible)
+                        if (Menu.IsAnyMenuVisible)
                         {
-                            menusMgr.HideAllMenus();
+                            menu.Hide();
                         }
                         else
                         {

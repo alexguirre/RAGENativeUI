@@ -2,73 +2,54 @@ namespace RAGENativeUI.Menus
 {
     using System;
     using System.Linq;
+    using System.Collections.Generic;
 
     using Rage;
 
-    public class MenusManager : IDisposable
+    internal static class MenusManager
     {
-        private MenusCollection menus;
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public MenusCollection Menus { get { return IsDisposed ? throw Common.NewDisposedException() : menus; } set { menus = IsDisposed ? throw Common.NewDisposedException() : value ?? throw new ArgumentNullException($"The manager {nameof(Menus)} collection can't be null."); } }
-        public bool IsAnyMenuVisible { get { return IsDisposed ? throw Common.NewDisposedException() : menus.Any(m => m.IsVisible); } }
-        protected internal GameFiber Fiber { get; private set; }
-        public bool IsDisposed { get; private set; }
+        private static readonly List<Menu> menus;
+        private static readonly GameFiber processFiber;
 
-        public MenusManager()
+        public static bool IsAnyMenuVisible { get { return menus.Any(m => m.IsVisible); } }
+
+        static MenusManager()
         {
-            Menus = new MenusCollection();
-            Fiber = GameFiber.StartNew(ProcessLoop);
+            menus = new List<Menu>();
+            processFiber = GameFiber.StartNew(ProcessLoop, "RAGENativeUI - Menus Manager");
             Game.RawFrameRender += OnRawFrameRender;
         }
 
-        public void HideAllMenus()
+        public static void AddMenu(Menu menu)
         {
-            if (IsDisposed)
-                throw Common.NewDisposedException();
-
-            foreach (Menu m in menus)
-            {
-                m.Hide(false);
-            }
+            menus.Add(menu);
         }
 
-        public void ShowAllMenus()
+        public static void RemoveMenu(Menu menu)
         {
-            if (IsDisposed)
-                throw Common.NewDisposedException();
-
-            foreach (Menu m in menus)
-            {
-                m.Show();
-            }
+            menus.Remove(menu);
         }
 
-        private void ProcessLoop()
+        private static void ProcessLoop()
         {
             while (true)
             {
                 GameFiber.Yield();
 
-                OnProcessMenus();
+                OnProcess();
             }
         }
 
-        protected virtual void OnProcessMenus()
+        private static void OnProcess()
         {
-            if (IsDisposed)
-                throw Common.NewDisposedException();
-
             for (int i = 0; i < menus.Count; i++)
             {
                 menus[i]?.Process();
             }
         }
 
-        protected virtual void OnRawFrameRender(object sender, GraphicsEventArgs e)
+        private static void OnRawFrameRender(object sender, GraphicsEventArgs e)
         {
-            if (IsDisposed)
-                throw Common.NewDisposedException();
-
             Graphics g = e.Graphics;
 
             for (int i = 0; i < menus.Count; i++)
@@ -76,23 +57,6 @@ namespace RAGENativeUI.Menus
                 menus[i]?.Draw(g);
             }
         }
-
-        public void Dispose()
-        {
-            if (!IsDisposed)
-            {
-                Game.RawFrameRender -= OnRawFrameRender;
-                Fiber?.Abort();
-                Fiber = null;
-                menus = null;
-                IsDisposed = true;
-            }
-        }
-    }
-
-
-    public class MenusCollection : BaseCollection<Menu>
-    {
     }
 }
 
