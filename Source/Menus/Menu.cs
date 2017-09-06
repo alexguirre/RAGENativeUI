@@ -133,11 +133,20 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="Owner"]/*' />
-        public Menu Owner { get; private set; }
+        // returns true if this menu is visible or any child menu in the hierarchy is visible
+        public bool IsAnyChildMenuVisible
+        {
+            get
+            {
+                return IsVisible || (currentChild != null && currentChild.IsAnyChildMenuVisible);
+            }
+        }
+
         public dynamic Metadata { get; } = new Metadata();
 
         public bool JustOpened { get; private set; }
+
+        private Menu currentParent, currentChild;
 
         public Menu(string title, string subtitle)
         {
@@ -160,28 +169,39 @@ namespace RAGENativeUI.Menus
             Width = DefaultWidth;
         }
 
-        public void Show(Menu owner = null)
+        public void Show(Menu parent = null)
         {
-            Owner = owner;
-            if (Owner != null)
-                Owner.isVisible = false;
+            currentParent = parent;
+
+            if (parent != null)
+            {
+                parent.currentChild = this;
+                parent.IsVisible = false;
+            }
+
             IsVisible = true;
             JustOpened = true;
         }
 
-        public void Hide(bool showOwner = true)
+        // hides child menus too
+        public void Hide(bool showParent = false)
         {
-            if (showOwner && Owner != null)
-                Owner.IsVisible = true;
-            Owner = null;
+            if (currentChild != null)
+                currentChild.Hide(false);
+
+            if (showParent && currentParent != null)
+            {
+                currentParent.Show(currentParent.currentParent);
+            }
+            
+            currentParent = null;
+            currentChild = null;
             IsVisible = false;
         }
 
+        // only called if the Menu is visible
         public virtual void Process()
         {
-            if (!IsVisible)
-                return;
-
             // don't process in the tick the menu was opened
             if (JustOpened)
             {
@@ -320,7 +340,7 @@ namespace RAGENativeUI.Menus
 
         protected virtual void Back()
         {
-            Hide();
+            Hide(true);
             SoundsSet?.Back?.Play();
         }
 
@@ -401,11 +421,9 @@ namespace RAGENativeUI.Menus
                 throw new InvalidOperationException($"MaxVisibleItemIndex({MaxVisibleItemIndex}) < MinVisibleItemIndex({MinVisibleItemIndex}): this shouldn't happen!");
         }
 
+        // only called if the Menu is visible
         public virtual void Draw(Graphics graphics)
         {
-            if (!IsVisible)
-                return;
-
             float x = Location.X, y = Location.Y;
 
             foreach (IMenuComponent c in Components)

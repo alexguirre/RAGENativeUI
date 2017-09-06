@@ -9,25 +9,41 @@ namespace RAGENativeUI.Menus
     internal static class MenusManager
     {
         private static readonly List<Menu> menus;
+        private static readonly List<Menu> visibleMenus;
         private static readonly GameFiber processFiber;
 
-        public static bool IsAnyMenuVisible { get { return menus.Any(m => m.IsVisible); } }
+        public static bool IsAnyMenuVisible { get { return visibleMenus.Count > 0; } }
 
         static MenusManager()
         {
             menus = new List<Menu>();
+            visibleMenus = new List<Menu>();
             processFiber = GameFiber.StartNew(ProcessLoop, "RAGENativeUI - Menus Manager");
             Game.RawFrameRender += OnRawFrameRender;
         }
 
         public static void AddMenu(Menu menu)
         {
+            menu.VisibleChanged += OnMenuVisibleChanged;
             menus.Add(menu);
         }
 
         public static void RemoveMenu(Menu menu)
         {
+            menu.VisibleChanged -= OnMenuVisibleChanged;
             menus.Remove(menu);
+        }
+
+        private static void OnMenuVisibleChanged(Menu menu, bool visible)
+        {
+            if (visible)
+            {
+                visibleMenus.Add(menu);
+            }
+            else
+            {
+                visibleMenus.Remove(menu);
+            }
         }
 
         private static void ProcessLoop()
@@ -42,9 +58,9 @@ namespace RAGENativeUI.Menus
 
         private static void OnProcess()
         {
-            for (int i = 0; i < menus.Count; i++)
+            for (int i = 0; i < visibleMenus.Count; i++)
             {
-                menus[i]?.Process();
+                visibleMenus[i]?.Process();
             }
         }
 
@@ -52,9 +68,9 @@ namespace RAGENativeUI.Menus
         {
             Graphics g = e.Graphics;
 
-            for (int i = 0; i < menus.Count; i++)
+            for (int i = 0; i < visibleMenus.Count; i++)
             {
-                menus[i]?.Draw(g);
+                visibleMenus[i]?.Draw(g);
             }
         }
     }

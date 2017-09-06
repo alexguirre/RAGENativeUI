@@ -11,17 +11,6 @@
             A <see cref="GameControl"/>s array.
             </value>
         </Member>
-        <Member name="Owner">  
-            <summary>
-            Gets the current owner.
-            <para>
-            Once this <see cref="Menu"/> is closed, it loses its owner. Use <see cref="Show(Menu)"/> to specify the owner.
-            </para>
-            </summary>
-            <value>
-            The owner <see cref="Menu"/> or <c>null</c> if it doesn't have an owner or is hidden.
-            </value>
-        </Member>
         <Member name="ForEachItemOnScreen">  
             <summary>
             Executes the specified action for each item that is currently on-screen.

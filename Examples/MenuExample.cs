@@ -37,7 +37,9 @@ namespace Examples
             subMenu.Location = menu.Location;
             for (int i = 1; i <= 999; i++)
             {
-                subMenu.Items.Add(new MenuItem("item #" + i));
+                Menu subSubMenu = new Menu("SubSubMenu", "SUB! SUB! #" + i);
+                subSubMenu.Items.Add(new MenuItem("An item in the SubSubMenu #" + i));
+                subMenu.Items.Add(new MenuItem("item #" + i) { BindedMenu = subSubMenu });
             }
 
             menu.Items.Add(new MenuItem("item with binded menu #0") { BindedMenu = subMenu, Description = "If you click this item it opens a menu with a LOT of items." });
@@ -78,10 +80,10 @@ namespace Examples
                 while (true)
                 {
                     GameFiber.Yield();
-
+                    
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
                     {
-                        if (Menu.IsAnyMenuVisible)
+                        if (menu.IsAnyChildMenuVisible)
                         {
                             menu.Hide();
                         }
