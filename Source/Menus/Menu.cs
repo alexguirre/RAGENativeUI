@@ -200,7 +200,7 @@ namespace RAGENativeUI.Menus
         }
 
         // only called if the Menu is visible
-        public virtual void Process()
+        protected internal virtual void OnProcess()
         {
             // don't process in the tick the menu was opened
             if (JustOpened)
@@ -422,7 +422,7 @@ namespace RAGENativeUI.Menus
         }
 
         // only called if the Menu is visible
-        public virtual void Draw(Graphics graphics)
+        protected internal virtual void OnDraw(Graphics graphics)
         {
             float x = Location.X, y = Location.Y;
 

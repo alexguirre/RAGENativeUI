@@ -60,7 +60,7 @@ namespace RAGENativeUI.Menus
         {
             for (int i = 0; i < visibleMenus.Count; i++)
             {
-                visibleMenus[i]?.Process();
+                visibleMenus[i]?.OnProcess();
             }
         }
 
@@ -70,7 +70,7 @@ namespace RAGENativeUI.Menus
 
             for (int i = 0; i < visibleMenus.Count; i++)
             {
-                visibleMenus[i]?.Draw(g);
+                visibleMenus[i]?.OnDraw(g);
             }
         }
     }
