@@ -591,7 +591,7 @@ namespace RAGENativeUI.Menus
             for (int i = 0; i < Count; i++)
             {
                 MenuItem item = this[i];
-                item?.Process(Menu, i == Menu.SelectedIndex);
+                item?.OnProcess(Menu, i == Menu.SelectedIndex);
             }
         }
 
@@ -600,7 +600,7 @@ namespace RAGENativeUI.Menus
             float currentX = x, currentY = y;
             Menu.ForEachItemOnScreen((item, index) =>
             {
-                item.Draw(g, Menu, index == Menu.SelectedIndex, ref currentX, ref currentY);
+                item.OnDraw(g, Menu, index == Menu.SelectedIndex, ref currentX, ref currentY);
             });
             x = currentX;
             y = currentY;

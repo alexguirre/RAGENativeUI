@@ -73,11 +73,11 @@ namespace RAGENativeUI.Menus
             return PreviewBack == null || PreviewBack.Invoke(this, origin);
         }
 
-        public virtual void Process(Menu sender, bool selected)
+        protected internal virtual void OnProcess(Menu sender, bool selected)
         {
         }
 
-        public virtual void Draw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
+        protected internal virtual void OnDraw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
         {
             if (!IsVisible)
                 return;

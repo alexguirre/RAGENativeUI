@@ -47,7 +47,7 @@ namespace RAGENativeUI.Menus
             return false;
         }
 
-        public override void Draw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
+        protected internal override void OnDraw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
         {
             if (!IsVisible)
                 return;
