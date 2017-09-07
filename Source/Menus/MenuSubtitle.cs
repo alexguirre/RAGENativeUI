@@ -12,7 +12,7 @@ namespace RAGENativeUI.Menus
         public Menu Menu { get; }
 
         public virtual string Text { get; set; }
-        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 37f);
+        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 36f);
 
         private int counterTotalCount = 0, counterOnScreenSelectedIndex = 0;
 

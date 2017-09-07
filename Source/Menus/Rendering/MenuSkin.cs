@@ -19,20 +19,6 @@ namespace RAGENativeUI.Menus.Rendering
         private Font ItemTextFont { get; } = new Font("Arial", 20.0f);
         private Font DescriptionFont { get; } = new Font("Arial", 20.0f);
 
-        private UVCoords BannerCoords { get; } = new UVCoords(0f, 0f, 0.5f, 0.125f);
-        private UVCoords BackgroundCoords { get; } = new UVCoords(0.5f, 0f, 1f, 0.5f);
-        private UVCoords SelectedGradientCoords { get; } = new UVCoords(0f, 0.125f, 0.5f, 0.1875f);
-        private UVCoords CheckboxEmptyWhiteCoords { get; } = new UVCoords(0f, 0.1875f, 0.0625f, 0.25f);
-        private UVCoords CheckboxEmptyBlackCoords { get; } = new UVCoords(0.0625f, 0.1875f, 0.125f, 0.25f);
-        private UVCoords CheckboxCrossWhiteCoords { get; } = new UVCoords(0.125f, 0.1875f, 0.1875f, 0.25f);
-        private UVCoords CheckboxCrossBlackCoords { get; } = new UVCoords(0.1875f, 0.1875f, 0.25f, 0.25f);
-        private UVCoords CheckboxTickWhiteCoords { get; } = new UVCoords(0.25f, 0.1875f, 0.3125f, 0.25f);
-        private UVCoords CheckboxTickBlackCoords { get; } = new UVCoords(0.3125f, 0.1875f, 0.375f, 0.25f);
-        private UVCoords ArrowLeftCoords { get; } = new UVCoords(0.375f, 0.1875f, 0.4375f, 0.25f);
-        private UVCoords ArrowRightCoords { get; } = new UVCoords(0.4375f, 0.1875f, 0.5f, 0.25f);
-        private UVCoords ArrowsUpDownCoords { get; } = new UVCoords(0f, 0.25f, 0.0625f, 0.3125f);
-        private UVCoords ArrowsUpDownBackgroundCoords { get; } = new UVCoords(0.5f, 0.5f, 1f, 0.5625f);
-
         public MenuSkin(string skinFileName)
         {
             if (!File.Exists(skinFileName))
@@ -47,7 +33,7 @@ namespace RAGENativeUI.Menus.Rendering
             if (background.Menu.IsAnyItemOnScreen)
             {
                 SizeF s = background.Size;
-                DrawBackgroundTexture(graphics, x, y - 1, s.Width, s.Height);
+                DrawBackgroundTexture(graphics, x, y, s.Width, s.Height);
             }
         }
 
@@ -69,10 +55,12 @@ namespace RAGENativeUI.Menus.Rendering
 
             if (description.FormattedText != null && s.Height > 0f)
             {
-                y += 3.5f;
+                y += 4f;
 
-                graphics.DrawRectangle(new RectangleF(x, y, s.Width, 3.25f), Color.FromArgb(240, 0, 0, 0));
-                graphics.DrawRectangle(new RectangleF(x, y, s.Width, s.Height), Color.FromArgb(95, 0, 0, 0));
+                // add 1 because there's a bug that offsets the rectangle by 1 on each axis
+                // TODO: remove +1 from DrawRectangle calls once it's fixed
+                graphics.DrawRectangle(new RectangleF(x + 1, y + 1, s.Width, 3.25f), Color.FromArgb(240, 0, 0, 0));
+                graphics.DrawRectangle(new RectangleF(x + 1, y + 1, s.Width, s.Height), Color.FromArgb(95, 0, 0, 0));
 
                 DrawText(graphics, description.FormattedText, DescriptionFont, new RectangleF(x + BorderSafezone, y + BorderSafezone, s.Width - BorderSafezone * 2f, s.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Top);
 
@@ -84,7 +72,7 @@ namespace RAGENativeUI.Menus.Rendering
             const float BorderSafezone = 8.5f;
 
             SizeF s = subtitle.Size;
-            graphics.DrawRectangle(new RectangleF(x, y, s.Width, s.Height), Color.Black);
+            graphics.DrawRectangle(new RectangleF(x + 1, y + 1, s.Width, s.Height), Color.Black);
             DrawText(graphics, subtitle.Text, SubtitleFont, new RectangleF(x + BorderSafezone, y, s.Width, s.Height), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Center);
 
             if (subtitle.ShouldShowItemsCounter())
@@ -98,6 +86,7 @@ namespace RAGENativeUI.Menus.Rendering
             SizeF s = upDownDisplay.Size;
             float arrowsSize = s.Height;
 
+            y += 1;
             DrawArrowsUpDownBackgroundTexture(graphics, x, y, s.Width, s.Height);
             DrawArrowsUpDownTexture(graphics, x - arrowsSize / 2f + s.Width / 2f, y, arrowsSize, arrowsSize);
         }
@@ -191,69 +180,23 @@ namespace RAGENativeUI.Menus.Rendering
         #endregion // IMenuSkin Implementation
 
         #region Draw Textures Helper Methods
-        private void DrawBannerTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), BannerCoords.U1, BannerCoords.V1, BannerCoords.U2, BannerCoords.V2);
-        }
+        private void DrawBannerTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, BannerCoords);
+        private void DrawBackgroundTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, BackgroundCoords);
+        private void DrawSelectedGradientTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, SelectedGradientCoords);
+        private void DrawCheckboxEmptyWhiteTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxEmptyWhiteCoords);
+        private void DrawCheckboxEmptyBlackTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxEmptyBlackCoords);
+        private void DrawCheckboxCrossWhiteTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxCrossWhiteCoords);
+        private void DrawCheckboxCrossBlackTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxCrossBlackCoords);
+        private void DrawCheckboxTickWhiteTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxTickWhiteCoords);
+        private void DrawCheckboxTickBlackTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxTickBlackCoords);
+        private void DrawArrowLeftTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowLeftCoords);
+        private  void DrawArrowRightTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowRightCoords);
+        private void DrawArrowsUpDownTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowsUpDownCoords);
+        private void DrawArrowsUpDownBackgroundTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowsUpDownBackgroundCoords);
 
-        private void DrawBackgroundTexture(Graphics graphics, float x, float y, float width, float height)
+        private void DrawTexture(Graphics graphics, float x, float y, float width, float height, UVCoords uv)
         {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), BackgroundCoords.U1, BackgroundCoords.V1, BackgroundCoords.U2, BackgroundCoords.V2);
-        }
-
-        private void DrawSelectedGradientTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), SelectedGradientCoords.U1, SelectedGradientCoords.V1, SelectedGradientCoords.U2, SelectedGradientCoords.V2);
-        }
-
-        private void DrawCheckboxEmptyWhiteTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxEmptyWhiteCoords.U1, CheckboxEmptyWhiteCoords.V1, CheckboxEmptyWhiteCoords.U2, CheckboxEmptyWhiteCoords.V2);
-        }
-
-        private void DrawCheckboxEmptyBlackTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxEmptyBlackCoords.U1, CheckboxEmptyBlackCoords.V1, CheckboxEmptyBlackCoords.U2, CheckboxEmptyBlackCoords.V2);
-        }
-
-        private void DrawCheckboxCrossWhiteTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxCrossWhiteCoords.U1, CheckboxCrossWhiteCoords.V1, CheckboxCrossWhiteCoords.U2, CheckboxCrossWhiteCoords.V2);
-        }
-
-        private void DrawCheckboxCrossBlackTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxCrossBlackCoords.U1, CheckboxCrossBlackCoords.V1, CheckboxCrossBlackCoords.U2, CheckboxCrossBlackCoords.V2);
-        }
-
-        private void DrawCheckboxTickWhiteTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxTickWhiteCoords.U1, CheckboxTickWhiteCoords.V1, CheckboxTickWhiteCoords.U2, CheckboxTickWhiteCoords.V2);
-        }
-
-        private void DrawCheckboxTickBlackTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), CheckboxTickBlackCoords.U1, CheckboxTickBlackCoords.V1, CheckboxTickBlackCoords.U2, CheckboxTickBlackCoords.V2);
-        }
-
-        private void DrawArrowLeftTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowLeftCoords.U1, ArrowLeftCoords.V1, ArrowLeftCoords.U2, ArrowLeftCoords.V2);
-        }
-
-        private  void DrawArrowRightTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowRightCoords.U1, ArrowRightCoords.V1, ArrowRightCoords.U2, ArrowRightCoords.V2);
-        }
-
-        private void DrawArrowsUpDownTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowsUpDownCoords.U1, ArrowsUpDownCoords.V1, ArrowsUpDownCoords.U2, ArrowsUpDownCoords.V2);
-        }
-
-        private void DrawArrowsUpDownBackgroundTexture(Graphics graphics, float x, float y, float width, float height)
-        {
-            graphics.DrawTexture(Image, new RectangleF(x - 1, y, width, height), ArrowsUpDownBackgroundCoords.U1, ArrowsUpDownBackgroundCoords.V1, ArrowsUpDownBackgroundCoords.U2, ArrowsUpDownBackgroundCoords.V2);
+            graphics.DrawTexture(Image, new RectangleF(x, y, width, height), uv.U1, uv.V1, uv.U2, uv.V2);
         }
         #endregion // Draw Textures Helper Methods
 
@@ -331,6 +274,21 @@ namespace RAGENativeUI.Menus.Rendering
                 }
             }
         }
+
+
+        private static readonly UVCoords BannerCoords = new UVCoords(0f, 0f, 0.5f, 0.125f);
+        private static readonly UVCoords BackgroundCoords = new UVCoords(0.5f, 0f, 1f, 0.5f);
+        private static readonly UVCoords SelectedGradientCoords = new UVCoords(0f, 0.125f, 0.5f, 0.1875f);
+        private static readonly UVCoords CheckboxEmptyWhiteCoords = new UVCoords(0f, 0.1875f, 0.0625f, 0.25f);
+        private static readonly UVCoords CheckboxEmptyBlackCoords = new UVCoords(0.0625f, 0.1875f, 0.125f, 0.25f);
+        private static readonly UVCoords CheckboxCrossWhiteCoords = new UVCoords(0.125f, 0.1875f, 0.1875f, 0.25f);
+        private static readonly UVCoords CheckboxCrossBlackCoords = new UVCoords(0.1875f, 0.1875f, 0.25f, 0.25f);
+        private static readonly UVCoords CheckboxTickWhiteCoords = new UVCoords(0.25f, 0.1875f, 0.3125f, 0.25f);
+        private static readonly UVCoords CheckboxTickBlackCoords = new UVCoords(0.3125f, 0.1875f, 0.375f, 0.25f);
+        private static readonly UVCoords ArrowLeftCoords = new UVCoords(0.375f, 0.1875f, 0.4375f, 0.25f);
+        private static readonly UVCoords ArrowRightCoords = new UVCoords(0.4375f, 0.1875f, 0.5f, 0.25f);
+        private static readonly UVCoords ArrowsUpDownCoords = new UVCoords(0f, 0.25f, 0.0625f, 0.3125f);
+        private static readonly UVCoords ArrowsUpDownBackgroundCoords = new UVCoords(0.5f, 0.5f, 1f, 0.5625f);
     }
 }
 
