@@ -106,7 +106,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <InProject>false</InProject>
     </Compile>
-    <Compile Include="Rendering\ISkin.cs" />
     <Compile Include="Rendering\TextAligment.cs" />
     <Compile Include="BaseCollection.cs" />
     <Compile Include="Control.cs" />

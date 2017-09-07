@@ -2,12 +2,9 @@ namespace RAGENativeUI.Menus.Rendering
 {
     using System.Drawing;
 
-    using Rage;
     using Graphics = Rage.Graphics;
-
-    using RAGENativeUI.Rendering;
-
-    public interface IMenuSkin : ISkin
+    
+    public interface IMenuSkin
     {
         void DrawBackground(Graphics graphics, MenuBackground background, float x, float y);
         void DrawBanner(Graphics graphics, MenuBanner banner, float x, float y);
