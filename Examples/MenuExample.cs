@@ -21,9 +21,9 @@ namespace Examples
             menu.Location = new PointF(480, 17);
 
             menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
-            menu.Items.Add(new MenuItemCheckbox("cb #0") { State = MenuItemCheckboxState.Empty, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
-            menu.Items.Add(new MenuItemCheckbox("cb #1") { State = MenuItemCheckboxState.Cross, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
-            menu.Items.Add(new MenuItemCheckbox("cb #2") { State = MenuItemCheckboxState.Tick });
+            menu.Items.Add(new MenuItemCheckbox("cb #0") { IsChecked = true, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
+            menu.Items.Add(new MenuItemCheckbox("cb #1") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
+            menu.Items.Add(new MenuItemCheckbox("cb #2"));
             menu.Items.Add(new MenuItemEnumScroller("enum scroller #0", typeof(GameControl)));
             menu.Items.Add(new MenuItemEnumScroller<GameControl>("enum scroller #1"));
             menu.Items.Add(new MenuItemNumericScroller("num scroller #0"));
@@ -53,7 +53,7 @@ namespace Examples
 
                 if (menu.Items[idx] is MenuItemCheckbox)
                 {
-                    (menu.Items[idx] as MenuItemCheckbox).StateChanged += (s, oldState, newState) => { Game.DisplayHelp($"Checkbox at index #{idx} state changed from {oldState} to {newState}"); };
+                    (menu.Items[idx] as MenuItemCheckbox).CheckedChanged += (s, c) => { Game.DisplayHelp($"Checkbox at index #{idx} {(c ? "checked" : "unchecked")}"); };
                     continue;
                 }
 
@@ -231,7 +231,7 @@ namespace Examples
                 }
 
                 DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
-                DrawText(graphics, $"[{(item.State == MenuItemCheckboxState.Empty ? " " : "X")}] ", SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+                DrawText(graphics, $"[{(item.IsChecked ? "X" : " ")}] ", SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
             }
 
             public void DrawItemScroller(Graphics graphics, MenuItemScroller item, float x, float y, bool selected)

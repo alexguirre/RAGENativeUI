@@ -1,34 +1,26 @@
 namespace RAGENativeUI.Menus
 {
-    using System.Drawing;
-    
     using Graphics = Rage.Graphics;
-
-    public enum MenuItemCheckboxState
-    {
-        Empty,
-        Cross,
-        Tick,
-    }
-
+    
     public class MenuItemCheckbox : MenuItem
     {
-        public delegate void StateChangedEventHandler(MenuItem sender, MenuItemCheckboxState oldState, MenuItemCheckboxState newState);
+        public delegate void CheckedChangedEventHandler(MenuItem sender, bool isChecked);
 
-        public event StateChangedEventHandler StateChanged;
-        
-        private MenuItemCheckboxState state;
-        public MenuItemCheckboxState State
+        public event CheckedChangedEventHandler CheckedChanged;
+        public event CheckedChangedEventHandler Checked;
+        public event CheckedChangedEventHandler Unchecked;
+
+        private bool isChecked;
+        public bool IsChecked
         {
-            get { return state; }
+            get { return isChecked; }
             set
             {
-                if (value == state)
+                if (value == isChecked)
                     return;
 
-                MenuItemCheckboxState oldState = state;
-                state = value;
-                OnStateChanged(oldState, state);
+                isChecked = value;
+                OnCheckChanged(isChecked);
             }
         }
 
@@ -40,7 +32,7 @@ namespace RAGENativeUI.Menus
         {
             if (base.OnPreviewAccept(origin))
             {
-                State = (State == MenuItemCheckboxState.Empty) ? MenuItemCheckboxState.Tick : MenuItemCheckboxState.Empty;
+                IsChecked = !IsChecked;
                 return true;
             }
 
@@ -56,9 +48,13 @@ namespace RAGENativeUI.Menus
             y += Size.Height;
         }
 
-        protected virtual void OnStateChanged(MenuItemCheckboxState oldState, MenuItemCheckboxState newState)
+        protected virtual void OnCheckChanged(bool isChecked)
         {
-            StateChanged?.Invoke(this, oldState, newState);
+            CheckedChanged?.Invoke(this, isChecked);
+            if (isChecked)
+                Checked?.Invoke(this, isChecked);
+            else
+                Unchecked?.Invoke(this, isChecked);
         }
     }
 }

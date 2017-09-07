@@ -116,32 +116,24 @@ namespace RAGENativeUI.Menus.Rendering
             SizeF s = item.Size;
             if (selected)
             {
-                switch (item.State)
+                if (item.IsChecked)
                 {
-                    case MenuItemCheckboxState.Empty:
-                        DrawCheckboxEmptyBlackTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
-                        break;
-                    case MenuItemCheckboxState.Cross:
-                        DrawCheckboxCrossBlackTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
-                        break;
-                    case MenuItemCheckboxState.Tick:
-                        DrawCheckboxTickBlackTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
-                        break;
+                    DrawCheckboxTickBlackTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
+                }
+                else
+                {
+                    DrawCheckboxEmptyBlackTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
                 }
             }
             else
             {
-                switch (item.State)
+                if (item.IsChecked)
                 {
-                    case MenuItemCheckboxState.Empty:
-                        DrawCheckboxEmptyWhiteTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
-                        break;
-                    case MenuItemCheckboxState.Cross:
-                        DrawCheckboxCrossWhiteTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
-                        break;
-                    case MenuItemCheckboxState.Tick:
-                        DrawCheckboxTickWhiteTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
-                        break;
+                    DrawCheckboxTickWhiteTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
+                }
+                else
+                {
+                    DrawCheckboxEmptyWhiteTexture(graphics, x + s.Width - s.Height - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, s.Height - BorderSafezone, s.Height - BorderSafezone);
                 }
             }
         }
