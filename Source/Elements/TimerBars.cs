@@ -10,7 +10,7 @@ namespace RAGENativeUI.Elements
     {
         protected const float DefaultWidth = 0.157f, DefaultHeight = 0.036f;
 
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; set; } = true;
 
         protected Sprite Background { get; set; }
 

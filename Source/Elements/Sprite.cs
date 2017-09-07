@@ -23,7 +23,7 @@ namespace RAGENativeUI.Elements
         public ScreenRectangle Rectangle { get; set; }
         public float Rotation { get; set; }
         public Color Color { get; set; }
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; set; } = true;
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
         {

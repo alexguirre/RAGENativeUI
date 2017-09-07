@@ -6,7 +6,7 @@ namespace RAGENativeUI.Elements
 
     public class Box
     {
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; set; } = true;
         public ScreenRectangle Rectangle { get; set; }
         public Color Color { get; set; }
 
