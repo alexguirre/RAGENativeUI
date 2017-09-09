@@ -5,7 +5,7 @@ $MINOR_VERSION = 0;
 $COMMITS_COUNT = git rev-list HEAD --count;
 $BUILDS_COUNT = 0;
 $EXTRA_INFO = "PRE-RELEASE";
-$START_YEAR = 2016;
+$START_YEAR = 2017;
 $CURRENT_YEAR = [System.DateTime]::UtcNow.Year;
 
 $YEAR_TEXT = $START_YEAR.ToString();
