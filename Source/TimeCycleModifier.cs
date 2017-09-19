@@ -147,7 +147,7 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByIndex"]/*' />
         public static TimeCycleModifier GetByIndex(int index)
         {
-            if (index < 0 || index >= Count)
+            if (index < 0 || index >= NumberOfTimeCycleModifiers)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
