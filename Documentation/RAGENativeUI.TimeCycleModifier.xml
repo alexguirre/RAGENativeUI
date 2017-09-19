@@ -111,7 +111,7 @@
             An array that contains all <see cref="TimeCycleModifier"/> instances currently in memory.
             </returns>
         </Member>
-        <Member name="Count">  
+        <Member name="NumberOfTimeCycleModifiers">  
             <summary>
             Gets the number of <see cref="TimeCycleModifier"/> instances currently in memory.
             </summary>

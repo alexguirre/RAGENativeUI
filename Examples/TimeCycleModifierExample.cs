@@ -39,7 +39,7 @@ namespace Examples
                 {
                     i--;
                     if (i < 0)
-                        i = TimeCycleModifier.Count - 1;
+                        i = TimeCycleModifier.NumberOfTimeCycleModifiers - 1;
                     TimeCycleModifier.CurrentModifier = null;
                     mod = TimeCycleModifier.GetByIndex(i);
                 }
@@ -47,7 +47,7 @@ namespace Examples
                 if (Gui.Button(new RectangleF(5 + 3 + 122, 3, 122, 25), "Next"))
                 {
                     i++;
-                    if (i >= TimeCycleModifier.Count)
+                    if (i >= TimeCycleModifier.NumberOfTimeCycleModifiers)
                         i = 0;
                     TimeCycleModifier.CurrentModifier = null;
                     mod = TimeCycleModifier.GetByIndex(i);
@@ -64,7 +64,7 @@ namespace Examples
                 Gui.Label(new RectangleF(5, 30 + 25 * 7, 350, 20), $"Current Strength: {TimeCycleModifier.CurrentModifierStrength}");
                 TimeCycleModifier.CurrentModifierStrength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.CurrentModifierStrength, -1.0f, 5.0f);
 
-                Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.Count}");
+                Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.NumberOfTimeCycleModifiers}");
 
                 mod.IsActive = Gui.Toggle(new RectangleF(5, 30 * 11, 150, 25), $"Active: {mod.IsActive}", mod.IsActive);
 
@@ -84,16 +84,16 @@ namespace Examples
 
                 if (Gui.Button(new RectangleF(5, 30 * 14, 250, 25), "Clone Current"))
                 {
-                    Game.DisplayNotification("Creating new CLONE" + TimeCycleModifier.Count);
-                    Game.LogTrivial("Creating new CLONE" + TimeCycleModifier.Count);
-                    TimeCycleModifier m = new TimeCycleModifier("CLONE" + TimeCycleModifier.Count, mod);
+                    Game.DisplayNotification("Creating new CLONE" + TimeCycleModifier.NumberOfTimeCycleModifiers);
+                    Game.LogTrivial("Creating new CLONE" + TimeCycleModifier.NumberOfTimeCycleModifiers);
+                    TimeCycleModifier m = new TimeCycleModifier("CLONE" + TimeCycleModifier.NumberOfTimeCycleModifiers, mod);
                 }
 
                 if (Gui.Button(new RectangleF(5, 30 * 15, 250, 25), "New Modifier"))
                 {
-                    Game.DisplayNotification("Creating new CUSTOM" + TimeCycleModifier.Count);
-                    Game.LogTrivial("Creating new CUSTOM" + TimeCycleModifier.Count);
-                    TimeCycleModifier m = new TimeCycleModifier("CUSTOM" + TimeCycleModifier.Count, 0,
+                    Game.DisplayNotification("Creating new CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers);
+                    Game.LogTrivial("Creating new CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers);
+                    TimeCycleModifier m = new TimeCycleModifier("CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers, 0,
                        Tuple.Create(TimeCycleModifierModType.postfx_desaturation, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
                        Tuple.Create(TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
                 }
