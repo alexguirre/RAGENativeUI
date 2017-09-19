@@ -12,7 +12,7 @@ namespace RAGENativeUI.Memory
 
 
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CSimpleArray
+        public unsafe struct CArray
         {
             public CAnimPostFX* Offset;
             public short Count;
@@ -22,7 +22,7 @@ namespace RAGENativeUI.Memory
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CAnimPostFX)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CAnimPostFX)}.{nameof(CArray)} is {Size}, the index {index} is out of range.");
                 }
 
                 return &Offset[index];

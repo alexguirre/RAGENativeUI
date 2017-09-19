@@ -6,7 +6,7 @@ namespace RAGENativeUI.Memory
     [StructLayout(LayoutKind.Explicit, Size = 48)]
     internal unsafe struct CTimeCycleModifier
     {
-        [FieldOffset(0x0000)] public Mod.CSimpleArray Mods;
+        [FieldOffset(0x0000)] public Mod.CArray Mods;
 
         [FieldOffset(0x0010)] public uint Name;
         [FieldOffset(0x0018)] public long unk18;
@@ -70,7 +70,7 @@ namespace RAGENativeUI.Memory
             [FieldOffset(0x0008)] public float Value2;
 
             [StructLayout(LayoutKind.Sequential)]
-            public unsafe struct CSimpleArray
+            public unsafe struct CArray
             {
                 public Mod* Offset;
                 public short Count;
@@ -80,7 +80,7 @@ namespace RAGENativeUI.Memory
                 {
                     if (index >= Size)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(Mod)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
+                        throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(Mod)}.{nameof(CArray)} is {Size}, the index {index} is out of range.");
                     }
 
                     return &Offset[index];
@@ -89,7 +89,7 @@ namespace RAGENativeUI.Memory
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct CSimpleArrayPtr
+        public struct CRefsArray
         {
             public CTimeCycleModifier** Offset;
             public short Count;
@@ -99,7 +99,7 @@ namespace RAGENativeUI.Memory
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CTimeCycleModifier)}.{nameof(CRefsArray)} is {Size}, the index {index} is out of range.");
                 }
 
                 return Offset[index];

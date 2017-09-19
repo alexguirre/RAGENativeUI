@@ -12,7 +12,7 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0008)] public CUnkArray UnkArray;
 
-        [FieldOffset(0x0040)] public CTimeCycleModifier.CSimpleArrayPtr Modifiers;
+        [FieldOffset(0x0040)] public CTimeCycleModifier.CRefsArray Modifiers;
 
         [FieldOffset(0x0058)] public CTimeCycleModifier.CSortedArray SortedModifiers;
 

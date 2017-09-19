@@ -12,8 +12,8 @@ namespace RAGENativeUI.Memory
         public static fwTxdStore* TxdStore { get; private set; }
         public static CAnimPostFXManager* AnimPostFXManager { get; private set; }
         public static CScaleformStore* ScaleformStore { get; private set; }
-        public static ScaleformData1.CArray* ScaleformData1Array { get; private set; }
-        public static ScaleformData2.CSimpleArray* ScaleformData2Array { get; private set; }
+        public static ScaleformData1.CInlinedArray* ScaleformData1Array { get; private set; }
+        public static ScaleformData2.CArray* ScaleformData2Array { get; private set; }
         public static CTimeCycleModifiersManager* TimeCycleModifiersManager { get; private set; }
         public static int* CurrentTimeCycleModifierIndex { get; private set; }
         public static float* CurrentTimeCycleModifierStrength { get; private set; }
@@ -43,17 +43,17 @@ namespace RAGENativeUI.Memory
             }
 
             address = Game.FindPattern("48 8D 35 ?? ?? ?? ?? 48 8D 3C C0 8B 4C FE B8 E8 ?? ?? ?? ?? 84 C0 74 15");
-            if (AssertAddress(address, $"{nameof(ScaleformData1)}.{nameof(ScaleformData1.CArray)}"))
+            if (AssertAddress(address, $"{nameof(ScaleformData1)}.{nameof(ScaleformData1.CInlinedArray)}"))
             {
                 address = address + *(int*)(address + 3) + 7;
-                ScaleformData1Array = (ScaleformData1.CArray*)address;
+                ScaleformData1Array = (ScaleformData1.CInlinedArray*)address;
             }
 
             address = Game.FindPattern("48 8B 0D ?? ?? ?? ?? 48 69 D2 ?? ?? ?? ?? 83 BC 0A ?? ?? ?? ?? ?? 0F 94 C0 C3");
-            if (AssertAddress(address, $"{nameof(ScaleformData2)}.{nameof(ScaleformData2.CSimpleArray)}"))
+            if (AssertAddress(address, $"{nameof(ScaleformData2)}.{nameof(ScaleformData2.CArray)}"))
             {
                 address = address + *(int*)(address + 3) + 7;
-                ScaleformData2Array = (ScaleformData2.CSimpleArray*)address;
+                ScaleformData2Array = (ScaleformData2.CArray*)address;
             }
 
             address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 45 33 C9 89 44 24 38 E8 ?? ?? ?? ?? 83 0D");

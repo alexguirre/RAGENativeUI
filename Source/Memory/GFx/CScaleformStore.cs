@@ -24,7 +24,7 @@ namespace RAGENativeUI.Memory.GFx
 
 
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CArray
+        public unsafe struct CInlinedArray
         {
             private ScaleformData1 start;
 
@@ -45,7 +45,7 @@ namespace RAGENativeUI.Memory.GFx
 
 
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CSimpleArray
+        public unsafe struct CArray
         {
             public ScaleformData2* Offset;
             public short Count;
@@ -55,7 +55,7 @@ namespace RAGENativeUI.Memory.GFx
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(ScaleformData2)}.{nameof(CSimpleArray)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(ScaleformData2)}.{nameof(CArray)} is {Size}, the index {index} is out of range.");
                 }
 
                 return &Offset[index];

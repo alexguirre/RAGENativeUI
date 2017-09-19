@@ -8,7 +8,7 @@ namespace RAGENativeUI.Memory
     [StructLayout(LayoutKind.Explicit, Size = 760)]
     internal unsafe struct CAnimPostFXManager
     {
-        [FieldOffset(0x0000)] public CAnimPostFX.CSimpleArray Effects;
+        [FieldOffset(0x0000)] public CAnimPostFX.CArray Effects;
 
         [FieldOffset(0x0020)] private IntPtr currentActiveEffectPtr;
         [FieldOffset(0x0050)] private IntPtr lastActiveEffectPtr;

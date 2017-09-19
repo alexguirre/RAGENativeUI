@@ -40,7 +40,7 @@ namespace RAGENativeUI.Memory
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        internal unsafe struct CSimpleArrayPtr
+        internal unsafe struct CRefsArray
         {
             public grcTexture** Offset;
             public ushort Count;
@@ -50,7 +50,7 @@ namespace RAGENativeUI.Memory
             {
                 if (index >= Size)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(grcTexture)}.{nameof(CSimpleArrayPtr)} is {Size}, the index {index} is out of range.");
+                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(grcTexture)}.{nameof(CRefsArray)} is {Size}, the index {index} is out of range.");
                 }
 
                 return Offset[index];
@@ -61,7 +61,7 @@ namespace RAGENativeUI.Memory
         internal unsafe struct pgDictionary
         {
             //[FieldOffset(0x0020)] public CSimpleArray_UInt32 Keys;
-            [FieldOffset(0x0030)] public CSimpleArrayPtr Values;
+            [FieldOffset(0x0030)] public CRefsArray Values;
         }
     }
 }
