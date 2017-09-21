@@ -67,6 +67,7 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Mods"]/*' />
         public TimeCycleModifierModsCollection Mods { get; }
 
+        // from existing timecycle modifier in memory
         private TimeCycleModifier(CTimeCycleModifier* native, int idx)
         {
             hash = native->Name;
@@ -75,8 +76,8 @@ namespace RAGENativeUI
             Mods = new TimeCycleModifierModsCollection(this);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor1"]/*' />
-        public TimeCycleModifier(string name, TimeCycleModifier template)
+        // creates new timecycle modifier in memory
+        private TimeCycleModifier(string name, uint flags, CTimeCycleModifier.Mod[] mods)
         {
             uint hash = Game.GetHashKey(name);
             knownNames[hash] = name;
@@ -85,27 +86,23 @@ namespace RAGENativeUI
 
 
             this.hash = hash;
-            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray(), template.Flags);
+            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, mods, flags);
             index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
             Mods = new TimeCycleModifierModsCollection(this);
             cache[hash] = this;
         }
 
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor1"]/*' />
+        public TimeCycleModifier(string name, TimeCycleModifier template)
+            : this(name, template.Flags, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray())
+        {
+        }
+
         // TODO: maybe change Tuple<TimeCycleModifierModType, float, float> to a custom struct
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor2"]/*' />
         public TimeCycleModifier(string name, uint flags, params Tuple<TimeCycleModifierModType, float, float>[] mods)
+            : this(name, flags, mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray())
         {
-            uint hash = Game.GetHashKey(name);
-            knownNames[hash] = name;
-            if (GameMemory.TimeCycleModifiersManager->IsNameUsed(hash))
-                throw new InvalidOperationException($"The name '{name}' is already in use.");
-
-
-            this.hash = hash;
-            memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray(), flags);
-            index = GameMemory.TimeCycleModifiersManager->Modifiers.Count - 1;
-            Mods = new TimeCycleModifierModsCollection(this);
-            cache[hash] = this;
         }
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="IsValid"]/*' />
