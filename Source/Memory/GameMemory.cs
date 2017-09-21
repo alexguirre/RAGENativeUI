@@ -15,8 +15,6 @@ namespace RAGENativeUI.Memory
         public static ScaleformData1.CInlinedArray* ScaleformData1Array { get; private set; }
         public static ScaleformData2.CArray* ScaleformData2Array { get; private set; }
         public static CTimeCycleModifiersManager* TimeCycleModifiersManager { get; private set; }
-        public static int* CurrentTimeCycleModifierIndex { get; private set; }
-        public static float* CurrentTimeCycleModifierStrength { get; private set; }
         public static sysMemAllocator* Allocator { get; private set; }
 
         internal static bool Init()
@@ -61,15 +59,6 @@ namespace RAGENativeUI.Memory
             {
                 address = address + *(int*)(address + 3) + 7;
                 TimeCycleModifiersManager = (CTimeCycleModifiersManager*)address;
-            }
-
-            address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 45 33 C9 89 44 24 38 E8 ?? ?? ?? ?? 83 0D");
-            if (AssertAddress(address, nameof(CurrentTimeCycleModifierIndex)))
-            {
-                address += 0x24;
-                address = address + *(int*)(address + 2) + 6;
-                CurrentTimeCycleModifierIndex = (int*)address;
-                CurrentTimeCycleModifierStrength = (float*)(address + 4);
             }
 
             address = Game.FindPattern("48 8D 1D ?? ?? ?? ?? A8 08 75 1D 83 C8 08 48 8B CB 89 05 ?? ?? ?? ??");

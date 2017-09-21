@@ -40,7 +40,7 @@ namespace RAGENativeUI
         {
             get
             {
-                return *GameMemory.CurrentTimeCycleModifierIndex == index;
+                return GameMemory.TimeCycleModifiersManager->CurrentModifierIndex == index;
             }
             set
             {
@@ -111,6 +111,16 @@ namespace RAGENativeUI
             return memAddress != IntPtr.Zero;
         }
 
+        // TODO: decide if IsActive and CurrentModifier should take modifiers in transition into account
+        public void SetActiveWithTransition(float time, float targetStrength = 1.0f)
+        {
+            CTimeCycleModifiersManager* mgr = GameMemory.TimeCycleModifiersManager;
+            mgr->CurrentModifierIndex = -1;
+            mgr->CurrentModifierStrength = targetStrength;
+            mgr->TransitionCurrentStrength = 0.0f;
+            mgr->TransitionModifierIndex = Index;
+            mgr->TransitionSpeed = targetStrength / time;
+        }
 
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByName"]/*' />
@@ -195,20 +205,20 @@ namespace RAGENativeUI
         {
             get
             {
-                int index = *GameMemory.CurrentTimeCycleModifierIndex;
+                int index = GameMemory.TimeCycleModifiersManager->CurrentModifierIndex;
                 return index == -1 ? null : GetByIndex(index);
             }
             set
             {
                 if(value == null || !value.IsValid())
                 {
-                    *GameMemory.CurrentTimeCycleModifierIndex = -1;
+                    GameMemory.TimeCycleModifiersManager->CurrentModifierIndex = -1;
                     // set strength to 1.0 to have the same behaviour as the CLEAR_TIMECYCLE_MODIFIER native
-                    *GameMemory.CurrentTimeCycleModifierStrength = 1.0f;
+                    GameMemory.TimeCycleModifiersManager->CurrentModifierStrength = 1.0f;
                 }
                 else
                 {
-                    *GameMemory.CurrentTimeCycleModifierIndex = value.Index;
+                    GameMemory.TimeCycleModifiersManager->CurrentModifierIndex = value.Index;
                 }
             }
         }
@@ -218,11 +228,11 @@ namespace RAGENativeUI
         {
             get
             {
-                return *GameMemory.CurrentTimeCycleModifierStrength;
+                return GameMemory.TimeCycleModifiersManager->CurrentModifierStrength;
             }
             set
             {
-                *GameMemory.CurrentTimeCycleModifierStrength = value;
+                GameMemory.TimeCycleModifiersManager->CurrentModifierStrength = value;
             }
         }
 

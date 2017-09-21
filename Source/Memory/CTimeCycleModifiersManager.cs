@@ -16,6 +16,13 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0058)] public CTimeCycleModifier.CSortedArray SortedModifiers;
 
+
+        [FieldOffset(0x27F0)] public int CurrentModifierIndex;
+        [FieldOffset(0x27F4)] public float CurrentModifierStrength;
+        [FieldOffset(0x27F8)] public int TransitionModifierIndex;
+        [FieldOffset(0x27FC)] public float TransitionCurrentStrength; // interpolates from 0.0 to CurrentModifierStrength using TransitionSpeed
+        [FieldOffset(0x2800)] public float TransitionSpeed; // CurrentModifierStrength / time
+
         public bool IsNameUsed(uint name)
         {
             for (short i = 0; i < SortedModifiers.Count; i++)
