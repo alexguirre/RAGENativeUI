@@ -59,14 +59,19 @@ namespace Examples
                 Gui.Label(new RectangleF(15, 30 + 25 * 2, 350, 20), $"Index: {mod.Index}");
                 Gui.Label(new RectangleF(15, 30 + 25 * 3, 350, 20), $"Flags: {mod.Flags}");
                 Gui.Label(new RectangleF(15, 30 + 25 * 4, 350, 20), $"Active: {mod.IsActive}");
-                Gui.Label(new RectangleF(15, 30 + 25 * 5, 350, 20), $"Memory Address: {mod.MemoryAddress.ToString("X")}");
+                Gui.Label(new RectangleF(15, 30 + 25 * 5, 350, 20), $"In Transition: {mod.IsInTransition}");
+                Gui.Label(new RectangleF(15, 30 + 25 * 6, 350, 20), $"Memory Address: {mod.MemoryAddress.ToString("X")}");
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 7, 350, 20), $"Current Strength: {TimeCycleModifier.CurrentModifierStrength}");
                 TimeCycleModifier.CurrentModifierStrength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.CurrentModifierStrength, -1.0f, 5.0f);
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.NumberOfTimeCycleModifiers}");
 
-                mod.IsActive = Gui.Toggle(new RectangleF(5, 30 * 11, 150, 25), $"Active: {mod.IsActive}", mod.IsActive);
+
+                if (Gui.Button(new RectangleF(5, 30 * 11, 250, 25), $"Toggle"))
+                {
+                    mod.IsActive = !mod.IsActive;
+                }
 
                 if (Gui.Button(new RectangleF(5, 30 * 12, 250, 25),  $"{(showCurrentModsValues ? "Hide" : "Show")} Current Mods Values"))
                 {

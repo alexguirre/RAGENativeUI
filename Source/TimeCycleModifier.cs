@@ -40,7 +40,8 @@ namespace RAGENativeUI
         {
             get
             {
-                return GameMemory.TimeCycleModifiersManager->CurrentModifierIndex == index;
+                return GameMemory.TimeCycleModifiersManager->CurrentModifierIndex == index || 
+                       GameMemory.TimeCycleModifiersManager->TransitionModifierIndex == index;
             }
             set
             {
@@ -53,6 +54,11 @@ namespace RAGENativeUI
                     CurrentModifier = null;
                 }
             }
+        }
+
+        public bool IsInTransition
+        {
+            get { return GameMemory.TimeCycleModifiersManager->TransitionModifierIndex == index; }
         }
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="MemoryAddress"]/*' />
@@ -110,9 +116,9 @@ namespace RAGENativeUI
         {
             return memAddress != IntPtr.Zero;
         }
-
-        // TODO: decide if IsActive and CurrentModifier should take modifiers in transition into account
-        public void SetActiveWithTransition(float time, float targetStrength = 1.0f)
+        
+        public void SetActiveWithTransition(float time) => SetActiveWithTransition(time, CurrentModifierStrength);
+        public void SetActiveWithTransition(float time, float targetStrength)
         {
             CTimeCycleModifiersManager* mgr = GameMemory.TimeCycleModifiersManager;
             mgr->CurrentModifierIndex = -1;
@@ -206,6 +212,10 @@ namespace RAGENativeUI
             get
             {
                 int index = GameMemory.TimeCycleModifiersManager->CurrentModifierIndex;
+                if(index == -1)
+                {
+                    index = GameMemory.TimeCycleModifiersManager->TransitionModifierIndex;
+                }
                 return index == -1 ? null : GetByIndex(index);
             }
             set
@@ -215,6 +225,10 @@ namespace RAGENativeUI
                     GameMemory.TimeCycleModifiersManager->CurrentModifierIndex = -1;
                     // set strength to 1.0 to have the same behaviour as the CLEAR_TIMECYCLE_MODIFIER native
                     GameMemory.TimeCycleModifiersManager->CurrentModifierStrength = 1.0f;
+
+                    GameMemory.TimeCycleModifiersManager->TransitionModifierIndex = -1;
+                    GameMemory.TimeCycleModifiersManager->TransitionCurrentStrength = 0.0f;
+                    GameMemory.TimeCycleModifiersManager->TransitionSpeed = 0.0f;
                 }
                 else
                 {
