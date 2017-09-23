@@ -127,7 +127,7 @@
             The <see cref="TimeCycleModifier"/> instance that is currently active.
             </returns>
         </Member>
-        <Member name="CurrentModifierStrength">  
+        <Member name="Strength">  
             <summary/>
         </Member>
     </TimeCycleModifier>

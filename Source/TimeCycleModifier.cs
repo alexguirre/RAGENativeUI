@@ -117,7 +117,7 @@ namespace RAGENativeUI
             return memAddress != IntPtr.Zero;
         }
         
-        public void SetActiveWithTransition(float time) => SetActiveWithTransition(time, CurrentModifierStrength);
+        public void SetActiveWithTransition(float time) => SetActiveWithTransition(time, Strength);
         public void SetActiveWithTransition(float time, float targetStrength)
         {
             CTimeCycleModifiersManager* mgr = GameMemory.TimeCycleModifiersManager;
@@ -223,8 +223,6 @@ namespace RAGENativeUI
                 if(value == null || !value.IsValid())
                 {
                     GameMemory.TimeCycleModifiersManager->CurrentModifierIndex = -1;
-                    // set strength to 1.0 to have the same behaviour as the CLEAR_TIMECYCLE_MODIFIER native
-                    GameMemory.TimeCycleModifiersManager->CurrentModifierStrength = 1.0f;
 
                     GameMemory.TimeCycleModifiersManager->TransitionModifierIndex = -1;
                     GameMemory.TimeCycleModifiersManager->TransitionCurrentStrength = 0.0f;
@@ -237,8 +235,8 @@ namespace RAGENativeUI
             }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="CurrentModifierStrength"]/*' />
-        public static float CurrentModifierStrength
+        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Strength"]/*' />
+        public static float Strength
         {
             get
             {

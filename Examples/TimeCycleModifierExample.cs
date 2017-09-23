@@ -62,8 +62,8 @@ namespace Examples
                 Gui.Label(new RectangleF(15, 30 + 25 * 5, 350, 20), $"In Transition: {mod.IsInTransition}");
                 Gui.Label(new RectangleF(15, 30 + 25 * 6, 350, 20), $"Memory Address: {mod.MemoryAddress.ToString("X")}");
 
-                Gui.Label(new RectangleF(5, 30 + 25 * 7, 350, 20), $"Current Strength: {TimeCycleModifier.CurrentModifierStrength}");
-                TimeCycleModifier.CurrentModifierStrength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.CurrentModifierStrength, -1.0f, 5.0f);
+                Gui.Label(new RectangleF(5, 30 + 25 * 7, 350, 20), $"Current Strength: {TimeCycleModifier.Strength}");
+                TimeCycleModifier.Strength = Gui.HorizontalSlider(new RectangleF(5, 30 + 25 * 8, 340, 25), TimeCycleModifier.Strength, -1.0f, 5.0f);
 
                 Gui.Label(new RectangleF(5, 30 + 25 * 10, 350, 20), $"Total Count: {TimeCycleModifier.NumberOfTimeCycleModifiers}");
 
