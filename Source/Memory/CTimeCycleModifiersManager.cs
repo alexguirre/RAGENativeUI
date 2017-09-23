@@ -38,8 +38,8 @@ namespace RAGENativeUI.Memory
             // TODO: should improve NewTimeCycleModifier performance, it takes around 20ms to execute this(depending on how many mods there are, etc.)
             // improving sorting algorithms will probably help
             // not a priority for now
-            CTimeCycleModifier* modifier = (CTimeCycleModifier*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier), 16, 0);
-            modifier->Mods.Offset = (CTimeCycleModifier.Mod*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier.Mod) * mods.Length, 16, 0);
+            CTimeCycleModifier* modifier = (CTimeCycleModifier*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier));
+            modifier->Mods.Offset = (CTimeCycleModifier.Mod*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier.Mod) * mods.Length);
             modifier->Mods.Size = (short)mods.Length;
             modifier->Mods.Count = (short)mods.Length;
             for (short i = 0; i < mods.Length; i++)
@@ -58,7 +58,7 @@ namespace RAGENativeUI.Memory
             entry->Modifier = modifier;
 
             short newUnkArraySize = Modifiers.Count;
-            float* newUnkArrayOffset = (float*)GameMemory.Allocator->Allocate(sizeof(float) * newUnkArraySize, 16, 0);
+            float* newUnkArrayOffset = (float*)GameMemory.Allocator->Allocate(sizeof(float) * newUnkArraySize);
             for (short i = 0; i < UnkArray.Count; i++)
             {
                 newUnkArrayOffset[i] = UnkArray.Offset[i];
@@ -99,7 +99,7 @@ namespace RAGENativeUI.Memory
             {
                 short newSize = unchecked((short)(Modifiers.Size + increaseCountIfFull));
                 Modifiers.Size = newSize;
-                CTimeCycleModifier** newOffset = (CTimeCycleModifier**)GameMemory.Allocator->Allocate(8 * newSize, 16, 0);
+                CTimeCycleModifier** newOffset = (CTimeCycleModifier**)GameMemory.Allocator->Allocate(8 * newSize);
                 for (short i = 0; i < Modifiers.Count; i++)
                 {
                     newOffset[i] = Modifiers.Get(i);
@@ -119,7 +119,7 @@ namespace RAGENativeUI.Memory
             {
                 short newSize = unchecked((short)(SortedModifiers.Size + increaseCountIfFull));
                 SortedModifiers.Size = newSize;
-                CTimeCycleModifier.CSortedArray.Entry* newOffset = (CTimeCycleModifier.CSortedArray.Entry*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier.CSortedArray.Entry) * newSize, 16, 0);
+                CTimeCycleModifier.CSortedArray.Entry* newOffset = (CTimeCycleModifier.CSortedArray.Entry*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier.CSortedArray.Entry) * newSize);
                 for (short i = 0; i < SortedModifiers.Count; i++)
                 {
                     newOffset[i] = SortedModifiers.Offset[i];

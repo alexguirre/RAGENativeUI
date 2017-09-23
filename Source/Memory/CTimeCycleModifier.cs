@@ -19,7 +19,7 @@ namespace RAGENativeUI.Memory
             {
                 short newSize = unchecked((short)(Mods.Size + increaseCountIfFull));
                 Mods.Size = newSize;
-                Mod* newOffset = (Mod*)GameMemory.Allocator->Allocate(sizeof(Mod) * newSize, 16, 0);
+                Mod* newOffset = (Mod*)GameMemory.Allocator->Allocate(sizeof(Mod) * newSize);
                 for (short i = 0; i < Mods.Count; i++)
                 {
                     newOffset[i] = *Mods.Get(i);

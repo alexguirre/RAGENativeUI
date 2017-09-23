@@ -12,6 +12,7 @@ namespace RAGENativeUI.Memory
         private delegate IntPtr AllocateDelegate(sysMemAllocator* allocator, long size, long align, int subAllocator);
         private delegate void FreeDelegate(sysMemAllocator* allocator, IntPtr pointer);
 
+        public IntPtr Allocate(long size) => Allocate(size, 16, 0);
         public IntPtr Allocate(long size, long align, int subAllocator)
         {
             AllocateDelegate fn = Marshal.GetDelegateForFunctionPointer<AllocateDelegate>(new IntPtr(*(long*)(VTable + 0x10)));
