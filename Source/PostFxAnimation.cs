@@ -3,6 +3,7 @@ namespace RAGENativeUI
     using System;
     using System.Linq;
     using System.Diagnostics;
+    using System.Collections;
     using System.Collections.Generic;
 
     using Rage;
@@ -13,9 +14,9 @@ namespace RAGENativeUI
     // defined in animpostfx.ymt
     public unsafe sealed class PostFxAnimation : IAddressable
     {
-        private uint hash;
-        private CAnimPostFX* native;
-        private int index = -1;
+        private uint hash; // not readonly to be able to take its address in other methods
+        private readonly CAnimPostFX* native;
+        private readonly int index = -1;
 
         public uint Hash { get { return hash; } }
         public string Name
@@ -27,7 +28,7 @@ namespace RAGENativeUI
                     return n;
                 }
 
-                return $"0x{hash.ToString("X8")}";
+                return $"0x{hash:X8}";
             }
         }
 
@@ -44,8 +45,8 @@ namespace RAGENativeUI
 
         public IntPtr MemoryAddress { get { return (IntPtr)native; } }
         public int Index { get { return index; } }
-        public LayerBlend Blend { get; }
-        public LayersWrapper Layers { get; }
+        public PostFxAnimationLayerBlend LayerBlend { get; }
+        public PostFxAnimationLayersCollection Layers { get; }
 
         private PostFxAnimation(CAnimPostFX* native)
         {
@@ -55,9 +56,11 @@ namespace RAGENativeUI
             {
                 index = unchecked((int)((long)native - (long)GameMemory.AnimPostFXManager->Effects.Offset) / sizeof(CAnimPostFX));
             }
-            Blend = new LayerBlend(this);
-            Layers = new LayersWrapper(this);
+            LayerBlend = new PostFxAnimationLayerBlend(this);
+            Layers = new PostFxAnimationLayersCollection(this);
         }
+
+        internal CAnimPostFX* GetNative() => native;
 
         public bool IsValid()
         {
@@ -196,173 +199,186 @@ namespace RAGENativeUI
         }
 
         private static Dictionary<uint, PostFxAnimation> cache = new Dictionary<uint, PostFxAnimation>();
-        
-        public sealed class LayerBlend : IAddressable
+    }
+
+    public enum PostFxAnimationLayerAnimationMode : uint
+    {
+        InHoldOut = 0, // POSTFX_IN_HOLD_OUT
+        EaseInHoldEaseOut = 1, // POSTFX_EASE_IN_HOLD_EASE_OUT
+        EaseIn = 2, // POSTFX_EASE_IN
+    }
+
+    public enum PostFxAnimationLayerLoopMode : uint
+    {
+        HoldOnly = 1, // POSTFX_LOOP_HOLD_ONLY
+        None = 2, // POSTFX_LOOP_NONE
+    }
+
+    public unsafe sealed class PostFxAnimationLayer : IAddressable
+    {
+        private CAnimPostFX.Layer* native;
+
+        public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+
+        public TimeCycleModifier Modifier
         {
-            private PostFxAnimation animation;
-            private CAnimPostFX.LayerBlend* native;
-
-            public IntPtr MemoryAddress { get { return (IntPtr)native; } }
-
-            private Layer layerA;
-            public Layer LayerA
+            get
             {
-                get
+                return native->ModifierName == 0 ? null : TimeCycleModifier.GetByHash(native->ModifierName);
+            }
+        }
+
+        public uint StartDelayDuration { get { return native->StartDelayDuration; } }
+        public uint InDuration { get { return native->InDuration; } }
+        public uint HoldDuration { get { return native->HoldDuration; } }
+        public uint OutDuration { get { return native->OutDuration; } }
+        public PostFxAnimationLayerAnimationMode AnimationMode { get { return (PostFxAnimationLayerAnimationMode)native->AnimMode; } }
+        public PostFxAnimationLayerLoopMode LoopMode { get { return (PostFxAnimationLayerLoopMode)native->LoopMode; } }
+
+        internal PostFxAnimationLayer(CAnimPostFX.Layer* native)
+        {
+            this.native = native;
+        }
+
+        public bool IsValid()
+        {
+            return MemoryAddress != IntPtr.Zero;
+        }
+    }
+
+    public unsafe sealed class PostFxAnimationLayersCollection : IReadOnlyCollection<PostFxAnimationLayer>, IEnumerable<PostFxAnimationLayer>
+    {
+        private PostFxAnimation animation;
+        private PostFxAnimationLayer[] layers;
+
+        public int Count { get { return animation.GetNative()->FXStack.LayersCount; } }
+        public PostFxAnimationLayer this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= Count)
+                    throw new IndexOutOfRangeException();
+
+                if (layers[index] == null)
                 {
-                    if(native->LayerA == null)
+                    PostFxAnimationLayer l = new PostFxAnimationLayer(animation.GetNative()->FXStack.GetLayer(index));
+                    layers[index] = l;
+                    return l;
+                }
+                else
+                {
+                    return layers[index];
+                }
+            }
+        }
+
+        internal PostFxAnimationLayersCollection(PostFxAnimation anim)
+        {
+            animation = anim;
+            layers = new PostFxAnimationLayer[Count];
+        }
+
+        public IEnumerator<PostFxAnimationLayer> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return this[i];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    public unsafe sealed class PostFxAnimationLayerBlend : IAddressable
+    {
+        private PostFxAnimation animation;
+        private CAnimPostFX.LayerBlend* native;
+
+        public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+
+        private PostFxAnimationLayer layerA;
+        public PostFxAnimationLayer LayerA
+        {
+            get
+            {
+                if (native->LayerA == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (layerA != null)
                     {
-                        return null;
+                        return layerA;
                     }
                     else
                     {
-                        if(layerA != null)
+                        for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            return layerA;
-                        }
-                        else
-                        {
-                            for (int i = 0; i < animation.Layers.Count; i++)
+                            if (animation.Layers[i].MemoryAddress == (IntPtr)native->LayerA)
                             {
-                                if(animation.Layers[i].MemoryAddress == (IntPtr)native->LayerA)
-                                {
-                                    layerA = animation.Layers[i];
-                                    break;
-                                }
+                                layerA = animation.Layers[i];
+                                break;
                             }
-
-                            return layerA;
                         }
+
+                        return layerA;
                     }
                 }
             }
+        }
 
-            private Layer layerB;
-            public Layer LayerB
+        private PostFxAnimationLayer layerB;
+        public PostFxAnimationLayer LayerB
+        {
+            get
             {
-                get
+                if (native->LayerB == null)
                 {
-                    if (native->LayerB == null)
+                    return null;
+                }
+                else
+                {
+                    if (layerB != null)
                     {
-                        return null;
+                        return layerB;
                     }
                     else
                     {
-                        if (layerB != null)
+                        for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            return layerB;
-                        }
-                        else
-                        {
-                            for (int i = 0; i < animation.Layers.Count; i++)
+                            if (animation.Layers[i].MemoryAddress == (IntPtr)native->LayerB)
                             {
-                                if (animation.Layers[i].MemoryAddress == (IntPtr)native->LayerB)
-                                {
-                                    layerB = animation.Layers[i];
-                                    break;
-                                }
+                                layerB = animation.Layers[i];
+                                break;
                             }
-
-                            return layerB;
                         }
+
+                        return layerB;
                     }
                 }
             }
-
-            public float FrequencyNoise { get { return native->FrequencyNoise; } }
-            public float AmplitudeNoise { get { return native->AmplitudeNoise; } }
-            public float Frequency { get { return native->Frequency; } }
-            public float Bias { get { return native->Bias; } }
-
-            public bool Disabled { get { return native->Disabled == 1; } }
-            
-            internal LayerBlend(PostFxAnimation anim)
-            {
-                animation = anim;
-                native = &animation.native->FXStack.LayerBlend;
-            }
-
-            public bool IsValid()
-            {
-                return MemoryAddress != IntPtr.Zero;
-            }
         }
 
-        public sealed class LayersWrapper
+        public float FrequencyNoise { get { return native->FrequencyNoise; } }
+        public float AmplitudeNoise { get { return native->AmplitudeNoise; } }
+        public float Frequency { get { return native->Frequency; } }
+        public float Bias { get { return native->Bias; } }
+
+        public bool Disabled { get { return native->Disabled == 1; } }
+
+        internal PostFxAnimationLayerBlend(PostFxAnimation anim)
         {
-            private PostFxAnimation animation;
-            private Layer[] layers;
-
-            public int Count { get { return animation.native->FXStack.LayersCount; } }
-            public Layer this[int index]
-            {
-                get
-                {
-                    if (index < 0 || index >= Count)
-                        throw new IndexOutOfRangeException();
-
-                    if(layers[index] == null)
-                    {
-                        Layer l = new Layer(animation.native->FXStack.GetLayer(index));
-                        layers[index] = l;
-                        return l;
-                    }
-                    else
-                    {
-                        return layers[index];
-                    }
-                }
-            }
-
-            internal LayersWrapper(PostFxAnimation anim)
-            {
-                animation = anim;
-                layers = new Layer[Count];
-            }
+            animation = anim;
+            native = &animation.GetNative()->FXStack.LayerBlend;
         }
 
-        public sealed class Layer : IAddressable
+        public bool IsValid()
         {
-            private CAnimPostFX.Layer* native;
-
-            public IntPtr MemoryAddress { get { return (IntPtr)native; } }
-
-            public TimeCycleModifier Modifier
-            {
-                get
-                {
-                    return native->ModifierName == 0 ? null : TimeCycleModifier.GetByHash(native->ModifierName);
-                }
-            }
-
-            public uint StartDelayDuration { get { return native->StartDelayDuration; } }
-            public uint InDuration { get { return native->InDuration; } }
-            public uint HoldDuration { get { return native->HoldDuration; } }
-            public uint OutDuration { get { return native->OutDuration; } }
-            public AnimationMode AnimationMode { get { return (AnimationMode)native->AnimMode; } }
-            public LoopMode LoopMode { get { return (LoopMode)native->LoopMode; } }
-
-            internal Layer(CAnimPostFX.Layer* native)
-            {
-                this.native = native;
-            }
-
-            public bool IsValid()
-            {
-                return MemoryAddress != IntPtr.Zero;
-            }
-        }
-
-        public enum AnimationMode : uint
-        {
-            InHoldOut = 0, // POSTFX_IN_HOLD_OUT
-            EaseInHoldEaseOut = 1, // POSTFX_EASE_IN_HOLD_EASE_OUT
-            EaseIn = 2, // POSTFX_EASE_IN
-        }
-
-        public enum LoopMode : uint
-        { 
-            HoldOnly = 1, // POSTFX_LOOP_HOLD_ONLY
-            None = 2, // POSTFX_LOOP_NONE
+            return MemoryAddress != IntPtr.Zero;
         }
     }
 }

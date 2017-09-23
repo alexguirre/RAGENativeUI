@@ -15,9 +15,9 @@ namespace RAGENativeUI
     /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Doc/*' />
     public unsafe sealed class TimeCycleModifier : IAddressable
     {
-        private uint hash;
-        private IntPtr memAddress;
-        private int index = -1;
+        private readonly uint hash;
+        private readonly IntPtr memAddress;
+        private readonly int index = -1;
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Hash"]/*' />
         public uint Hash { get { return hash; } }
@@ -31,7 +31,7 @@ namespace RAGENativeUI
                     return n;
                 }
 
-                return $"0x{hash.ToString("X")}";
+                return $"0x{hash:X8}";
             }
         }
 

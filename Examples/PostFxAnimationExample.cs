@@ -95,43 +95,43 @@ namespace Examples
                     s += $"Memory Address: {effect.MemoryAddress.ToString("X")}\r\n";
                     s += $"Layers Count: {effect.Layers.Count}\r\n";
                     s += $"Blend:\r\n";
-                    s += $" FrequencyNoise: {effect.Blend.FrequencyNoise}\r\n";
-                    s += $" AmplitudeNoise: {effect.Blend.AmplitudeNoise}\r\n";
-                    s += $" Frequency: {effect.Blend.Frequency}\r\n";
-                    s += $" Bias: {effect.Blend.Bias}\r\n";
-                    s += $" Disabled: {effect.Blend.Disabled}\r\n";
-                    if (effect.Blend.LayerA == null)
+                    s += $" FrequencyNoise: {effect.LayerBlend.FrequencyNoise}\r\n";
+                    s += $" AmplitudeNoise: {effect.LayerBlend.AmplitudeNoise}\r\n";
+                    s += $" Frequency: {effect.LayerBlend.Frequency}\r\n";
+                    s += $" Bias: {effect.LayerBlend.Bias}\r\n";
+                    s += $" Disabled: {effect.LayerBlend.Disabled}\r\n";
+                    if (effect.LayerBlend.LayerA == null)
                     {
                         s += $" LayerA: null\r\n";
                     }
                     else
                     {
                         s += $" Layer A:\r\n";
-                        s += $"   Memory Address: {effect.Blend.LayerA.MemoryAddress.ToString("X")}\r\n";
-                        s += $"   TimeCycle Modifier: {(effect.Blend.LayerA.Modifier == null ? "null" : effect.Blend.LayerA.Modifier.Name)}\r\n";
-                        s += $"   Animation Mode: {effect.Blend.LayerA.AnimationMode}\r\n";
-                        s += $"   Loop Mode: {effect.Blend.LayerA.LoopMode}\r\n";
-                        s += $"   Start Delay Duration: {effect.Blend.LayerA.StartDelayDuration}\r\n";
-                        s += $"   In Duration: {effect.Blend.LayerA.InDuration}\r\n";
-                        s += $"   Hold Duration: {effect.Blend.LayerA.HoldDuration}\r\n";
-                        s += $"   Out Duration: {effect.Blend.LayerA.OutDuration}\r\n";
+                        s += $"   Memory Address: {effect.LayerBlend.LayerA.MemoryAddress.ToString("X")}\r\n";
+                        s += $"   TimeCycle Modifier: {(effect.LayerBlend.LayerA.Modifier == null ? "null" : effect.LayerBlend.LayerA.Modifier.Name)}\r\n";
+                        s += $"   Animation Mode: {effect.LayerBlend.LayerA.AnimationMode}\r\n";
+                        s += $"   Loop Mode: {effect.LayerBlend.LayerA.LoopMode}\r\n";
+                        s += $"   Start Delay Duration: {effect.LayerBlend.LayerA.StartDelayDuration}\r\n";
+                        s += $"   In Duration: {effect.LayerBlend.LayerA.InDuration}\r\n";
+                        s += $"   Hold Duration: {effect.LayerBlend.LayerA.HoldDuration}\r\n";
+                        s += $"   Out Duration: {effect.LayerBlend.LayerA.OutDuration}\r\n";
                     }
                     s += "\r\n";
-                    if (effect.Blend.LayerB == null)
+                    if (effect.LayerBlend.LayerB == null)
                     {
                         s += $" LayerB: null\r\n";
                     }
                     else
                     {
                         s += $" Layer B:\r\n";
-                        s += $"   Memory Address: {effect.Blend.LayerB.MemoryAddress.ToString("X")}\r\n";
-                        s += $"   TimeCycle Modifier: {(effect.Blend.LayerB.Modifier == null ? "null" : effect.Blend.LayerB.Modifier.Name)}\r\n";
-                        s += $"   Animation Mode: {effect.Blend.LayerB.AnimationMode}\r\n";
-                        s += $"   Loop Mode: {effect.Blend.LayerB.LoopMode}\r\n";
-                        s += $"   Start Delay Duration: {effect.Blend.LayerB.StartDelayDuration}\r\n";
-                        s += $"   In Duration: {effect.Blend.LayerB.InDuration}\r\n";
-                        s += $"   Hold Duration: {effect.Blend.LayerB.HoldDuration}\r\n";
-                        s += $"   Out Duration: {effect.Blend.LayerB.OutDuration}\r\n";
+                        s += $"   Memory Address: {effect.LayerBlend.LayerB.MemoryAddress.ToString("X")}\r\n";
+                        s += $"   TimeCycle Modifier: {(effect.LayerBlend.LayerB.Modifier == null ? "null" : effect.LayerBlend.LayerB.Modifier.Name)}\r\n";
+                        s += $"   Animation Mode: {effect.LayerBlend.LayerB.AnimationMode}\r\n";
+                        s += $"   Loop Mode: {effect.LayerBlend.LayerB.LoopMode}\r\n";
+                        s += $"   Start Delay Duration: {effect.LayerBlend.LayerB.StartDelayDuration}\r\n";
+                        s += $"   In Duration: {effect.LayerBlend.LayerB.InDuration}\r\n";
+                        s += $"   Hold Duration: {effect.LayerBlend.LayerB.HoldDuration}\r\n";
+                        s += $"   Out Duration: {effect.LayerBlend.LayerB.OutDuration}\r\n";
                     }
 
                     Gui.Label(new RectangleF(5, 5, 350, 640), s, 15.0f, TextHorizontalAligment.Left, TextVerticalAligment.Top);
