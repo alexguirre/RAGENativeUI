@@ -9,7 +9,7 @@ namespace Examples
 
     using RAGENativeUI.Rendering;
     using RAGENativeUI.Menus;
-    using RAGENativeUI.Menus.Rendering;
+    using RAGENativeUI.Menus.Styles;
     using Font = RAGENativeUI.Rendering.Font;
 
     internal static class MenuExample
@@ -139,13 +139,13 @@ namespace Examples
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
-                        if(menu.Skin is MyCustomMenuSkin)
+                        if(menu.Style is MyCustomMenuStyle)
                         {
-                            menu.Skin = MenuSkin.DefaultSkin;
+                            menu.Style = MenuStyle.Default;
                         }
                         else
                         {
-                            menu.Skin = new MyCustomMenuSkin();
+                            menu.Style = new MyCustomMenuStyle();
                         }
                     }
                 }
@@ -178,40 +178,37 @@ namespace Examples
         }
 
 
-        private class MyCustomMenuSkin : IMenuSkin
+        private class MyCustomMenuStyle : IMenuStyle
         {
-            public Font BigFont { get; } = new Font("Consolas", 32.5f);
-            public Font SmallFont { get; } = new Font("Consolas", 22.5f);
+            public PointF InitialMenuLocation { get; set; } = new PointF(30.0f, 23.0f);
+            public float MenuWidth { get; set; } = 750.0f;
+            public float BannerHeight { get; set; } = 80.0f;
+            public float SubtitleHeight { get; set; } = 35.0f;
+            public float ItemHeight { get; set; } = 30.0f;
+            public float UpDownDisplayHeight { get; set; } = 30.0f;
 
-            public void DrawBackground(Graphics graphics, MenuBackground background, float x, float y)
+            public Font BigFont { get; set; } = new Font("Consolas", 32.0f);
+            public Font SmallFont { get; set; } = new Font("Consolas", 20.0f);
+
+            public void DrawBackground(Graphics graphics, MenuBackground background, ref float x, ref float y)
             {
                 // no background
             }
 
-            public void DrawBanner(Graphics graphics, MenuBanner banner, float x, float y)
+            public void DrawBanner(Graphics graphics, MenuBanner banner, ref float x, ref float y)
             {
-                DrawText(graphics, banner.Title.ToUpper(), BigFont, new RectangleF(x, y, banner.Size.Width, banner.Size.Height), Color.Red, TextHorizontalAligment.Center);
+                DrawText(graphics, banner.Title.ToUpper(), BigFont, new RectangleF(x, y, MenuWidth, BannerHeight), Color.Red, TextHorizontalAligment.Center);
+                y += BannerHeight;
             }
 
-            public void DrawDescription(Graphics graphics, MenuDescription description, float x, float y)
+            public void DrawDescription(Graphics graphics, MenuDescription description, ref float x, ref float y)
             {
                 // no description
             }
 
-            public void DrawSubtitle(Graphics graphics, MenuSubtitle subtitle, float x, float y)
+            public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y, bool selected)
             {
-                DrawText(graphics, subtitle.Text, SmallFont, new RectangleF(x, y, subtitle.Size.Width, subtitle.Size.Height), Color.Red, TextHorizontalAligment.Right);
-                // no counter
-            }
-
-            public void DrawUpDownDisplay(Graphics graphics, MenuUpDownDisplay upDownDisplay, float x, float y)
-            {
-                // no up down display
-            }
-
-            public void DrawItem(Graphics graphics, MenuItem item, float x, float y, bool selected)
-            {
-                RectangleF r = new RectangleF(x, y, item.Size.Width, item.Size.Height);
+                RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
                 if (selected)
                 {
@@ -219,11 +216,13 @@ namespace Examples
                 }
 
                 DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Center, TextVerticalAligment.Center);
+
+                y += ItemHeight;
             }
 
-            public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, float x, float y, bool selected)
+            public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y, bool selected)
             {
-                RectangleF r = new RectangleF(x, y, item.Size.Width, item.Size.Height);
+                RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
                 if (selected)
                 {
@@ -232,11 +231,13 @@ namespace Examples
 
                 DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
                 DrawText(graphics, $"[{(item.IsChecked ? "X" : " ")}] ", SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+
+                y += ItemHeight;
             }
 
-            public void DrawItemScroller(Graphics graphics, MenuItemScroller item, float x, float y, bool selected)
+            public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y, bool selected)
             {
-                RectangleF r = new RectangleF(x, y, item.Size.Width, item.Size.Height);
+                RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
                 if (selected)
                 {
@@ -245,6 +246,21 @@ namespace Examples
 
                 DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
                 DrawText(graphics, selected ? $"<{item.GetSelectedOptionText()}> " : item.GetSelectedOptionText(), SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+
+                y += ItemHeight;
+            }
+
+            public void DrawSubtitle(Graphics graphics, MenuSubtitle subtitle, ref float x, ref float y)
+            {
+                DrawText(graphics, subtitle.Text, SmallFont, new RectangleF(x, y, MenuWidth, SubtitleHeight), Color.Red, TextHorizontalAligment.Right);
+                // no counter
+
+                y += SubtitleHeight;
+            }
+
+            public void DrawUpDownDisplay(Graphics graphics, MenuUpDownDisplay upDownDisplay, ref float x, ref float y)
+            {
+                // no up down display
             }
 
             public string FormatDescriptionText(MenuDescription description, string text, out SizeF textMeasurement)
@@ -252,7 +268,6 @@ namespace Examples
                 textMeasurement = SmallFont.Measure(text);
                 return text;
             }
-
 
 
             private void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)

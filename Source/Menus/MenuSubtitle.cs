@@ -1,25 +1,23 @@
 namespace RAGENativeUI.Menus
 {
-    using System.Linq;
-    using System.Drawing;
-    
     using Graphics = Rage.Graphics;
-
-    using RAGENativeUI.Rendering;
 
     public class MenuSubtitle : IMenuComponent
     {
-        public Menu Menu { get; }
-
-        public virtual string Text { get; set; }
-        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 36f);
-
         private int counterTotalCount = 0, counterOnScreenSelectedIndex = 0;
 
-        public MenuSubtitle(Menu menu)
+        public Menu Menu { get; }
+        public virtual string Text { get; set; }
+
+        public MenuSubtitle(Menu menu, string text)
         {
-            Menu = menu;
+            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
             Menu.SelectedIndexChanged += OnMenuSelectedIndexChanged;
+            Text = text;
+        }
+
+        public MenuSubtitle(Menu menu) : this(menu, null)
+        {
         }
 
         ~MenuSubtitle()
@@ -27,7 +25,6 @@ namespace RAGENativeUI.Menus
             Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged;
         }
 
-        protected internal virtual bool ShouldShowItemsCounter() => Menu.IsAnyItemOnScreen && Menu.GetOnScreenItemsCount() < Menu.Items.Sum(i => i.IsVisible ? 1 : 0);
         protected internal virtual string GetItemsCounterText()
         {
             if (counterTotalCount == 0 && counterOnScreenSelectedIndex == 0)
@@ -41,8 +38,7 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            Menu.Skin.DrawSubtitle(graphics, this, x, y);
-            y += Size.Height;
+            Menu.Style.DrawSubtitle(graphics, this, ref x, ref y);
         }
 
         private void UpdateCounter()

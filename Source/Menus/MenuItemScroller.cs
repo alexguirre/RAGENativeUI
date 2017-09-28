@@ -37,39 +37,29 @@ namespace RAGENativeUI.Menus
 
         public abstract string GetSelectedOptionText();
         public abstract int GetOptionsCount();
-        
-        protected internal override bool OnPreviewMoveLeft(Menu origin)
+
+        protected internal override bool OnMoveLeft(Menu origin)
         {
-            if (base.OnPreviewMoveLeft(origin))
-            {
-                int newIndex = SelectedIndex - 1;
+            int newIndex = SelectedIndex - 1;
 
-                if (newIndex < 0)
-                    newIndex = GetOptionsCount() - 1;
+            if (newIndex < 0)
+                newIndex = GetOptionsCount() - 1;
 
-                SelectedIndex = newIndex;
+            SelectedIndex = newIndex;
 
-                return true;
-            }
-
-            return false;
+            return base.OnMoveLeft(origin);
         }
 
-        protected internal override bool OnPreviewMoveRight(Menu origin)
+        protected internal override bool OnMoveRight(Menu origin)
         {
-            if (base.OnPreviewMoveRight(origin))
-            {
-                int newIndex = SelectedIndex + 1;
+            int newIndex = SelectedIndex + 1;
 
-                if (newIndex > (GetOptionsCount() - 1))
-                    newIndex = 0;
+            if (newIndex > (GetOptionsCount() - 1))
+                newIndex = 0;
 
-                SelectedIndex = newIndex;
+            SelectedIndex = newIndex;
 
-                return true;
-            }
-
-            return false;
+            return base.OnMoveRight(origin);
         }
 
         protected internal override void OnDraw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
@@ -77,8 +67,7 @@ namespace RAGENativeUI.Menus
             if (!IsVisible)
                 return;
 
-            sender.Skin.DrawItemScroller(graphics, this, x, y, selected);
-            y += Size.Height;
+            sender.Style.DrawItemScroller(graphics, this, ref x, ref y, selected);
         }
 
         protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)

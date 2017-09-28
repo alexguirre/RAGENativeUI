@@ -4,39 +4,18 @@ namespace RAGENativeUI.Menus
     using System.Drawing;
     
     using Graphics = Rage.Graphics;
-
-    using RAGENativeUI.Rendering;
-
-    public class MenuDescription : IMenuComponent
+    
+    public class MenuDescription : IDynamicHeightMenuComponent
     {
-        public Menu Menu { get; }
-
-        private SizeF size = new SizeF(Menu.DefaultWidth, 0f);
-        public virtual SizeF Size
-        {
-            get { return size; }
-            set
-            {
-                if (value == size)
-                    return;
-
-                bool widthChanged = value.Width != size.Width;
-                size = value;
-                if (widthChanged)
-                {
-                    FormatCurrentText();
-                }
-            }
-        } 
-        
         private MenuItem currentItem;
         private string currentOrigText;
         private string currentFormattedText;
+        private string textOverride = null;
+        private float height;
 
+        public Menu Menu { get; }
         public virtual string Text { get { return currentOrigText; } }
         public virtual string FormattedText { get { return currentFormattedText; } }
-
-        private string textOverride = null;
         public virtual string TextOverride
         {
             get { return textOverride; }
@@ -64,25 +43,27 @@ namespace RAGENativeUI.Menus
 
         public MenuDescription(Menu menu)
         {
-            Menu = menu;
+            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
         }
+
+        public float GetHeight() => height;
 
         private void FormatCurrentText()
         {
             if (currentOrigText != null)
             {
-                float height = 0.0f;
+                float h = 0.0f;
                 if (!String.IsNullOrWhiteSpace(currentOrigText))
                 {
-                    currentFormattedText = Menu.Skin.FormatDescriptionText(this, currentOrigText, out SizeF textSize);
-                    height = textSize.Height;
+                    currentFormattedText = Menu.Style.FormatDescriptionText(this, currentOrigText, out SizeF textSize);
+                    h = textSize.Height;
                 }
                 else
                 {
                     currentFormattedText = null;
                 }
 
-                Size = new SizeF(Size.Width, height);
+                height = h;
             }
         }
 
@@ -112,8 +93,7 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            Menu.Skin.DrawDescription(graphics, this, x, y);
-            y += currentFormattedText == null ? 0.0f : Size.Height;
+            Menu.Style.DrawDescription(graphics, this, ref x, ref y);
         }
     }
 }

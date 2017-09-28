@@ -28,15 +28,11 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal override bool OnPreviewAccept(Menu origin)
+        protected internal override bool OnAccept(Menu origin)
         {
-            if (base.OnPreviewAccept(origin))
-            {
-                IsChecked = !IsChecked;
-                return true;
-            }
+            IsChecked = !IsChecked;
 
-            return false;
+            return base.OnAccept(origin);
         }
 
         protected internal override void OnDraw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
@@ -44,8 +40,7 @@ namespace RAGENativeUI.Menus
             if (!IsVisible)
                 return;
 
-            sender.Skin.DrawItemCheckbox(graphics, this, x, y, selected);
-            y += Size.Height;
+            sender.Style.DrawItemCheckbox(graphics, this, ref x, ref y, selected);
         }
 
         protected virtual void OnCheckChanged(bool isChecked)

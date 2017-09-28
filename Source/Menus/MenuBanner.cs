@@ -1,19 +1,20 @@
 namespace RAGENativeUI.Menus
 {
-    using System.Drawing;
-    
     using Graphics = Rage.Graphics;
 
     public class MenuBanner : IMenuComponent
     {
         public Menu Menu { get; }
-
         public virtual string Title { get; set; }
-        public virtual SizeF Size { get; set; } = new SizeF(Menu.DefaultWidth, 109f);
 
-        public MenuBanner(Menu menu)
+        public MenuBanner(Menu menu, string title)
         {
-            Menu = menu;
+            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+            Title = title;
+        }
+
+        public MenuBanner(Menu menu) : this(menu, null)
+        {
         }
 
         public virtual void Process()
@@ -22,8 +23,7 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            Menu.Skin.DrawBanner(graphics, this, x, y);
-            y += Size.Height;
+            Menu.Style.DrawBanner(graphics, this, ref x, ref y);
         }
     }
 }

@@ -12,35 +12,53 @@ namespace RAGENativeUI.Menus
     using Rage.Native;
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Menus.Rendering;
+    using RAGENativeUI.Menus.Styles;
 
     /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Doc/*' />
     public class Menu : IDisposable
     {
         public delegate void ForEachOnScreenItemDelegate(MenuItem item, int index);
-
         public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
         public delegate void VisibleChangedEventHandler(Menu sender, bool visible);
+        
 
+        public static bool IsAnyMenuVisible => MenusManager.IsAnyMenuVisible;
+        public static readonly ReadOnlyCollection<GameControl> DefaultAllowedControls = Array.AsReadOnly(new[]
+        {
+            GameControl.MoveUpDown,
+            GameControl.MoveLeftRight,
+            GameControl.Sprint,
+            GameControl.Jump,
+            GameControl.Enter,
+            GameControl.VehicleExit,
+            GameControl.VehicleAccelerate,
+            GameControl.VehicleBrake,
+            GameControl.VehicleMoveLeftRight,
+            GameControl.VehicleFlyYawLeft,
+            GameControl.ScriptedFlyLeftRight,
+            GameControl.ScriptedFlyUpDown,
+            GameControl.VehicleFlyYawRight,
+            GameControl.VehicleHandbrake,
+        });
+
+
+        private IMenuStyle style;
+        private MenuItemsCollection items;
+        private int selectedIndex;
+        private int maxItemsOnScreen = 10;
+        private bool isVisible;
+        private Menu currentParent, currentChild;
 
         public event SelectedIndexChangedEventHandler SelectedIndexChanged;
         public event VisibleChangedEventHandler VisibleChanged;
 
         public bool IsDisposed { get; private set; }
-        public PointF Location { get; set; } = new PointF(30, 23);
-
-        private IMenuSkin skin;
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public IMenuSkin Skin { get { return skin; } set { skin = value ?? throw new ArgumentNullException($"The menu {nameof(Skin)} can't be null."); } }
-
+        public PointF Location { get; set; }
+        public IMenuStyle Style { get { return style; } set { style = value ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null."); } }
         public MenuBanner Banner { get; set; }
         public MenuSubtitle Subtitle { get; set; }
         public MenuBackground Background { get; set; }
-
-        private MenuItemsCollection items;
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null."); } }
-
         public MenuUpDownDisplay UpDownDisplay { get; set; }
         public MenuDescription Description { get; set; }
 
@@ -58,7 +76,6 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        private int selectedIndex;
         public int SelectedIndex
         {
             get { return selectedIndex; }
@@ -76,37 +93,13 @@ namespace RAGENativeUI.Menus
             }
         }
         public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { SelectedIndex = Items.IndexOf(value); } }
-
         public MenuControls Controls { get; set; }
         public MenuSoundsSet SoundsSet { get; set; }
-
-        private float width;
-        public float Width
-        {
-            get { return width; }
-            set
-            {
-                if (value == width)
-                    return;
-                width = value;
-
-                foreach (IMenuComponent c in Components)
-                {
-                    if (c != null)
-                    {
-                        c.Size = new SizeF(width, c.Size.Height);
-                    }
-                }
-            }
-        }
-
         public bool DisableControlsActions { get; set; } = true;
         /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="AllowedControls"]/*' />
         public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls.ToArray();
-
         protected int MinVisibleItemIndex { get; set; }
         protected int MaxVisibleItemIndex { get; set; }
-        private int maxItemsOnScreen = 10;
         public int MaxItemsOnScreen
         {
             get { return maxItemsOnScreen; }
@@ -119,8 +112,6 @@ namespace RAGENativeUI.Menus
             }
         }
         public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible); } }
-
-        private bool isVisible = false;
         public bool IsVisible
         {
             get { return isVisible; }
@@ -132,7 +123,6 @@ namespace RAGENativeUI.Menus
                 OnVisibleChanged(isVisible);
             }
         }
-
         // returns true if this menu is visible or any child menu in the hierarchy is visible
         public bool IsAnyChildMenuVisible
         {
@@ -141,20 +131,17 @@ namespace RAGENativeUI.Menus
                 return IsVisible || (currentChild != null && currentChild.IsAnyChildMenuVisible);
             }
         }
-
         public dynamic Metadata { get; } = new Metadata();
-
         public bool JustOpened { get; private set; }
 
-        private Menu currentParent, currentChild;
-
-        public Menu(string title, string subtitle)
+        public Menu(string title, string subtitle, MenuStyle style)
         {
             MenusManager.AddMenu(this);
 
-            Skin = MenuSkin.DefaultSkin;
-            Banner = new MenuBanner(this);
-            Subtitle = new MenuSubtitle(this);
+            Style = style ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null.");
+            Location = Style.InitialMenuLocation;
+            Banner = new MenuBanner(this, title);
+            Subtitle = new MenuSubtitle(this, subtitle);
             Background = new MenuBackground(this);
             Items = new MenuItemsCollection(this);
             UpDownDisplay = new MenuUpDownDisplay(this);
@@ -162,14 +149,14 @@ namespace RAGENativeUI.Menus
 
             Controls = new MenuControls();
             SoundsSet = new MenuSoundsSet();
-
-            Banner.Title = title;
-            Subtitle.Text = subtitle;
-
-            Width = DefaultWidth;
         }
 
-        public void Show(Menu parent = null)
+        public Menu(string title, string subtitle) : this(title, subtitle, MenuStyle.Default)
+        {
+        }
+
+        public void Show() => Show(null);
+        public void Show(Menu parent)
         {
             currentParent = parent;
 
@@ -184,7 +171,8 @@ namespace RAGENativeUI.Menus
         }
 
         // hides child menus too
-        public void Hide(bool showParent = false)
+        public void Hide() => Hide(false);
+        public void Hide(bool showParent)
         {
             if (currentChild != null)
                 currentChild.Hide(false);
@@ -239,7 +227,7 @@ namespace RAGENativeUI.Menus
             {
                 if (Controls.Up != null && Controls.Up.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewMoveUp(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveUp(this))
                     {
                         MoveUp();
                     }
@@ -247,7 +235,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Down != null && Controls.Down.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewMoveDown(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveDown(this))
                     {
                         MoveDown();
                     }
@@ -255,7 +243,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Right != null && Controls.Right.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewMoveRight(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveRight(this))
                     {
                         MoveRight();
                     }
@@ -263,7 +251,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Left != null && Controls.Left.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewMoveLeft(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveLeft(this))
                     {
                         MoveLeft();
                     }
@@ -271,7 +259,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Accept != null && Controls.Accept.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewAccept(this))
+                    if (SelectedItem == null || SelectedItem.OnAccept(this))
                     {
                         Accept();
                     }
@@ -279,7 +267,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Back != null && Controls.Back.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnPreviewBack(this))
+                    if (SelectedItem == null || SelectedItem.OnBack(this))
                     {
                         Back();
                     }
@@ -516,74 +504,24 @@ namespace RAGENativeUI.Menus
             Dispose(true);
         }
         #endregion
-
-
-        public const float DefaultWidth = 432.0f;
-        public static readonly ReadOnlyCollection<GameControl> DefaultAllowedControls = Array.AsReadOnly(new[]
-        {
-            GameControl.MoveUpDown,
-            GameControl.MoveLeftRight,
-            GameControl.Sprint,
-            GameControl.Jump,
-            GameControl.Enter,
-            GameControl.VehicleExit,
-            GameControl.VehicleAccelerate,
-            GameControl.VehicleBrake,
-            GameControl.VehicleMoveLeftRight,
-            GameControl.VehicleFlyYawLeft,
-            GameControl.ScriptedFlyLeftRight,
-            GameControl.ScriptedFlyUpDown,
-            GameControl.VehicleFlyYawRight,
-            GameControl.VehicleHandbrake,
-        });
-
-        public static bool IsAnyMenuVisible => MenusManager.IsAnyMenuVisible;
     }
 
 
     /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/MenuItemsCollection/Doc/*' />
-    public class MenuItemsCollection : BaseCollection<MenuItem>, IMenuComponent
+    public class MenuItemsCollection : BaseCollection<MenuItem>, IDynamicHeightMenuComponent
     {
         public Menu Menu { get; }
-        public SizeF Size
-        {
-            get
-            {
-                float w = 0f, h = 0f;
-                Menu.ForEachItemOnScreen((item, index) =>
-                {
-                    if (item.Size.Width > w)
-                        w = item.Size.Width;
-
-                    h += item.Size.Height;
-                });
-
-                return new SizeF(w, h);
-            }
-            set
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    MenuItem item = this[i];
-                    item.Size = new SizeF(value.Width, item.Size.Height);
-                }
-            }
-        }
-
-        public override MenuItem this[int index]
-        {
-            get { return base[index]; }
-            set
-            {
-                base[index] = value;
-                value.Size = new SizeF(Menu.Width, value.Size.Height);
-            }
-
-        }
 
         public MenuItemsCollection(Menu menu)
         {
-            Menu = menu;
+            Menu = menu ?? throw new ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+        }
+
+        public float GetHeight()
+        {
+            float h = 0f;
+            Menu.ForEachItemOnScreen((item, index) => h += Menu.Style.ItemHeight);
+            return h;
         }
 
         public void Process()
@@ -609,14 +547,12 @@ namespace RAGENativeUI.Menus
         public override void Add(MenuItem item)
         {
             base.Add(item);
-            item.Size = new SizeF(Menu.Width, item.Size.Height);
             Menu.UpdateVisibleItemsIndices();
         }
 
         public override void Insert(int index, MenuItem item)
         {
             base.Insert(index, item);
-            item.Size = new SizeF(Menu.Width, item.Size.Height);
             Menu.UpdateVisibleItemsIndices();
         }
 

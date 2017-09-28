@@ -139,74 +139,64 @@ namespace RAGENativeUI.Menus
             return text;
         }
 
-        protected internal override bool OnPreviewMoveLeft(Menu origin)
+        protected internal override bool OnMoveLeft(Menu origin)
         {
-            if (base.OnPreviewMoveLeft(origin))
+            decimal newValue = currentValue;
+
+            try
             {
-                decimal newValue = currentValue;
+                newValue -= Increment;
 
-                try
-                {
-                    newValue -= Increment;
-
-                    if (newValue < minimum)
-                        newValue = minimum;
-                }
-#if DEBUG
-                catch (OverflowException ex)
-                {
-                    Game.LogTrivial("MenuItemNumericScroller.OnPreviewMoveLeft: OverflowException");
-                    Game.LogTrivial(ex.ToString());
-
+                if (newValue < minimum)
                     newValue = minimum;
-                }
-#else
-                catch (OverflowException)
-                {
-                    newValue = minimum;
-                }
-#endif
-                Value = newValue;
-
-                return true;
             }
+#if DEBUG
+            catch (OverflowException ex)
+            {
+                Game.LogTrivial("MenuItemNumericScroller.OnPreviewMoveLeft: OverflowException");
+                Game.LogTrivial(ex.ToString());
 
-            return false;
+                newValue = minimum;
+            }
+#else
+            catch (OverflowException)
+            {
+                newValue = minimum;
+            }
+#endif
+            Value = newValue;
+
+            return base.OnMoveLeft(origin);
         }
 
-        protected internal override bool OnPreviewMoveRight(Menu origin)
+        protected internal override bool OnMoveRight(Menu origin)
         {
-            if (base.OnPreviewMoveRight(origin))
+            decimal newValue = currentValue;
+
+            try
             {
-                decimal newValue = currentValue;
+                newValue += Increment;
 
-                try
-                {
-                    newValue += Increment;
-
-                    if (newValue > maximum)
-                        newValue = maximum;
-                }
-#if DEBUG
-                catch (OverflowException ex)
-                {
-                    Game.LogTrivial("MenuItemNumericScroller.OnPreviewMoveLeft: OverflowException");
-                    Game.LogTrivial(ex.ToString());
-
+                if (newValue > maximum)
                     newValue = maximum;
-                }
+            }
+#if DEBUG
+            catch (OverflowException ex)
+            {
+                Game.LogTrivial("MenuItemNumericScroller.OnPreviewMoveLeft: OverflowException");
+                Game.LogTrivial(ex.ToString());
+
+                newValue = maximum;
+            }
 #else
             catch (OverflowException)
             {
                 newValue = maximum;
             }
 #endif
-                Value = newValue;
+            Value = newValue;
 
-                return true;
-            }
-
-            return false;
+            return base.OnMoveRight(origin);
         }
     }
 }

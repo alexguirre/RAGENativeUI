@@ -1,19 +1,17 @@
 namespace RAGENativeUI.Menus
 {
-    using System.Drawing;
-    
     using Graphics = Rage.Graphics;
 
-    public class MenuBackground : IMenuComponent
+    public class MenuBackground : IDynamicHeightMenuComponent
     {
         public Menu Menu { get; }
-        
-        public virtual SizeF Size { get { return Menu.Items.Size; } set { Menu.Items.Size = value; } }
 
         public MenuBackground(Menu menu)
         {
-            Menu = menu;
+            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
         }
+
+        public float GetHeight() => Menu.Items.GetHeight();
 
         public virtual void Process()
         {
@@ -21,7 +19,7 @@ namespace RAGENativeUI.Menus
 
         public virtual void Draw(Graphics graphics, ref float x, ref float y)
         {
-            Menu.Skin.DrawBackground(graphics, this, x, y);
+            Menu.Style.DrawBackground(graphics, this, ref x, ref y);
         }
     }
 }
