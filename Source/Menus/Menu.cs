@@ -138,7 +138,7 @@ namespace RAGENativeUI.Menus
         {
             MenusManager.AddMenu(this);
 
-            Style = style ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null.");
+            Style = style ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null.");
             Location = Style.InitialMenuLocation;
             Banner = new MenuBanner(this, title);
             Subtitle = new MenuSubtitle(this, subtitle);
