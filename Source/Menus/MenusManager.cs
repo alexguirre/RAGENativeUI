@@ -1,7 +1,5 @@
 namespace RAGENativeUI.Menus
 {
-    using System;
-    using System.Linq;
     using System.Collections.Generic;
 
     using Rage;

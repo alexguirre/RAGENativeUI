@@ -18,7 +18,7 @@ namespace Examples
         private static void Command()
         {
             Menu menu = new Menu("title", "SUBTITLE");
-            menu.Location = new PointF(480, 17);
+            menu.Location = new PointF(480f, 17f);
 
             menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
             menu.Items.Add(new MenuItemCheckbox("cb #0") { IsChecked = true, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
@@ -75,6 +75,35 @@ namespace Examples
                 menu.Metadata.Test += new Vector3(1f, 1f, 1f);
             };
             
+
+            // create a page with random items
+            ScrollableMenuPage CreatePageForScroller(string text)
+            {
+                ScrollableMenuPage p = new ScrollableMenuPage(text);
+                int count = MathHelper.GetRandomInteger(5, 1000);
+                for (int i = 1; i <= count; i++)
+                {
+                    p.Items.Add(new MenuItem($"{text} - #{i}"));
+                }
+
+                return p;
+            }
+
+            ScrollableMenu scrollableMenu = new ScrollableMenu("Scrollable Menu", "Subtitle", "Page");
+            scrollableMenu.Pages.Add(CreatePageForScroller("First Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Second Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Third Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Fourth Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Fifth Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Sixth Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Seventh Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Eighth Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Ninth Page"));
+            scrollableMenu.Pages.Add(CreatePageForScroller("Tenth Page"));
+
+
+            menu.Items.Add(new MenuItem("item with binded scrollable menu") { BindedMenu = scrollableMenu });
+
             GameFiber.StartNew(() =>
             {
                 while (true)

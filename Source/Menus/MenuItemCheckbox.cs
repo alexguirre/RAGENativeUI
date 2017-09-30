@@ -6,11 +6,12 @@ namespace RAGENativeUI.Menus
     {
         public delegate void CheckedChangedEventHandler(MenuItem sender, bool isChecked);
 
+        private bool isChecked;
+
         public event CheckedChangedEventHandler CheckedChanged;
         public event CheckedChangedEventHandler Checked;
         public event CheckedChangedEventHandler Unchecked;
 
-        private bool isChecked;
         public bool IsChecked
         {
             get { return isChecked; }

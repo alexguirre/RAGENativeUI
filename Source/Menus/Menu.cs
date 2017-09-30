@@ -1,12 +1,10 @@
 namespace RAGENativeUI.Menus
 {
     using System;
-    using System.Text;
     using System.Linq;
     using System.Drawing;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Text.RegularExpressions;
 
     using Rage;
     using Rage.Native;
@@ -504,107 +502,6 @@ namespace RAGENativeUI.Menus
             Dispose(true);
         }
         #endregion
-    }
-
-
-    /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/MenuItemsCollection/Doc/*' />
-    public class MenuItemsCollection : BaseCollection<MenuItem>, IDynamicHeightMenuComponent
-    {
-        public Menu Menu { get; }
-
-        public MenuItemsCollection(Menu menu)
-        {
-            Menu = menu ?? throw new ArgumentNullException($"The component {nameof(Menu)} can't be null.");
-        }
-
-        public float GetHeight()
-        {
-            float h = 0f;
-            Menu.ForEachItemOnScreen((item, index) => h += Menu.Style.ItemHeight);
-            return h;
-        }
-
-        public void Process()
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                MenuItem item = this[i];
-                item?.OnProcess(Menu, i == Menu.SelectedIndex);
-            }
-        }
-
-        public void Draw(Graphics g, ref float x, ref float y)
-        {
-            float currentX = x, currentY = y;
-            Menu.ForEachItemOnScreen((item, index) =>
-            {
-                item.OnDraw(g, Menu, index == Menu.SelectedIndex, ref currentX, ref currentY);
-            });
-            x = currentX;
-            y = currentY;
-        }
-
-        public override void Add(MenuItem item)
-        {
-            base.Add(item);
-            Menu.UpdateVisibleItemsIndices();
-        }
-
-        public override void Insert(int index, MenuItem item)
-        {
-            base.Insert(index, item);
-            Menu.UpdateVisibleItemsIndices();
-        }
-
-        public MenuItem FindByText(string regexSearchPattern) => FindByText(regexSearchPattern, 0, Count - 1); 
-        public MenuItem FindByText(string regexSearchPattern, int startIndex, int endIndex)
-        {
-            return FindByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Text);
-        }
-
-        public MenuItem FindByDescription(string regexSearchPattern) => FindByText(regexSearchPattern, 0, Count - 1);
-        public MenuItem FindByDescription(string regexSearchPattern, int startIndex, int endIndex)
-        {
-            return FindByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Description);
-        }
-
-        private MenuItem FindByInternal(string regexSearchPattern, int startIndex, int endIndex, Func<MenuItem, string> getInput)
-        {
-            return FindAllByInternal(regexSearchPattern, startIndex, endIndex, getInput).FirstOrDefault();
-        }
-
-        public IEnumerable<MenuItem> FindAllByText(string regexSearchPattern) => FindAllByText(regexSearchPattern, 0, Count - 1);
-        public IEnumerable<MenuItem> FindAllByText(string regexSearchPattern, int startIndex, int endIndex)
-        {
-            return FindAllByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Text);
-        }
-
-        public IEnumerable<MenuItem> FindAllByDescription(string regexSearchPattern) => FindAllByText(regexSearchPattern, 0, Count - 1);
-        public IEnumerable<MenuItem> FindAllByDescription(string regexSearchPattern, int startIndex, int endIndex)
-        {
-            return FindAllByInternal(regexSearchPattern, startIndex, endIndex, (m) => m.Description);
-        }
-
-        private IEnumerable<MenuItem> FindAllByInternal(string regexSearchPattern, int startIndex, int endIndex, Func<MenuItem, string> getInput)
-        {
-            if (regexSearchPattern == null)
-                throw new ArgumentNullException(nameof(regexSearchPattern));
-            if (getInput == null)
-                throw new ArgumentNullException(nameof(getInput));
-
-            for (int i = startIndex; i < endIndex; i++)
-            {
-                if (i > 0 && i < Count)
-                {
-                    MenuItem item = this[i];
-                    string input = getInput(item);
-                    if (input != null && Regex.IsMatch(getInput(item), regexSearchPattern, RegexOptions.IgnoreCase))
-                    {
-                        yield return item;
-                    }
-                }
-            }
-        }
     }
 
     /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/MenuControls/Doc/*' />

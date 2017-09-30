@@ -7,10 +7,11 @@ namespace RAGENativeUI.Menus
     public class MenuItemListScroller : MenuItemScroller
     {
         private DisplayItemsCollection items;
+        private string defaultText = "-";
+
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public DisplayItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The MenuItemListScroller {nameof(Items)} can't be null."); } }
 
-        private string defaultText = "-";
         /// <summary>
         /// Gets or sets the text that will be displayed when failed to get an item's display text, for example if <see cref="Items"/> is empty.
         /// </summary>

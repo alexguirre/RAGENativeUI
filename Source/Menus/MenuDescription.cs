@@ -43,7 +43,7 @@ namespace RAGENativeUI.Menus
 
         public MenuDescription(Menu menu)
         {
-            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+            Menu = menu ?? throw new ArgumentNullException($"The component {nameof(Menu)} can't be null.");
         }
 
         public float GetHeight() => height;

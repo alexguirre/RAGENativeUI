@@ -1,20 +1,17 @@
 namespace RAGENativeUI.Menus
 {
-    using System.Drawing;
-
     using Rage;
     using Graphics = Rage.Graphics;
-
-    using RAGENativeUI.Rendering;
 
     public abstract class MenuItemScroller : MenuItem
     {
         public delegate void SelectedIndexChangedEventHandler(MenuItemScroller sender, int oldIndex, int newIndex);
 
 
+        private int selectedIndex;
+
         public event SelectedIndexChangedEventHandler SelectedIndexChanged;
 
-        private int selectedIndex;
         public virtual int SelectedIndex
         {
             get { return selectedIndex; }

@@ -2,15 +2,6 @@ namespace RAGENativeUI.Menus
 {
     using System;
 
-    public class MenuItemEnumScroller<TEnum> : MenuItemEnumScroller where TEnum : struct
-    {
-        public TEnum SelectedEnumValue { get { return (TEnum)Values.GetValue(SelectedIndex); } set { SelectedIndex = Array.IndexOf(Values, value); } }
-
-        public MenuItemEnumScroller(string text) : base(text, typeof(TEnum))
-        {
-        }
-    }
-
     public class MenuItemEnumScroller : MenuItemScroller
     {
         public Type EnumType { get; }
@@ -34,6 +25,15 @@ namespace RAGENativeUI.Menus
         public override string GetSelectedOptionText()
         {
             return Values.GetValue(SelectedIndex).ToString();
+        }
+    }
+
+    public class MenuItemEnumScroller<TEnum> : MenuItemEnumScroller where TEnum : struct
+    {
+        public TEnum SelectedEnumValue { get { return (TEnum)Values.GetValue(SelectedIndex); } set { SelectedIndex = Array.IndexOf(Values, value); } }
+
+        public MenuItemEnumScroller(string text) : base(text, typeof(TEnum))
+        {
         }
     }
 }
