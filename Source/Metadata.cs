@@ -7,6 +7,11 @@ namespace RAGENativeUI
     {
         Dictionary<string, object> dictionary;
 
+        public bool ContainsKey(string key)
+        {
+            return dictionary != null && dictionary.ContainsKey(key);
+        }
+
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             if(indexes.Length == 1)
