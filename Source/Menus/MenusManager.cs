@@ -17,7 +17,7 @@ namespace RAGENativeUI.Menus
             menus = new List<Menu>();
             visibleMenus = new List<Menu>();
             processFiber = GameFiber.StartNew(ProcessLoop, "RAGENativeUI - Menus Manager");
-            Game.RawFrameRender += OnRawFrameRender;
+            Game.FrameRender += OnFrameRender;
         }
 
         public static void AddMenu(Menu menu)
@@ -62,7 +62,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        private static void OnRawFrameRender(object sender, GraphicsEventArgs e)
+        private static void OnFrameRender(object sender, GraphicsEventArgs e)
         {
             Graphics g = e.Graphics;
 
