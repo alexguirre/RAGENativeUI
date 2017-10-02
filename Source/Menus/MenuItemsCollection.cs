@@ -10,16 +10,21 @@ namespace RAGENativeUI.Menus
     /// <include file='..\Documentation\RAGENativeUI.Menus.MenuItemsCollection.xml' path='D/MenuItemsCollection/Doc/*' />
     public class MenuItemsCollection : BaseCollection<MenuItem>, IDynamicHeightMenuComponent
     {
-        public Menu Menu { get; }
+        public Menu Menu { get; private set; }
 
-        public MenuItemsCollection(Menu menu) : base()
+        public MenuItemsCollection() : base()
         {
-            Menu = menu ?? throw new ArgumentNullException($"The component {nameof(Menu)} can't be null.");
         }
 
-        public MenuItemsCollection(Menu menu, IEnumerable<MenuItem> items) : base(items)
+        public MenuItemsCollection(IEnumerable<MenuItem> items) : base(items)
         {
-            Menu = menu ?? throw new ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+        }
+
+        internal void SetMenu(Menu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new InvalidOperationException($"{nameof(MenuItemsCollection)} already set to a {nameof(Menus.Menu)}.");
+            Menu = menu ?? throw new ArgumentNullException($"The {nameof(MenuItemsCollection)} {nameof(Menu)} can't be null.");
         }
 
         public float GetHeight()

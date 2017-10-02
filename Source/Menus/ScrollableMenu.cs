@@ -11,20 +11,35 @@ namespace RAGENativeUI.Menus
         public delegate void SelectedPageChangedEventHandler(ScrollableMenu sender, ScrollableMenuPage oldPage, ScrollableMenuPage newPage);
 
         private ScrollableMenuPagesCollection pages;
-        private MenuItemPagesScroller scrollerItem;
 
         public event SelectedPageChangedEventHandler SelectedPageChanged;
 
-        public ScrollableMenuPagesCollection Pages { get { return pages; } set { pages = value ?? throw new ArgumentNullException($"The menu {nameof(Pages)} can't be null."); } }
-        public ScrollableMenuPage SelectedPage { get { return (scrollerItem.SelectedIndex >= 0 && scrollerItem.SelectedIndex < Pages.Count) ? Pages[scrollerItem.SelectedIndex] : null; } set { scrollerItem.SelectedIndex = Pages.IndexOf(value); } }
-        public MenuItemScroller ScrollerItem { get { return scrollerItem; } }
+        public ScrollableMenuPagesCollection Pages
+        {
+            get { return pages; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException($"The menu {nameof(Pages)} can't be null.");
+                if (value == pages)
+                    return;
+                pages = value;
+                pages.SetMenu(this);
+                if (ScrollerItem is MenuItemPagesScroller scroller)
+                {
+                    scroller.Pages = pages;
+                }
+            }
+        }
+        public ScrollableMenuPage SelectedPage { get { return (ScrollerItem.SelectedIndex >= 0 && ScrollerItem.SelectedIndex < Pages.Count) ? Pages[ScrollerItem.SelectedIndex] : null; } set { ScrollerItem.SelectedIndex = Pages.IndexOf(value); } }
+        public MenuItemScroller ScrollerItem { get; }
 
         public ScrollableMenu(string title, string subtitle, string scrollerItemText, MenuStyle style) : base(title, subtitle, style)
         {
-            pages = new ScrollableMenuPagesCollection(this);
-            scrollerItem = new MenuItemPagesScroller(scrollerItemText, pages);
-            scrollerItem.SelectedIndexChanged += OnScrollerSelectedIndexChanged;
-            Items.Add(scrollerItem);
+            Pages = new ScrollableMenuPagesCollection();
+            ScrollerItem = new MenuItemPagesScroller(scrollerItemText, pages);
+            ScrollerItem.SelectedIndexChanged += OnScrollerSelectedIndexChanged;
+            Items.Add(ScrollerItem);
         }
 
         public ScrollableMenu(string title, string subtitle, string scrollerItemText) : this(title, subtitle, scrollerItemText, MenuStyle.Default)
@@ -57,9 +72,9 @@ namespace RAGENativeUI.Menus
         // clears the items collection and adds the scroller item and the items from the current page
         internal void UpdateItems()
         {
-            int index = scrollerItem.SelectedIndex;
+            int index = ScrollerItem.SelectedIndex;
             Items.Clear();
-            Items.Add(scrollerItem);
+            Items.Add(ScrollerItem);
             if (index >= 0 && index < Pages.Count)
             {
                 foreach (MenuItem item in Pages[index].Items)
@@ -73,7 +88,7 @@ namespace RAGENativeUI.Menus
         {
             if(!IsDisposed && disposing)
             {
-                scrollerItem.SelectedIndexChanged -= OnScrollerSelectedIndexChanged;
+                ScrollerItem.SelectedIndexChanged -= OnScrollerSelectedIndexChanged;
             }
 
             base.Dispose(disposing);
@@ -126,11 +141,17 @@ namespace RAGENativeUI.Menus
 
     public sealed class ScrollableMenuPagesCollection : BaseCollection<ScrollableMenuPage>
     {
-        public ScrollableMenu Menu { get; }
+        public ScrollableMenu Menu { get; private set; }
 
-        internal ScrollableMenuPagesCollection(ScrollableMenu menu)
+        public ScrollableMenuPagesCollection()
         {
-            Menu = menu ?? throw new ArgumentNullException($"The pages collection {nameof(Menu)} can't be null.");
+        }
+
+        internal void SetMenu(ScrollableMenu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new InvalidOperationException($"{nameof(ScrollableMenuPagesCollection)} already set to a {nameof(ScrollableMenu)}.");
+            Menu = menu ?? throw new ArgumentNullException($"The {nameof(ScrollableMenuPagesCollection)} {nameof(Menu)} can't be null.");
         }
 
         public override void Add(ScrollableMenuPage item)

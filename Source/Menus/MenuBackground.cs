@@ -4,11 +4,17 @@ namespace RAGENativeUI.Menus
 
     public class MenuBackground : IDynamicHeightMenuComponent
     {
-        public Menu Menu { get; }
+        public Menu Menu { get; private set; }
 
-        public MenuBackground(Menu menu)
+        public MenuBackground()
         {
-            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+        }
+
+        internal void SetMenu(Menu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new System.InvalidOperationException($"{nameof(MenuBackground)} already set to a {nameof(Menus.Menu)}.");
+            Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuBackground)} {nameof(Menu)} can't be null.");
         }
 
         public float GetHeight() => Menu.Items.GetHeight();

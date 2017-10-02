@@ -6,23 +6,33 @@ namespace RAGENativeUI.Menus
     {
         private int counterTotalCount = 0, counterOnScreenSelectedIndex = 0;
 
-        public Menu Menu { get; }
+        public Menu Menu { get; private set; }
         public virtual string Text { get; set; }
 
-        public MenuSubtitle(Menu menu, string text)
+        public MenuSubtitle(string text)
         {
-            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
-            Menu.SelectedIndexChanged += OnMenuSelectedIndexChanged;
             Text = text;
         }
 
-        public MenuSubtitle(Menu menu) : this(menu, null)
+        public MenuSubtitle() : this(null)
         {
         }
 
         ~MenuSubtitle()
         {
-            Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged;
+            if (Menu != null)
+            {
+                Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged;
+            }
+        }
+
+        internal void SetMenu(Menu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new System.InvalidOperationException($"{nameof(MenuSubtitle)} already set to a {nameof(Menus.Menu)}.");
+            Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuSubtitle)} {nameof(Menu)} can't be null.");
+            Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged; // remove first in case it's set to the same menu twice
+            Menu.SelectedIndexChanged += OnMenuSelectedIndexChanged;
         }
 
         protected internal virtual string GetItemsCounterText()

@@ -4,17 +4,23 @@ namespace RAGENativeUI.Menus
 
     public class MenuBanner : IMenuComponent
     {
-        public Menu Menu { get; }
+        public Menu Menu { get; private set; }
         public virtual string Title { get; set; }
 
-        public MenuBanner(Menu menu, string title)
+        public MenuBanner(string title)
         {
-            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
             Title = title;
         }
 
-        public MenuBanner(Menu menu) : this(menu, null)
+        public MenuBanner() : this(null)
         {
+        }
+
+        internal void SetMenu(Menu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new System.InvalidOperationException($"{nameof(MenuBanner)} already set to a {nameof(Menus.Menu)}.");
+            Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuBanner)} {nameof(Menu)} can't be null.");
         }
 
         public virtual void Process()

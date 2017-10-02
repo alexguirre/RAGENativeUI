@@ -13,7 +13,7 @@ namespace RAGENativeUI.Menus
         private string textOverride = null;
         private float height;
 
-        public Menu Menu { get; }
+        public Menu Menu { get; private set; }
         public virtual string Text { get { return currentOrigText; } }
         public virtual string FormattedText { get { return currentFormattedText; } }
         public virtual string TextOverride
@@ -41,9 +41,15 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public MenuDescription(Menu menu)
+        public MenuDescription()
         {
-            Menu = menu ?? throw new ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+        }
+
+        internal void SetMenu(Menu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new InvalidOperationException($"{nameof(MenuDescription)} already set to a {nameof(Menus.Menu)}.");
+            Menu = menu ?? throw new ArgumentNullException($"The {nameof(MenuDescription)} {nameof(Menu)} can't be null.");
         }
 
         public float GetHeight() => height;

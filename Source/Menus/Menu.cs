@@ -18,7 +18,7 @@ namespace RAGENativeUI.Menus
         public delegate void ForEachOnScreenItemDelegate(MenuItem item, int index);
         public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
         public delegate void VisibleChangedEventHandler(Menu sender, bool visible);
-        
+
 
         public static bool IsAnyMenuVisible => MenusManager.IsAnyMenuVisible;
         public static readonly ReadOnlyCollection<GameControl> DefaultAllowedControls = Array.AsReadOnly(new[]
@@ -41,7 +41,12 @@ namespace RAGENativeUI.Menus
 
 
         private IMenuStyle style;
+        private MenuBanner banner;
+        private MenuSubtitle subtitle;
+        private MenuBackground background;
         private MenuItemsCollection items;
+        private MenuUpDownDisplay upDownDisplay;
+        private MenuDescription description;
         private int selectedIndex;
         private int maxItemsOnScreen = 10;
         private bool isVisible;
@@ -52,13 +57,71 @@ namespace RAGENativeUI.Menus
 
         public bool IsDisposed { get; private set; }
         public PointF Location { get; set; }
-        public IMenuStyle Style { get { return style; } set { style = value ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null."); } }
-        public MenuBanner Banner { get; set; }
-        public MenuSubtitle Subtitle { get; set; }
-        public MenuBackground Background { get; set; }
-        public MenuItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null."); } }
-        public MenuUpDownDisplay UpDownDisplay { get; set; }
-        public MenuDescription Description { get; set; }
+        public IMenuStyle Style
+        {
+            get => style;
+            set => style = value ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null.");
+        }
+
+        public MenuBanner Banner
+        {
+            get => banner;
+            set
+            {
+                banner = value;
+                banner?.SetMenu(this);
+            }
+        }
+
+        public MenuSubtitle Subtitle
+        {
+            get => subtitle;
+            set
+            {
+                subtitle = value;
+                subtitle?.SetMenu(this);
+            }
+        }
+
+        public MenuBackground Background
+        {
+            get => background;
+            set
+            {
+                background = value;
+                background?.SetMenu(this);
+            }
+        }
+
+        public MenuItemsCollection Items
+        {
+            get => items;
+            set
+            {
+                items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null.");
+                items.SetMenu(this);
+            }
+        }
+
+        public MenuUpDownDisplay UpDownDisplay
+        {
+            get => upDownDisplay;
+            set
+            {
+                upDownDisplay = value;
+                upDownDisplay?.SetMenu(this);
+            }
+        }
+
+        public MenuDescription Description
+        {
+            get => description;
+            set
+            {
+                description = value;
+                description?.SetMenu(this);
+            }
+        }
 
         public IEnumerable<IMenuComponent> Components
         {
@@ -138,12 +201,12 @@ namespace RAGENativeUI.Menus
 
             Style = style ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null.");
             Location = Style.InitialMenuLocation;
-            Banner = new MenuBanner(this, title);
-            Subtitle = new MenuSubtitle(this, subtitle);
-            Background = new MenuBackground(this);
-            Items = new MenuItemsCollection(this);
-            UpDownDisplay = new MenuUpDownDisplay(this);
-            Description = new MenuDescription(this);
+            Banner = new MenuBanner(title);
+            Subtitle = new MenuSubtitle(subtitle);
+            Background = new MenuBackground();
+            Items = new MenuItemsCollection();
+            UpDownDisplay = new MenuUpDownDisplay();
+            Description = new MenuDescription();
 
             Controls = new MenuControls();
             SoundsSet = new MenuSoundsSet();
@@ -179,7 +242,7 @@ namespace RAGENativeUI.Menus
             {
                 currentParent.Show(currentParent.currentParent);
             }
-            
+
             currentParent = null;
             currentChild = null;
             IsVisible = false;

@@ -4,11 +4,17 @@ namespace RAGENativeUI.Menus
 
     public class MenuUpDownDisplay : IMenuComponent
     {
-        public Menu Menu { get; }
+        public Menu Menu { get; private set; }
         
-        public MenuUpDownDisplay(Menu menu)
+        public MenuUpDownDisplay()
         {
-            Menu = menu ?? throw new System.ArgumentNullException($"The component {nameof(Menu)} can't be null.");
+        }
+
+        internal void SetMenu(Menu menu)
+        {
+            if (Menu != null && Menu != menu)
+                throw new System.InvalidOperationException($"{nameof(MenuUpDownDisplay)} already set to a {nameof(Menus.Menu)}.");
+            Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuUpDownDisplay)} {nameof(Menu)} can't be null.");
         }
 
         public virtual void Process()
