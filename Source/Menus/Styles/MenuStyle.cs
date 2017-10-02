@@ -118,11 +118,11 @@ namespace RAGENativeUI.Menus.Styles
             }
         }
 
-        public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y, bool selected)
+        public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y)
         {
             const float BorderSafezone = 8.25f;
             
-            if (selected)
+            if (item.Selected)
             {
                 DrawSelectedGradientTexture(graphics, x, y, MenuWidth, ItemHeight);
                 DrawText(graphics, item.Text, ItemFont, new RectangleF(x + BorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(225, 10, 10, 10));
@@ -135,14 +135,14 @@ namespace RAGENativeUI.Menus.Styles
             y += ItemHeight;
         }
 
-        public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y, bool selected)
+        public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
         {
             const float BorderSafezone = 8.25f;
 
             float tempX = x, tempY = y;
-            DrawItem(graphics, item, ref tempX, ref tempY, selected);
+            DrawItem(graphics, item, ref tempX, ref tempY);
             
-            if (selected)
+            if (item.Selected)
             {
                 if (item.IsChecked)
                 {
@@ -169,14 +169,14 @@ namespace RAGENativeUI.Menus.Styles
             y = tempY;
         }
 
-        public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y, bool selected)
+        public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y)
         {
             const float BorderSafezone = 8.25f;
 
             float tempX = x, tempY = y;
-            DrawItem(graphics, item, ref tempX, ref tempY, selected);
+            DrawItem(graphics, item, ref tempX, ref tempY);
 
-            if (selected)
+            if (item.Selected)
             {
                 string selectedOptionText = item.GetSelectedOptionText();
 

@@ -35,7 +35,7 @@ namespace RAGENativeUI.Menus
         public abstract string GetSelectedOptionText();
         public abstract int GetOptionsCount();
 
-        protected internal override bool OnMoveLeft(Menu origin)
+        protected internal override bool OnMoveLeft()
         {
             int newIndex = SelectedIndex - 1;
 
@@ -44,10 +44,10 @@ namespace RAGENativeUI.Menus
 
             SelectedIndex = newIndex;
 
-            return base.OnMoveLeft(origin);
+            return base.OnMoveLeft();
         }
 
-        protected internal override bool OnMoveRight(Menu origin)
+        protected internal override bool OnMoveRight()
         {
             int newIndex = SelectedIndex + 1;
 
@@ -56,15 +56,15 @@ namespace RAGENativeUI.Menus
 
             SelectedIndex = newIndex;
 
-            return base.OnMoveRight(origin);
+            return base.OnMoveRight();
         }
 
-        protected internal override void OnDraw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
+        protected internal override void OnDraw(Graphics graphics, ref float x, ref float y)
         {
             if (!IsVisible)
                 return;
 
-            sender.Style.DrawItemScroller(graphics, this, ref x, ref y, selected);
+            Parent.Style.DrawItemScroller(graphics, this, ref x, ref y);
         }
 
         protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)

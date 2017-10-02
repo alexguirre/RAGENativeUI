@@ -29,19 +29,19 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal override bool OnAccept(Menu origin)
+        protected internal override bool OnAccept()
         {
             IsChecked = !IsChecked;
 
-            return base.OnAccept(origin);
+            return base.OnAccept();
         }
 
-        protected internal override void OnDraw(Graphics graphics, Menu sender, bool selected, ref float x, ref float y)
+        protected internal override void OnDraw(Graphics graphics, ref float x, ref float y)
         {
             if (!IsVisible)
                 return;
 
-            sender.Style.DrawItemCheckbox(graphics, this, ref x, ref y, selected);
+            Parent.Style.DrawItemCheckbox(graphics, this, ref x, ref y);
         }
 
         protected virtual void OnCheckChanged(bool isChecked)

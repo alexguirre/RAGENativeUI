@@ -1,7 +1,5 @@
 namespace RAGENativeUI.Menus
 {
-    using System.Drawing;
-    
     using Graphics = Rage.Graphics;
 
     public interface IMenuComponent

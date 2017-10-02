@@ -62,12 +62,13 @@ namespace Examples
                     (menu.Items[idx] as MenuItemScroller).SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Scroller at index #{idx} selected index changed from #{oldIndex} to #{newIndex}"); };
                 }
 
-                menu.Items[idx].Activated += (s, origin) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+                menu.Items[idx].Activated += (s) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+                menu.Items[idx].SelectedChanged += (s, selected) => { Game.DisplayHelp($"{(selected ? "Selected" : "Unselected")} item at index #{idx}"); };
             }
 
             menu.Metadata["Test"] = new Vector3(50f, 75f, 100f);
             menu.Items[0].Metadata.Test = 100;
-            menu.Items[0].Activated += (sender, origin) => 
+            menu.Items[0].Activated += (sender) => 
             {
                 Game.DisplayNotification(menu.Items[0].Metadata.Test.ToString());
                 Game.DisplayNotification(menu.Metadata.Test.ToString());
@@ -112,7 +113,7 @@ namespace Examples
                 while (true)
                 {
                     GameFiber.Yield();
-                    
+
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.T))
                     {
                         if (menu.IsAnyChildMenuVisible)
@@ -242,46 +243,46 @@ namespace Examples
                 // no description
             }
 
-            public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y, bool selected)
+            public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y)
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
-                if (selected)
+                if (item.Selected)
                 {
                     graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
                 }
 
-                DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Center, TextVerticalAligment.Center);
+                DrawText(graphics, item.Text, SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Center, TextVerticalAligment.Center);
 
                 y += ItemHeight;
             }
 
-            public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y, bool selected)
+            public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
-                if (selected)
+                if (item.Selected)
                 {
                     graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
                 }
 
-                DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
-                DrawText(graphics, $"[{(item.IsChecked ? "X" : " ")}] ", SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+                DrawText(graphics, item.Text, SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
+                DrawText(graphics, $"[{(item.IsChecked ? "X" : " ")}] ", SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
                 y += ItemHeight;
             }
 
-            public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y, bool selected)
+            public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y)
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
-                if (selected)
+                if (item.Selected)
                 {
                     graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
                 }
 
-                DrawText(graphics, item.Text, SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
-                DrawText(graphics, selected ? $"<{item.GetSelectedOptionText()}> " : item.GetSelectedOptionText(), SmallFont, r, selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+                DrawText(graphics, item.Text, SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
+                DrawText(graphics, item.Selected ? $"<{item.GetSelectedOptionText()}> " : item.GetSelectedOptionText(), SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
                 y += ItemHeight;
             }

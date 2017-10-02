@@ -288,7 +288,7 @@ namespace RAGENativeUI.Menus
             {
                 if (Controls.Up != null && Controls.Up.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveUp(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveUp())
                     {
                         MoveUp();
                     }
@@ -296,7 +296,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Down != null && Controls.Down.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveDown(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveDown())
                     {
                         MoveDown();
                     }
@@ -304,7 +304,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Right != null && Controls.Right.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveRight(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveRight())
                     {
                         MoveRight();
                     }
@@ -312,7 +312,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Left != null && Controls.Left.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveLeft(this))
+                    if (SelectedItem == null || SelectedItem.OnMoveLeft())
                     {
                         MoveLeft();
                     }
@@ -320,7 +320,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Accept != null && Controls.Accept.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnAccept(this))
+                    if (SelectedItem == null || SelectedItem.OnAccept())
                     {
                         Accept();
                     }
@@ -328,7 +328,7 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Back != null && Controls.Back.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnBack(this))
+                    if (SelectedItem == null || SelectedItem.OnBack())
                     {
                         Back();
                     }

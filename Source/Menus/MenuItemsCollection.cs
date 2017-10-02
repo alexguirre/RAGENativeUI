@@ -36,10 +36,12 @@ namespace RAGENativeUI.Menus
 
         public void Process()
         {
+            int selectedIndex = Menu.SelectedIndex;
             for (int i = 0; i < Count; i++)
             {
                 MenuItem item = this[i];
-                item?.OnProcess(Menu, i == Menu.SelectedIndex);
+                item.Selected = i == selectedIndex;
+                item?.OnProcess();
             }
         }
 
@@ -48,7 +50,7 @@ namespace RAGENativeUI.Menus
             float currentX = x, currentY = y;
             Menu.ForEachItemOnScreen((item, index) =>
             {
-                item.OnDraw(g, Menu, index == Menu.SelectedIndex, ref currentX, ref currentY);
+                item.OnDraw(g, ref currentX, ref currentY);
             });
             x = currentX;
             y = currentY;
@@ -57,31 +59,44 @@ namespace RAGENativeUI.Menus
         public override void Add(MenuItem item)
         {
             base.Add(item);
+            item.SetParentInternal(Menu);
             Menu.UpdateVisibleItemsIndices();
         }
 
         public override void Insert(int index, MenuItem item)
         {
             base.Insert(index, item);
+            item.SetParentInternal(Menu);
             Menu.UpdateVisibleItemsIndices();
         }
 
         public override bool Remove(MenuItem item)
         {
             bool b = base.Remove(item);
-            if(b)
+            if (b)
+            {
+                item.SetParentInternal(null);
                 Menu.UpdateVisibleItemsIndices();
+            }
             return b;
         }
 
         public override void RemoveAt(int index)
         {
+            if (index >= 0 && index < Count)
+            {
+                this[index].SetParentInternal(null);
+            }
             base.RemoveAt(index);
             Menu.UpdateVisibleItemsIndices();
         }
 
         public override void Clear()
         {
+            foreach (MenuItem item in this)
+            {
+                item.SetParentInternal(null);
+            }
             base.Clear();
             Menu.UpdateVisibleItemsIndices();
         }
