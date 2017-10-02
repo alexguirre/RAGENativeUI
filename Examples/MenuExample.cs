@@ -90,6 +90,8 @@ namespace Examples
             }
 
             ScrollableMenu scrollableMenu = new ScrollableMenu("Scrollable Menu", "Subtitle", "Page");
+            scrollableMenu.Location = new PointF(1000f, 17f);
+
             scrollableMenu.Pages.Add(CreatePageForScroller("First Page"));
             scrollableMenu.Pages.Add(CreatePageForScroller("Second Page"));
             scrollableMenu.Pages.Add(CreatePageForScroller("Third Page"));
@@ -101,6 +103,7 @@ namespace Examples
             scrollableMenu.Pages.Add(CreatePageForScroller("Ninth Page"));
             scrollableMenu.Pages.Add(CreatePageForScroller("Tenth Page"));
 
+            scrollableMenu.SelectedPageChanged += (s, o, n) => { Game.DisplayHelp($"Page changed from '{o.Text}' to '{n.Text}'."); };
 
             menu.Items.Add(new MenuItem("item with binded scrollable menu") { BindedMenu = scrollableMenu });
 
@@ -171,10 +174,14 @@ namespace Examples
                         if(menu.Style is MyCustomMenuStyle)
                         {
                             menu.Style = MenuStyle.Default;
+                            subMenu.Style = MenuStyle.Default;
+                            scrollableMenu.Style = MenuStyle.Default;
                         }
                         else
                         {
                             menu.Style = new MyCustomMenuStyle();
+                            subMenu.Style = new MyCustomMenuStyle();
+                            scrollableMenu.Style = new MyCustomMenuStyle();
                         }
                     }
                 }

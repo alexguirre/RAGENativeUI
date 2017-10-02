@@ -8,8 +8,12 @@ namespace RAGENativeUI.Menus
     // note: do not modifiy the Items collection directly(Add, Remove, Clear,...), changes will be overwritten once UpdateItems() is called
     public class ScrollableMenu : Menu
     {
+        public delegate void SelectedPageChangedEventHandler(ScrollableMenu sender, ScrollableMenuPage oldPage, ScrollableMenuPage newPage);
+
         private ScrollableMenuPagesCollection pages;
         private MenuItemPagesScroller scrollerItem;
+
+        public event SelectedPageChangedEventHandler SelectedPageChanged;
 
         public ScrollableMenuPagesCollection Pages { get { return pages; } set { pages = value ?? throw new ArgumentNullException($"The menu {nameof(Pages)} can't be null."); } }
         public ScrollableMenuPage SelectedPage { get { return (scrollerItem.SelectedIndex >= 0 && scrollerItem.SelectedIndex < Pages.Count) ? Pages[scrollerItem.SelectedIndex] : null; } set { scrollerItem.SelectedIndex = Pages.IndexOf(value); } }
@@ -37,8 +41,16 @@ namespace RAGENativeUI.Menus
             base.OnVisibleChanged(visible);
         }
 
+        protected virtual void OnSelectedPageChanged(ScrollableMenuPage oldPage, ScrollableMenuPage newPage)
+        {
+            SelectedPageChanged?.Invoke(this, oldPage, newPage);
+        }
+
         private void OnScrollerSelectedIndexChanged(MenuItemScroller sender, int oldIndex, int newIndex)
         {
+            ScrollableMenuPage oldPage = (oldIndex >= 0 && oldIndex < Pages.Count) ? Pages[oldIndex] : null;
+            ScrollableMenuPage newPage = (newIndex >= 0 && newIndex < Pages.Count) ? Pages[newIndex] : null;
+            OnSelectedPageChanged(oldPage, newPage);
             UpdateItems();
         }
 
