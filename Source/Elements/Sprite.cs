@@ -8,8 +8,9 @@ namespace RAGENativeUI.Elements
 
     public class Sprite
     {
-        public TextureDictionary TextureDictionary { get; set; }
         private string textureName;
+
+        public TextureDictionary TextureDictionary { get; set; }
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public string TextureName { get { return textureName; } set { textureName = value ?? throw new ArgumentNullException($"The sprite {nameof(TextureName)} can't be null."); } }
         public SizeF Resolution

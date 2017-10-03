@@ -9,6 +9,7 @@ namespace RAGENativeUI.Scaleforms
     public class InstructionalButtons : Scaleform
     {
         private InstructionalButtonsSlots slots;
+
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public InstructionalButtonsSlots Slots { get { return slots; } set { slots = value ?? throw new ArgumentNullException($"The instruction buttons {nameof(Slots)} can't be null."); } }
         public LayoutType Layout { get; set; } = LayoutType.Horizontal;

@@ -9,6 +9,7 @@ namespace RAGENativeUI.Elements
     public class TimerBarsManager : IDisposable
     {
         private TimerBarsCollection timerBars;
+
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public TimerBarsCollection TimerBars { get { return IsDisposed ? throw Common.NewDisposedException() : timerBars; } set { timerBars = IsDisposed ? throw Common.NewDisposedException() : value ?? throw new ArgumentNullException($"The manager {nameof(TimerBars)} collection can't be null."); } }
         public bool IsAnyTimerBarVisible { get { return IsDisposed ? throw Common.NewDisposedException() : timerBars.Any(m => m.IsVisible); } }

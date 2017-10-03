@@ -9,10 +9,10 @@ namespace RAGENativeUI.Scaleforms
     {
         private uint endTime;
         private bool performedOutTransition;
-
-        public OutTransitionType OutTransition { get; set; } = OutTransitionType.MoveUp;
         private uint outTransitionTimeInMilliseconds = 400;
         private float outTransitionTimeInSeconds = 0.4f;
+
+        public OutTransitionType OutTransition { get; set; } = OutTransitionType.MoveUp;
         public float OutTransitionTime
         {
             get { return outTransitionTimeInSeconds; }

@@ -11,9 +11,9 @@ namespace RAGENativeUI.Scaleforms
 
     public unsafe class Scaleform : IAddressable
     {
-        public string Name { get; }
-
         private int handle;
+
+        public string Name { get; }
         public int Handle { get { return handle; } }
         public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
         /// <summary>

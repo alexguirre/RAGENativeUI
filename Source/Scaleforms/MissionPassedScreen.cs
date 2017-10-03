@@ -12,12 +12,18 @@ namespace RAGENativeUI.Scaleforms
     {
         private const int MaxItemsOnScreenCount = 14;
 
-        public BigMessage BigMessage { get; private set; }
-        public InstructionalButtons InstructionalButtons { get; private set; }
 
         private readonly int instructionalButtonContinueIndex, instructionalButtonExpandIndex;
-
         private State state;
+        private string title;
+        private string subtitle;
+        private MissionPassedScreenItemsCollection items;
+        private uint timer;
+
+        public event TypedEventHandler<MissionPassedScreen, EventArgs> Continued;
+
+        public BigMessage BigMessage { get; private set; }
+        public InstructionalButtons InstructionalButtons { get; private set; }
 
         public GameControl ContinueControl
         {
@@ -31,13 +37,10 @@ namespace RAGENativeUI.Scaleforms
             set { (InstructionalButtons.Slots[instructionalButtonExpandIndex] as InstructionalButtonControlSlot).Control = value; }
         }
         
-        private string title;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public string Title { get { return title; } set { title = value ?? throw new ArgumentNullException($"The mission passed screen {nameof(Title)} can't be null."); } }
-        private string subtitle;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public string Subtitle { get { return subtitle; } set { subtitle = value ?? throw new ArgumentNullException($"The mission passed screen {nameof(Subtitle)} can't be null."); } }
-        private MissionPassedScreenItemsCollection items;
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public MissionPassedScreenItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The mission passed screen {nameof(Items)} can't be null."); } }
 
@@ -52,8 +55,6 @@ namespace RAGENativeUI.Scaleforms
 
         public PostFxAnimation ShownEffect { get; set; } = PostFxAnimation.GetByName("SuccessNeutral");
         public FrontendSound ButtonPressedSound { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "CONTINUE");
-
-        public event TypedEventHandler<MissionPassedScreen, EventArgs> Continued;
 
         public MissionPassedScreen(string title, string subtitle)
         {
@@ -107,7 +108,6 @@ namespace RAGENativeUI.Scaleforms
             }
         }
 
-        private uint timer;
         private void Update()
         {
             if (state == State.None)
@@ -192,7 +192,7 @@ namespace RAGENativeUI.Scaleforms
 
                 case State.Continue:
                     {
-                        OnContinued();
+                        OnContinued(EventArgs.Empty);
                         BigMessage.Dismiss();
                         InstructionalButtons.Dismiss();
                         state = State.None;
@@ -256,9 +256,9 @@ namespace RAGENativeUI.Scaleforms
             }
         }
 
-        private void OnContinued()
+        protected virtual void OnContinued(EventArgs e)
         {
-            Continued?.Invoke(this, EventArgs.Empty);
+            Continued?.Invoke(this, e);
         }
 
         private int GetBigMessageNumStats()
