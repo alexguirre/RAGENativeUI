@@ -71,7 +71,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        private void OnMenuSelectedIndexChanged(Menu sender, int oldIndex, int newIndex)
+        private void OnMenuSelectedIndexChanged(Menu sender, SelectedIndexChangedEventArgs e)
         {
             UpdateCounter();
         }

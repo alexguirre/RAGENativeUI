@@ -18,7 +18,7 @@ namespace Examples
             missionPassedScreen.Items.Add(new MissionPassedScreenItem("Sniper Kill Bonus", "", MissionPassedScreenItem.TickboxState.Tick));
             missionPassedScreen.Items.Add(new MissionPassedScreenItem("Money Earned", "$9,000", MissionPassedScreenItem.TickboxState.Tick));
             missionPassedScreen.IsCompletionVisible = true;
-            missionPassedScreen.Continued += (s) => Game.DisplayHelp("OnContinued");
+            missionPassedScreen.Continued += (s, e) => Game.DisplayHelp("OnContinued");
 
             int i = 0;
             GameFiber.StartNew(() =>

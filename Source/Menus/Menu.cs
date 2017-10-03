@@ -15,9 +15,7 @@ namespace RAGENativeUI.Menus
     /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Doc/*' />
     public class Menu : IDisposable
     {
-        public delegate void ForEachOnScreenItemDelegate(MenuItem item, int index);
-        public delegate void SelectedIndexChangedEventHandler(Menu sender, int oldIndex, int newIndex);
-        public delegate void VisibleChangedEventHandler(Menu sender, bool visible);
+        public delegate void ForEachItemOnScreenDelegate(MenuItem item, int index);
 
 
         public static bool IsAnyMenuVisible => MenusManager.IsAnyMenuVisible;
@@ -52,8 +50,8 @@ namespace RAGENativeUI.Menus
         private bool isVisible;
         private Menu currentParent, currentChild;
 
-        public event SelectedIndexChangedEventHandler SelectedIndexChanged;
-        public event VisibleChangedEventHandler VisibleChanged;
+        public event TypedEventHandler<Menu, SelectedIndexChangedEventArgs> SelectedIndexChanged;
+        public event TypedEventHandler<Menu, VisibleChangedEventArgs> VisibleChanged;
 
         public bool IsDisposed { get; private set; }
         public PointF Location { get; set; }
@@ -149,7 +147,7 @@ namespace RAGENativeUI.Menus
                     int oldIndex = selectedIndex;
                     selectedIndex = newIndex;
                     UpdateVisibleItemsIndices();
-                    OnSelectedIndexChanged(oldIndex, newIndex);
+                    OnSelectedIndexChanged(new SelectedIndexChangedEventArgs(oldIndex, newIndex));
                 }
             }
         }
@@ -181,7 +179,7 @@ namespace RAGENativeUI.Menus
                 if (value == isVisible)
                     return;
                 isVisible = value;
-                OnVisibleChanged(isVisible);
+                OnVisibleChanged(new VisibleChangedEventArgs(isVisible));
             }
         }
         // returns true if this menu is visible or any child menu in the hierarchy is visible
@@ -482,7 +480,7 @@ namespace RAGENativeUI.Menus
         }
 
         /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="ForEachItemOnScreen"]/*' />
-        public void ForEachItemOnScreen(ForEachOnScreenItemDelegate action)
+        public void ForEachItemOnScreen(ForEachItemOnScreenDelegate action)
         {
             if (Items.Count > 0 && IsAnyItemOnScreen)
             {
@@ -536,14 +534,14 @@ namespace RAGENativeUI.Menus
             return max;
         }
 
-        protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
+        protected virtual void OnSelectedIndexChanged(SelectedIndexChangedEventArgs e)
         {
-            SelectedIndexChanged?.Invoke(this, oldIndex, newIndex);
+            SelectedIndexChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnVisibleChanged(bool visible)
+        protected virtual void OnVisibleChanged(VisibleChangedEventArgs e)
         {
-            VisibleChanged?.Invoke(this, visible);
+            VisibleChanged?.Invoke(this, e);
         }
 
         #region IDisposable Support

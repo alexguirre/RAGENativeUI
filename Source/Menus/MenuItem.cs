@@ -4,14 +4,11 @@ namespace RAGENativeUI.Menus
 
     public class MenuItem
     {
-        public delegate void ActivatedEventHandler(MenuItem sender);
-        public delegate void SelectedChangedEventHandler(MenuItem sender, bool selected);
-
         private Menu parent;
         private bool selected;
 
-        public event ActivatedEventHandler Activated;
-        public event SelectedChangedEventHandler SelectedChanged;
+        public event TypedEventHandler<MenuItem, ActivatedEventArgs> Activated;
+        public event TypedEventHandler<MenuItem, SelectedChangedEventArgs> SelectedChanged;
         
         public Menu Parent
         {
@@ -42,7 +39,7 @@ namespace RAGENativeUI.Menus
         /// </value>
         public Menu BindedMenu { get; set; }
         public dynamic Metadata { get; } = new Metadata();
-        public bool Selected
+        public bool IsSelected
         {
             get => selected;
             internal set
@@ -50,7 +47,7 @@ namespace RAGENativeUI.Menus
                 if (value == selected)
                     return;
                 selected = value;
-                OnSelectedChanged(selected);
+                OnSelectedChanged(new SelectedChangedEventArgs(selected));
             }
         }
 
@@ -77,7 +74,7 @@ namespace RAGENativeUI.Menus
         protected internal virtual bool OnMoveLeft() => true;
         protected internal virtual bool OnAccept()
         {
-            OnActivated();
+            OnActivated(new ActivatedEventArgs());
             BindedMenu?.Show(Parent);
             return true;
         }
@@ -95,14 +92,14 @@ namespace RAGENativeUI.Menus
             Parent.Style.DrawItem(graphics, this, ref x, ref y);
         }
 
-        protected virtual void OnActivated()
+        protected virtual void OnActivated(ActivatedEventArgs e)
         {
-            Activated?.Invoke(this);
+            Activated?.Invoke(this, e);
         }
 
-        protected virtual void OnSelectedChanged(bool selected)
+        protected virtual void OnSelectedChanged(SelectedChangedEventArgs e)
         {
-            SelectedChanged?.Invoke(this, selected);
+            SelectedChanged?.Invoke(this, e);
         }
     }
 }

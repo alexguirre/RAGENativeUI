@@ -44,8 +44,8 @@ namespace Examples
 
             menu.Items.Add(new MenuItem("item with binded menu #0") { BindedMenu = subMenu, Description = "If you click this item it opens a menu with a LOT of items." });
 
-            menu.SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Selected index changed from #{oldIndex} to #{newIndex}"); };
-            menu.VisibleChanged += (s, visible) => { Game.DisplayHelp($"Visible now: {visible}"); };
+            menu.SelectedIndexChanged += (s, e) => { Game.DisplayHelp($"Selected index changed from #{e.OldIndex} to #{e.NewIndex}"); };
+            menu.VisibleChanged += (s, e) => { Game.DisplayHelp($"Visible now: {e.IsVisible}"); };
 
             for (int i = 0; i < menu.Items.Count; i++)
             {
@@ -53,22 +53,22 @@ namespace Examples
 
                 if (menu.Items[idx] is MenuItemCheckbox)
                 {
-                    (menu.Items[idx] as MenuItemCheckbox).CheckedChanged += (s, c) => { Game.DisplayHelp($"Checkbox at index #{idx} {(c ? "checked" : "unchecked")}"); };
+                    (menu.Items[idx] as MenuItemCheckbox).CheckedChanged += (s, e) => { Game.DisplayHelp($"Checkbox at index #{idx} {(e.IsChecked ? "checked" : "unchecked")}"); };
                     continue;
                 }
 
                 if (menu.Items[idx] is MenuItemScroller)
                 {
-                    (menu.Items[idx] as MenuItemScroller).SelectedIndexChanged += (s, oldIndex, newIndex) => { Game.DisplayHelp($"Scroller at index #{idx} selected index changed from #{oldIndex} to #{newIndex}"); };
+                    (menu.Items[idx] as MenuItemScroller).SelectedIndexChanged += (s, e) => { Game.DisplayHelp($"Scroller at index #{idx} selected index changed from #{e.OldIndex} to #{e.NewIndex}"); };
                 }
 
-                menu.Items[idx].Activated += (s) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
-                menu.Items[idx].SelectedChanged += (s, selected) => { Game.DisplayHelp($"{(selected ? "Selected" : "Unselected")} item at index #{idx}"); };
+                menu.Items[idx].Activated += (s, e) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
+                menu.Items[idx].SelectedChanged += (s, e) => { Game.DisplayHelp($"{(e.IsSelected ? "Selected" : "Unselected")} item at index #{idx}"); };
             }
 
             menu.Metadata["Test"] = new Vector3(50f, 75f, 100f);
             menu.Items[0].Metadata.Test = 100;
-            menu.Items[0].Activated += (sender) => 
+            menu.Items[0].Activated += (s, e) => 
             {
                 Game.DisplayNotification(menu.Items[0].Metadata.Test.ToString());
                 Game.DisplayNotification(menu.Metadata.Test.ToString());
@@ -104,7 +104,7 @@ namespace Examples
             scrollableMenu.Pages.Add(CreatePageForScroller("Ninth Page"));
             scrollableMenu.Pages.Add(CreatePageForScroller("Tenth Page"));
 
-            scrollableMenu.SelectedPageChanged += (s, o, n) => { Game.DisplayHelp($"Page changed from '{o.Text}' to '{n.Text}'."); };
+            scrollableMenu.SelectedPageChanged += (s, e) => { Game.DisplayHelp($"Page changed from '{e.OldPage.Text}' to '{e.NewPage.Text}'."); };
 
             menu.Items.Add(new MenuItem("item with binded scrollable menu") { BindedMenu = scrollableMenu });
 
@@ -247,12 +247,12 @@ namespace Examples
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
-                if (item.Selected)
+                if (item.IsSelected)
                 {
                     graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
                 }
 
-                DrawText(graphics, item.Text, SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Center, TextVerticalAligment.Center);
+                DrawText(graphics, item.Text, SmallFont, r, item.IsSelected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Center, TextVerticalAligment.Center);
 
                 y += ItemHeight;
             }
@@ -261,13 +261,13 @@ namespace Examples
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
-                if (item.Selected)
+                if (item.IsSelected)
                 {
                     graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
                 }
 
-                DrawText(graphics, item.Text, SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
-                DrawText(graphics, $"[{(item.IsChecked ? "X" : " ")}] ", SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+                DrawText(graphics, item.Text, SmallFont, r, item.IsSelected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
+                DrawText(graphics, $"[{(item.IsChecked ? "X" : " ")}] ", SmallFont, r, item.IsSelected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
                 y += ItemHeight;
             }
@@ -276,13 +276,13 @@ namespace Examples
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
-                if (item.Selected)
+                if (item.IsSelected)
                 {
                     graphics.DrawRectangle(r, Color.FromArgb(230, 165, 165, 165));
                 }
 
-                DrawText(graphics, item.Text, SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
-                DrawText(graphics, item.Selected ? $"<{item.GetSelectedOptionText()}> " : item.GetSelectedOptionText(), SmallFont, r, item.Selected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
+                DrawText(graphics, item.Text, SmallFont, r, item.IsSelected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Left, TextVerticalAligment.Center);
+                DrawText(graphics, item.IsSelected ? $"<{item.GetSelectedOptionText()}> " : item.GetSelectedOptionText(), SmallFont, r, item.IsSelected ? Color.FromArgb(240, 5, 5, 5) : Color.FromArgb(240, 175, 175, 175), TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
                 y += ItemHeight;
             }

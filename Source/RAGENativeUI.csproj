@@ -60,6 +60,7 @@
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
     <Compile Include="Memory\sysMemAllocator.cs" />
+    <Compile Include="Menus\EventArgs.cs" />
     <Compile Include="Menus\MenuItemsCollection.cs" />
     <Compile Include="Menus\ScrollableMenu.cs" />
     <Compile Include="Menus\Styles\IMenuStyle.cs" />

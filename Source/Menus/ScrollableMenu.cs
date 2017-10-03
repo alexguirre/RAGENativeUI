@@ -8,11 +8,9 @@ namespace RAGENativeUI.Menus
     // note: do not modifiy the Items collection directly(Add, Remove, Clear,...), changes will be overwritten once UpdateItems() is called
     public class ScrollableMenu : Menu
     {
-        public delegate void SelectedPageChangedEventHandler(ScrollableMenu sender, ScrollableMenuPage oldPage, ScrollableMenuPage newPage);
-
         private ScrollableMenuPagesCollection pages;
 
-        public event SelectedPageChangedEventHandler SelectedPageChanged;
+        public event TypedEventHandler<ScrollableMenu, SelectedPageChangedEventArgs> SelectedPageChanged;
 
         public ScrollableMenuPagesCollection Pages
         {
@@ -46,26 +44,26 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected override void OnVisibleChanged(bool visible)
+        protected override void OnVisibleChanged(VisibleChangedEventArgs e)
         {
-            if (visible)
+            if (e.IsVisible)
             {
                 UpdateItems();
             }
 
-            base.OnVisibleChanged(visible);
+            base.OnVisibleChanged(e);
         }
 
-        protected virtual void OnSelectedPageChanged(ScrollableMenuPage oldPage, ScrollableMenuPage newPage)
+        protected virtual void OnSelectedPageChanged(SelectedPageChangedEventArgs e)
         {
-            SelectedPageChanged?.Invoke(this, oldPage, newPage);
+            SelectedPageChanged?.Invoke(this, e);
         }
 
-        private void OnScrollerSelectedIndexChanged(MenuItemScroller sender, int oldIndex, int newIndex)
+        private void OnScrollerSelectedIndexChanged(MenuItemScroller sender, SelectedIndexChangedEventArgs e)
         {
-            ScrollableMenuPage oldPage = (oldIndex >= 0 && oldIndex < Pages.Count) ? Pages[oldIndex] : null;
-            ScrollableMenuPage newPage = (newIndex >= 0 && newIndex < Pages.Count) ? Pages[newIndex] : null;
-            OnSelectedPageChanged(oldPage, newPage);
+            ScrollableMenuPage oldPage = (e.OldIndex >= 0 && e.OldIndex < Pages.Count) ? Pages[e.OldIndex] : null;
+            ScrollableMenuPage newPage = (e.NewIndex >= 0 && e.NewIndex < Pages.Count) ? Pages[e.NewIndex] : null;
+            OnSelectedPageChanged(new SelectedPageChangedEventArgs(oldPage, newPage));
             UpdateItems();
         }
 

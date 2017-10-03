@@ -40,7 +40,7 @@ namespace RAGENativeUI.Menus
             for (int i = 0; i < Count; i++)
             {
                 MenuItem item = this[i];
-                item.Selected = i == selectedIndex;
+                item.IsSelected = i == selectedIndex;
                 item?.OnProcess();
             }
         }

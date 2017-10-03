@@ -122,7 +122,7 @@ namespace RAGENativeUI.Menus.Styles
         {
             const float BorderSafezone = 8.25f;
             
-            if (item.Selected)
+            if (item.IsSelected)
             {
                 DrawSelectedGradientTexture(graphics, x, y, MenuWidth, ItemHeight);
                 DrawText(graphics, item.Text, ItemFont, new RectangleF(x + BorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(225, 10, 10, 10));
@@ -142,7 +142,7 @@ namespace RAGENativeUI.Menus.Styles
             float tempX = x, tempY = y;
             DrawItem(graphics, item, ref tempX, ref tempY);
             
-            if (item.Selected)
+            if (item.IsSelected)
             {
                 if (item.IsChecked)
                 {
@@ -176,7 +176,7 @@ namespace RAGENativeUI.Menus.Styles
             float tempX = x, tempY = y;
             DrawItem(graphics, item, ref tempX, ref tempY);
 
-            if (item.Selected)
+            if (item.IsSelected)
             {
                 string selectedOptionText = item.GetSelectedOptionText();
 

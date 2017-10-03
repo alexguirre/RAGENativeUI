@@ -4,13 +4,11 @@ namespace RAGENativeUI.Menus
     
     public class MenuItemCheckbox : MenuItem
     {
-        public delegate void CheckedChangedEventHandler(MenuItem sender, bool isChecked);
-
         private bool isChecked;
 
-        public event CheckedChangedEventHandler CheckedChanged;
-        public event CheckedChangedEventHandler Checked;
-        public event CheckedChangedEventHandler Unchecked;
+        public event TypedEventHandler<MenuItemCheckbox, CheckedChangedEventArgs> CheckedChanged;
+        public event TypedEventHandler<MenuItemCheckbox, CheckedChangedEventArgs> Checked;
+        public event TypedEventHandler<MenuItemCheckbox, CheckedChangedEventArgs> Unchecked;
 
         public bool IsChecked
         {
@@ -21,7 +19,7 @@ namespace RAGENativeUI.Menus
                     return;
 
                 isChecked = value;
-                OnCheckChanged(isChecked);
+                OnCheckedChanged(new CheckedChangedEventArgs(isChecked));
             }
         }
 
@@ -44,13 +42,13 @@ namespace RAGENativeUI.Menus
             Parent.Style.DrawItemCheckbox(graphics, this, ref x, ref y);
         }
 
-        protected virtual void OnCheckChanged(bool isChecked)
+        protected virtual void OnCheckedChanged(CheckedChangedEventArgs e)
         {
-            CheckedChanged?.Invoke(this, isChecked);
-            if (isChecked)
-                Checked?.Invoke(this, isChecked);
+            CheckedChanged?.Invoke(this, e);
+            if (e.IsChecked)
+                Checked?.Invoke(this, e);
             else
-                Unchecked?.Invoke(this, isChecked);
+                Unchecked?.Invoke(this, e);
         }
     }
 }

@@ -5,12 +5,9 @@ namespace RAGENativeUI.Menus
 
     public abstract class MenuItemScroller : MenuItem
     {
-        public delegate void SelectedIndexChangedEventHandler(MenuItemScroller sender, int oldIndex, int newIndex);
-
-
         private int selectedIndex;
 
-        public event SelectedIndexChangedEventHandler SelectedIndexChanged;
+        public event TypedEventHandler<MenuItemScroller, SelectedIndexChangedEventArgs> SelectedIndexChanged;
 
         public virtual int SelectedIndex
         {
@@ -23,7 +20,7 @@ namespace RAGENativeUI.Menus
                 {
                     int oldIndex = selectedIndex;
                     selectedIndex = newIndex;
-                    OnSelectedIndexChanged(oldIndex, newIndex);
+                    OnSelectedIndexChanged(new SelectedIndexChangedEventArgs(oldIndex, newIndex));
                 }
             }
         }
@@ -67,9 +64,9 @@ namespace RAGENativeUI.Menus
             Parent.Style.DrawItemScroller(graphics, this, ref x, ref y);
         }
 
-        protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
+        protected virtual void OnSelectedIndexChanged(SelectedIndexChangedEventArgs e)
         {
-            SelectedIndexChanged?.Invoke(this, oldIndex, newIndex);
+            SelectedIndexChanged?.Invoke(this, e);
         }
     }
 }
