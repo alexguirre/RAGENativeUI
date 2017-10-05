@@ -2,9 +2,7 @@ namespace RAGENativeUI
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Text;
-    using System.Collections.Generic;
 
     using Rage;
     using Rage.Native;
@@ -38,21 +36,20 @@ namespace RAGENativeUI
         public static string WrapText(string text, Rendering.Font font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
         public static string WrapText(string text, string fontName, float fontSize, float widthLimit)
         {
-            float GetTextWidth(string str)
-            {
-                return Graphics.MeasureText(str, fontName, fontSize).Width;
-            }
+            float GetTextWidth(string str) => Graphics.MeasureText(str, fontName, fontSize).Width;
 
-
-            List<dynamic> words = new List<dynamic>(text.Split(' ').Select(x => new { SplitChar = " ", Word = x }));
+            const char SplitChar = ' ';
+            
+            string[] words = text.Split(SplitChar);
 
             StringBuilder resultText = new StringBuilder();
             string currentLine = String.Empty;
-            dynamic lastWord = new { Word = String.Empty, SplitChar = String.Empty };
+            string lastWord = String.Empty;
 
+            int index = 0;
             while (true)
             {
-                string newString = (currentLine + lastWord.SplitChar).TrimStart(' ') + words[0].Word;
+                string newString = (currentLine + SplitChar).TrimStart(SplitChar) + words[index];
 
                 if (currentLine != String.Empty && GetTextWidth(newString) > widthLimit)
                 {
@@ -62,24 +59,28 @@ namespace RAGENativeUI
                 }
                 else
                 {
-                    lastWord = words[0];
-                    words.RemoveAt(0);
+                    lastWord = words[index];
+                    index++;
                     currentLine = newString;
                 }
 
-                if (words.Count == 0)
+                if (index == words.Length)
                 {
                     resultText.Append(currentLine.TrimEnd() + "\n");
                     break;
                 }
             }
 
+            words = null;
+            currentLine = null;
+            lastWord = null;
+
             return resultText.ToString().TrimEnd();
         }
 
         public static void Log(object o) => Game.LogTrivial($"[RAGENativeUI] {o}");
         [System.Diagnostics.Conditional("DEBUG")]
-        public static void LogDebug(object o) => Game.LogTrivialDebug($"[RAGENativeUI] {o}");
+        public static void LogDebug(object o) => Log(o);
     }
 }
 
