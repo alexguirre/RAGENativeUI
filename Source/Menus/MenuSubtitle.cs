@@ -22,7 +22,7 @@ namespace RAGENativeUI.Menus
         {
             if (Menu != null)
             {
-                Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged;
+                Menu.SelectedItemChanged -= OnMenuSelectedItemChanged;
             }
         }
 
@@ -31,8 +31,8 @@ namespace RAGENativeUI.Menus
             if (Menu != null && Menu != menu)
                 throw new System.InvalidOperationException($"{nameof(MenuSubtitle)} already set to a {nameof(Menus.Menu)}.");
             Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuSubtitle)} {nameof(Menu)} can't be null.");
-            Menu.SelectedIndexChanged -= OnMenuSelectedIndexChanged; // remove first in case it's set to the same menu twice
-            Menu.SelectedIndexChanged += OnMenuSelectedIndexChanged;
+            Menu.SelectedItemChanged -= OnMenuSelectedItemChanged; // remove first in case it's set to the same menu twice
+            Menu.SelectedItemChanged += OnMenuSelectedItemChanged;
         }
 
         protected internal virtual string GetItemsCounterText()
@@ -71,7 +71,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        private void OnMenuSelectedIndexChanged(Menu sender, SelectedIndexChangedEventArgs e)
+        private void OnMenuSelectedItemChanged(Menu sender, SelectedItemChangedEventArgs e)
         {
             UpdateCounter();
         }

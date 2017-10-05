@@ -44,7 +44,7 @@ namespace Examples
 
             menu.Items.Add(new MenuItem("item with binded menu #0") { BindedMenu = subMenu, Description = "If you click this item it opens a menu with a LOT of items." });
 
-            menu.SelectedIndexChanged += (s, e) => { Game.DisplayHelp($"Selected index changed from #{e.OldIndex} to #{e.NewIndex}"); };
+            menu.SelectedItemChanged += (s, e) => { Game.DisplayHelp($"Selected index changed from #{e.OldIndex} to #{e.NewIndex}"); };
             menu.VisibleChanged += (s, e) => { Game.DisplayHelp($"Visible now: {e.IsVisible}"); };
 
             for (int i = 0; i < menu.Items.Count; i++)
