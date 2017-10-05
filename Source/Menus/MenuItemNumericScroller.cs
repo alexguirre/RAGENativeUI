@@ -31,7 +31,6 @@ namespace RAGENativeUI.Menus
             }
         }
 
-
         public decimal Minimum
         {
             get { return minimum; }

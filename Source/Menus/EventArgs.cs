@@ -2,7 +2,7 @@ namespace RAGENativeUI.Menus
 {
     using System;
 
-    public sealed class SelectedIndexChangedEventArgs : EventArgs
+    public class SelectedIndexChangedEventArgs : EventArgs
     {
         public int OldIndex { get; }
         public int NewIndex { get; }
@@ -14,7 +14,7 @@ namespace RAGENativeUI.Menus
         }
     }
 
-    public sealed class VisibleChangedEventArgs : EventArgs
+    public class VisibleChangedEventArgs : EventArgs
     {
         public bool IsVisible { get; }
 
@@ -24,7 +24,7 @@ namespace RAGENativeUI.Menus
         }
     }
 
-    public sealed class SelectedChangedEventArgs : EventArgs
+    public class SelectedChangedEventArgs : EventArgs
     {
         public bool IsSelected { get; }
 
@@ -34,7 +34,7 @@ namespace RAGENativeUI.Menus
         }
     }
 
-    public sealed class CheckedChangedEventArgs : EventArgs
+    public class CheckedChangedEventArgs : EventArgs
     {
         public bool IsChecked { get; }
 
@@ -44,22 +44,34 @@ namespace RAGENativeUI.Menus
         }
     }
 
-    public sealed class ActivatedEventArgs : EventArgs
+    public class ActivatedEventArgs : EventArgs
     {
         public ActivatedEventArgs()
         {
         }
     }
 
-    public sealed class SelectedPageChangedEventArgs : EventArgs
+    public class SelectedPageChangedEventArgs : SelectedIndexChangedEventArgs
     {
         public ScrollableMenuPage OldPage { get; }
         public ScrollableMenuPage NewPage { get; }
 
-        public SelectedPageChangedEventArgs(ScrollableMenuPage oldPage, ScrollableMenuPage newPage)
+        public SelectedPageChangedEventArgs(int oldIndex, int newIndex, ScrollableMenuPage oldPage, ScrollableMenuPage newPage) : base(oldIndex, newIndex)
         {
             OldPage = oldPage;
             NewPage = newPage;
+        }
+    }
+
+    public class SelectedItemChangedEventArgs : SelectedIndexChangedEventArgs
+    {
+        public MenuItem OldItem { get; }
+        public MenuItem NewItem { get; }
+
+        public SelectedItemChangedEventArgs(int oldIndex, int newIndex, MenuItem oldItem, MenuItem newItem) : base(oldIndex, newIndex)
+        {
+            OldItem = oldItem;
+            NewItem = newItem;
         }
     }
 }

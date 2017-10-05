@@ -61,9 +61,11 @@ namespace RAGENativeUI.Menus
 
         private void OnScrollerSelectedIndexChanged(MenuItemScroller sender, SelectedIndexChangedEventArgs e)
         {
-            ScrollableMenuPage oldPage = (e.OldIndex >= 0 && e.OldIndex < Pages.Count) ? Pages[e.OldIndex] : null;
-            ScrollableMenuPage newPage = (e.NewIndex >= 0 && e.NewIndex < Pages.Count) ? Pages[e.NewIndex] : null;
-            OnSelectedPageChanged(new SelectedPageChangedEventArgs(oldPage, newPage));
+            int oldIndex = e.OldIndex;
+            int newIndex = e.NewIndex;
+            ScrollableMenuPage oldPage = (oldIndex >= 0 && oldIndex < Pages.Count) ? Pages[oldIndex] : null;
+            ScrollableMenuPage newPage = (newIndex >= 0 && newIndex < Pages.Count) ? Pages[newIndex] : null;
+            OnSelectedPageChanged(new SelectedPageChangedEventArgs(oldIndex, newIndex, oldPage, newPage));
             UpdateItems();
         }
 

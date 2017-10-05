@@ -50,7 +50,7 @@ namespace RAGENativeUI.Menus
         private bool isVisible;
         private Menu currentParent, currentChild;
 
-        public event TypedEventHandler<Menu, SelectedIndexChangedEventArgs> SelectedIndexChanged;
+        public event TypedEventHandler<Menu, SelectedItemChangedEventArgs> SelectedItemChanged;
         public event TypedEventHandler<Menu, VisibleChangedEventArgs> VisibleChanged;
 
         public bool IsDisposed { get; private set; }
@@ -147,7 +147,7 @@ namespace RAGENativeUI.Menus
                     int oldIndex = selectedIndex;
                     selectedIndex = newIndex;
                     UpdateVisibleItemsIndices();
-                    OnSelectedIndexChanged(new SelectedIndexChangedEventArgs(oldIndex, newIndex));
+                    OnSelectedItemChanged(new SelectedItemChangedEventArgs(oldIndex, newIndex, Items[oldIndex], Items[newIndex]));
                 }
             }
         }
@@ -534,9 +534,9 @@ namespace RAGENativeUI.Menus
             return max;
         }
 
-        protected virtual void OnSelectedIndexChanged(SelectedIndexChangedEventArgs e)
+        protected virtual void OnSelectedItemChanged(SelectedItemChangedEventArgs e)
         {
-            SelectedIndexChanged?.Invoke(this, e);
+            SelectedItemChanged?.Invoke(this, e);
         }
 
         protected virtual void OnVisibleChanged(VisibleChangedEventArgs e)
