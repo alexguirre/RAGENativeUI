@@ -1,7 +1,5 @@
 namespace RAGENativeUI.Menus
 {
-    using Graphics = Rage.Graphics;
-    
     public class MenuItemCheckbox : MenuItem
     {
         private bool isChecked;
@@ -32,14 +30,6 @@ namespace RAGENativeUI.Menus
             IsChecked = !IsChecked;
 
             return base.OnAccept();
-        }
-
-        protected internal override void OnDraw(Graphics graphics, ref float x, ref float y)
-        {
-            if (!IsVisible)
-                return;
-
-            Parent.Style.DrawItemCheckbox(graphics, this, ref x, ref y);
         }
 
         protected virtual void OnCheckedChanged(CheckedChangedEventArgs e)

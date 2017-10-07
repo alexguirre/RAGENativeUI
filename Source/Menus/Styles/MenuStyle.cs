@@ -13,6 +13,8 @@ namespace RAGENativeUI.Menus.Styles
 
     public class MenuStyle : IMenuStyle
     {
+        private const float ItemsBorderSafezone = 8.25f;
+
         public PointF InitialMenuLocation { get; set; }
 
         public float MenuWidth { get; set; }
@@ -120,48 +122,54 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y)
         {
-            const float BorderSafezone = 8.25f;
-            
+            switch (item)
+            {
+                case MenuItemCheckbox checkbox: DrawItemCheckbox(graphics, checkbox, ref x, ref y); break;
+                case MenuItemScroller scroller: DrawItemScroller(graphics, scroller, ref x, ref y); break;
+                default: DrawItemBase(graphics, item, ref x, ref y); break;
+            }
+        }
+
+        private void DrawItemBase(Graphics graphics, MenuItem item, ref float x, ref float y)
+        {
             if (item.IsSelected)
             {
                 DrawSelectedGradientTexture(graphics, x, y, MenuWidth, ItemHeight);
-                DrawText(graphics, item.Text, ItemFont, new RectangleF(x + BorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(225, 10, 10, 10));
+                DrawText(graphics, item.Text, ItemFont, new RectangleF(x + ItemsBorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(225, 10, 10, 10));
             }
             else
             {
-                DrawText(graphics, item.Text, ItemFont, new RectangleF(x + BorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(240, 240, 240, 240));
+                DrawText(graphics, item.Text, ItemFont, new RectangleF(x + ItemsBorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(240, 240, 240, 240));
             }
 
             y += ItemHeight;
         }
 
-        public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
+        private void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
         {
-            const float BorderSafezone = 8.25f;
-
             float tempX = x, tempY = y;
-            DrawItem(graphics, item, ref tempX, ref tempY);
+            DrawItemBase(graphics, item, ref tempX, ref tempY);
             
             if (item.IsSelected)
             {
                 if (item.IsChecked)
                 {
-                    DrawCheckboxTickBlackTexture(graphics, x + MenuWidth - ItemHeight - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, ItemHeight - BorderSafezone, ItemHeight - BorderSafezone);
+                    DrawCheckboxTickBlackTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
                 }
                 else
                 {
-                    DrawCheckboxEmptyBlackTexture(graphics, x + MenuWidth - ItemHeight - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, ItemHeight - BorderSafezone, ItemHeight - BorderSafezone);
+                    DrawCheckboxEmptyBlackTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
                 }
             }
             else
             {
                 if (item.IsChecked)
                 {
-                    DrawCheckboxTickWhiteTexture(graphics, x + MenuWidth - ItemHeight - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, ItemHeight - BorderSafezone, ItemHeight - BorderSafezone);
+                    DrawCheckboxTickWhiteTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
                 }
                 else
                 {
-                    DrawCheckboxEmptyWhiteTexture(graphics, x + MenuWidth - ItemHeight - BorderSafezone * 0.5f, y + BorderSafezone * 0.5f, ItemHeight - BorderSafezone, ItemHeight - BorderSafezone);
+                    DrawCheckboxEmptyWhiteTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
                 }
             }
 
@@ -169,25 +177,23 @@ namespace RAGENativeUI.Menus.Styles
             y = tempY;
         }
 
-        public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y)
+        private void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y)
         {
-            const float BorderSafezone = 8.25f;
-
             float tempX = x, tempY = y;
-            DrawItem(graphics, item, ref tempX, ref tempY);
+            DrawItemBase(graphics, item, ref tempX, ref tempY);
 
             if (item.IsSelected)
             {
                 string selectedOptionText = item.GetSelectedOptionText();
 
-                DrawArrowRightTexture(graphics, x + MenuWidth - ItemHeight, y + BorderSafezone * 0.5f, ItemHeight - BorderSafezone, ItemHeight - BorderSafezone);
-                DrawText(graphics, selectedOptionText, ItemFont, new RectangleF(x, y, MenuWidth - ItemHeight / 1.5f - BorderSafezone, ItemHeight), Color.FromArgb(225, 10, 10, 10), TextHorizontalAligment.Right);
+                DrawArrowRightTexture(graphics, x + MenuWidth - ItemHeight, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                DrawText(graphics, selectedOptionText, ItemFont, new RectangleF(x, y, MenuWidth - ItemHeight / 1.5f - ItemsBorderSafezone, ItemHeight), Color.FromArgb(225, 10, 10, 10), TextHorizontalAligment.Right);
                 SizeF textSize = ItemFont.Measure(selectedOptionText);
-                DrawArrowLeftTexture(graphics, x + MenuWidth - ItemHeight - textSize.Width - BorderSafezone * 2.5f, y + BorderSafezone * 0.5f, ItemHeight - BorderSafezone, ItemHeight - BorderSafezone);
+                DrawArrowLeftTexture(graphics, x + MenuWidth - ItemHeight - textSize.Width - ItemsBorderSafezone * 2.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
             }
             else
             {
-                DrawText(graphics, item.GetSelectedOptionText(), ItemFont, new RectangleF(x, y, MenuWidth - BorderSafezone, ItemHeight), Color.FromArgb(240, 240, 240, 240), TextHorizontalAligment.Right);
+                DrawText(graphics, item.GetSelectedOptionText(), ItemFont, new RectangleF(x, y, MenuWidth - ItemsBorderSafezone, ItemHeight), Color.FromArgb(240, 240, 240, 240), TextHorizontalAligment.Right);
             }
 
             x = tempX;

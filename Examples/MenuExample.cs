@@ -245,6 +245,16 @@ namespace Examples
 
             public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y)
             {
+                switch (item)
+                {
+                    case MenuItemCheckbox checkbox: DrawItemCheckbox(graphics, checkbox, ref x, ref y); break;
+                    case MenuItemScroller scroller: DrawItemScroller(graphics, scroller, ref x, ref y); break;
+                    default: DrawItemBase(graphics, item, ref x, ref y); break;
+                }
+            }
+
+            private void DrawItemBase(Graphics graphics, MenuItem item, ref float x, ref float y)
+            {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
                 if (item.IsSelected)
@@ -257,7 +267,7 @@ namespace Examples
                 y += ItemHeight;
             }
 
-            public void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
+            private void DrawItemCheckbox(Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 
@@ -272,7 +282,7 @@ namespace Examples
                 y += ItemHeight;
             }
 
-            public void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y)
+            private void DrawItemScroller(Graphics graphics, MenuItemScroller item, ref float x, ref float y)
             {
                 RectangleF r = new RectangleF(x, y, MenuWidth, ItemHeight);
 

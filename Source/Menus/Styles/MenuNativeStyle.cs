@@ -36,16 +36,6 @@ namespace RAGENativeUI.Menus.Styles
             throw new System.NotImplementedException();
         }
 
-        public void DrawItemCheckbox(Rage.Graphics graphics, MenuItemCheckbox item, ref float x, ref float y)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void DrawItemScroller(Rage.Graphics graphics, MenuItemScroller item, ref float x, ref float y)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void DrawSubtitle(Rage.Graphics graphics, MenuSubtitle subtitle, ref float x, ref float y)
         {
             throw new System.NotImplementedException();

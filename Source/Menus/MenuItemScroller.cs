@@ -1,7 +1,6 @@
 namespace RAGENativeUI.Menus
 {
     using Rage;
-    using Graphics = Rage.Graphics;
 
     public abstract class MenuItemScroller : MenuItem
     {
@@ -54,14 +53,6 @@ namespace RAGENativeUI.Menus
             SelectedIndex = newIndex;
 
             return base.OnMoveRight();
-        }
-
-        protected internal override void OnDraw(Graphics graphics, ref float x, ref float y)
-        {
-            if (!IsVisible)
-                return;
-
-            Parent.Style.DrawItemScroller(graphics, this, ref x, ref y);
         }
 
         protected virtual void OnSelectedIndexChanged(SelectedIndexChangedEventArgs e)
