@@ -4,7 +4,7 @@ $MAJOR_VERSION = 2;
 $MINOR_VERSION = 0;
 $COMMITS_COUNT = git rev-list HEAD --count;
 $BUILDS_COUNT = 0;
-$EXTRA_INFO = "PRE-RELEASE";
+$EXTRA_INFO = "Prerelease";
 $START_YEAR = 2017;
 $CURRENT_YEAR = [System.DateTime]::UtcNow.Year;
 
@@ -16,7 +16,7 @@ if($START_YEAR -ne $CURRENT_YEAR)
 
 if($config.ToLower() -eq "release")
 {
-    $EXTRA_INFO = "RELEASE";
+    $EXTRA_INFO = "Release";
 }
 
 $lastBuildSaveFile = (Split-Path -Parent $MyInvocation.MyCommand.Definition) + "\last_build.txt";

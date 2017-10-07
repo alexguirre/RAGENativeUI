@@ -3,8 +3,12 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("RAGENativeUI")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+[assembly: AssemblyCompany("alexguirre")]
 [assembly: AssemblyProduct("RAGENativeUI")]
 [assembly: AssemblyCopyright("Copyright ©  $YEAR$ alexguirre")]
 [assembly: AssemblyTrademark("")]
@@ -13,5 +17,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("fc3d6fad-db94-4c47-9b48-3b783398bdc5")]
 [assembly: AssemblyVersion("$MAJOR$.$MINOR$.$COMMITS_COUNT$.$BUILDS_COUNT$")]
 [assembly: AssemblyFileVersion("$MAJOR$.$MINOR$.$COMMITS_COUNT$.$BUILDS_COUNT$")]
-[assembly: AssemblyInformationalVersion("$MAJOR$.$MINOR$ $EXTRA_INFO$")]
+[assembly: AssemblyInformationalVersion("$MAJOR$.$MINOR$ - $EXTRA_INFO$")]
 
