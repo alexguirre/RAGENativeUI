@@ -1,6 +1,5 @@
 namespace RAGENativeUI.Rendering
 {
-    using System;
     using System.Drawing;
     
     using Graphics = Rage.Graphics;
@@ -22,13 +21,17 @@ namespace RAGENativeUI.Rendering
 
         public Font(string name, float size)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Throw.IfNull(name, nameof(name));
+
+            Name = name;
             Size = size;
             height = -1.0f;
         }
 
         public SizeF Measure(string text)
         {
+            Throw.IfNull(text, nameof(text));
+
             return Graphics.MeasureText(text, Name, Size);
         }
     }

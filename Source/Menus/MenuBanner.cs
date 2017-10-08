@@ -18,9 +18,10 @@ namespace RAGENativeUI.Menus
 
         internal void SetMenu(Menu menu)
         {
-            if (Menu != null && Menu != menu)
-                throw new System.InvalidOperationException($"{nameof(MenuBanner)} already set to a {nameof(Menus.Menu)}.");
-            Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuBanner)} {nameof(Menu)} can't be null.");
+            Throw.InvalidOperationIf(Menu != null && Menu != menu, $"{nameof(MenuBanner)} already set to a {nameof(Menus.Menu)}.");
+            Throw.IfNull(menu, nameof(menu));
+
+            Menu = menu;
         }
 
         public virtual void Process()

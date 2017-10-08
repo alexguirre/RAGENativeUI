@@ -22,9 +22,10 @@ namespace RAGENativeUI.Menus
 
         internal void SetMenu(Menu menu)
         {
-            if (Menu != null && Menu != menu)
-                throw new InvalidOperationException($"{nameof(MenuItemsCollection)} already set to a {nameof(Menus.Menu)}.");
-            Menu = menu ?? throw new ArgumentNullException($"The {nameof(MenuItemsCollection)} {nameof(Menu)} can't be null.");
+            Throw.InvalidOperationIf(Menu != null && Menu != menu, $"{nameof(MenuItemsCollection)} already set to a {nameof(Menus.Menu)}.");
+            Throw.IfNull(menu, nameof(menu));
+
+            Menu = menu;
         }
 
         public float GetHeight()
@@ -132,10 +133,8 @@ namespace RAGENativeUI.Menus
 
         private IEnumerable<MenuItem> FindAllByInternal(string regexSearchPattern, int startIndex, int endIndex, Func<MenuItem, string> getInput)
         {
-            if (regexSearchPattern == null)
-                throw new ArgumentNullException(nameof(regexSearchPattern));
-            if (getInput == null)
-                throw new ArgumentNullException(nameof(getInput));
+            Throw.IfNull(regexSearchPattern, nameof(regexSearchPattern));
+            Throw.IfNull(getInput, nameof(getInput));
 
             for (int i = startIndex; i < endIndex; i++)
             {

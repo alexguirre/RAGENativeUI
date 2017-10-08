@@ -11,7 +11,7 @@ namespace RAGENativeUI.Scaleforms
         private InstructionalButtonsSlots slots;
 
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public InstructionalButtonsSlots Slots { get { return slots; } set { slots = value ?? throw new ArgumentNullException($"The instruction buttons {nameof(Slots)} can't be null."); } }
+        public InstructionalButtonsSlots Slots { get { return slots; } set { Throw.IfNull(value, nameof(value)); slots = value; } }
         public LayoutType Layout { get; set; } = LayoutType.Horizontal;
         public Color BackgroundColor { get; set; } = Color.FromArgb(80, 0, 0, 0);
 
@@ -90,6 +90,8 @@ namespace RAGENativeUI.Scaleforms
 
         public InstructionalButtonSlot(string label)
         {
+            Throw.IfNull(label, nameof(label));
+
             Label = label;
         }
 
@@ -124,6 +126,8 @@ namespace RAGENativeUI.Scaleforms
 
         public InstructionalButtonTextSlot(string label, string text, InstructionalButtonStyle style) : base(label)
         {
+            Throw.IfNull(text, nameof(text));
+
             Text = text;
             Style = style;
         }

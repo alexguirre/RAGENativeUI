@@ -62,8 +62,7 @@ namespace RAGENativeUI.ImGui
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void EnsureCall()
         {
-            if (state.Graphics == null)
-                throw new InvalidOperationException($"{nameof(Gui)} methods cannot be called from outside the {nameof(Gui)}.{nameof(Do)} event.");
+            Throw.InvalidOperationIf(state.Graphics == null, $"{nameof(Gui)} methods cannot be called from outside the {nameof(Gui)}.{nameof(Do)} event.");
         }
 
         public static Vector2 Mouse(bool disableGameControls = true)
@@ -89,6 +88,8 @@ namespace RAGENativeUI.ImGui
         
         public static RectangleF BeginWindow(RectangleF position, string title)
         {
+            Throw.IfNull(title, nameof(title));
+
             EnsureCall();
             uint id = state.Id(true, false);
 
@@ -144,6 +145,8 @@ namespace RAGENativeUI.ImGui
 
         public static bool Button(RectangleF position, string text)
         {
+            Throw.IfNull(text, nameof(text));
+
             EnsureCall();
             uint id = state.Id();
 
@@ -175,6 +178,8 @@ namespace RAGENativeUI.ImGui
 
         public static bool Toggle(RectangleF position, string text, bool value)
         {
+            Throw.IfNull(text, nameof(text));
+
             EnsureCall();
             uint id = state.Id();
 
@@ -216,6 +221,8 @@ namespace RAGENativeUI.ImGui
 
         public static void Label(RectangleF rectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Left, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
+            Throw.IfNull(text, nameof(text));
+
             EnsureCall();
             uint id = state.Id();
 

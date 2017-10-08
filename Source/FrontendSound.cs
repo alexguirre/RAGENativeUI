@@ -5,12 +5,15 @@ namespace RAGENativeUI
     public class FrontendSound
     {
         private string set;
-        public string Set { get { return set; } set { set = value ?? throw new ArgumentNullException($"The frontend sound {nameof(Set)} can't be null."); } }
+        public string Set { get { return set; } set { Throw.IfNull(value, nameof(value)); set = value; } }
         private string name;
-        public string Name { get { return name; } set { name = value ?? throw new ArgumentNullException($"The frontend sound {nameof(Name)} can't be null."); } }
+        public string Name { get { return name; } set { Throw.IfNull(value, nameof(value)); name = value; } }
 
         public FrontendSound(string set, string name)
         {
+            Throw.IfNull(set, nameof(set));
+            Throw.IfNull(name, nameof(name));
+
             Set = set;
             Name = name;
         }

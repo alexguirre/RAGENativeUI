@@ -12,9 +12,10 @@ namespace RAGENativeUI.Menus
 
         internal void SetMenu(Menu menu)
         {
-            if (Menu != null && Menu != menu)
-                throw new System.InvalidOperationException($"{nameof(MenuBackground)} already set to a {nameof(Menus.Menu)}.");
-            Menu = menu ?? throw new System.ArgumentNullException($"The {nameof(MenuBackground)} {nameof(Menu)} can't be null.");
+            Throw.InvalidOperationIf(Menu != null && Menu != menu, $"{nameof(MenuBackground)} already set to a {nameof(Menus.Menu)}.");
+            Throw.IfNull(menu, nameof(menu));
+
+            Menu = menu;
         }
 
         public float GetHeight() => Menu.Items.GetHeight();

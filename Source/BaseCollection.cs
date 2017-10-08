@@ -21,15 +21,13 @@ namespace RAGENativeUI
         {
             get
             {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                Throw.IfOutOfRange(index, 0, Count - 1, nameof(index));
 
                 return InternalList[index];
             }
             set
             {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                Throw.IfOutOfRange(index, 0, Count - 1, nameof(index));
 
                 InternalList[index] = value;
             }
@@ -44,6 +42,8 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Ctor2"]/*' />
         public BaseCollection(IEnumerable<T> collection)
         {
+            Throw.IfNull(collection, nameof(collection));
+
             InternalList = new List<T>(collection);
         }
 

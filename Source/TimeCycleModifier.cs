@@ -2,12 +2,10 @@ namespace RAGENativeUI
 {
     using System;
     using System.Linq;
-    using System.Diagnostics;
     using System.Collections;
     using System.Collections.Generic;
 
     using Rage;
-    using Rage.Native;
 
     using RAGENativeUI.Memory;
 
@@ -85,11 +83,14 @@ namespace RAGENativeUI
         // creates new timecycle modifier in memory
         private TimeCycleModifier(string name, uint flags, CTimeCycleModifier.Mod[] mods)
         {
-            uint hash = Game.GetHashKey(name);
-            KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
-            if (GameMemory.TimeCycleModifiersManager->IsNameUsed(hash))
-                throw new InvalidOperationException($"The name '{name}' is already in use.");
+            Throw.IfNull(name, nameof(name));
+            Throw.IfNull(mods, nameof(mods));
 
+            uint hash = Game.GetHashKey(name);
+
+            Throw.InvalidOperationIf(GameMemory.TimeCycleModifiersManager->IsNameUsed(hash), $"The name '{name}' is already in use.");
+
+            KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
 
             this.hash = hash;
             memAddress = (IntPtr)GameMemory.TimeCycleModifiersManager->NewTimeCycleModifier(hash, mods, flags);
@@ -107,7 +108,7 @@ namespace RAGENativeUI
         // TODO: maybe change Tuple<TimeCycleModifierModType, float, float> to a custom struct
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor2"]/*' />
         public TimeCycleModifier(string name, uint flags, params Tuple<TimeCycleModifierModType, float, float>[] mods)
-            : this(name, flags, mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray())
+            : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray())
         {
         }
 
@@ -132,6 +133,8 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByName"]/*' />
         public static TimeCycleModifier GetByName(string name)
         {
+            Throw.IfNull(name, nameof(name));
+
             uint hash = Game.GetHashKey(name);
             KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
             return GetByHash(hash);
@@ -160,10 +163,7 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByIndex"]/*' />
         public static TimeCycleModifier GetByIndex(int index)
         {
-            if (index < 0 || index >= NumberOfTimeCycleModifiers)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
+            Throw.IfOutOfRange(index, 0, NumberOfTimeCycleModifiers - 1, nameof(index));
 
             short i = (short)index;
             CTimeCycleModifier* native = GameMemory.TimeCycleModifiersManager->Modifiers.Get(i);
@@ -274,8 +274,8 @@ namespace RAGENativeUI
             get
             {
                 CTimeCycleModifier* native = (CTimeCycleModifier*)Modifier.MemoryAddress;
-                if (index < 0 || index >= native->Mods.Count)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+
+                Throw.IfOutOfRange(index, 0, native->Mods.Count - 1, nameof(index));
 
                 CTimeCycleModifier.Mod* nativeMod = native->Mods.Get((short)index);
                 TimeCycleModifierModType type = (TimeCycleModifierModType)nativeMod->ModType;
@@ -300,12 +300,12 @@ namespace RAGENativeUI
             {
                 if (modByType.TryGetValue(type, out TimeCycleModifierMod m))
                 {
-                    return m.IsValid ? m : throw new InvalidOperationException($"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
+                    Throw.InvalidOperationIfNot(m.IsValid, $"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
+                    return m;
                 }
                 else
                 {
-                    if(GetIndexForType(type) == -1)
-                        throw new InvalidOperationException($"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
+                    Throw.InvalidOperationIf(GetIndexForType(type) == -1, $"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
                     TimeCycleModifierMod managedMod = new TimeCycleModifierMod(this, type);
                     modByType[type] = managedMod;
                     return managedMod;
@@ -349,8 +349,7 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Add"]/*' />
         public TimeCycleModifierMod Add(TimeCycleModifierModType type, float value1, float value2)
         {
-            if(Has(type))
-                throw new InvalidOperationException($"This {nameof(TimeCycleModifierModsCollection)} already contains a mod of type {type}.");
+            Throw.InvalidOperationIf(Has(type), $"This {nameof(TimeCycleModifierModsCollection)} already contains a mod of type {type}.");
 
             CTimeCycleModifier* native = (CTimeCycleModifier*)Modifier.MemoryAddress;
 
@@ -371,8 +370,7 @@ namespace RAGENativeUI
         {
             short index = GetIndexForType(type);
 
-            if (index == -1)
-                throw new InvalidOperationException($"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
+            Throw.InvalidOperationIf(index == -1, $"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
 
             CTimeCycleModifier* native = (CTimeCycleModifier*)Modifier.MemoryAddress;
             native->RemoveModEntry(index);
@@ -421,11 +419,10 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Value1"]/*' />
         public float Value1
         {
-            get { return IsValid ? GetNative()->Value1 : throw new InvalidOperationException(); }
+            get { Throw.InvalidOperationIfNot(IsValid); return GetNative()->Value1; }
             set
             {
-                if (!IsValid)
-                    throw new InvalidOperationException();
+                Throw.InvalidOperationIfNot(IsValid);
                 GetNative()->Value1 = value;
             }
         }
@@ -433,11 +430,10 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Value2"]/*' />
         public float Value2
         {
-            get { return IsValid ? GetNative()->Value2 : throw new InvalidOperationException(); }
+            get { Throw.InvalidOperationIfNot(IsValid); return GetNative()->Value2; }
             set
             {
-                if (!IsValid)
-                    throw new InvalidOperationException();
+                Throw.InvalidOperationIfNot(IsValid);
                 GetNative()->Value2 = value;
             }
         }
@@ -461,8 +457,8 @@ namespace RAGENativeUI
                 return null;
 
             CTimeCycleModifier* native = (CTimeCycleModifier*)collection.Modifier.MemoryAddress;
-            if (index >= native->Mods.Count)
-                throw new IndexOutOfRangeException();
+
+            Throw.IfOutOfRange(index, 0, native->Mods.Count - 1, nameof(index), "Shouldn't happen, notify a RAGENativeUI developer.");
 
             return native->Mods.Get(index);
         }

@@ -10,9 +10,8 @@ namespace RAGENativeUI.Menus
 
         public MenuItemEnumScroller(string text, Type enumType) : base(text)
         {
-            if (!enumType.IsEnum)
-                throw new InvalidOperationException($"The type {enumType.Name} isn't an enum.");
-
+            Throw.InvalidOperationIfNot(enumType.IsEnum, $"The type {enumType.Name} isn't an enum.");
+            
             EnumType = enumType;
             Values = Enum.GetValues(enumType);
         }

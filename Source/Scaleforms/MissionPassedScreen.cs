@@ -38,11 +38,11 @@ namespace RAGENativeUI.Scaleforms
         }
         
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string Title { get { return title; } set { title = value ?? throw new ArgumentNullException($"The mission passed screen {nameof(Title)} can't be null."); } }
+        public string Title { get { return title; } set { Throw.IfNull(value, nameof(value)); title = value; } }
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string Subtitle { get { return subtitle; } set { subtitle = value ?? throw new ArgumentNullException($"The mission passed screen {nameof(Subtitle)} can't be null."); } }
+        public string Subtitle { get { return subtitle; } set { Throw.IfNull(value, nameof(value)); subtitle = value; } }
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public MissionPassedScreenItemsCollection Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The mission passed screen {nameof(Items)} can't be null."); } }
+        public MissionPassedScreenItemsCollection Items { get { return items; } set { Throw.IfNull(value, nameof(value)); items = value; } }
 
         public bool IsVisible { get { return state != State.None; } }
 
@@ -58,6 +58,9 @@ namespace RAGENativeUI.Scaleforms
 
         public MissionPassedScreen(string title, string subtitle)
         {
+            Throw.IfNull(title, nameof(title));
+            Throw.IfNull(subtitle, nameof(subtitle));
+
             BigMessage = new BigMessage();
             BigMessage.OutTransition = BigMessage.OutTransitionType.MoveUp;
             BigMessage.OutTransitionTime = 0.4f;

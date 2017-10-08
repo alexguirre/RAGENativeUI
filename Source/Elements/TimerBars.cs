@@ -8,7 +8,8 @@ namespace RAGENativeUI.Elements
 
     public abstract class TimerBarBase
     {
-        protected const float DefaultWidth = 0.157f, DefaultHeight = 0.036f;
+        public static readonly float DefaultWidth = 0.157f;
+        public static readonly float DefaultHeight = 0.036f;
 
         public bool IsVisible { get; set; } = true;
 
@@ -43,12 +44,14 @@ namespace RAGENativeUI.Elements
     public class LabeledTimerBar : TimerBarBase
     {
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string Label { get { return LabelElement.Caption; } set { LabelElement.Caption = value ?? throw new ArgumentNullException($"The timer bar {nameof(Label)} can't be null."); } }
+        public string Label { get { return LabelElement.Caption; } set { Throw.IfNull(value, nameof(value)); LabelElement.Caption = value; } }
 
         protected Text LabelElement { get; set; }
 
         public LabeledTimerBar(string label)
         {
+            Throw.IfNull(label, nameof(label));
+
             LabelElement = new Text(label, ScreenPosition.FromRelativeCoords(-1.0f, -1.0f), 0.288f, Color.White) { IsVisible = true, Alignment = TextAlignment.Right };
         }
         
@@ -69,12 +72,14 @@ namespace RAGENativeUI.Elements
     public class TextTimerBar : LabeledTimerBar
     {
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string Text { get { return TextElement.Caption; } set { TextElement.Caption = value ?? throw new ArgumentNullException($"The timer bar {nameof(Text)} can't be null."); } }
+        public string Text { get { return TextElement.Caption; } set { Throw.IfNull(value, nameof(value)); TextElement.Caption = value; } }
 
         protected Text TextElement { get; set; }
 
         public TextTimerBar(string label, string text) : base(label)
         {
+            Throw.IfNull(text, nameof(text));
+
             TextElement = new Text(text, ScreenPosition.FromRelativeCoords(-1.0f, -1.0f), 0.5f, Color.White) { IsVisible = true, Alignment = TextAlignment.Right };
         }
         

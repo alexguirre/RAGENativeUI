@@ -12,7 +12,7 @@ namespace RAGENativeUI.Elements
 
         public TextureDictionary TextureDictionary { get; set; }
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string TextureName { get { return textureName; } set { textureName = value ?? throw new ArgumentNullException($"The sprite {nameof(TextureName)} can't be null."); } }
+        public string TextureName { get { return textureName; } set { Throw.IfNull(value, nameof(value)); textureName = value; } }
         public SizeF Resolution
         {
             get
@@ -28,6 +28,8 @@ namespace RAGENativeUI.Elements
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
         {
+            Throw.IfNull(textureName, nameof(textureName));
+
             TextureDictionary = textureDictionary;
             TextureName = textureName;
             Rectangle = rectangle;
@@ -50,6 +52,8 @@ namespace RAGENativeUI.Elements
 
         public static void Draw(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, float rotation, Color color)
         {
+            Throw.IfNull(textureName, nameof(textureName));
+
             if (!textureDictionary.IsLoaded)
                 textureDictionary.Load();
 

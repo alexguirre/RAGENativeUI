@@ -1,6 +1,5 @@
 namespace RAGENativeUI.Memory
 {
-    using System;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Size = 416)]
@@ -20,10 +19,7 @@ namespace RAGENativeUI.Memory
 
             public CAnimPostFX* Get(short index)
             {
-                if (index >= Size)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"The size of this {nameof(CAnimPostFX)}.{nameof(CArray)} is {Size}, the index {index} is out of range.");
-                }
+                Throw.IfOutOfRange(index, 0, Size - 1, nameof(index), $"The size of this {nameof(CAnimPostFX)}.{nameof(CArray)} is {Size}, the index {index} is out of range.");
 
                 return &Offset[index];
             }

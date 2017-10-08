@@ -97,6 +97,8 @@ namespace RAGENativeUI
 
         public static PostFxAnimation GetByName(string name)
         {
+            Throw.IfNull(name, nameof(name));
+
             uint hash = Game.GetHashKey(name);
             KnownNames.PostFxAnimations.Dictionary[hash] = name;
             return GetByHash(hash);
@@ -125,10 +127,7 @@ namespace RAGENativeUI
 
         public static PostFxAnimation GetByIndex(int index)
         {
-            if (index < 0 || index >= Count)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            Throw.IfOutOfRange(index, 0, Count - 1, nameof(index));
 
             short i = (short)index;
             CAnimPostFX* native = GameMemory.AnimPostFXManager->Effects.Get(i);
@@ -256,8 +255,7 @@ namespace RAGENativeUI
         {
             get
             {
-                if (index < 0 || index >= Count)
-                    throw new IndexOutOfRangeException();
+                Throw.IfOutOfRange(index, 0, Count - 1, nameof(index));
 
                 if (layers[index] == null)
                 {

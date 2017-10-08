@@ -58,7 +58,11 @@ namespace RAGENativeUI.Menus
         public IMenuStyle Style
         {
             get => style;
-            set => style = value ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null.");
+            set
+            {
+                Throw.IfNull(value, nameof(value));
+                style = value;
+            }
         }
 
         public MenuBanner Banner
@@ -96,7 +100,8 @@ namespace RAGENativeUI.Menus
             get => items;
             set
             {
-                items = value ?? throw new ArgumentNullException($"The menu {nameof(Items)} can't be null.");
+                Throw.IfNull(value, nameof(value));
+                items = value;
                 items.SetMenu(this);
             }
         }
@@ -164,8 +169,8 @@ namespace RAGENativeUI.Menus
             get { return maxItemsOnScreen; }
             set
             {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException($"{nameof(MaxItemsOnScreen)} can't be a negative value.");
+                Throw.IfNegative(value, nameof(value));
+                
                 maxItemsOnScreen = value;
                 UpdateVisibleItemsIndices();
             }
@@ -195,9 +200,9 @@ namespace RAGENativeUI.Menus
 
         public Menu(string title, string subtitle, MenuStyle style)
         {
-            MenusManager.AddMenu(this);
+            Throw.IfNull(style, nameof(style));
 
-            Style = style ?? throw new ArgumentNullException($"The menu {nameof(Style)} can't be null.");
+            Style = style;
             Location = Style.InitialMenuLocation;
             Banner = new MenuBanner(title);
             Subtitle = new MenuSubtitle(subtitle);
@@ -208,6 +213,8 @@ namespace RAGENativeUI.Menus
 
             Controls = new MenuControls();
             SoundsSet = new MenuSoundsSet();
+
+            MenusManager.AddMenu(this);
         }
 
         public Menu(string title, string subtitle) : this(title, subtitle, MenuStyle.Default)
@@ -464,8 +471,7 @@ namespace RAGENativeUI.Menus
             if (MaxVisibleItemIndex > max)
                 MaxVisibleItemIndex = max;
 
-            if (MaxVisibleItemIndex < MinVisibleItemIndex)
-                throw new InvalidOperationException($"MaxVisibleItemIndex({MaxVisibleItemIndex}) < MinVisibleItemIndex({MinVisibleItemIndex}): this shouldn't happen!");
+            Throw.InvalidOperationIf(MaxVisibleItemIndex < MinVisibleItemIndex, $"MaxVisibleItemIndex({MaxVisibleItemIndex}) < MinVisibleItemIndex({MinVisibleItemIndex}): Shouldn't happen, notify a RAGENativeUI developer.");
         }
 
         // only called if the Menu is visible

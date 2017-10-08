@@ -17,8 +17,8 @@ namespace RAGENativeUI.Menus
             get { return pages; }
             set
             {
-                if (value == null)
-                    throw new ArgumentNullException($"The menu {nameof(Pages)} can't be null.");
+                Throw.IfNull(value, nameof(value));
+                
                 if (value == pages)
                     return;
                 pages = value;
@@ -99,10 +99,12 @@ namespace RAGENativeUI.Menus
         {
             private ScrollableMenuPagesCollection pages;
 
-            public ScrollableMenuPagesCollection Pages { get { return pages; } set { pages = value ?? throw new ArgumentNullException(); } }
+            public ScrollableMenuPagesCollection Pages { get { return pages; } set { Throw.IfNull(value, nameof(value)); pages = value; } }
 
             public MenuItemPagesScroller(string text, ScrollableMenuPagesCollection pages) : base(text)
             {
+                Throw.IfNull(pages, nameof(pages));
+
                 Pages = pages;
             }
 
@@ -128,11 +130,13 @@ namespace RAGENativeUI.Menus
         private string text;
         private List<MenuItem> items;
 
-        public string Text { get { return text; } set { text = value ?? throw new ArgumentNullException($"The page {nameof(Text)} can't be null."); } }
-        public List<MenuItem> Items { get { return items; } set { items = value ?? throw new ArgumentNullException($"The page {nameof(Items)} can't be null."); } }
+        public string Text { get { return text; } set { Throw.IfNull(value, nameof(value)); text = value; } }
+        public List<MenuItem> Items { get { return items; } set { Throw.IfNull(value, nameof(value)); items = value; } }
 
         public ScrollableMenuPage(string text)
         {
+            Throw.IfNull(text, nameof(text));
+
             Text = text;
             Items = new List<MenuItem>();
         }
@@ -143,15 +147,20 @@ namespace RAGENativeUI.Menus
     {
         public ScrollableMenu Menu { get; private set; }
 
-        public ScrollableMenuPagesCollection()
+        public ScrollableMenuPagesCollection() : base()
+        {
+        }
+
+        public ScrollableMenuPagesCollection(IEnumerable<ScrollableMenuPage> collection) : base(collection)
         {
         }
 
         internal void SetMenu(ScrollableMenu menu)
         {
-            if (Menu != null && Menu != menu)
-                throw new InvalidOperationException($"{nameof(ScrollableMenuPagesCollection)} already set to a {nameof(ScrollableMenu)}.");
-            Menu = menu ?? throw new ArgumentNullException($"The {nameof(ScrollableMenuPagesCollection)} {nameof(Menu)} can't be null.");
+            Throw.InvalidOperationIf(Menu != null && Menu != menu, $"{nameof(ScrollableMenuPagesCollection)} already set to a {nameof(Menus.Menu)}.");
+            Throw.IfNull(menu, nameof(menu));
+
+            Menu = menu;
         }
 
         public override void Add(ScrollableMenuPage item)

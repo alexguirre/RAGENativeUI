@@ -18,8 +18,8 @@ namespace RAGENativeUI.Elements
             get { return caption; }
             set
             {
-                if (value == null)
-                    throw new ArgumentNullException($"The text {nameof(Caption)} can't be null.");
+                Throw.IfNull(value, nameof(value));
+
                 if (value == caption)
                     return;
                 caption = value;
@@ -45,6 +45,8 @@ namespace RAGENativeUI.Elements
 
         public Text(string caption, ScreenPosition position, float scale, Color color)
         {
+            Throw.IfNull(caption, nameof(caption));
+
             Caption = caption;
             Position = position;
             Scale = scale;
@@ -66,6 +68,8 @@ namespace RAGENativeUI.Elements
 
         public static void Draw(ScreenPosition position, string caption, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
+            Throw.IfNull(caption, nameof(caption));
+
             const int MaxStringLenth = 99;
             List<string> captionSplitted = new List<string>((int)Math.Ceiling(caption.Length / (double)MaxStringLenth));
 
@@ -80,6 +84,8 @@ namespace RAGENativeUI.Elements
 
         public static void Draw(ScreenPosition position, List<string> captionSplitted, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
+            Throw.IfNull(captionSplitted, nameof(captionSplitted));
+
             NativeFunction.Natives.SetTextFont((int)font);
             NativeFunction.Natives.SetTextScale(1.0f, scale);
             NativeFunction.Natives.SetTextColour(color.R, color.G, color.B, color.A);

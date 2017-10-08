@@ -15,21 +15,19 @@ namespace RAGENativeUI.Menus.Styles
     {
         private const float ItemsBorderSafezone = 8.25f;
 
+        private Texture spriteSheet;
+
         public PointF InitialMenuLocation { get; set; }
-
         public float MenuWidth { get; set; }
-
         public float BannerHeight { get; set; }
         public float SubtitleHeight { get; set; }
         public float ItemHeight { get; set; }
         public float UpDownDisplayHeight{ get; set; }
-
         public Font TitleFont { get; set; }
         public Font SubtitleFont { get; set; }
         public Font ItemFont { get; set; }
         public Font DescriptionFont { get; set; }
-
-        public Texture SpriteSheet { get; set; }
+        public Texture SpriteSheet { get => spriteSheet; set { Throw.IfNull(value, nameof(value)); spriteSheet = value; }  }
 
         public MenuStyle()
         {
@@ -53,6 +51,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawBackground(Graphics graphics, MenuBackground background, ref float x, ref float y)
         {
+            Throw.IfNull(graphics, nameof(graphics));
+            Throw.IfNull(background, nameof(background));
+
             if (background.Menu.IsAnyItemOnScreen)
             {
                 float h = background.GetHeight();
@@ -62,6 +63,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawBanner(Graphics graphics, MenuBanner banner, ref float x, ref float y)
         {
+            Throw.IfNull(graphics, nameof(graphics));
+            Throw.IfNull(banner, nameof(banner));
+
             DrawBannerTexture(graphics, x, y, MenuWidth, BannerHeight);
             if (banner.Title != null)
             {
@@ -72,6 +76,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawDescription(Graphics graphics, MenuDescription description, ref float x, ref float y)
         {
+            Throw.IfNull(graphics, nameof(graphics));
+            Throw.IfNull(description, nameof(description));
+
             const float BorderSafezone = 8.5f;
 
             float h = description.GetHeight();
@@ -93,6 +100,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawSubtitle(Graphics graphics, MenuSubtitle subtitle, ref float x, ref float y)
         {
+            Throw.IfNull(graphics, nameof(graphics));
+            Throw.IfNull(subtitle, nameof(subtitle));
+
             const float BorderSafezone = 8.5f;
             
             graphics.DrawRectangle(new RectangleF(x + 1, y + 1, MenuWidth, SubtitleHeight), Color.Black);
@@ -108,6 +118,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawUpDownDisplay(Graphics graphics, MenuUpDownDisplay upDownDisplay, ref float x, ref float y)
         {
+            Throw.IfNull(graphics, nameof(graphics));
+            Throw.IfNull(upDownDisplay, nameof(upDownDisplay));
+
             if (ShouldUpDownDisplayBeVisible(upDownDisplay))
             {
                 float arrowsSize = UpDownDisplayHeight;
@@ -122,6 +135,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public void DrawItem(Graphics graphics, MenuItem item, ref float x, ref float y)
         {
+            Throw.IfNull(graphics, nameof(graphics));
+            Throw.IfNull(item, nameof(item));
+
             switch (item)
             {
                 case MenuItemCheckbox checkbox: DrawItemCheckbox(graphics, checkbox, ref x, ref y); break;
@@ -202,6 +218,9 @@ namespace RAGENativeUI.Menus.Styles
 
         public virtual string FormatDescriptionText(MenuDescription description, string text, out SizeF textMeasurement)
         {
+            Throw.IfNull(description, nameof(description));
+            Throw.IfNull(text, nameof(text));
+
             const float BorderSafezone = 8.5f;
 
             string t = Common.WrapText(text.Replace('\n', ' '), DescriptionFont, MenuWidth - BorderSafezone * 2f);

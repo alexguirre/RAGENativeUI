@@ -19,10 +19,7 @@ namespace RAGENativeUI.Menus
             {
                 if (value != currentValue)
                 {
-                    if (value < minimum || value > maximum)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(Value), $"{nameof(Value)} can't be lower than {nameof(Minimum)} or higher than {nameof(Maximum)}.");
-                    }
+                    Throw.IfOutOfRange(value, minimum, maximum, nameof(value), $"{nameof(Value)} can't be lower than {nameof(Minimum)} or higher than {nameof(Maximum)}.");
 
                     currentValue = value;
 
@@ -70,10 +67,7 @@ namespace RAGENativeUI.Menus
             get { return increment; }
             set
             {
-                if (value < 0.0m)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(Increment), $"{nameof(Increment)} can't be lower than zero.");
-                }
+                Throw.IfNegative(value, nameof(value));
 
                 increment = value;
 
