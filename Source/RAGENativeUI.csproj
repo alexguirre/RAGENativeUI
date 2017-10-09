@@ -103,10 +103,7 @@
     <Compile Include="Menus\MenusManager.cs" />
     <Compile Include="Menus\MenuSubtitle.cs" />
     <Compile Include="Menus\MenuUpDownDisplay.cs" />
-    <AdditionalFiles Include="Properties\AssemblyInfo_template.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <InProject>false</InProject>
-    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\TextAligment.cs" />
     <Compile Include="BaseCollection.cs" />
     <Compile Include="Control.cs" />
@@ -128,7 +125,7 @@
 ..\PostBuild\InjectModuleInitializer.exe "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>cd $(ProjectDir)
-powershell -ExecutionPolicy RemoteSigned -file ..\PreBuild\versioning.ps1 "$(ConfigurationName)"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
