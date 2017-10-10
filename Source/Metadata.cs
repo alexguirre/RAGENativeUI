@@ -1,5 +1,6 @@
 namespace RAGENativeUI
 {
+    using System;
     using System.Dynamic;
     using System.Collections.Generic;
 
@@ -12,6 +13,40 @@ namespace RAGENativeUI
             Throw.IfNull(key, nameof(key));
 
             return dictionary != null && dictionary.ContainsKey(key);
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            Throw.IfNull(key, nameof(key));
+
+            value = null;
+            return dictionary != null && dictionary.TryGetValue(key, out value);
+        }
+
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            Throw.IfNull(key, nameof(key));
+            
+            if(TryGetValue(key, out object v))
+            {
+                if(v is T convertedValue)
+                {
+                    value = convertedValue;
+                    return true;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Invalid cast from {v.GetType().Name} to {typeof(T).Name}");
+                }
+            }
+
+            value = default(T);
+            return false;
+        }
+
+        public Dictionary<string, object> ToDictionary()
+        {
+            return dictionary != null ? new Dictionary<string, object>(dictionary) : new Dictionary<string, object>(0);
         }
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
