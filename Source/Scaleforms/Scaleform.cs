@@ -135,8 +135,8 @@ namespace RAGENativeUI.Scaleforms
                         case char charValue:
                             NativeFunction.Natives.xBA7148484BD90365(charValue.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
                             break;
-
-                        default: throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.", nameof(arguments));
+                        case null: throw new ArgumentNullException($"Null argument passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.");
+                        default: throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.");
                     }
                 }
             }

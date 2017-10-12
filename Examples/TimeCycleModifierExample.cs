@@ -99,8 +99,8 @@ namespace Examples
                     Game.DisplayNotification("Creating new CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers);
                     Game.LogTrivial("Creating new CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers);
                     TimeCycleModifier m = new TimeCycleModifier("CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers, 0,
-                       Tuple.Create(TimeCycleModifierModType.postfx_desaturation, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
-                       Tuple.Create(TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
+                           (TimeCycleModifierModType.postfx_desaturation, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
+                           (TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
                 }
 
                 Gui.EndWindow();

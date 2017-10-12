@@ -107,8 +107,8 @@ namespace RAGENativeUI
 
         // TODO: maybe change Tuple<TimeCycleModifierModType, float, float> to a custom struct
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor2"]/*' />
-        public TimeCycleModifier(string name, uint flags, params Tuple<TimeCycleModifierModType, float, float>[] mods)
-            : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Item1, Value1 = m.Item2, Value2 = m.Item3 }).ToArray())
+        public TimeCycleModifier(string name, uint flags, params (TimeCycleModifierModType type, float value1, float value2)[] mods)
+            : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.type, Value1 = m.value1, Value2 = m.value2 }).ToArray())
         {
         }
 
