@@ -19,11 +19,12 @@ namespace Examples
         {
             Menu menu = new Menu("title", "SUBTITLE");
             menu.Location = new PointF(480f, 17f);
-
+            
             menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
             menu.Items.Add(new MenuItemCheckbox("cb #0") { IsChecked = true, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
             menu.Items.Add(new MenuItemCheckbox("cb #1") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
             menu.Items.Add(new MenuItemCheckbox("cb #2"));
+            menu.Items.Add(new MenuItem("disabled item #0") { Description = "I'm disabled.", IsDisabled = true });
             menu.Items.Add(new MenuItemEnumScroller("enum scroller #0", typeof(GameControl)));
             menu.Items.Add(new MenuItemEnumScroller<GameControl>("enum scroller #1"));
             menu.Items.Add(new MenuItemNumericScroller("num scroller #0"));
@@ -32,6 +33,11 @@ namespace Examples
             menu.Items.Add(new MenuItemNumericScroller("num scroller #3") { Minimum = -1.0m, Maximum = 1.0m, Value = 0.0m, Increment = 0.00005m, DecimalPlaces = 5 });
             menu.Items.Add(new MenuItemListScroller("list scroller #0"));
             menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
+            menu.Items.Add(new MenuItem("disabled item #1") { Description = "I'm disabled.", IsDisabled = true });
+            menu.Items.Add(new MenuItemCheckbox("disabled item #1") { Description = "I'm disabled.", IsDisabled = true });
+            menu.Items.Add(new MenuItemEnumScroller<GroupFormationType>("disabled item #2") { Description = "I'm disabled.", IsDisabled = true });
+            menu.Items.Add(new MenuItemCheckbox("skipped disabled item #0") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true, IsChecked = true });
+            menu.Items.Add(new MenuItemEnumScroller<GroupFormationType>("skipped disabled item #1") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true });
 
             Menu subMenu = new Menu("SubMenu", "SUB!");
             subMenu.Location = menu.Location;
@@ -65,7 +71,7 @@ namespace Examples
                 menu.Items[idx].Activated += (s, e) => { Game.DisplayHelp($"Activated item at index #{idx}"); };
                 menu.Items[idx].SelectedChanged += (s, e) => { Game.DisplayHelp($"{(e.IsSelected ? "Selected" : "Unselected")} item at index #{idx}"); };
             }
-
+            
             menu.Metadata["Test"] = new Vector3(50f, 75f, 100f);
             menu.Items[0].Metadata.Test = 100;
             menu.Items[0].Activated += (s, e) => 
@@ -107,6 +113,8 @@ namespace Examples
             scrollableMenu.SelectedPageChanged += (s, e) => { Game.DisplayHelp($"Page changed from '{e.OldPage.Text}' to '{e.NewPage.Text}'."); };
 
             menu.Items.Add(new MenuItem("item with binded scrollable menu") { BindedMenu = scrollableMenu });
+
+            menu.Items.Add(new MenuItem("skipped disabled item #2") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true });
 
             GameFiber.StartNew(() =>
             {

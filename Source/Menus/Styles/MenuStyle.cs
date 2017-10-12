@@ -16,6 +16,9 @@ namespace RAGENativeUI.Menus.Styles
         private const float ItemsBorderSafezone = 8.25f;
 
         private Texture spriteSheet;
+        private readonly Color itemSelectedTextColor = Color.FromArgb(225, 10, 10, 10),
+                               itemDisabledTextColor = Color.FromArgb(163, 159, 148),
+                               itemDefaultTextColor = Color.FromArgb(240, 240, 240, 240);
 
         public PointF InitialMenuLocation { get; set; }
         public float MenuWidth { get; set; }
@@ -148,15 +151,16 @@ namespace RAGENativeUI.Menus.Styles
 
         private void DrawItemBase(Graphics graphics, MenuItem item, ref float x, ref float y)
         {
-            if (item.IsSelected)
+            bool selected = item.IsSelected, disabled = item.IsDisabled;
+
+            Color textColor = GetItemTextColor(selected, disabled);
+
+            if (selected)
             {
                 DrawSelectedGradientTexture(graphics, x, y, MenuWidth, ItemHeight);
-                DrawText(graphics, item.Text, ItemFont, new RectangleF(x + ItemsBorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(225, 10, 10, 10));
             }
-            else
-            {
-                DrawText(graphics, item.Text, ItemFont, new RectangleF(x + ItemsBorderSafezone, y, MenuWidth, ItemHeight), Color.FromArgb(240, 240, 240, 240));
-            }
+
+            DrawText(graphics, item.Text, ItemFont, new RectangleF(x + ItemsBorderSafezone, y, MenuWidth, ItemHeight), textColor);
 
             y += ItemHeight;
         }
@@ -165,23 +169,39 @@ namespace RAGENativeUI.Menus.Styles
         {
             float tempX = x, tempY = y;
             DrawItemBase(graphics, item, ref tempX, ref tempY);
-            
-            if (item.IsSelected)
+
+            bool selected = item.IsSelected, disabled = item.IsDisabled, isChecked = item.IsChecked;
+
+            if (disabled)
             {
-                if (item.IsChecked)
+                if (isChecked)
+                {
+                    DrawCheckboxTickDisabledTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                }
+                else
+                {
+                    DrawCheckboxEmptyDisabledTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                }
+            }
+            else if (selected)
+            {
+                if (isChecked)
                 {
                     DrawCheckboxTickBlackTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+
                 }
                 else
                 {
                     DrawCheckboxEmptyBlackTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+
                 }
             }
             else
             {
-                if (item.IsChecked)
+                if (isChecked)
                 {
                     DrawCheckboxTickWhiteTexture(graphics, x + MenuWidth - ItemHeight - ItemsBorderSafezone * 0.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+
                 }
                 else
                 {
@@ -198,18 +218,38 @@ namespace RAGENativeUI.Menus.Styles
             float tempX = x, tempY = y;
             DrawItemBase(graphics, item, ref tempX, ref tempY);
 
-            if (item.IsSelected)
+            bool selected = item.IsSelected, disabled = item.IsDisabled;
+
+            Color textColor = GetItemTextColor(selected, disabled);
+
+            if (selected)
             {
                 string selectedOptionText = item.GetSelectedOptionText();
 
-                DrawArrowRightTexture(graphics, x + MenuWidth - ItemHeight, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
-                DrawText(graphics, selectedOptionText, ItemFont, new RectangleF(x, y, MenuWidth - ItemHeight / 1.5f - ItemsBorderSafezone, ItemHeight), Color.FromArgb(225, 10, 10, 10), TextHorizontalAligment.Right);
+                if (disabled)
+                {
+                    DrawArrowRightDisabledTexture(graphics, x + MenuWidth - ItemHeight, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                }
+                else
+                {
+                    DrawArrowRightTexture(graphics, x + MenuWidth - ItemHeight, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                }
+
+                DrawText(graphics, selectedOptionText, ItemFont, new RectangleF(x, y, MenuWidth - ItemHeight / 1.5f - ItemsBorderSafezone, ItemHeight), textColor, TextHorizontalAligment.Right);
                 SizeF textSize = ItemFont.Measure(selectedOptionText);
-                DrawArrowLeftTexture(graphics, x + MenuWidth - ItemHeight - textSize.Width - ItemsBorderSafezone * 2.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+
+                if (disabled)
+                {
+                    DrawArrowLeftDisabledTexture(graphics, x + MenuWidth - ItemHeight - textSize.Width - ItemsBorderSafezone * 2.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                }
+                else
+                {
+                    DrawArrowLeftTexture(graphics, x + MenuWidth - ItemHeight - textSize.Width - ItemsBorderSafezone * 2.5f, y + ItemsBorderSafezone * 0.5f, ItemHeight - ItemsBorderSafezone, ItemHeight - ItemsBorderSafezone);
+                }
             }
             else
             {
-                DrawText(graphics, item.GetSelectedOptionText(), ItemFont, new RectangleF(x, y, MenuWidth - ItemsBorderSafezone, ItemHeight), Color.FromArgb(240, 240, 240, 240), TextHorizontalAligment.Right);
+                DrawText(graphics, item.GetSelectedOptionText(), ItemFont, new RectangleF(x, y, MenuWidth - ItemsBorderSafezone, ItemHeight), textColor, TextHorizontalAligment.Right);
             }
 
             x = tempX;
@@ -232,20 +272,38 @@ namespace RAGENativeUI.Menus.Styles
         private bool ShouldUpDownDisplayBeVisible(MenuUpDownDisplay display) => display.Menu.IsAnyItemOnScreen && display.Menu.GetOnScreenItemsCount() < display.Menu.Items.Sum(i => i.IsVisible ? 1 : 0);
         private bool ShouldShowSubtitleItemsCounter(MenuSubtitle subtitle) => subtitle.Menu.IsAnyItemOnScreen && subtitle.Menu.GetOnScreenItemsCount() < subtitle.Menu.Items.Sum(i => i.IsVisible ? 1 : 0);
 
+        private Color GetItemTextColor(bool selected, bool disabled)
+        {
+            if (disabled)
+            {
+                return itemDisabledTextColor;
+            }
+            else if (selected)
+            {
+                return itemSelectedTextColor;
+            }
+            else
+            {
+                return itemDefaultTextColor;
+            }
+        }
+
         #region Draw Helper Methods
         private void DrawBannerTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, BannerCoords);
         private void DrawBackgroundTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, BackgroundCoords);
         private void DrawSelectedGradientTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, SelectedGradientCoords);
         private void DrawCheckboxEmptyWhiteTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxEmptyWhiteCoords);
         private void DrawCheckboxEmptyBlackTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxEmptyBlackCoords);
-        private void DrawCheckboxCrossWhiteTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxCrossWhiteCoords);
-        private void DrawCheckboxCrossBlackTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxCrossBlackCoords);
+        private void DrawCheckboxEmptyDisabledTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxEmptyDisabledCoords);
+        private void DrawCheckboxTickDisabledTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxTickDisabledCoords);
         private void DrawCheckboxTickWhiteTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxTickWhiteCoords);
         private void DrawCheckboxTickBlackTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, CheckboxTickBlackCoords);
         private void DrawArrowLeftTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowLeftCoords);
         private void DrawArrowRightTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowRightCoords);
         private void DrawArrowsUpDownTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowsUpDownCoords);
         private void DrawArrowsUpDownBackgroundTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowsUpDownBackgroundCoords);
+        private void DrawArrowLeftDisabledTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowLeftDisabledCoords);
+        private void DrawArrowRightDisabledTexture(Graphics graphics, float x, float y, float w, float h) => DrawTexture(graphics, x, y, w, h, ArrowRightDisabledCoords);
 
         private void DrawTexture(Graphics graphics, float x, float y, float width, float height, UVCoords uv)
         {
@@ -335,14 +393,16 @@ namespace RAGENativeUI.Menus.Styles
         private static readonly UVCoords SelectedGradientCoords = new UVCoords(0f, 0.125f, 0.5f, 0.1875f);
         private static readonly UVCoords CheckboxEmptyWhiteCoords = new UVCoords(0f, 0.1875f, 0.0625f, 0.25f);
         private static readonly UVCoords CheckboxEmptyBlackCoords = new UVCoords(0.0625f, 0.1875f, 0.125f, 0.25f);
-        private static readonly UVCoords CheckboxCrossWhiteCoords = new UVCoords(0.125f, 0.1875f, 0.1875f, 0.25f);
-        private static readonly UVCoords CheckboxCrossBlackCoords = new UVCoords(0.1875f, 0.1875f, 0.25f, 0.25f);
+        private static readonly UVCoords CheckboxEmptyDisabledCoords = new UVCoords(0.125f, 0.1875f, 0.1875f, 0.25f);
+        private static readonly UVCoords CheckboxTickDisabledCoords = new UVCoords(0.1875f, 0.1875f, 0.25f, 0.25f);
         private static readonly UVCoords CheckboxTickWhiteCoords = new UVCoords(0.25f, 0.1875f, 0.3125f, 0.25f);
         private static readonly UVCoords CheckboxTickBlackCoords = new UVCoords(0.3125f, 0.1875f, 0.375f, 0.25f);
         private static readonly UVCoords ArrowLeftCoords = new UVCoords(0.375f, 0.1875f, 0.4375f, 0.25f);
         private static readonly UVCoords ArrowRightCoords = new UVCoords(0.4375f, 0.1875f, 0.5f, 0.25f);
         private static readonly UVCoords ArrowsUpDownCoords = new UVCoords(0f, 0.25f, 0.0625f, 0.3125f);
         private static readonly UVCoords ArrowsUpDownBackgroundCoords = new UVCoords(0.5f, 0.5f, 1f, 0.5625f);
+        private static readonly UVCoords ArrowLeftDisabledCoords = new UVCoords(0.375f, 0.25f, 0.4375f, 0.3125f);
+        private static readonly UVCoords ArrowRightDisabledCoords = new UVCoords(0.4375f, 0.25f, 0.5f, 0.3125f);
     }
 }
 

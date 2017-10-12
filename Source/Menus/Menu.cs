@@ -293,7 +293,8 @@ namespace RAGENativeUI.Menus
             {
                 if (Controls.Up != null && Controls.Up.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveUp())
+                    MenuItem item = SelectedItem;
+                    if (item == null || item.OnMoveUp())
                     {
                         MoveUp();
                     }
@@ -301,7 +302,8 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Down != null && Controls.Down.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveDown())
+                    MenuItem item = SelectedItem;
+                    if (item == null || item.OnMoveDown())
                     {
                         MoveDown();
                     }
@@ -309,7 +311,8 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Right != null && Controls.Right.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveRight())
+                    MenuItem item = SelectedItem;
+                    if (item == null || (!item.IsDisabled && item.OnMoveRight()))
                     {
                         MoveRight();
                     }
@@ -317,7 +320,8 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Left != null && Controls.Left.IsHeld())
                 {
-                    if (SelectedItem == null || SelectedItem.OnMoveLeft())
+                    MenuItem item = SelectedItem;
+                    if (item == null || (!item.IsDisabled && item.OnMoveLeft()))
                     {
                         MoveLeft();
                     }
@@ -325,7 +329,8 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Accept != null && Controls.Accept.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnAccept())
+                    MenuItem item = SelectedItem;
+                    if (item == null || (!item.IsDisabled && item.OnAccept()))
                     {
                         Accept();
                     }
@@ -333,7 +338,8 @@ namespace RAGENativeUI.Menus
 
                 if (Controls.Back != null && Controls.Back.IsJustPressed())
                 {
-                    if (SelectedItem == null || SelectedItem.OnBack())
+                    MenuItem item = SelectedItem;
+                    if (item == null || item.OnBack())
                     {
                         Back();
                     }
@@ -345,14 +351,14 @@ namespace RAGENativeUI.Menus
         {
             int newIndex = SelectedIndex - 1;
 
-            int min = GetMinVisibleItemIndex();
+            int min = GetMinItemWithInputIndex();
 
             // get previous if current isn't visible
-            while (newIndex >= min && !Items[newIndex].IsVisible)
+            while (newIndex >= min && (!Items[newIndex].IsVisible || (Items[newIndex].IsDisabled && Items[newIndex].IsSkippedIfDisabled)))
                 newIndex--;
 
             if (newIndex < min)
-                newIndex = GetMaxVisibleItemIndex();
+                newIndex = GetMaxItemWithInputIndex();
 
             SelectedIndex = newIndex;
 
@@ -363,14 +369,14 @@ namespace RAGENativeUI.Menus
         {
             int newIndex = SelectedIndex + 1;
 
-            int max = GetMaxVisibleItemIndex();
+            int max = GetMaxItemWithInputIndex();
 
             // get next if current isn't visible
-            while (newIndex <= max && !Items[newIndex].IsVisible)
+            while (newIndex <= max && (!Items[newIndex].IsVisible || (Items[newIndex].IsDisabled && Items[newIndex].IsSkippedIfDisabled)))
                 newIndex++;
 
             if (newIndex > max)
-                newIndex = GetMinVisibleItemIndex();
+                newIndex = GetMinItemWithInputIndex();
 
             SelectedIndex = newIndex;
 
@@ -513,27 +519,34 @@ namespace RAGENativeUI.Menus
             ForEachItemOnScreen((item, index) => count++);
             return count;
         }
+        
+        private int GetMinItemWithInputIndex() => GetMinItemIndexForCondition(m => m.IsVisible && !(m.IsDisabled && m.IsSkippedIfDisabled));
+        private int GetMaxItemWithInputIndex() => GetMaxItemIndexForCondition(m => m.IsVisible && !(m.IsDisabled && m.IsSkippedIfDisabled));
+        private int GetMinVisibleItemIndex() => GetMinItemIndexForCondition(m => m.IsVisible);
+        private int GetMaxVisibleItemIndex() => GetMaxItemIndexForCondition(m => m.IsVisible);
 
-        private int GetMinVisibleItemIndex()
+        private int GetMinItemIndexForCondition(Predicate<MenuItem> condition)
         {
             int min = 0;
             for (int i = 0; i < Items.Count; i++)
             {
                 min = i;
-                if (Items[i].IsVisible)
+                MenuItem item = Items[i];
+                if (condition(item))
                     break;
             }
 
             return min;
         }
 
-        private int GetMaxVisibleItemIndex()
+        private int GetMaxItemIndexForCondition(Predicate<MenuItem> condition)
         {
             int max = 0;
             for (int i = Items.Count - 1; i >= 0; i--)
             {
                 max = i;
-                if (Items[i].IsVisible)
+                MenuItem item = Items[i];
+                if (condition(item))
                     break;
             }
 
