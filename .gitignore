@@ -11,11 +11,6 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# Dependencies
-Dependencies/*
-!Dependencies/*.dll
-!Dependencies/*/
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
