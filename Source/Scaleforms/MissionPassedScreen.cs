@@ -51,7 +51,7 @@ namespace RAGENativeUI.Scaleforms
         public bool IsCompletionVisible { get; set; }
         public string CompletionText { get; set; } = Game.GetLocalizedString("MTPHPER"); // Completion
         public int CompletionPercentage { get; set; } = 100;
-        public Color CompletionMedalColor { get; set; } = HudColor.GOLD.GetColor();
+        public Color CompletionMedalColor { get; set; } = HudColor.Gold.GetColor();
 
         public PostFxAnimation ShownEffect { get; set; } = PostFxAnimation.GetByName("SuccessNeutral");
         public FrontendSound ButtonPressedSound { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "CONTINUE");
@@ -211,7 +211,7 @@ namespace RAGENativeUI.Scaleforms
 
             if(state == State.WaitForInputExpanded)
             {
-                Color white = HudColor.WHITE.GetColor();
+                Color white = HudColor.White.GetColor();
                 Box.Draw(ScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
 
                 // TODO: show items as the background rolls down, instead of showing them all at once

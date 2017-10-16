@@ -34,7 +34,7 @@ namespace Examples
                     }
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.D3))
                     {
-                        bigMessage.ShowColoredShard("message", "subtitle", HudColor.REDDARK, HudColor.WHITE);
+                        bigMessage.ShowColoredShard("message", "subtitle", HudColor.RedDark, HudColor.White);
                     }
                     else if (Game.IsKeyDown(System.Windows.Forms.Keys.D4))
                     {

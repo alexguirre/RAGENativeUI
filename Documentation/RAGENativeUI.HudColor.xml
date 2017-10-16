@@ -11,7 +11,7 @@
         </Doc>
         <Member name="GetName">
             <summary>
-            Gets the name of the specified HUD color. For example, for <see cref="HudColor.WHITE"/> it will return "HUD_COLOUR_WHITE".
+            Gets the real name of the specified HUD color. For example, for <see cref="HudColor.White"/> it will return "HUD_COLOUR_WHITE".
             </summary>
             <remarks>
             One of the uses of the returned name is changing the color of the text from notifications, help messages or subtitles.
