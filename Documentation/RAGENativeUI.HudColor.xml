@@ -1,25 +1,1139 @@
 <D>
     <HudColor>
         <Doc>
-            <summary/>
+            <summary>
+            Defines identifiers that represent the game HUD colors. 
+            </summary>
         </Doc>
+            <Member name="PureWhite">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PURE_WHITE".
+                </summary>
+            </Member>
+            <Member name="White">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_WHITE".
+                </summary>
+            </Member>
+            <Member name="Black">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_BLACK".
+                </summary>
+            </Member>
+            <Member name="Grey">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GREY".
+                </summary>
+            </Member>
+            <Member name="GreyLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GREYLIGHT".
+                </summary>
+            </Member>
+            <Member name="GreyDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GREYDARK".
+                </summary>
+            </Member>
+            <Member name="Red">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_RED".
+                </summary>
+            </Member>
+            <Member name="RedLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_REDLIGHT".
+                </summary>
+            </Member>
+            <Member name="RedDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_REDDARK".
+                </summary>
+            </Member>
+            <Member name="Blue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_BLUE".
+                </summary>
+            </Member>
+            <Member name="BlueLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_BLUELIGHT".
+                </summary>
+            </Member>
+            <Member name="BlueDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_BLUEDARK".
+                </summary>
+            </Member>
+            <Member name="Yellow">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_YELLOW".
+                </summary>
+            </Member>
+            <Member name="YellowLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_YELLOWLIGHT".
+                </summary>
+            </Member>
+            <Member name="YellowDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_YELLOWDARK".
+                </summary>
+            </Member>
+            <Member name="Orange">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_ORANGE".
+                </summary>
+            </Member>
+            <Member name="OrangeLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_ORANGELIGHT".
+                </summary>
+            </Member>
+            <Member name="OrangeDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_ORANGEDARK".
+                </summary>
+            </Member>
+            <Member name="Green">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GREEN".
+                </summary>
+            </Member>
+            <Member name="GreenLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GREENLIGHT".
+                </summary>
+            </Member>
+            <Member name="GreenDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GREENDARK".
+                </summary>
+            </Member>
+            <Member name="Purple">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PURPLE".
+                </summary>
+            </Member>
+            <Member name="PurpleLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PURPLELIGHT".
+                </summary>
+            </Member>
+            <Member name="PurpleDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PURPLEDARK".
+                </summary>
+            </Member>
+            <Member name="Pink">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PINK".
+                </summary>
+            </Member>
+            <Member name="RadarHealth">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_RADAR_HEALTH".
+                </summary>
+            </Member>
+            <Member name="RadarArmour">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_RADAR_ARMOUR".
+                </summary>
+            </Member>
+            <Member name="RadarDamage">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_RADAR_DAMAGE".
+                </summary>
+            </Member>
+            <Member name="NetPlayer1">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER1".
+                </summary>
+            </Member>
+            <Member name="NetPlayer2">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER2".
+                </summary>
+            </Member>
+            <Member name="NetPlayer3">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER3".
+                </summary>
+            </Member>
+            <Member name="NetPlayer4">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER4".
+                </summary>
+            </Member>
+            <Member name="NetPlayer5">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER5".
+                </summary>
+            </Member>
+            <Member name="NetPlayer6">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER6".
+                </summary>
+            </Member>
+            <Member name="NetPlayer7">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER7".
+                </summary>
+            </Member>
+            <Member name="NetPlayer8">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER8".
+                </summary>
+            </Member>
+            <Member name="NetPlayer9">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER9".
+                </summary>
+            </Member>
+            <Member name="NetPlayer10">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER10".
+                </summary>
+            </Member>
+            <Member name="NetPlayer11">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER11".
+                </summary>
+            </Member>
+            <Member name="NetPlayer12">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER12".
+                </summary>
+            </Member>
+            <Member name="NetPlayer13">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER13".
+                </summary>
+            </Member>
+            <Member name="NetPlayer14">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER14".
+                </summary>
+            </Member>
+            <Member name="NetPlayer15">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER15".
+                </summary>
+            </Member>
+            <Member name="NetPlayer16">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER16".
+                </summary>
+            </Member>
+            <Member name="NetPlayer17">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER17".
+                </summary>
+            </Member>
+            <Member name="NetPlayer18">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER18".
+                </summary>
+            </Member>
+            <Member name="NetPlayer19">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER19".
+                </summary>
+            </Member>
+            <Member name="NetPlayer20">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER20".
+                </summary>
+            </Member>
+            <Member name="NetPlayer21">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER21".
+                </summary>
+            </Member>
+            <Member name="NetPlayer22">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER22".
+                </summary>
+            </Member>
+            <Member name="NetPlayer23">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER23".
+                </summary>
+            </Member>
+            <Member name="NetPlayer24">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER24".
+                </summary>
+            </Member>
+            <Member name="NetPlayer25">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER25".
+                </summary>
+            </Member>
+            <Member name="NetPlayer26">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER26".
+                </summary>
+            </Member>
+            <Member name="NetPlayer27">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER27".
+                </summary>
+            </Member>
+            <Member name="NetPlayer28">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER28".
+                </summary>
+            </Member>
+            <Member name="NetPlayer29">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER29".
+                </summary>
+            </Member>
+            <Member name="NetPlayer30">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER30".
+                </summary>
+            </Member>
+            <Member name="NetPlayer31">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER31".
+                </summary>
+            </Member>
+            <Member name="NetPlayer32">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER32".
+                </summary>
+            </Member>
+            <Member name="SimpleBlipDefault">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SIMPLEBLIP_DEFAULT".
+                </summary>
+            </Member>
+            <Member name="MenuBlue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_BLUE".
+                </summary>
+            </Member>
+            <Member name="MenuGreyLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_GREY_LIGHT".
+                </summary>
+            </Member>
+            <Member name="MenuBlueExtraDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_BLUE_EXTRA_DARK".
+                </summary>
+            </Member>
+            <Member name="MenuYellow">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_YELLOW".
+                </summary>
+            </Member>
+            <Member name="MenuYellowDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_YELLOW_DARK".
+                </summary>
+            </Member>
+            <Member name="MenuGreen">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_GREEN".
+                </summary>
+            </Member>
+            <Member name="MenuGrey">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_GREY".
+                </summary>
+            </Member>
+            <Member name="MenuGreyDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_GREY_DARK".
+                </summary>
+            </Member>
+            <Member name="MenuHighlight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_HIGHLIGHT".
+                </summary>
+            </Member>
+            <Member name="MenuStandard">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_STANDARD".
+                </summary>
+            </Member>
+            <Member name="MenuDimmed">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_DIMMED".
+                </summary>
+            </Member>
+            <Member name="MenuExtraDimmed">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MENU_EXTRA_DIMMED".
+                </summary>
+            </Member>
+            <Member name="BriefTitle">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_BRIEF_TITLE".
+                </summary>
+            </Member>
+            <Member name="MidGreyMultiplayer">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MID_GREY_MP".
+                </summary>
+            </Member>
+            <Member name="NetPlayer1Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER1_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer2Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER2_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer3Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER3_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer4Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER4_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer5Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER5_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer6Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER6_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer7Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER7_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer8Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER8_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer9Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER9_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer10Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER10_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer11Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER11_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer12Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER12_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer13Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER13_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer14Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER14_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer15Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER15_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer16Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER16_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer17Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER17_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer18Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER18_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer19Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER19_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer20Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER20_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer21Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER21_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer22Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER22_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer23Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER23_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer24Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER24_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer25Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER25_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer26Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER26_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer27Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER27_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer28Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER28_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer29Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER29_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer30Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER30_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer31Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER31_DARK".
+                </summary>
+            </Member>
+            <Member name="NetPlayer32Dark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NET_PLAYER32_DARK".
+                </summary>
+            </Member>
+            <Member name="Bronze">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_BRONZE".
+                </summary>
+            </Member>
+            <Member name="Silver">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SILVER".
+                </summary>
+            </Member>
+            <Member name="Gold">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GOLD".
+                </summary>
+            </Member>
+            <Member name="Platinum">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PLATINUM".
+                </summary>
+            </Member>
+            <Member name="Gang1">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GANG1".
+                </summary>
+            </Member>
+            <Member name="Gang2">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GANG2".
+                </summary>
+            </Member>
+            <Member name="Gang3">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GANG3".
+                </summary>
+            </Member>
+            <Member name="Gang4">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GANG4".
+                </summary>
+            </Member>
+            <Member name="SameCrew">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SAME_CREW".
+                </summary>
+            </Member>
+            <Member name="Freemode">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FREEMODE".
+                </summary>
+            </Member>
+            <Member name="PauseBackground">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PAUSE_BG".
+                </summary>
+            </Member>
+            <Member name="Friendly">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FRIENDLY".
+                </summary>
+            </Member>
+            <Member name="Enemy">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_ENEMY".
+                </summary>
+            </Member>
+            <Member name="Location">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_LOCATION".
+                </summary>
+            </Member>
+            <Member name="Pickup">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PICKUP".
+                </summary>
+            </Member>
+            <Member name="PauseSingleplayer">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PAUSE_SINGLEPLAYER".
+                </summary>
+            </Member>
+            <Member name="FreemodeDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FREEMODE_DARK".
+                </summary>
+            </Member>
+            <Member name="InactiveMission">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_INACTIVE_MISSION".
+                </summary>
+            </Member>
+            <Member name="Damage">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DAMAGE".
+                </summary>
+            </Member>
+            <Member name="PinkLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PINKLIGHT".
+                </summary>
+            </Member>
+            <Member name="PmMItemHighlight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PM_MITEM_HIGHLIGHT".
+                </summary>
+            </Member>
+            <Member name="ScriptVariable">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SCRIPT_VARIABLE".
+                </summary>
+            </Member>
+            <Member name="Yoga">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_YOGA".
+                </summary>
+            </Member>
+            <Member name="Tennis">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_TENNIS".
+                </summary>
+            </Member>
+            <Member name="Golf">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GOLF".
+                </summary>
+            </Member>
+            <Member name="ShootingRange">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SHOOTING_RANGE".
+                </summary>
+            </Member>
+            <Member name="FlightSchool">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FLIGHT_SCHOOL".
+                </summary>
+            </Member>
+            <Member name="NorthBlue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NORTH_BLUE".
+                </summary>
+            </Member>
+            <Member name="SocialClub">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SOCIAL_CLUB".
+                </summary>
+            </Member>
+            <Member name="PlatformBlue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PLATFORM_BLUE".
+                </summary>
+            </Member>
+            <Member name="PlatformGreen">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PLATFORM_GREEN".
+                </summary>
+            </Member>
+            <Member name="PlatformGrey">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PLATFORM_GREY".
+                </summary>
+            </Member>
+            <Member name="FacebookBlue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FACEBOOK_BLUE".
+                </summary>
+            </Member>
+            <Member name="InGameBackground">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_INGAME_BG".
+                </summary>
+            </Member>
+            <Member name="Darts">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DARTS".
+                </summary>
+            </Member>
+            <Member name="Waypoint">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_WAYPOINT".
+                </summary>
+            </Member>
+            <Member name="Michael">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MICHAEL".
+                </summary>
+            </Member>
+            <Member name="Franklin">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FRANKLIN".
+                </summary>
+            </Member>
+            <Member name="Trevor">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_TREVOR".
+                </summary>
+            </Member>
+            <Member name="GolfP1">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GOLF_P1".
+                </summary>
+            </Member>
+            <Member name="GolfP2">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GOLF_P2".
+                </summary>
+            </Member>
+            <Member name="GolfP3">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GOLF_P3".
+                </summary>
+            </Member>
+            <Member name="GolfP4">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GOLF_P4".
+                </summary>
+            </Member>
+            <Member name="WaypointLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_WAYPOINTLIGHT".
+                </summary>
+            </Member>
+            <Member name="WaypointDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_WAYPOINTDARK".
+                </summary>
+            </Member>
+            <Member name="PanelLight">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PANEL_LIGHT".
+                </summary>
+            </Member>
+            <Member name="MichaelDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_MICHAEL_DARK".
+                </summary>
+            </Member>
+            <Member name="FranklinDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_FRANKLIN_DARK".
+                </summary>
+            </Member>
+            <Member name="TrevorDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_TREVOR_DARK".
+                </summary>
+            </Member>
+            <Member name="ObjectiveRoute">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_OBJECTIVE_ROUTE".
+                </summary>
+            </Member>
+            <Member name="PauseMapTint">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PAUSEMAP_TINT".
+                </summary>
+            </Member>
+            <Member name="PauseDeselect">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PAUSE_DESELECT".
+                </summary>
+            </Member>
+            <Member name="PmWeaponsPurchasable">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PM_WEAPONS_PURCHASABLE".
+                </summary>
+            </Member>
+            <Member name="PmWeaponsLocked">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PM_WEAPONS_LOCKED".
+                </summary>
+            </Member>
+            <Member name="EndScreenBackground">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_END_SCREEN_BG".
+                </summary>
+            </Member>
+            <Member name="Chop">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CHOP".
+                </summary>
+            </Member>
+            <Member name="PauseMapTintHalf">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_PAUSEMAP_TINT_HALF".
+                </summary>
+            </Member>
+            <Member name="NorthBlueOfficial">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_NORTH_BLUE_OFFICIAL".
+                </summary>
+            </Member>
+            <Member name="ScriptVariable2">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SCRIPT_VARIABLE_2".
+                </summary>
+            </Member>
+            <Member name="H">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_H".
+                </summary>
+            </Member>
+            <Member name="HDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_HDARK".
+                </summary>
+            </Member>
+            <Member name="T">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_T".
+                </summary>
+            </Member>
+            <Member name="TDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_TDARK".
+                </summary>
+            </Member>
+            <Member name="HShard">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_HSHARD".
+                </summary>
+            </Member>
+            <Member name="ControllerMichael">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CONTROLLER_MICHAEL".
+                </summary>
+            </Member>
+            <Member name="ControllerFranklin">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CONTROLLER_FRANKLIN".
+                </summary>
+            </Member>
+            <Member name="ControllerTrevor">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CONTROLLER_TREVOR".
+                </summary>
+            </Member>
+            <Member name="ControllerChop">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CONTROLLER_CHOP".
+                </summary>
+            </Member>
+            <Member name="VideoEditorVideo">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_VIDEO".
+                </summary>
+            </Member>
+            <Member name="VideoEditorAudio">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AUDIO".
+                </summary>
+            </Member>
+            <Member name="VideoEditorText">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_TEXT".
+                </summary>
+            </Member>
+            <Member name="HbBlue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_HB_BLUE".
+                </summary>
+            </Member>
+            <Member name="HbYellow">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_HB_YELLOW".
+                </summary>
+            </Member>
+            <Member name="VideoEditorScore">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_SCORE".
+                </summary>
+            </Member>
+            <Member name="VideoEditorAudioFadeout">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AUDIO_FADEOUT".
+                </summary>
+            </Member>
+            <Member name="VideoEditorTextFadeout">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_TEXT_FADEOUT".
+                </summary>
+            </Member>
+            <Member name="VideoEditorScoreFadeout">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_SCORE_FADEOUT".
+                </summary>
+            </Member>
+            <Member name="HeistBackground">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_HEIST_BACKGROUND".
+                </summary>
+            </Member>
+            <Member name="VideoEditorAmbient">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AMBIENT".
+                </summary>
+            </Member>
+            <Member name="VideoEditorAmbientFadeout">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AMBIENT_FADEOUT".
+                </summary>
+            </Member>
+            <Member name="Gb">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_GB".
+                </summary>
+            </Member>
+            <Member name="G">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G".
+                </summary>
+            </Member>
+            <Member name="B">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_B".
+                </summary>
+            </Member>
+            <Member name="LowFlow">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_LOW_FLOW".
+                </summary>
+            </Member>
+            <Member name="LowFlowDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_LOW_FLOW_DARK".
+                </summary>
+            </Member>
+            <Member name="G1">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G1".
+                </summary>
+            </Member>
+            <Member name="G2">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G2".
+                </summary>
+            </Member>
+            <Member name="G3">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G3".
+                </summary>
+            </Member>
+            <Member name="G4">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G4".
+                </summary>
+            </Member>
+            <Member name="G5">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G5".
+                </summary>
+            </Member>
+            <Member name="G6">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G6".
+                </summary>
+            </Member>
+            <Member name="G7">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G7".
+                </summary>
+            </Member>
+            <Member name="G8">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G8".
+                </summary>
+            </Member>
+            <Member name="G9">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G9".
+                </summary>
+            </Member>
+            <Member name="G10">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G10".
+                </summary>
+            </Member>
+            <Member name="G11">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G11".
+                </summary>
+            </Member>
+            <Member name="G12">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G12".
+                </summary>
+            </Member>
+            <Member name="G13">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G13".
+                </summary>
+            </Member>
+            <Member name="G14">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G14".
+                </summary>
+            </Member>
+            <Member name="G15">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_G15".
+                </summary>
+            </Member>
+            <Member name="Adversary">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_ADVERSARY".
+                </summary>
+            </Member>
+            <Member name="DegenRed">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DEGEN_RED".
+                </summary>
+            </Member>
+            <Member name="DegenYellow">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DEGEN_YELLOW".
+                </summary>
+            </Member>
+            <Member name="DegenGreen">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DEGEN_GREEN".
+                </summary>
+            </Member>
+            <Member name="DegenCyan">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DEGEN_CYAN".
+                </summary>
+            </Member>
+            <Member name="DegenBlue">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DEGEN_BLUE".
+                </summary>
+            </Member>
+            <Member name="DegenMagenta">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_DEGEN_MAGENTA".
+                </summary>
+            </Member>
+            <Member name="Stunt1">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_STUNT_1".
+                </summary>
+            </Member>
+            <Member name="Stunt2">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_STUNT_2".
+                </summary>
+            </Member>
+            <Member name="SpecialRaceSeries">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SPECIAL_RACE_SERIES".
+                </summary>
+            </Member>
+            <Member name="SpecialRaceSeriesDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_SPECIAL_RACE_SERIES_DARK".
+                </summary>
+            </Member>
+            <Member name="Cs">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CS".
+                </summary>
+            </Member>
+            <Member name="CsDark">
+                <summary>
+                Represents the HUD color "HUD_COLOUR_CS_DARK".
+                </summary>
+            </Member>
     </HudColor>
 
     <HudColorExtensions>
         <Doc>
             <summary/>
         </Doc>
+        <Member name="GetColor">
+            <summary>
+            Gets the RGBA value of the specified HUD color.
+            </summary>
+            <param name="hudColor">The HUD color.</param>
+        </Member>
+        <Member name="SetColor">
+            <summary>
+            Sets the RGBA value of the specified HUD color.
+            </summary>
+            <param name="hudColor">The HUD color.</param>
+        </Member>
         <Member name="GetName">
             <summary>
-            Gets the real name of the specified HUD color. For example, for <see cref="HudColor.White"/> it will return "HUD_COLOUR_WHITE".
+            Gets the real name of the specified HUD color. For example, for <see cref="HudColor.PureWhite"/> it will return "HUD_COLOUR_PURE_WHITE".
             </summary>
             <remarks>
             One of the uses of the returned name is changing the color of the text from notifications, help messages or subtitles.
             <code>
-            Game.DisplayHelp($"~{HudColor.RED.GetName()}~Now this text is red!");
+            Game.DisplayHelp($"~{HudColor.Red.GetName()}~Now this text is red!");
             </code>
             </remarks>
-            <param name="hudColor">The HUD color id.</param>
+            <param name="hudColor">The HUD color.</param>
         </Member>
     </HudColorExtensions>
 </D>
