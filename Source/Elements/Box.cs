@@ -4,7 +4,7 @@ namespace RAGENativeUI.Elements
     
     using Rage.Native;
 
-    public class Box
+    public class Box : IScreenElement
     {
         public bool IsVisible { get; set; } = true;
         public ScreenRectangle Rectangle { get; set; }

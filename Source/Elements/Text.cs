@@ -6,12 +6,17 @@ namespace RAGENativeUI.Elements
     
     using Rage.Native;
 
-    public class Text
+    public class Text : IScreenElement
     {
+        private ScreenRectangle rectangle;
         private List<string> splittedCaption = new List<string>();
         private string caption;
 
         public bool IsVisible { get; set; } = true;
+        // Width = wrapWidth, Height = ignored
+        public ScreenRectangle Rectangle { get => rectangle; set => rectangle = value; }
+        public ScreenPosition Position { get => ScreenPosition.FromRelativeCoords(rectangle.X, rectangle.Y); set => rectangle = ScreenRectangle.FromRelativeCoords(value.X, value.Y, rectangle.Width, rectangle.Height); }
+        public Color Color { get; set; }
         public float Scale { get; set; }
         public string Caption
         {
@@ -32,13 +37,11 @@ namespace RAGENativeUI.Elements
                 }
             }
         }
-        public Color Color { get; set; }
-        public ScreenPosition Position { get; set; }
         public TextFont Font { get; set; }
-        public TextAlignment Alignment { get; set; } = TextAlignment.Left;
-        public float WrapWidth { get; set; }
+        public TextAlignment Alignment { get; set; }
         public bool DropShadow { get; set; }
         public bool Outline { get; set; }
+        public float WrapWidth { get => rectangle.Width; set => rectangle = ScreenRectangle.FromRelativeCoords(rectangle.X, rectangle.Y, value, rectangle.Height); }
 
         public Text(string caption, ScreenPosition position, float scale, Color color)
         {
@@ -152,8 +155,8 @@ namespace RAGENativeUI.Elements
 
     public enum TextAlignment
     {
-        Center,
         Left,
+        Center,
         Right,
     }
 

@@ -1,37 +1,44 @@
 namespace Examples
 {
-    using System;
     using System.Drawing;
 
     using Rage;
-    using Rage.Native;
     using Rage.Attributes;
-    using Graphics = Rage.Graphics;
 
     using RAGENativeUI;
-    using RAGENativeUI.Elements;
+    using RAGENativeUI.Elements.TimerBars;
 
     internal static class TimerBarsExample
     {
         [ConsoleCommand(Name = "TimerBarsExample", Description = "Example showing the TimerBars classes.")]
         private static void Command()
         {
+            TimerBarsStack stack = new TimerBarsStack();
 
-            TimerBarsManager timerBarsMgr = new TimerBarsManager();
-            timerBarsMgr.TimerBars.Add(new TextTimerBar("TIME", "00:00.00") { IsVisible = true });
-            timerBarsMgr.TimerBars.Add(new TextTimerBar("POSICIÓN", "8/8") { IsVisible = true });
-            timerBarsMgr.TimerBars.Add(new LabeledTimerBar("LABEL") { IsVisible = true });
-            LabeledTimerBar resizableTimerBar = new LabeledTimerBar("RESIZABLE") { IsVisible = true };
-            timerBarsMgr.TimerBars.Add(resizableTimerBar);
-            timerBarsMgr.TimerBars.Add(new TextTimerBar("LABEL", "TEXT") { IsVisible = true });
-            ProgressTimerBar progressBar = new ProgressTimerBar("PROGRESS") { IsVisible = true, Percentage = 0.5f };
-            timerBarsMgr.TimerBars.Add(progressBar);
+            TextTimerBar timeBar = new TextTimerBar("TIME", "00:00.00");
+            TextTimerBar positionBar = new TextTimerBar("POSITION", "8/8") { Color = Color.Cyan };
+            LabeledTimerBar labelBar = new LabeledTimerBar("LABEL");
+            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { Color = Color.Orange };
+            ProgressTimerBar progressBar = new ProgressTimerBar("PROGRESS") { Percentage = 0.5f, Color = Color.Aquamarine };
+
+            stack.Add(timeBar);
+            stack.Add(positionBar);
+            stack.Add(labelBar);
+            stack.Add(textBar);
+            stack.Add(progressBar);
+
+
+            LabeledTimerBar middleBar = new LabeledTimerBar("MIDDLE");
+            middleBar.Rectangle = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, middleBar.Rectangle.Width, middleBar.Rectangle.Height);
 
             GameFiber.StartNew(() =>
             {
                 while (true)
                 {
                     GameFiber.Yield();
+
+                    stack.Draw();
+                    middleBar.Draw();
 
                     if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
                         progressBar.Percentage += 2.0f * Game.FrameTime;
@@ -40,24 +47,22 @@ namespace Examples
 
                     if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Multiply))
                     {
-                        resizableTimerBar.Width += 0.5f * Game.FrameTime;
-                        resizableTimerBar.Height += 0.5f * Game.FrameTime;
+                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width + 0.5f * Game.FrameTime, textBar.Rectangle.Height + 0.5f * Game.FrameTime);
                     }
                     if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Divide))
                     {
-                        resizableTimerBar.Width -= 0.5f * Game.FrameTime;
-                        resizableTimerBar.Height -= 0.5f * Game.FrameTime;
+                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width - 0.5f * Game.FrameTime, textBar.Rectangle.Height - 0.5f * Game.FrameTime);
                     }
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {
-                        if (timerBarsMgr.IsAnyTimerBarVisible)
+                        if (stack.OriginPosition.HasValue)
                         {
-                            timerBarsMgr.HideAllTimerBars();
+                            stack.OriginPosition = null;
                         }
                         else
                         {
-                            timerBarsMgr.ShowAllTimerBars();
+                            stack.OriginPosition = ScreenPosition.FromRelativeCoords(0.5f, 0.5f);
                         }
                     }
                 }

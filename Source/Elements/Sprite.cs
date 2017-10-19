@@ -6,13 +6,16 @@ namespace RAGENativeUI.Elements
     using Rage;
     using Rage.Native;
 
-    public class Sprite
+    public class Sprite : IScreenElement
     {
         private string textureName;
 
+        public bool IsVisible { get; set; } = true;
+        public ScreenRectangle Rectangle { get; set; }
+        public Color Color { get; set; }
         public TextureDictionary TextureDictionary { get; set; }
-        /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
         public string TextureName { get { return textureName; } set { Throw.IfNull(value, nameof(value)); textureName = value; } }
+        public float Rotation { get; set; }
         public SizeF Resolution
         {
             get
@@ -21,10 +24,6 @@ namespace RAGENativeUI.Elements
                 return new SizeF(tmp.X, tmp.Y);
             }
         }
-        public ScreenRectangle Rectangle { get; set; }
-        public float Rotation { get; set; }
-        public Color Color { get; set; }
-        public bool IsVisible { get; set; } = true;
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
         {

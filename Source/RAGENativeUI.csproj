@@ -51,6 +51,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Elements\IScreenElement.cs" />
+    <Compile Include="Elements\TimerBars\LabeledTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\ProgressTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\TimerBar.cs" />
+    <Compile Include="Elements\TimerBars\TimerBarsStack.cs" />
     <Compile Include="ImGui\Gui.cs" />
     <Compile Include="ImGui\Gui.State.cs" />
     <Compile Include="KnownNames.cs" />
@@ -80,8 +86,6 @@
     <Compile Include="Elements\Text.cs" />
     <Compile Include="PostFxAnimation.cs" />
     <Compile Include="TextureDictionary.cs" />
-    <Compile Include="Elements\TimerBars.cs" />
-    <Compile Include="Elements\TimerBarsManager.cs" />
     <Compile Include="Memory\CPool.cs" />
     <Compile Include="Memory\fwTxdDef.cs" />
     <Compile Include="Memory\fwTxdStore.cs" />
