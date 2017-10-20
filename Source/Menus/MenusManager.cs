@@ -8,28 +8,50 @@ namespace RAGENativeUI.Menus
     {
         private static readonly List<Menu> menus;
         private static readonly List<Menu> visibleMenus;
-        private static readonly GameFiber processFiber;
+        private static GameFiber processFiber;
 
-        public static bool IsAnyMenuVisible { get { return visibleMenus.Count > 0; } }
+        public static bool IsProcessRunning => processFiber != null && processFiber.IsAlive;
+        public static bool IsAnyMenuVisible => visibleMenus.Count > 0;
 
         static MenusManager()
         {
             menus = new List<Menu>();
             visibleMenus = new List<Menu>();
-            processFiber = GameFiber.StartNew(ProcessLoop, "RAGENativeUI - Menus Manager");
-            Game.FrameRender += OnFrameRender;
         }
 
         public static void AddMenu(Menu menu)
         {
             menu.VisibleChanged += OnMenuVisibleChanged;
             menus.Add(menu);
+
+            if (!IsProcessRunning)
+            {
+                StartProcess();
+            }
         }
 
         public static void RemoveMenu(Menu menu)
         {
             menu.VisibleChanged -= OnMenuVisibleChanged;
             menus.Remove(menu);
+
+            if (menus.Count <= 0 && IsProcessRunning)
+            {
+                AbortProcess();
+            }
+        }
+
+        private static void StartProcess()
+        {
+            processFiber = GameFiber.StartNew(ProcessLoop, "RAGENativeUI - Menus Manager");
+            Game.FrameRender += OnFrameRender;
+        }
+
+        private static void AbortProcess()
+        {
+            processFiber?.Abort();
+            processFiber = null;
+            Game.FrameRender -= OnFrameRender;
         }
 
         private static void OnMenuVisibleChanged(Menu menu, VisibleChangedEventArgs e)
