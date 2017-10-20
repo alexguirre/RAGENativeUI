@@ -8,10 +8,9 @@ namespace Examples
     using Rage.Attributes;
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Rendering;
+    using RAGENativeUI;
     using RAGENativeUI.Menus;
     using RAGENativeUI.Menus.Styles;
-    using Font = RAGENativeUI.Rendering.Font;
 
     internal static class MenuExample
     {
@@ -233,8 +232,8 @@ namespace Examples
             public float ItemHeight { get; set; } = 30.0f;
             public float UpDownDisplayHeight { get; set; } = 30.0f;
 
-            public Font BigFont { get; set; } = new Font("Consolas", 32.0f);
-            public Font SmallFont { get; set; } = new Font("Consolas", 20.0f);
+            public GraphicsFont BigFont { get; set; } = new GraphicsFont("Consolas", 32.0f);
+            public GraphicsFont SmallFont { get; set; } = new GraphicsFont("Consolas", 20.0f);
 
             public void DrawBackground(Graphics graphics, MenuBackground background, ref float x, ref float y)
             {
@@ -338,10 +337,10 @@ namespace Examples
 
             private void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
             {
-                DrawText(graphics, text, new Font(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);
+                DrawText(graphics, text, new GraphicsFont(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);
             }
 
-            private void DrawText(Graphics graphics, string text, Font font, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
+            private void DrawText(Graphics graphics, string text, GraphicsFont font, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
             {
                 SizeF textSize = font.Measure(text);
                 textSize.Height = font.Height;

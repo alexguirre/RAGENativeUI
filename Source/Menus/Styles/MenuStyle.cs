@@ -9,9 +9,6 @@ namespace RAGENativeUI.Menus.Styles
     using Rage;
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Rendering;
-    using Font = RAGENativeUI.Rendering.Font;
-
     public class MenuStyle : IMenuStyle
     {
         private const float ItemsBorderSafezone = 8.25f;
@@ -27,10 +24,10 @@ namespace RAGENativeUI.Menus.Styles
         public float SubtitleHeight { get; set; }
         public float ItemHeight { get; set; }
         public float UpDownDisplayHeight { get; set; }
-        public Font TitleFont { get; set; }
-        public Font SubtitleFont { get; set; }
-        public Font ItemFont { get; set; }
-        public Font DescriptionFont { get; set; }
+        public GraphicsFont TitleFont { get; set; }
+        public GraphicsFont SubtitleFont { get; set; }
+        public GraphicsFont ItemFont { get; set; }
+        public GraphicsFont DescriptionFont { get; set; }
         public Texture SpriteSheet { get => spriteSheet; set { Throw.IfNull(value, nameof(value)); spriteSheet = value; } }
 
         public MenuStyle()
@@ -44,10 +41,10 @@ namespace RAGENativeUI.Menus.Styles
             ItemHeight = 37.0f;
             UpDownDisplayHeight = 38.0f;
 
-            TitleFont = new Font("Arial", 35.0f);
-            SubtitleFont = new Font("Arial", 20.0f);
-            ItemFont = new Font("Arial", 20.0f);
-            DescriptionFont = new Font("Arial", 20.0f);
+            TitleFont = new GraphicsFont("Arial", 35.0f);
+            SubtitleFont = new GraphicsFont("Arial", 20.0f);
+            ItemFont = new GraphicsFont("Arial", 20.0f);
+            DescriptionFont = new GraphicsFont("Arial", 20.0f);
 
             SpriteSheet = DefaultSpriteSheet;
         }
@@ -323,10 +320,10 @@ namespace RAGENativeUI.Menus.Styles
 
         private void DrawText(Graphics graphics, string text, string fontName, float fontSize, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
         {
-            DrawText(graphics, text, new Font(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);
+            DrawText(graphics, text, new GraphicsFont(fontName, fontSize), rectangle, color, horizontalAligment, verticalAligment);
         }
 
-        private void DrawText(Graphics graphics, string text, Font font, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
+        private void DrawText(Graphics graphics, string text, GraphicsFont font, RectangleF rectangle, Color color, TextHorizontalAligment horizontalAligment = TextHorizontalAligment.Left, TextVerticalAligment verticalAligment = TextVerticalAligment.Center)
         {
             SizeF textSize = font.Measure(text);
             textSize.Height = font.Height;

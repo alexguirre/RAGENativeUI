@@ -7,7 +7,6 @@ namespace Examples
 
     using RAGENativeUI;
     using RAGENativeUI.ImGui;
-    using RAGENativeUI.Rendering;
 
     internal static class ImGuiExample
     {

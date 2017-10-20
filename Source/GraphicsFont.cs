@@ -1,14 +1,15 @@
-namespace RAGENativeUI.Rendering
+namespace RAGENativeUI
 {
     using System.Drawing;
     
     using Graphics = Rage.Graphics;
 
-    public struct Font
+    public struct GraphicsFont
     {
+        private float height;
+
         public string Name { get; }
         public float Size { get; }
-        private float height;
         public float Height
         {
             get
@@ -19,7 +20,7 @@ namespace RAGENativeUI.Rendering
             }
         }
 
-        public Font(string name, float size)
+        public GraphicsFont(string name, float size)
         {
             Throw.IfNull(name, nameof(name));
 

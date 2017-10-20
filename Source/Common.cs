@@ -33,7 +33,7 @@ namespace RAGENativeUI
             NativeFunction.Natives.PlaySoundFrontend(-1, soundName, soundSet, false);
         }
 
-        public static string WrapText(string text, Rendering.Font font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
+        public static string WrapText(string text, GraphicsFont font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
         public static string WrapText(string text, string fontName, float fontSize, float widthLimit)
         {
             float GetTextWidth(string str) => Graphics.MeasureText(str, fontName, fontSize).Width;

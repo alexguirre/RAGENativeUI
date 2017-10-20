@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Rendering
+namespace RAGENativeUI
 {
     public enum TextHorizontalAligment
     {

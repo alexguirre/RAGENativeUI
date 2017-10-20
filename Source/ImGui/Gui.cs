@@ -9,9 +9,7 @@ namespace RAGENativeUI.ImGui
     using Rage;
     using Rage.Native;
     using Graphics = Rage.Graphics;
-
-    using RAGENativeUI.Rendering;
-
+    
     public static partial class Gui
     {
         public delegate void GuiEventHandler();

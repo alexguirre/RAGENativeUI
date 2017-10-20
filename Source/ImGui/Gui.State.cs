@@ -1,15 +1,10 @@
 namespace RAGENativeUI.ImGui
 {
-    using System;
     using System.Drawing;
-    using System.Runtime.CompilerServices;
 
     using Rage;
-    using Rage.Native;
     using Graphics = Rage.Graphics;
-
-    using RAGENativeUI.Rendering;
-
+    
     public static partial class Gui
     {
         internal struct State
