@@ -2,6 +2,7 @@ namespace Examples
 {
     using System;
     using System.Drawing;
+    using System.Collections.Generic;
 
     using Rage;
     using Rage.Attributes;
@@ -322,6 +323,16 @@ namespace Examples
             {
                 textMeasurement = SmallFont.Measure(text);
                 return text;
+            }
+
+            public virtual IEnumerable<IMenuComponent> EnumerateComponentsInDrawOrder(Menu menu)
+            {
+                yield return menu.Banner;
+                yield return menu.Subtitle;
+                yield return menu.Background;
+                yield return menu.Items;
+                yield return menu.UpDownDisplay;
+                yield return menu.Description;
             }
 
 

@@ -4,6 +4,7 @@ namespace RAGENativeUI.Menus.Styles
     using System.Linq;
     using System.Drawing;
     using System.Reflection;
+    using System.Collections.Generic;
 
     using Rage;
     using Graphics = Rage.Graphics;
@@ -25,12 +26,12 @@ namespace RAGENativeUI.Menus.Styles
         public float BannerHeight { get; set; }
         public float SubtitleHeight { get; set; }
         public float ItemHeight { get; set; }
-        public float UpDownDisplayHeight{ get; set; }
+        public float UpDownDisplayHeight { get; set; }
         public Font TitleFont { get; set; }
         public Font SubtitleFont { get; set; }
         public Font ItemFont { get; set; }
         public Font DescriptionFont { get; set; }
-        public Texture SpriteSheet { get => spriteSheet; set { Throw.IfNull(value, nameof(value)); spriteSheet = value; }  }
+        public Texture SpriteSheet { get => spriteSheet; set { Throw.IfNull(value, nameof(value)); spriteSheet = value; } }
 
         public MenuStyle()
         {
@@ -89,7 +90,7 @@ namespace RAGENativeUI.Menus.Styles
             if (description.FormattedText != null && h > 0f)
             {
                 float drawY = y + 4.0f;
-                
+
                 // add 1 because there's a bug that offsets the rectangle by 1 on each axis
                 // TODO: remove +1 from DrawRectangle calls once it's fixed
                 graphics.DrawRectangle(new RectangleF(x + 1, drawY + 1, MenuWidth, 3.25f), Color.FromArgb(240, 0, 0, 0));
@@ -107,7 +108,7 @@ namespace RAGENativeUI.Menus.Styles
             Throw.IfNull(subtitle, nameof(subtitle));
 
             const float BorderSafezone = 8.5f;
-            
+
             graphics.DrawRectangle(new RectangleF(x + 1, y + 1, MenuWidth, SubtitleHeight), Color.Black);
             DrawText(graphics, subtitle.Text, SubtitleFont, new RectangleF(x + BorderSafezone, y, MenuWidth, SubtitleHeight), Color.White, TextHorizontalAligment.Left, TextVerticalAligment.Center);
 
@@ -267,6 +268,16 @@ namespace RAGENativeUI.Menus.Styles
             textMeasurement = DescriptionFont.Measure(t);
             textMeasurement.Height += BorderSafezone * 3.0f;
             return t;
+        }
+
+        public virtual IEnumerable<IMenuComponent> EnumerateComponentsInDrawOrder(Menu menu)
+        {
+            yield return menu.Banner;
+            yield return menu.Subtitle;
+            yield return menu.Background;
+            yield return menu.Items;
+            yield return menu.UpDownDisplay;
+            yield return menu.Description;
         }
 
         private bool ShouldUpDownDisplayBeVisible(MenuUpDownDisplay display) => display.Menu.IsAnyItemOnScreen && display.Menu.GetOnScreenItemsCount() < display.Menu.Items.Sum(i => i.IsVisible ? 1 : 0);

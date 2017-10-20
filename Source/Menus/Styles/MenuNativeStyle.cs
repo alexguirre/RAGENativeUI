@@ -1,8 +1,8 @@
-using System.Drawing;
-using Rage;
-
 namespace RAGENativeUI.Menus.Styles
 {
+    using System.Drawing;
+    using System.Collections.Generic;
+
     // TODO: implement MenuNativeStyle
     // this class will use natives to draw the menu
     internal class MenuNativeStyle : IMenuStyle
@@ -47,6 +47,11 @@ namespace RAGENativeUI.Menus.Styles
         }
 
         public string FormatDescriptionText(MenuDescription description, string text, out SizeF textMeasurement)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public virtual IEnumerable<IMenuComponent> EnumerateComponentsInDrawOrder(Menu menu)
         {
             throw new System.NotImplementedException();
         }

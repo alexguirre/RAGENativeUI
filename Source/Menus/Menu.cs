@@ -126,20 +126,6 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public IEnumerable<IMenuComponent> Components
-        {
-            get
-            {
-                // returned in draw order
-                yield return Banner;
-                yield return Subtitle;
-                yield return Background;
-                yield return Items;
-                yield return UpDownDisplay;
-                yield return Description;
-            }
-        }
-
         public int SelectedIndex
         {
             get { return selectedIndex; }
@@ -271,7 +257,7 @@ namespace RAGENativeUI.Menus
             ProcessInput();
 
 
-            foreach (IMenuComponent c in Components)
+            foreach (IMenuComponent c in Style.EnumerateComponentsInDrawOrder(this))
             {
                 c?.Process();
             }
@@ -485,7 +471,7 @@ namespace RAGENativeUI.Menus
         {
             float x = Location.X, y = Location.Y;
 
-            foreach (IMenuComponent c in Components)
+            foreach (IMenuComponent c in Style.EnumerateComponentsInDrawOrder(this))
             {
                 c?.Draw(graphics, ref x, ref y);
             }
