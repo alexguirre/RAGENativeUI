@@ -1,41 +1,40 @@
 namespace RAGENativeUI.Elements
 {
-    using System;
     using System.Drawing;
-
-    using Rage;
+    
     using Rage.Native;
 
     public class Sprite : IScreenElement
     {
-        private string textureName;
-
         public bool IsVisible { get; set; } = true;
         public ScreenRectangle Rectangle { get; set; }
         public Color Color { get; set; }
-        public TextureDictionary TextureDictionary { get; set; }
-        public string TextureName { get { return textureName; } set { Throw.IfNull(value, nameof(value)); textureName = value; } }
+        public TextureAsset Texture { get; set; }
         public float Rotation { get; set; }
-        public SizeF Resolution
-        {
-            get
-            {
-                Vector3 tmp = NativeFunction.Natives.GetTextureResolution<Vector3>(TextureDictionary.Name, TextureName);
-                return new SizeF(tmp.X, tmp.Y);
-            }
-        }
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
         {
             Throw.IfNull(textureName, nameof(textureName));
+            Throw.InvalidOperationIfNot(textureDictionary.IsValid, $"The texture dictionary '{textureDictionary.Name}' is invalid.");
+            Throw.InvalidOperationIfNot(textureDictionary.Contains(textureName), $"The texture dictionary '{textureDictionary.Name}' does contain the texture '{textureName}'.");
 
-            TextureDictionary = textureDictionary;
-            TextureName = textureName;
+            Texture = textureDictionary[textureName];
             Rectangle = rectangle;
             Color = color;
         }
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle) : this(textureDictionary, textureName, rectangle, Color.White)
+        {
+        }
+
+        public Sprite(TextureAsset texture, ScreenRectangle rectangle, Color color)
+        {
+            Texture = texture;
+            Rectangle = rectangle;
+            Color = color;
+        }
+
+        public Sprite(TextureAsset texture, ScreenRectangle rectangle) : this(texture, rectangle, Color.White)
         {
         }
 
@@ -45,7 +44,7 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            Draw(TextureDictionary, TextureName, Rectangle, Rotation, Color);
+            Draw(Texture.Dictionary, Texture.Name, Rectangle, Rotation, Color);
         }
 
 

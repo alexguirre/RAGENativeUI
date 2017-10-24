@@ -32,21 +32,31 @@ namespace RAGENativeUI.Memory
         public grcTexture.pgDictionary* GetDictionaryByName(string name) => GetDictionaryByHash(Game.GetHashKey(name));
         public grcTexture.pgDictionary* GetDictionaryByHash(uint hash)
         {
+            uint poolIndex = GetDictionaryPoolIndexByHash(hash);
+            if (poolIndex != 0xFFFFFFFF)
+            {
+                fwTxdDef* def = (fwTxdDef*)Pool.Get(poolIndex);
+                return def == null ? null : def->TexturesDictionary;
+            }
+
+            return null;
+        }
+
+        public uint GetDictionaryPoolIndexByHash(uint hash)
+        {
             ushort index = IndicesArray[hash % IndicesArraySize].HashIndex;
 
             if (index == 0xFFFF)
-                return null;
+                return 0xFFFFFFFF;
 
             while (HashesArray[index].Hash != hash)
             {
                 index = HashesArray[index].NextIndex;
                 if (index == 0xFFFF)
-                    return null;
+                    return 0xFFFFFFFF;
             }
 
-            uint poolIndex = HashesArray[index].PoolIndex;
-            fwTxdDef* def = (fwTxdDef*)Pool.Get(poolIndex);
-            return def == null ? null : def->TexturesDictionary;
+            return HashesArray[index].PoolIndex;
         }
     }
 }

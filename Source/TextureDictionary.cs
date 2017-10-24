@@ -1,6 +1,7 @@
 namespace RAGENativeUI
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
 
     using Rage;
@@ -8,15 +9,18 @@ namespace RAGENativeUI
 
     using RAGENativeUI.Memory;
 
-    public struct TextureDictionary : INamedAsset, IAddressable
+    public unsafe struct TextureDictionary : INamedAsset, IAddressable, IEnumerable<TextureAsset>
     {
         public string Name { get; }
-        public bool IsLoaded { get { return NativeFunction.Natives.HasStreamedTextureDictLoaded<bool>(Name); } }
-        public string[] Textures { get { return GetTextureNames(this); } }
+        public bool IsValid => GameMemory.TxdStore->GetDictionaryPoolIndexByHash(Game.GetHashKey(Name)) != 0xFFFFFFFF;
+        public bool IsLoaded => NativeFunction.Natives.HasStreamedTextureDictLoaded<bool>(Name);
         /// <summary>
         /// Gets the memory address of this instance. If this <see cref="TextureDictionary"/> isn't loaded, returns <see cref="IntPtr.Zero"/>.
         /// </summary>
-        public unsafe IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GameMemory.TxdStore->GetDictionaryByName(Name) : IntPtr.Zero; } }
+        public IntPtr MemoryAddress => (IntPtr)GetNative();
+
+        public TextureAsset this[string name] { get { Throw.IfNull(name, nameof(name)); return TextureAsset.GetFromDictionary(this, Game.GetHashKey(name)); } }
+        public TextureAsset this[uint nameHash] => TextureAsset.GetFromDictionary(this, nameHash);
 
         public TextureDictionary(string name)
         {
@@ -37,6 +41,9 @@ namespace RAGENativeUI
 
         public void LoadAndWait()
         {
+            if (!IsValid)
+                return;
+
             Load();
 
             int endTime = Environment.TickCount + 5000;
@@ -44,40 +51,31 @@ namespace RAGENativeUI
                 GameFiber.Yield();
         }
 
-        private static Dictionary<string, string[]> TextureNamesCache = new Dictionary<string, string[]>();
-        private static unsafe string[] GetTextureNames(TextureDictionary dict)
+        public bool Contains(string textureName) => Contains(Game.GetHashKey(textureName));
+        public bool Contains(uint textureNameHash)
         {
-            if (TextureNamesCache.TryGetValue(dict.Name, out string[] n))
+            if (!IsLoaded)
             {
-                return n;
+                LoadAndWait();
             }
-            else
-            {
-                dict.LoadAndWait();
 
-                if (!dict.IsLoaded)
-                    return null;
-
-                grcTexture.pgDictionary* txd = GameMemory.TxdStore->GetDictionaryByName(dict.Name);
-                if (txd != null)
-                {
-                    string[] names = new string[txd->Values.Count];
-                    for (ushort i = 0; i < txd->Values.Count; i++)
-                    {
-                        grcTexture* texture = txd->Values.Get(i);
-                        if (texture != null)
-                        {
-                            names[i] = texture->GetName();
-                        }
-                    }
-
-                    TextureNamesCache[dict.Name] = names;
-                    return names;
-                }
-
-                return null;
-            }
+            grcTexture.pgDictionary* dict = GetNative();
+            int index = dict->GetValueIndex(textureNameHash);
+            return index != -1;
         }
+
+        internal grcTexture.pgDictionary* GetNative()
+        {
+            if (!IsLoaded)
+                return null;
+
+            return GameMemory.TxdStore->GetDictionaryByName(Name);
+        }
+
+        public TextureAsset[] ToArray() => TextureAsset.GetAllFromDictionary(this);
+
+        public IEnumerator<TextureAsset> GetEnumerator() => TextureAsset.GetEnumeratorForDictionary(this);
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public static implicit operator TextureDictionary(string name) => new TextureDictionary(name);
         public static implicit operator string(TextureDictionary textureDictionary) => textureDictionary.Name;

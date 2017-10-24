@@ -74,6 +74,7 @@
     <Compile Include="Menus\Styles\MenuNativeStyle.cs" />
     <Compile Include="Menus\Styles\MenuStyle.cs" />
     <Compile Include="ModuleInitializer.cs" />
+    <Compile Include="TextureAsset.cs" />
     <Compile Include="Throw.cs" />
     <Compile Include="TimeCycleModifier.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
