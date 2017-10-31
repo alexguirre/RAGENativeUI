@@ -46,6 +46,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
@@ -62,10 +65,12 @@
     <Compile Include="KnownNames.cs" />
     <Compile Include="Memory\CAnimPostFX.cs" />
     <Compile Include="Memory\CAnimPostFXManager.cs" />
+    <Compile Include="Memory\CArray.cs" />
     <Compile Include="Memory\CTimeCycleModifier.cs" />
     <Compile Include="Memory\CTimeCycleModifiersManager.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
+    <Compile Include="Memory\pgDictionary.cs" />
     <Compile Include="Memory\sysMemAllocator.cs" />
     <Compile Include="Menus\EventArgs.cs" />
     <Compile Include="Menus\MenuItemsCollection.cs" />
@@ -74,7 +79,7 @@
     <Compile Include="Menus\Styles\MenuNativeStyle.cs" />
     <Compile Include="Menus\Styles\MenuStyle.cs" />
     <Compile Include="ModuleInitializer.cs" />
-    <Compile Include="TextureAsset.cs" />
+    <Compile Include="TextureProperties.cs" />
     <Compile Include="Throw.cs" />
     <Compile Include="TimeCycleModifier.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
@@ -124,6 +129,9 @@
     <EmbeddedResource Include="RAGENativeUI Resources\menu-default.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

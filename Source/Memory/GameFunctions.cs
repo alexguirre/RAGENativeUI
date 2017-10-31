@@ -7,11 +7,11 @@ namespace RAGENativeUI.Memory
 
     internal static unsafe class GameFunctions
     {
-        public delegate bool StartAnimPostFXDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr, int duration, bool looped, byte a5, int a6, int a7);
-        public delegate void StopAnimPostFXDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
-        public delegate long IsAnimPostFXActiveDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
-        public delegate CAnimPostFX* GetAnimPostFXByHashDelegate(CAnimPostFXManager* effectMgr, uint* effectNameHashPtr);
-        public delegate int GetTimeCycleModifierIndexDelegate(CTimeCycleModifiersManager* modsMgr, uint* nameHashPtr);
+        public delegate bool StartAnimPostFXDelegate(ref CAnimPostFXManager effectMgr, ref uint effectNameHashPtr, int duration, bool looped, byte a5, int a6, int a7);
+        public delegate void StopAnimPostFXDelegate(ref CAnimPostFXManager effectMgr, ref uint effectNameHashPtr);
+        public delegate long IsAnimPostFXActiveDelegate(ref CAnimPostFXManager effectMgr, ref uint effectNameHashPtr);
+        public delegate IntPtr GetAnimPostFXByHashDelegate(ref CAnimPostFXManager effectMgr, ref uint effectNameHashPtr);
+        public delegate int GetTimeCycleModifierIndexDelegate(ref CTimeCycleModifiersManager timeCycleModifiersMgr, ref uint nameHashPtr);
 
 
         public static StartAnimPostFXDelegate StartAnimPostFX { get; private set; }

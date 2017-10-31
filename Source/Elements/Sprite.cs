@@ -9,7 +9,8 @@ namespace RAGENativeUI.Elements
         public bool IsVisible { get; set; } = true;
         public ScreenRectangle Rectangle { get; set; }
         public Color Color { get; set; }
-        public TextureAsset Texture { get; set; }
+        public TextureDictionary TextureDictionary { get; set; }
+        public string TextureName { get; set; }
         public float Rotation { get; set; }
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
@@ -18,23 +19,13 @@ namespace RAGENativeUI.Elements
             Throw.InvalidOperationIfNot(textureDictionary.IsValid, $"The texture dictionary '{textureDictionary.Name}' is invalid.");
             Throw.InvalidOperationIfNot(textureDictionary.Contains(textureName), $"The texture dictionary '{textureDictionary.Name}' does contain the texture '{textureName}'.");
 
-            Texture = textureDictionary[textureName];
+            TextureDictionary = textureDictionary;
+            TextureName = textureName;
             Rectangle = rectangle;
             Color = color;
         }
 
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle) : this(textureDictionary, textureName, rectangle, Color.White)
-        {
-        }
-
-        public Sprite(TextureAsset texture, ScreenRectangle rectangle, Color color)
-        {
-            Texture = texture;
-            Rectangle = rectangle;
-            Color = color;
-        }
-
-        public Sprite(TextureAsset texture, ScreenRectangle rectangle) : this(texture, rectangle, Color.White)
         {
         }
 
@@ -44,7 +35,7 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            Draw(Texture.Dictionary, Texture.Name, Rectangle, Rotation, Color);
+            Draw(TextureDictionary, TextureName, Rectangle, Rotation, Color);
         }
 
 

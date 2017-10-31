@@ -5,6 +5,7 @@ namespace RAGENativeUI
     using System.Diagnostics;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
 
     using Rage;
     using Rage.Native;
@@ -15,7 +16,7 @@ namespace RAGENativeUI
     public unsafe sealed class PostFxAnimation : IAddressable
     {
         private uint hash; // not readonly to be able to take its address in other methods
-        private readonly CAnimPostFX* native;
+        private readonly IntPtr memAddress;
         private readonly int index = -1;
 
         public uint Hash { get { return hash; } }
@@ -36,32 +37,30 @@ namespace RAGENativeUI
         {
             get
             {
-                fixed (uint* hashPtr = &hash)
-                {
-                    return IsValid() && (GameFunctions.IsAnimPostFXActive(GameMemory.AnimPostFXManager, hashPtr) & 1) != 0;
-                }
+                return IsValid() && (GameFunctions.IsAnimPostFXActive(ref GameMemory.AnimPostFXManager, ref hash) & 1) != 0;
             }
         }
 
-        public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+        public IntPtr MemoryAddress { get { return memAddress; } }
         public int Index { get { return index; } }
         public PostFxAnimationLayerBlend LayerBlend { get; }
         public PostFxAnimationLayersCollection Layers { get; }
 
-        private PostFxAnimation(CAnimPostFX* native)
+        private PostFxAnimation(ref CAnimPostFX native)
         {
-            hash = native->Name;
-            this.native = native;
+            hash = native.Name;
+            memAddress = (IntPtr)Unsafe.AsPointer(ref native);
             if(IsValid())
             {
-                index = unchecked((int)((long)native - (long)GameMemory.AnimPostFXManager->Effects.Offset) / sizeof(CAnimPostFX));
+                index = unchecked((int)((long)memAddress - (long)GameMemory.AnimPostFXManager.Effects.Offset) / Unsafe.SizeOf<CAnimPostFX>());
             }
             LayerBlend = new PostFxAnimationLayerBlend(this);
             Layers = new PostFxAnimationLayersCollection(this);
         }
 
-        internal CAnimPostFX* GetNative() => native;
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref CAnimPostFX GetNative() => ref Unsafe.AsRef<CAnimPostFX>(memAddress.ToPointer());
+        
         public bool IsValid()
         {
             return MemoryAddress != IntPtr.Zero;
@@ -72,10 +71,7 @@ namespace RAGENativeUI
             if (!IsValid())
                 return;
 
-            fixed (uint* hashPtr = &hash)
-            {
-                GameFunctions.StartAnimPostFX(GameMemory.AnimPostFXManager, hashPtr, duration, looped, 0, 0, 0);
-            }
+            GameFunctions.StartAnimPostFX(ref GameMemory.AnimPostFXManager, ref hash, duration, looped, 0, 0, 0);
         }
 
         public void Stop()
@@ -83,10 +79,7 @@ namespace RAGENativeUI
             if (!IsValid())
                 return;
 
-            fixed (uint* hashPtr = &hash)
-            {
-                GameFunctions.StopAnimPostFX(GameMemory.AnimPostFXManager, hashPtr);
-            }
+            GameFunctions.StopAnimPostFX(ref GameMemory.AnimPostFXManager, ref hash);
         }
 
 
@@ -112,11 +105,11 @@ namespace RAGENativeUI
             }
             else
             {
-                CAnimPostFX* native = GameFunctions.GetAnimPostFXByHash(GameMemory.AnimPostFXManager, &hash);
+                IntPtr native = GameFunctions.GetAnimPostFXByHash(ref GameMemory.AnimPostFXManager, ref hash);
 
-                if (native != null)
+                if (native != IntPtr.Zero)
                 {
-                    PostFxAnimation e = new PostFxAnimation(native);
+                    PostFxAnimation e = new PostFxAnimation(ref Unsafe.AsRef<CAnimPostFX>(native.ToPointer()));
                     cache[hash] = e;
                     return e;
                 }
@@ -127,35 +120,31 @@ namespace RAGENativeUI
 
         public static PostFxAnimation GetByIndex(int index)
         {
-            Throw.IfOutOfRange(index, 0, Count - 1, nameof(index));
+            Throw.IfOutOfRange(index, 0, NumberOfPostFxAnimations - 1, nameof(index));
 
             short i = (short)index;
-            CAnimPostFX* native = GameMemory.AnimPostFXManager->Effects.Get(i);
+            ref CAnimPostFX native = ref GameMemory.AnimPostFXManager.Effects[i];
 
-            if (native != null)
+            if (cache.TryGetValue(native.Name, out PostFxAnimation p))
             {
-                if (cache.TryGetValue(native->Name, out PostFxAnimation p))
-                {
-                    return p;
-                }
-                else
-                {
-                    PostFxAnimation e = new PostFxAnimation(native);
-                    cache[native->Name] = e;
-                    return e;
-                }
+                return p;
             }
-
-            return null;
+            else
+            {
+                PostFxAnimation e = new PostFxAnimation(ref native);
+                cache[native.Name] = e;
+                return e;
+            }
         }
 
         public static PostFxAnimation[] GetAll()
         {
-            PostFxAnimation[] effects = new PostFxAnimation[GameMemory.AnimPostFXManager->Effects.Count];
-            for (short i = 0; i < GameMemory.AnimPostFXManager->Effects.Count; i++)
+            ref CAnimPostFXManager mgr = ref GameMemory.AnimPostFXManager;
+            PostFxAnimation[] effects = new PostFxAnimation[mgr.Effects.Count];
+            for (short i = 0; i < mgr.Effects.Count; i++)
             {
-                CAnimPostFX* e = GameMemory.AnimPostFXManager->Effects.Get(i);
-                effects[i] = GetByHash(e->Name);
+                ref CAnimPostFX e = ref mgr.Effects[i];
+                effects[i] = GetByHash(e.Name);
             }
 
             return effects;
@@ -165,10 +154,10 @@ namespace RAGENativeUI
         {
             get
             {
-                CAnimPostFX* e = GameMemory.AnimPostFXManager->GetLastActiveEffect();
+                void* e = GameMemory.AnimPostFXManager.GetLastActiveEffect();
                 if (e != null)
                 {
-                    return GetByHash(e->Name);
+                    return GetByHash(Unsafe.AsRef<CAnimPostFX>(e).Name);
                 }
 
                 return null;
@@ -179,21 +168,21 @@ namespace RAGENativeUI
         {
             get
             {
-                CAnimPostFX* e = GameMemory.AnimPostFXManager->GetCurrentActiveEffect();
+                void* e = GameMemory.AnimPostFXManager.GetCurrentActiveEffect();
                 if (e != null)
                 {
-                    return GetByHash(e->Name);
+                    return GetByHash(Unsafe.AsRef<CAnimPostFX>(e).Name);
                 }
 
                 return null;
             }
         }
 
-        public static int Count
+        public static int NumberOfPostFxAnimations
         {
             get
             {
-                return GameMemory.AnimPostFXManager->Effects.Count;
+                return GameMemory.AnimPostFXManager.Effects.Count;
             }
         }
 
@@ -215,29 +204,33 @@ namespace RAGENativeUI
 
     public unsafe sealed class PostFxAnimationLayer : IAddressable
     {
-        private CAnimPostFX.Layer* native;
+        private readonly IntPtr memAddress;
 
-        public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+        public IntPtr MemoryAddress { get { return memAddress; } }
 
         public TimeCycleModifier Modifier
         {
             get
             {
-                return native->ModifierName == 0 ? null : TimeCycleModifier.GetByHash(native->ModifierName);
+                ref CAnimPostFX.Layer l = ref GetNative();
+                return l.ModifierName == 0 ? null : TimeCycleModifier.GetByHash(l.ModifierName);
             }
         }
 
-        public uint StartDelayDuration { get { return native->StartDelayDuration; } }
-        public uint InDuration { get { return native->InDuration; } }
-        public uint HoldDuration { get { return native->HoldDuration; } }
-        public uint OutDuration { get { return native->OutDuration; } }
-        public PostFxAnimationLayerAnimationMode AnimationMode { get { return (PostFxAnimationLayerAnimationMode)native->AnimMode; } }
-        public PostFxAnimationLayerLoopMode LoopMode { get { return (PostFxAnimationLayerLoopMode)native->LoopMode; } }
+        public uint StartDelayDuration { get { return GetNative().StartDelayDuration; } }
+        public uint InDuration { get { return GetNative().InDuration; } }
+        public uint HoldDuration { get { return GetNative().HoldDuration; } }
+        public uint OutDuration { get { return GetNative().OutDuration; } }
+        public PostFxAnimationLayerAnimationMode AnimationMode { get { return (PostFxAnimationLayerAnimationMode)GetNative().AnimMode; } }
+        public PostFxAnimationLayerLoopMode LoopMode { get { return (PostFxAnimationLayerLoopMode)GetNative().LoopMode; } }
 
-        internal PostFxAnimationLayer(CAnimPostFX.Layer* native)
+        internal PostFxAnimationLayer(ref CAnimPostFX.Layer native)
         {
-            this.native = native;
+            memAddress = (IntPtr)Unsafe.AsPointer(ref native);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref CAnimPostFX.Layer GetNative() => ref Unsafe.AsRef<CAnimPostFX.Layer>(memAddress.ToPointer());
 
         public bool IsValid()
         {
@@ -250,7 +243,7 @@ namespace RAGENativeUI
         private PostFxAnimation animation;
         private PostFxAnimationLayer[] layers;
 
-        public int Count { get { return animation.GetNative()->FXStack.LayersCount; } }
+        public int Count { get { return animation.GetNative().FXStack.LayersCount; } }
         public PostFxAnimationLayer this[int index]
         {
             get
@@ -259,7 +252,7 @@ namespace RAGENativeUI
 
                 if (layers[index] == null)
                 {
-                    PostFxAnimationLayer l = new PostFxAnimationLayer(animation.GetNative()->FXStack.GetLayer(index));
+                    PostFxAnimationLayer l = new PostFxAnimationLayer(ref animation.GetNative().FXStack.Layers[index]);
                     layers[index] = l;
                     return l;
                 }
@@ -292,17 +285,17 @@ namespace RAGENativeUI
 
     public unsafe sealed class PostFxAnimationLayerBlend : IAddressable
     {
-        private PostFxAnimation animation;
-        private CAnimPostFX.LayerBlend* native;
+        private readonly PostFxAnimation animation;
+        private readonly IntPtr memAddress;
 
-        public IntPtr MemoryAddress { get { return (IntPtr)native; } }
+        public IntPtr MemoryAddress { get { return memAddress; } }
 
         private PostFxAnimationLayer layerA;
         public PostFxAnimationLayer LayerA
         {
             get
             {
-                if (native->LayerA == null)
+                if (GetNative().LayerA == null)
                 {
                     return null;
                 }
@@ -316,7 +309,7 @@ namespace RAGENativeUI
                     {
                         for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            if (animation.Layers[i].MemoryAddress == (IntPtr)native->LayerA)
+                            if (animation.Layers[i].MemoryAddress == (IntPtr)GetNative().LayerA)
                             {
                                 layerA = animation.Layers[i];
                                 break;
@@ -334,7 +327,7 @@ namespace RAGENativeUI
         {
             get
             {
-                if (native->LayerB == null)
+                if (GetNative().LayerB == null)
                 {
                     return null;
                 }
@@ -348,7 +341,7 @@ namespace RAGENativeUI
                     {
                         for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            if (animation.Layers[i].MemoryAddress == (IntPtr)native->LayerB)
+                            if (animation.Layers[i].MemoryAddress == (IntPtr)GetNative().LayerB)
                             {
                                 layerB = animation.Layers[i];
                                 break;
@@ -361,18 +354,21 @@ namespace RAGENativeUI
             }
         }
 
-        public float FrequencyNoise { get { return native->FrequencyNoise; } }
-        public float AmplitudeNoise { get { return native->AmplitudeNoise; } }
-        public float Frequency { get { return native->Frequency; } }
-        public float Bias { get { return native->Bias; } }
+        public float FrequencyNoise { get { return GetNative().FrequencyNoise; } }
+        public float AmplitudeNoise { get { return GetNative().AmplitudeNoise; } }
+        public float Frequency { get { return GetNative().Frequency; } }
+        public float Bias { get { return GetNative().Bias; } }
 
-        public bool Disabled { get { return native->Disabled == 1; } }
+        public bool Disabled { get { return GetNative().Disabled; } }
 
         internal PostFxAnimationLayerBlend(PostFxAnimation anim)
         {
             animation = anim;
-            native = &animation.GetNative()->FXStack.LayerBlend;
+            memAddress = (IntPtr)Unsafe.AsPointer(ref animation.GetNative().FXStack.LayerBlend);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref CAnimPostFX.LayerBlend GetNative() => ref Unsafe.AsRef<CAnimPostFX.LayerBlend>(memAddress.ToPointer());
 
         public bool IsValid()
         {

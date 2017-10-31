@@ -14,8 +14,8 @@ namespace Examples
         private static void Command()
         {
             Sprite sprite = new Sprite("3dtextures", "mpgroundlogo_cops", ScreenRectangle.FromAbsoluteCoords(1920f / 2f - 64f, 1080f / 2f - 64f, 128f, 128f));
-            Game.LogTrivial($"TextureDictionary: {sprite.Texture.Name}");
-            Game.LogTrivial($"TextureName: {sprite.Texture.Dictionary.Name}");
+            Game.LogTrivial($"TextureDictionary: {sprite.TextureDictionary.Name}");
+            Game.LogTrivial($"TextureName: {sprite.TextureName}");
             Game.LogTrivial($"Rectangle: {sprite.Rectangle}");
             Game.LogTrivial($"Rotation: {sprite.Rotation}");
             Game.LogTrivial($"Color: {sprite.Color}");

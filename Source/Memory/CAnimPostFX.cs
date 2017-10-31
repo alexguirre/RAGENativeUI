@@ -9,37 +9,13 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0008)] public Stack FXStack;
 
-
-        [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct CArray
-        {
-            public CAnimPostFX* Offset;
-            public short Count;
-            public short Size;
-
-            public CAnimPostFX* Get(short index)
-            {
-                Throw.IfOutOfRange(index, 0, Size - 1, nameof(index), $"The size of this {nameof(CAnimPostFX)}.{nameof(CArray)} is {Size}, the index {index} is out of range.");
-
-                return &Offset[index];
-            }
-        }
-
         [StructLayout(LayoutKind.Explicit, Size = 408)]
         internal unsafe struct Stack
         {
             [FieldOffset(0x0000)] public LayerBlend LayerBlend;
-            [FieldOffset(0x0030)] private Layer layersArrayStart;
+            [FieldOffset(0x0030)] public CInlinedArray<Layer> Layers;
 
             [FieldOffset(0x0168)] public int LayersCount;
-
-            public Layer* GetLayer(int index)
-            {
-                fixed(Layer* array = &layersArrayStart)
-                {
-                    return &array[index];
-                }
-            }
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 48)]
@@ -54,7 +30,7 @@ namespace RAGENativeUI.Memory
 
             [FieldOffset(0x0024)] public uint LayerAModifierName;
             [FieldOffset(0x0028)] public uint LayerBModifierName;
-            [FieldOffset(0x002C)] public byte Disabled;
+            [FieldOffset(0x002C), MarshalAs(UnmanagedType.I1)] public bool Disabled;
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 52)]

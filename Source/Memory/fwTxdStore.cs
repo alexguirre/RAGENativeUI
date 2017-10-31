@@ -2,6 +2,7 @@ namespace RAGENativeUI.Memory
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Runtime.CompilerServices;
 
     using Rage;
 
@@ -22,26 +23,27 @@ namespace RAGENativeUI.Memory
             public ushort HashIndex;
         }
 
-        [FieldOffset(0x0038)] public CPool Pool;
+        [FieldOffset(0x0038)] public CPool<fwTxdDef> Pool;
 
         [FieldOffset(0x0070)] public TxdNameHash* HashesArray;
         [FieldOffset(0x0078)] public TxdIndex* IndicesArray;
         [FieldOffset(0x0080)] public ushort IndicesArraySize;
         [FieldOffset(0x0082)] public ushort HashesArraySize;
 
-        public grcTexture.pgDictionary* GetDictionaryByName(string name) => GetDictionaryByHash(Game.GetHashKey(name));
-        public grcTexture.pgDictionary* GetDictionaryByHash(uint hash)
+        public ref pgDictionary<grcTexture> GetDictionaryByName(string name) => ref GetDictionaryByHash(Game.GetHashKey(name));
+        public ref pgDictionary<grcTexture> GetDictionaryByHash(uint hash)
         {
             uint poolIndex = GetDictionaryPoolIndexByHash(hash);
             if (poolIndex != 0xFFFFFFFF)
             {
-                fwTxdDef* def = (fwTxdDef*)Pool.Get(poolIndex);
-                return def == null ? null : def->TexturesDictionary;
+                ref fwTxdDef def = ref Pool.Get(poolIndex);
+                return ref def.TexturesDictionary;
             }
 
-            return null;
+            throw new InvalidOperationException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint GetDictionaryPoolIndexByHash(uint hash)
         {
             ushort index = IndicesArray[hash % IndicesArraySize].HashIndex;

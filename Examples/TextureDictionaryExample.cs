@@ -22,15 +22,14 @@ namespace Examples
                     {
                         TextureDictionary dict = new TextureDictionary("commonmenu");
                         Stopwatch sw = Stopwatch.StartNew();
-                        TextureAsset texture = dict["arrowleft"];
+                        TextureProperties texture = dict["arrowleft"];
                         sw.Stop();
                         Game.LogTrivial($"Indexer: {sw.Elapsed} | {sw.ElapsedMilliseconds} | {sw.ElapsedTicks}");
                         Game.LogTrivial($"Name: {texture.Name}");
-                        Game.LogTrivial($"Index: {texture.Index}");
-                        Game.LogTrivial($"Res: {texture.Resolution}");
+                        Game.LogTrivial($"W: {texture.Width}");
+                        Game.LogTrivial($"H: {texture.Height}");
                         Game.LogTrivial($"Depth: {texture.Depth}");
                         Game.LogTrivial($"Format: {texture.Format}");
-                        Game.LogTrivial($"Address: {texture.MemoryAddress.ToString("X16")}");
 
                         Game.LogTrivial("");
 
@@ -46,21 +45,20 @@ namespace Examples
                         sw.Stop();
                         Game.LogTrivial($"Indexer: {sw.Elapsed} | {sw.ElapsedMilliseconds} | {sw.ElapsedTicks}");
                         Game.LogTrivial($"Name: {texture.Name}");
-                        Game.LogTrivial($"Index: {texture.Index}");
-                        Game.LogTrivial($"Res: {texture.Resolution}");
+                        Game.LogTrivial($"W: {texture.Width}");
+                        Game.LogTrivial($"H: {texture.Height}");
                         Game.LogTrivial($"Depth: {texture.Depth}");
                         Game.LogTrivial($"Format: {texture.Format}");
-                        Game.LogTrivial($"Address: {texture.MemoryAddress.ToString("X16")}");
 
                         Game.LogTrivial("");
 
                         sw.Restart();
-                        TextureAsset[] textures = dict.ToArray();
+                        TextureProperties[] textures = dict.ToArray();
                         sw.Stop();
                         Game.LogTrivial($"ToArray: {sw.Elapsed} | {sw.ElapsedMilliseconds} | {sw.ElapsedTicks}");
 
                         sw.Restart();
-                        foreach (TextureAsset t in dict)
+                        foreach (TextureProperties t in dict)
                         {
                             Game.LogTrivial($"  Name: {t.Name}");
                         }

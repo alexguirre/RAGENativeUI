@@ -2,29 +2,33 @@ namespace RAGENativeUI.Memory
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Runtime.CompilerServices;
 
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct CPool
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe struct CPool<T> where T : struct
     {
-        [FieldOffset(0x00)] private long dataAddress;
-        [FieldOffset(0x08)] private byte* byteArray;
-        [FieldOffset(0x10)] private uint size;
-        [FieldOffset(0x14)] private uint itemSize;
-        [FieldOffset(0x18)] private uint nextEmptyItemSlotIndex; // 0xFFFFFFFF == pool full
-        [FieldOffset(0x1C)] private uint lastInvalidatedItemSlotIndex;
-        [FieldOffset(0x20)] private uint count;
-        [FieldOffset(0x24)] private uint unk;
+        private long dataAddress;
+        private byte* byteArray;
+        private uint size;
+        private uint itemSize;
+        private uint nextEmptyItemSlotIndex; // 0xFFFFFFFF == pool full
+        private uint lastInvalidatedItemSlotIndex;
+        private uint count;
 
         public uint Size => size;
         public uint Count => count & 0x3FFFFFFF;
         public uint ItemSize => itemSize;
         public bool IsFull => nextEmptyItemSlotIndex == 0xFFFFFFFF;
 
+        public ref T this[uint index] => ref Get(index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsValid(uint index)
         {
             return index < size && Mask(index) != 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsValid(void* item)
         {
             IntPtr address = new IntPtr(item);
@@ -32,30 +36,28 @@ namespace RAGENativeUI.Memory
             return IsValid(i);
         }
 
-        public void* Get(uint index)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T Get(uint index)
         {
-            return (void*)GetAddress(index);
+            return ref Unsafe.AsRef<T>(GetAddress(index).ToPointer());
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IntPtr GetAddress(uint index)
         {
             return new IntPtr(Mask(index) & (dataAddress + index * itemSize));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint GetIndex(void* item)
         {
             IntPtr address = new IntPtr(item);
             uint i = unchecked((uint)((address.ToInt64() - dataAddress) / itemSize));
 
-            if (i >= size)
-            {
-                throw new InvalidOperationException($"The passed pointer ({address.ToString("X")}) isn't contained in the pool.");
-            }
-
             return i;
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal long Mask(uint i)
         {
             long num1 = byteArray[i] & 0x80;

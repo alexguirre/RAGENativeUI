@@ -176,9 +176,9 @@ namespace RAGENativeUI.Scaleforms
         internal GFxMovieRoot* GetMovieRoot()
         {
             int index = Handle - 1;
-            short data2Index = GameMemory.ScaleformData1Array->Get(index)->ScaleformIndex;
-            int storeIndex = GameMemory.ScaleformData2Array->Get(data2Index)->ScaleformStorePoolIndex;
-            GFxMovieRoot* movieRoot = GameMemory.ScaleformStore->GetPoolItem(storeIndex)->MovieObject->GetMovieRoot();
+            short data2Index = GameMemory.ScaleformData1Array[index].ScaleformIndex;
+            int storeIndex = GameMemory.ScaleformData2Array[data2Index].ScaleformStorePoolIndex;
+            GFxMovieRoot* movieRoot = GameMemory.ScaleformStore.GetPoolItem(storeIndex).MovieObject->GetMovieRoot();
             return movieRoot;
         }
     }
