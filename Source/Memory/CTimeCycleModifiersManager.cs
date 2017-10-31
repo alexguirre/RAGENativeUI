@@ -3,9 +3,7 @@ namespace RAGENativeUI.Memory
     using System;
     using System.Runtime.InteropServices;
     using System.Runtime.CompilerServices;
-
-    using Rage;
-
+    
     [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct CTimeCycleModifiersManager
     {
@@ -26,11 +24,30 @@ namespace RAGENativeUI.Memory
 
         public bool IsNameUsed(uint name)
         {
-            for (short i = 0; i < SortedModifiers.Count; i++)
+            int leftIndex = 0;
+            int rightIndex = SortedModifiers.Count - 1;
+
+            while (leftIndex <= rightIndex)
             {
-                if (SortedModifiers[i].Name == name)
+                int mid = (rightIndex + leftIndex) >> 1;
+
+                uint hash = SortedModifiers[(short)mid].Name;
+
+                if (hash == name)
+                {
                     return true;
+                }
+
+                if (name > hash)
+                {
+                    leftIndex = mid + 1;
+                }
+                else
+                {
+                    rightIndex = mid - 1;
+                }
             }
+
             return false;
         }
 
@@ -53,11 +70,10 @@ namespace RAGENativeUI.Memory
             modifier.Flags = flags;
             modifier.unk24 = -1;
 
-            ref CTimeCycleModifier m = ref GetModifiersArrayUnusedEntry();
-            m = modifier;
+            *GetModifiersArrayUnusedEntry() = Unsafe.AsPointer(ref modifier);
             ref CTimeCycleModifier.SortedEntry entry = ref GetSortedModifiersArrayUnusedEntry();
             entry.Name = name;
-            entry.Modifier = modifier;
+            entry.ModifierPtr = (IntPtr)Unsafe.AsPointer(ref modifier);
 
             short newUnkArraySize = Modifiers.Count;
             float* newUnkArrayOffset = (float*)GameMemory.Allocator.Allocate(sizeof(float) * newUnkArraySize);
@@ -87,7 +103,7 @@ namespace RAGENativeUI.Memory
                     short next = unchecked((short)(sort + 1));
                     if (SortedModifiers[sort].Name > SortedModifiers[next].Name)
                     {
-                        ref CTimeCycleModifier.SortedEntry temp = ref SortedModifiers[next];
+                        CTimeCycleModifier.SortedEntry temp = SortedModifiers[next];
                         SortedModifiers[next] = SortedModifiers[sort];
                         SortedModifiers[sort] = temp;
                     }
@@ -96,7 +112,7 @@ namespace RAGENativeUI.Memory
         }
 
 
-        private ref CTimeCycleModifier GetModifiersArrayUnusedEntry(short increaseCountIfFull = 5)
+        private void** GetModifiersArrayUnusedEntry(short increaseCountIfFull = 5)
         {
             if (Modifiers.Count == Modifiers.Size)
             {
@@ -113,7 +129,7 @@ namespace RAGENativeUI.Memory
 
             short last = Modifiers.Count;
             Modifiers.Count++;
-            return ref Modifiers[last];
+            return (void**)(Modifiers.Offset + last * 8);
         }
 
         private ref CTimeCycleModifier.SortedEntry GetSortedModifiersArrayUnusedEntry(short increaseCountIfFull = 5)

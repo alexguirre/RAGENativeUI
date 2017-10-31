@@ -13,55 +13,42 @@ namespace RAGENativeUI.Memory
         private ulong pad3;
         public CArray<uint> Keys;
         public CPtrsArray<T> Values;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetValueIndex(uint key)
+        
+        public int FindIndex(uint key)
         {
-            int index = -1;
-
             int leftIndex = 0;
             int rightIndex = Keys.Count - 1;
 
-            if (rightIndex < 0)
+            while (leftIndex <= rightIndex)
             {
-                index = -1;
-            }
-            else
-            {
-                while (true)
+                int mid = (rightIndex + leftIndex) >> 1;
+
+                uint hash = Keys[(short)mid];
+
+                if(hash == key)
                 {
-                    index = (rightIndex + leftIndex) >> 1;
-                    short tmpIndex = (short)((rightIndex + leftIndex) >> 1);
-                    if (key == Keys[tmpIndex])
-                    {
-                        break;
-                    }
+                    return mid;
+                }
 
-                    if (key >= Keys[tmpIndex])
-                    {
-                        leftIndex = index + 1;
-                    }
-                    else
-                    {
-                        rightIndex = index - 1;
-                    }
-
-                    if (leftIndex > rightIndex)
-                    {
-                        index = -1;
-                    }
+                if(key > hash)
+                {
+                    leftIndex = mid + 1;
+                }
+                else
+                {
+                    rightIndex = mid - 1;
                 }
             }
 
-            return index;
+            return -1;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsKey(uint key) => GetValueIndex(key) != -1;
+        public bool ContainsKey(uint key) => FindIndex(key) != -1;
 
         public ref T GetValue(uint key)
         {
-            int index = GetValueIndex(key);
+            int index = FindIndex(key);
             if (index != -1)
             {
                 return ref Values[(short)index];

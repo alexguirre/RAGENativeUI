@@ -4,7 +4,7 @@ namespace RAGENativeUI.Memory
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
-    [StructLayout(LayoutKind.Sequential, Size = 12)]
+    [StructLayout(LayoutKind.Sequential, Size = 16)]
     internal unsafe struct CArray<T> where T : struct
     {
         public IntPtr Offset;
@@ -15,7 +15,7 @@ namespace RAGENativeUI.Memory
         public ref T this[short index] => ref Unsafe.AsRef<T>((Offset + index * Unsafe.SizeOf<T>()).ToPointer());
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 12)]
+    [StructLayout(LayoutKind.Sequential, Size = 16)]
     internal unsafe struct CPtrsArray<T> where T : struct
     {
         public IntPtr Offset;
@@ -23,12 +23,12 @@ namespace RAGENativeUI.Memory
         public short Size;
         private uint pad0;
 
-        public ref T this[short index] => ref Unsafe.AsRef<T>(*(void**)(Offset + index* 8).ToPointer());
+        public ref T this[short index] => ref Unsafe.AsRef<T>(*(void**)(Offset + index * 8).ToPointer());
     }
 
 
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct CInlinedArray<T> where T : struct
+    internal unsafe struct CInlinedArray<T> where T : struct
     {
         private byte start;
 

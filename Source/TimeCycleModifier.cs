@@ -107,8 +107,8 @@ namespace RAGENativeUI
         }
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor2"]/*' />
-        public TimeCycleModifier(string name, uint flags, params (TimeCycleModifierModType type, float value1, float value2)[] mods)
-            : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.type, Value1 = m.value1, Value2 = m.value2 }).ToArray())
+        public TimeCycleModifier(string name, uint flags, params (TimeCycleModifierModType Type, float Value1, float Value2)[] mods)
+            : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray())
         {
         }
 

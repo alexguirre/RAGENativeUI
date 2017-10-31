@@ -2,6 +2,7 @@ namespace RAGENativeUI.Memory
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Runtime.CompilerServices;
 
     [StructLayout(LayoutKind.Explicit, Size = 144)]
     internal unsafe struct grcTexture
@@ -16,8 +17,11 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0058)] public int format;
 
-        [FieldOffset(0x0060)] public grcTexture* Previous;
-        [FieldOffset(0x0068)] public grcTexture* Next;
+        [FieldOffset(0x0060)] public IntPtr PreviousTexturePtr;
+        [FieldOffset(0x0068)] public IntPtr NextTexturePtr;
+
+        public ref grcTexture PreviousTexture => ref Unsafe.AsRef<grcTexture>(PreviousTexturePtr.ToPointer());
+        public ref grcTexture NextTexture => ref Unsafe.AsRef<grcTexture>(NextTexturePtr.ToPointer());
 
         public string GetName()
         {

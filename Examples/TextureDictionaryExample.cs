@@ -17,6 +17,15 @@ namespace Examples
                 while (true)
                 {
                     GameFiber.Yield();
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.J))
+                    {
+                        TextureDictionary dict = new TextureDictionary("commonmenu");
+                        dict.LoadAndWait();
+
+                        Game.LogTrivial("Contains: arrowleft " + dict.Contains("arrowleft"));
+                        Game.LogTrivial("Contains: gradient_bgd " + dict.Contains("gradient_bgd"));
+                        Game.LogTrivial("Contains: notcontained " + dict.Contains("notcontained"));
+                    }
 
                     if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
                     {

@@ -3,7 +3,7 @@ namespace RAGENativeUI.Memory
     using System;
     using System.Runtime.InteropServices;
     using System.Runtime.CompilerServices;
-
+    
     [StructLayout(LayoutKind.Explicit, Size = 48)]
     internal unsafe struct CTimeCycleModifier
     {
@@ -25,7 +25,7 @@ namespace RAGENativeUI.Memory
                 {
                     newOffset[i] = Mods[i];
                 }
-                GameMemory.Allocator.Free((IntPtr)Mods.Offset);
+                GameMemory.Allocator.Free(Mods.Offset);
                 Mods.Offset = (IntPtr)newOffset;
             }
 
@@ -56,7 +56,7 @@ namespace RAGENativeUI.Memory
                     short next = unchecked((short)(sort + 1));
                     if (Mods[sort].ModType > Mods[next].ModType)
                     {
-                        ref Mod temp = ref Mods[next];
+                        Mod temp = Mods[next];
                         Mods[next] = Mods[sort];
                         Mods[sort] = temp;
                     }
