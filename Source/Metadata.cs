@@ -93,8 +93,7 @@ namespace RAGENativeUI
 
         private void GetValue(string name, out object result)
         {
-            EnsureDictionary();
-            if(!dictionary.TryGetValue(name, out result))
+            if(dictionary == null || !dictionary.TryGetValue(name, out result))
             {
                 throw new KeyNotFoundException();
             }
