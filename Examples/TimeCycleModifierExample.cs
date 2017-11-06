@@ -2,6 +2,7 @@ namespace Examples
 {
     using System;
     using System.Drawing;
+    using System.Collections.Generic;
 
     using Rage;
     using Rage.Attributes;
@@ -79,10 +80,9 @@ namespace Examples
 
                 if (Gui.Button(new RectangleF(5, 30 * 13, 250, 25), "Randomize Current Mods Values"))
                 {
-                    foreach (TimeCycleModifierMod m in mod.Mods)
+                    for (int j = 0; j < mod.Mods.Count; j++)
                     {
-                        m.Value1 = MathHelper.GetRandomSingle(0.0f, 15.0f);
-                        m.Value2 = MathHelper.GetRandomSingle(0.0f, 15.0f);
+                        mod.Mods[j] = (MathHelper.GetRandomSingle(0.0f, 15.0f), MathHelper.GetRandomSingle(0.0f, 15.0f));
                     }
                 }
 
@@ -122,12 +122,12 @@ namespace Examples
                     modsValuesScrollViewPos = Gui.BeginScrollView(new RectangleF(3, 30, 450, 550), modsValuesScrollViewPos, new SizeF(418, height), false);
 
                     float y = 3;
-                    foreach (TimeCycleModifierMod m in mod.Mods)
+                    foreach (KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)> pair in mod.Mods)
                     {
                         if (y > modsValuesScrollViewPos.Y - 30.0f && y < 550.0f + modsValuesScrollViewPos.Y) // only call Label if it's currently visible, for reducing flickering
                         {
-                            Gui.Label(new RectangleF(3, y, 428, 25), $"{m.Type}:");
-                            Gui.Label(new RectangleF(3, y, 428, 25), $"{m.Value1.ToString("0.000")} {m.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
+                            Gui.Label(new RectangleF(3, y, 428, 25), $"{pair.Key}:");
+                            Gui.Label(new RectangleF(3, y, 428, 25), $"{pair.Value.Value1.ToString("0.000")} {pair.Value.Value2.ToString("0.000")}", 15.0f, TextHorizontalAligment.Right);
                         }
 
                         y += 26;

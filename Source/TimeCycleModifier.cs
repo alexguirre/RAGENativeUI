@@ -70,7 +70,7 @@ namespace RAGENativeUI
         public uint Flags { get { return Unsafe.AsRef<CTimeCycleModifier>(memAddress.ToPointer()).Flags; } }
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Mods"]/*' />
-        public TimeCycleModifierModsCollection Mods { get; }
+        public TimeCycleModifierMods Mods { get; }
 
         // from existing timecycle modifier in memory
         private TimeCycleModifier(ref CTimeCycleModifier native, int idx)
@@ -78,7 +78,7 @@ namespace RAGENativeUI
             hash = native.Name;
             memAddress = (IntPtr)Unsafe.AsPointer(ref native);
             index = idx;
-            Mods = new TimeCycleModifierModsCollection(this);
+            Mods = new TimeCycleModifierMods(this);
         }
 
         // creates new timecycle modifier in memory
@@ -96,13 +96,13 @@ namespace RAGENativeUI
             this.hash = hash;
             memAddress = (IntPtr)Unsafe.AsPointer(ref GameMemory.TimeCycleModifiersManager.NewTimeCycleModifier(hash, mods, flags));
             index = GameMemory.TimeCycleModifiersManager.Modifiers.Count - 1;
-            Mods = new TimeCycleModifierModsCollection(this);
+            Mods = new TimeCycleModifierMods(this);
             cache[hash] = this;
         }
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor1"]/*' />
         public TimeCycleModifier(string name, TimeCycleModifier template)
-            : this(name, template.Flags, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray())
+            : this(name, template.Flags, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Key, Value1 = m.Value.Value1, Value2 = m.Value.Value2 }).ToArray())
         {
         }
 
@@ -111,6 +111,9 @@ namespace RAGENativeUI
             : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray())
         {
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref CTimeCycleModifier GetNative() => ref Unsafe.AsRef<CTimeCycleModifier>(memAddress.ToPointer());
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="IsValid"]/*' />
         public bool IsValid()
@@ -251,99 +254,120 @@ namespace RAGENativeUI
 
     }
 
-    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Doc/*' />
-    public sealed unsafe class TimeCycleModifierModsCollection : IEnumerable<TimeCycleModifierMod>
+    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMods/Doc/*' />
+    public sealed unsafe class TimeCycleModifierMods : IDictionary<TimeCycleModifierModType, (float Value1, float Value2)>
     {
-        internal readonly TimeCycleModifier Modifier;
-        private readonly Dictionary<TimeCycleModifierModType, TimeCycleModifierMod> modByType;
+        private readonly TimeCycleModifier modifier;
+        private KeyCollection keys;
+        private ValueCollection values;
+        
+        public int Count => modifier.GetNative().Mods.Count;
+        public ICollection<TimeCycleModifierModType> Keys => keys ?? (keys = new KeyCollection(this));
+        public ICollection<(float Value1, float Value2)> Values => values ?? (values = new ValueCollection(this));
+        public bool IsReadOnly => false;
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Count"]/*' />
-        public int Count => Unsafe.AsRef<CTimeCycleModifier>(Modifier.MemoryAddress.ToPointer()).Mods.Count;
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Indexer1"]/*' />
-        public TimeCycleModifierMod this[int index]
+        public (float Value1, float Value2) this[int index]
         {
             get
             {
-                ref CTimeCycleModifier native = ref Unsafe.AsRef<CTimeCycleModifier>(Modifier.MemoryAddress.ToPointer());
+                ref CTimeCycleModifier native = ref modifier.GetNative();
 
                 Throw.IfOutOfRange(index, 0, native.Mods.Count - 1, nameof(index));
 
                 ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[(short)index];
-                TimeCycleModifierModType type = (TimeCycleModifierModType)nativeMod.ModType;
+                return (nativeMod.Value1, nativeMod.Value2);
+            }
+            set
+            {
+                ref CTimeCycleModifier native = ref modifier.GetNative();
 
-                if (modByType.TryGetValue(type, out TimeCycleModifierMod m))
-                {
-                    return m;
-                }
-                else
-                {
-                    TimeCycleModifierMod managedMod = new TimeCycleModifierMod(this, type);
-                    modByType[type] = managedMod;
-                    return managedMod;
-                }
+                Throw.IfOutOfRange(index, 0, native.Mods.Count - 1, nameof(index));
+
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[(short)index];
+                nativeMod.Value1 = value.Value1;
+                nativeMod.Value2 = value.Value2;
             }
         }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Indexer2"]/*' />
-        public TimeCycleModifierMod this[TimeCycleModifierModType type]
+        
+        public (float Value1, float Value2) this[TimeCycleModifierModType type]
         {
             get
             {
-                if (modByType.TryGetValue(type, out TimeCycleModifierMod m))
+                ref CTimeCycleModifier native = ref modifier.GetNative();
+                short index = FindIndex(type);
+
+                Throw.InvalidOperationIf(index == -1, $"This {nameof(TimeCycleModifierMods)} doesn't contain a mod of type '{type}'.");
+                
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                return (nativeMod.Value1, nativeMod.Value2);
+            }
+            set
+            {
+                ref CTimeCycleModifier native = ref modifier.GetNative();
+                short index = FindIndex(type);
+
+                if(index == -1)
                 {
-                    Throw.InvalidOperationIfNot(m.IsValid, $"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
-                    return m;
+                    Add(type, value.Value1, value.Value2);
                 }
                 else
                 {
-                    Throw.InvalidOperationIf(GetIndexForType(type) == -1, $"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
-                    TimeCycleModifierMod managedMod = new TimeCycleModifierMod(this, type);
-                    modByType[type] = managedMod;
-                    return managedMod;
+                    ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                    nativeMod.Value1 = value.Value1;
+                    nativeMod.Value2 = value.Value2;
                 }
             }
         }
 
-        internal TimeCycleModifierModsCollection(TimeCycleModifier modifier)
+        internal TimeCycleModifierMods(TimeCycleModifier modifier)
         {
-            Modifier = modifier;
-            modByType = new Dictionary<TimeCycleModifierModType, TimeCycleModifierMod>();
+            this.modifier = modifier;
         }
 
-        internal short GetIndexForType(TimeCycleModifierModType type)
+        private short FindIndex(TimeCycleModifierModType type)
         {
-            ref CTimeCycleModifier native = ref Unsafe.AsRef<CTimeCycleModifier>(Modifier.MemoryAddress.ToPointer());
-            for (short i = 0; i < native.Mods.Count; i++)
+            ref CTimeCycleModifier native = ref modifier.GetNative();
+
+            int keyType = (int)type;
+
+            int leftIndex = 0;
+            int rightIndex = native.Mods.Count - 1;
+
+            while (leftIndex <= rightIndex)
             {
-                ref CTimeCycleModifier.Mod mod = ref native.Mods[i];
-                if (mod.ModType == (int)type)
+                int mid = (rightIndex + leftIndex) >> 1;
+
+                int modType = native.Mods[(short)mid].ModType;
+
+                if (keyType == modType)
                 {
-                    return i;
+                    return (short)mid;
                 }
-                else if (i >= (int)type) // the mods array is sorted by type value, if current index is equal to or greater than type value,
-                                         // we can safely assume the array doesn't contain a mod of that type and break out of it
+
+                if (keyType > modType)
                 {
-                    break;
+                    leftIndex = mid + 1;
+                }
+                else
+                {
+                    rightIndex = mid - 1;
                 }
             }
 
             return -1;
         }
-
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Has"]/*' />
-        public bool Has(TimeCycleModifierModType type)
+        
+        public bool ContainsKey(TimeCycleModifierModType type)
         {
-            return GetIndexForType(type) != -1;
+            return FindIndex(type) != -1;
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Add"]/*' />
-        public TimeCycleModifierMod Add(TimeCycleModifierModType type, float value1, float value2)
+        public void Add(TimeCycleModifierModType type, (float Value1, float Value2) values) => Add(type, values.Value1, values.Value2);
+        public void Add(TimeCycleModifierModType type, float value1, float value2)
         {
-            Throw.InvalidOperationIf(Has(type), $"This {nameof(TimeCycleModifierModsCollection)} already contains a mod of type {type}.");
+            Throw.ArgumentExceptionIf(ContainsKey(type), nameof(type), $"This {nameof(TimeCycleModifierMods)} already contains a mod of type '{type}'.");
 
-            ref CTimeCycleModifier native = ref Unsafe.AsRef<CTimeCycleModifier>(Modifier.MemoryAddress.ToPointer());
+            ref CTimeCycleModifier native = ref modifier.GetNative();
 
             ref CTimeCycleModifier.Mod newMod = ref native.GetUnusedModEntry();
             newMod.ModType = (int)type;
@@ -351,139 +375,274 @@ namespace RAGENativeUI
             newMod.Value2 = value2;
 
             native.SortMods();
-
-            TimeCycleModifierMod managedMod = new TimeCycleModifierMod(this, type);
-            modByType[type] = managedMod;
-            return managedMod;
         }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="Remove"]/*' />
-        public void Remove(TimeCycleModifierModType type)
+        
+        public bool Remove(TimeCycleModifierModType type)
         {
-            short index = GetIndexForType(type);
+            short index = FindIndex(type);
+            if(index == -1)
+            {
+                return false;
+            }
 
-            Throw.InvalidOperationIf(index == -1, $"This {nameof(TimeCycleModifierModsCollection)} doesn't contain a mod of type {type}.");
-
-            ref CTimeCycleModifier native = ref Unsafe.AsRef<CTimeCycleModifier>(Modifier.MemoryAddress.ToPointer());
+            ref CTimeCycleModifier native = ref modifier.GetNative();
             native.RemoveModEntry(index);
-
-            if (modByType.ContainsKey(type))
-                modByType.Remove(type);
+            return true;
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="GetEnumerator"]/*' />
-        public IEnumerator<TimeCycleModifierMod> GetEnumerator()
+        public bool TryGetValue(TimeCycleModifierModType type, out (float Value1, float Value2) values)
         {
-            for (int i = 0; i < Count; i++)
+            ref CTimeCycleModifier native = ref modifier.GetNative();
+            short index = FindIndex(type);
+
+            if (index != -1)
             {
-                yield return this[i];
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                values = (nativeMod.Value1, nativeMod.Value2);
+                return true;
             }
+
+            values = default;
+            return false;
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModsCollection/Member[@name="GetEnumerator"]/*' />
-        IEnumerator IEnumerable.GetEnumerator()
+        void ICollection<KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>>.Add(KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)> keyValuePair)
         {
-            return GetEnumerator();
+            Add(keyValuePair.Key, keyValuePair.Value);
         }
-    }
 
-    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Doc/*' />
-    public sealed unsafe class TimeCycleModifierMod : IAddressable, IEquatable<TimeCycleModifierMod>
-    {
-        private readonly TimeCycleModifierModsCollection collection;
-        private readonly TimeCycleModifierModType type;
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Index"]/*' />
-        public int Index { get { return collection.GetIndexForType(type); } }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="MemoryAddress"]/*' />
-        public IntPtr MemoryAddress
+        bool ICollection<KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>>.Contains(KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)> keyValuePair)
         {
-            get
+            short index = FindIndex(keyValuePair.Key);
+            if (index != -1)
             {
-                return (IntPtr)Unsafe.AsPointer(ref GetNative());
-            }
-        }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Type"]/*' />
-        public TimeCycleModifierModType Type { get { return type; } }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Value1"]/*' />
-        public float Value1
-        {
-            get { Throw.InvalidOperationIfNot(IsValid); return GetNative().Value1; }
-            set
-            {
-                Throw.InvalidOperationIfNot(IsValid);
-                GetNative().Value1 = value;
-            }
-        }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="Value2"]/*' />
-        public float Value2
-        {
-            get { Throw.InvalidOperationIfNot(IsValid); return GetNative().Value2; }
-            set
-            {
-                Throw.InvalidOperationIfNot(IsValid);
-                GetNative().Value2 = value;
-            }
-        }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMod/Member[@name="IsValid"]/*' />
-        public bool IsValid
-        {
-            get { return Index != -1; }
-        }
-
-        internal TimeCycleModifierMod(TimeCycleModifierModsCollection collection, TimeCycleModifierModType type)
-        {
-            this.collection = collection;
-            this.type = type;
-        }
-
-        private ref CTimeCycleModifier.Mod GetNative()
-        {
-            short index = collection.GetIndexForType(type);
-
-            ref CTimeCycleModifier native = ref Unsafe.AsRef<CTimeCycleModifier>(collection.Modifier.MemoryAddress.ToPointer());
-
-            Throw.IfOutOfRange(index, 0, native.Mods.Count - 1, nameof(index), "Shouldn't happen, notify a RAGENativeUI developer.");
-
-            return ref native.Mods[index];
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is TimeCycleModifierMod other)
-            {
-                return Equals(other);
+                ref CTimeCycleModifier native = ref modifier.GetNative();
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                return nativeMod.Value1 == keyValuePair.Value.Value1 && nativeMod.Value2 == keyValuePair.Value.Value2;
             }
 
             return false;
         }
 
-        public bool Equals(TimeCycleModifierMod other)
+        bool ICollection<KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>>.Remove(KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)> keyValuePair)
         {
-            return other != null && other.type == type && ReferenceEquals(other.collection, collection);
+            short index = FindIndex(keyValuePair.Key);
+            if (index != -1)
+            {
+                ref CTimeCycleModifier native = ref modifier.GetNative();
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+
+                if (nativeMod.Value1 == keyValuePair.Value.Value1 && nativeMod.Value2 == keyValuePair.Value.Value2)
+                {
+                    native.RemoveModEntry(index);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
-        public override int GetHashCode()
+        public void Clear()
         {
-            return unchecked(collection.GetHashCode() * 17 + type.GetHashCode());
+            ref CTimeCycleModifier native = ref modifier.GetNative();
+            if (native.Mods.Count > 0)
+            {
+                native.RemoveAllMods();
+            }
         }
 
-
-        public static bool operator ==(TimeCycleModifierMod left, TimeCycleModifierMod right)
+        public void CopyTo(KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>[] array, int arrayIndex)
         {
-            if (left == null)
-                return right == null;
-            return left.Equals(right);
+            Throw.IfNull(array, nameof(array));
+
+            ref CTimeCycleModifier native = ref modifier.GetNative();
+            short sourceCount = native.Mods.Count;
+
+            Throw.IfOutOfRange(arrayIndex, 0, sourceCount - 1, nameof(arrayIndex));
+            Throw.ArgumentExceptionIf(sourceCount > (array.Length - arrayIndex));
+
+            for (short i = 0; i < sourceCount; i++)
+            {
+                ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                array[arrayIndex++] = new KeyValuePair<TimeCycleModifierModType, (float, float)>((TimeCycleModifierModType)m.ModType, (m.Value1, m.Value2));
+            }
         }
 
-        public static bool operator !=(TimeCycleModifierMod left, TimeCycleModifierMod right)
+        public IEnumerator<KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>> GetEnumerator() => new Enumerator(this);
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+
+        private sealed class Enumerator : IEnumerator<KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>>
         {
-            return !(left == right);
+            private readonly TimeCycleModifierMods mods;
+            private short index;
+            private KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)> current;
+
+            public KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)> Current => current;
+            object IEnumerator.Current => Current;
+
+            internal Enumerator(TimeCycleModifierMods mods)
+            {
+                Throw.IfNull(mods, nameof(mods));
+
+                this.mods = mods;
+                index = -1;
+                current = default;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                ref CTimeCycleModifier native = ref mods.modifier.GetNative();
+
+                if(index < native.Mods.Count)
+                {
+                    index++;
+                    if(index < native.Mods.Count)
+                    {
+                        ref CTimeCycleModifier.Mod m = ref native.Mods[index];
+                        current = new KeyValuePair<TimeCycleModifierModType, (float, float)>((TimeCycleModifierModType)m.ModType, (m.Value1, m.Value2));
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            public void Reset()
+            {
+                index = -1;
+                current = default;
+            }
+        }
+
+        private sealed class KeyCollection : ICollection<TimeCycleModifierModType>, IReadOnlyCollection<TimeCycleModifierModType>
+        {
+            private TimeCycleModifierMods mods;
+            
+            public int Count
+            {
+                get { return mods.Count; }
+            }
+
+            public bool IsReadOnly => true;
+
+            internal KeyCollection(TimeCycleModifierMods mods)
+            {
+                Throw.IfNull(mods, nameof(mods));
+
+                this.mods = mods;
+            }
+
+            public void CopyTo(TimeCycleModifierModType[] array, int arrayIndex)
+            {
+                Throw.IfNull(array, nameof(array));
+
+                ref CTimeCycleModifier native = ref mods.modifier.GetNative();
+                short sourceCount = native.Mods.Count;
+
+                Throw.IfOutOfRange(arrayIndex, 0, sourceCount - 1, nameof(arrayIndex));
+                Throw.ArgumentExceptionIf(sourceCount > (array.Length - arrayIndex));
+
+                for (short i = 0; i < sourceCount; i++)
+                {
+                    ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                    array[arrayIndex++] = (TimeCycleModifierModType)m.ModType;
+                }
+            }
+
+            void ICollection<TimeCycleModifierModType>.Add(TimeCycleModifierModType item) => Throw.NotSupportedException();
+            void ICollection<TimeCycleModifierModType>.Clear() => Throw.NotSupportedException();
+
+            public bool Contains(TimeCycleModifierModType item) => mods.ContainsKey(item);
+
+            bool ICollection<TimeCycleModifierModType>.Remove(TimeCycleModifierModType item)
+            {
+                Throw.NotSupportedException();
+                return false;
+            }
+
+            public IEnumerator<TimeCycleModifierModType> GetEnumerator()
+            {
+                foreach (KeyValuePair<TimeCycleModifierModType, (float, float)> pair in mods)
+                {
+                    yield return pair.Key;
+                }
+            }
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private sealed class ValueCollection : ICollection<(float Value1, float Value2)>, IReadOnlyCollection<(float Value1, float Value2)>
+        {
+            private TimeCycleModifierMods mods;
+
+            public int Count
+            {
+                get { return mods.Count; }
+            }
+
+            public bool IsReadOnly => true;
+
+            internal ValueCollection(TimeCycleModifierMods mods)
+            {
+                Throw.IfNull(mods, nameof(mods));
+
+                this.mods = mods;
+            }
+
+            public void CopyTo((float Value1, float Value2)[] array, int arrayIndex)
+            {
+                Throw.IfNull(array, nameof(array));
+
+                ref CTimeCycleModifier native = ref mods.modifier.GetNative();
+                short sourceCount = native.Mods.Count;
+
+                Throw.IfOutOfRange(arrayIndex, 0, sourceCount - 1, nameof(arrayIndex));
+                Throw.ArgumentExceptionIf(sourceCount > (array.Length - arrayIndex));
+
+                for (short i = 0; i < sourceCount; i++)
+                {
+                    ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                    array[arrayIndex++] = (m.Value1, m.Value2);
+                }
+            }
+
+            void ICollection<(float Value1, float Value2)>.Add((float Value1, float Value2) item) => Throw.NotSupportedException();
+            void ICollection<(float Value1, float Value2)>.Clear() => Throw.NotSupportedException();
+
+            public bool Contains((float Value1, float Value2) item)
+            {
+                ref CTimeCycleModifier native = ref mods.modifier.GetNative();
+
+                for (short i = 0; i < native.Mods.Count; i++)
+                {
+                    ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                    if(m.Value1 == item.Value1 && m.Value2 == item.Value1)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            bool ICollection<(float Value1, float Value2)>.Remove((float Value1, float Value2) item)
+            {
+                Throw.NotSupportedException();
+                return false;
+            }
+
+            public IEnumerator<(float Value1, float Value2)> GetEnumerator()
+            {
+                foreach (KeyValuePair<TimeCycleModifierModType, (float, float)> pair in mods)
+                {
+                    yield return pair.Value;
+                }
+            }
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
     }
 

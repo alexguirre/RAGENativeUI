@@ -104,6 +104,43 @@ namespace RAGENativeUI
                 throw new ObjectDisposedException(objectName, message);
             }
         }
+
+        public static void ArgumentExceptionIf(bool value, string paramName, string message = null)
+        {
+            if (value)
+            {
+                throw new ArgumentException(message, paramName);
+            }
+        }
+
+        public static void ArgumentExceptionIfNot(bool value, string paramName, string message = null)
+        {
+            if (!value)
+            {
+                throw new ArgumentException(message, paramName);
+            }
+        }
+
+        public static void ArgumentExceptionIf(bool value, string message = null)
+        {
+            if (value)
+            {
+                throw new ArgumentException(message);
+            }
+        }
+
+        public static void ArgumentExceptionIfNot(bool value, string message = null)
+        {
+            if (!value)
+            {
+                throw new ArgumentException(message);
+            }
+        }
+
+        public static void NotSupportedException(string message = null)
+        {
+            throw new NotSupportedException(message);
+        }
     }
 }
 

@@ -44,6 +44,17 @@ namespace RAGENativeUI.Memory
             Mods.Count--;
         }
 
+        public void RemoveAllMods()
+        {
+            int count = Mods.Size * sizeof(Mod);
+            for (int i = 0; i < count; i++)
+            {
+                *(byte*)(Mods.Offset + i) = 0;
+            }
+
+            Mods.Count = 0;
+        }
+
         // call after adding new mods, to maintain the array in the correct order
         public void SortMods()
         {
