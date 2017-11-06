@@ -30,18 +30,9 @@ namespace RAGENativeUI.Memory
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct CInlinedArray<T> where T : struct
     {
-        private byte start;
+        private T start;
 
-        public ref T this[int index]
-        {
-            get
-            {
-                fixed (byte* array = &start)
-                {
-                    return ref Unsafe.AsRef<T>((array + index * Unsafe.SizeOf<T>()));
-                }
-            }
-        }
+        public ref T this[int index] => ref Unsafe.AsRef<T>((byte*)Unsafe.AsPointer(ref start) + index * Unsafe.SizeOf<T>());
     }
 }
 

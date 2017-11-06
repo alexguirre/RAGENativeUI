@@ -2,9 +2,7 @@ namespace RAGENativeUI
 {
     using System;
     using System.Collections.Generic;
-
-    using Rage;
-
+    
     using RAGENativeUI.Memory;
 
     public unsafe struct TextureProperties
@@ -37,7 +35,7 @@ namespace RAGENativeUI
                     dictionary.LoadAndWait();
                 }
 
-                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool.Get(unchecked((uint)dictIndex)).TexturesDictionary;
+                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary;
                 int index = dict.FindIndex(nameHash);
 
                 if(index == -1)
@@ -64,7 +62,7 @@ namespace RAGENativeUI
                     dictionary.LoadAndWait();
                 }
 
-                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool.Get(unchecked((uint)dictIndex)).TexturesDictionary;
+                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary;
 
                 Throw.IfOutOfRange(index, 0, dict.Values.Count - 1, nameof(index));
 
@@ -88,7 +86,7 @@ namespace RAGENativeUI
                     dictionary.LoadAndWait();
                 }
 
-                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool.Get(unchecked((uint)dictIndex)).TexturesDictionary;
+                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary;
 
                 short count = dict.Values.Count;
                 TextureProperties[] textures = new TextureProperties[count];

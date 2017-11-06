@@ -297,7 +297,7 @@ namespace RAGENativeUI
                 short index = FindIndex(type);
 
                 Throw.InvalidOperationIf(index == -1, $"This {nameof(TimeCycleModifierMods)} doesn't contain a mod of type '{type}'.");
-                
+
                 ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
                 return (nativeMod.Value1, nativeMod.Value2);
             }

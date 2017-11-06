@@ -1,6 +1,5 @@
 namespace RAGENativeUI.Memory
 {
-    using System;
     using System.Runtime.InteropServices;
     using System.Runtime.CompilerServices;
 
@@ -20,7 +19,7 @@ namespace RAGENativeUI.Memory
         public uint ItemSize => itemSize;
         public bool IsFull => nextEmptyItemSlotIndex == 0xFFFFFFFF;
 
-        public ref T this[uint index] => ref Get(index);
+        public ref T this[uint index] => ref GetItem(index);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsValid(uint index)
@@ -31,29 +30,40 @@ namespace RAGENativeUI.Memory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsValid(void* item)
         {
-            IntPtr address = new IntPtr(item);
-            uint i = unchecked((uint)((address.ToInt64() - dataAddress) / itemSize));
+            uint i = unchecked((uint)(((long)item - dataAddress) / itemSize));
             return IsValid(i);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T Get(uint index)
+        public bool IsValid(ref T item)
         {
-            return ref Unsafe.AsRef<T>(GetAddress(index).ToPointer());
+            uint i = unchecked((uint)(((long)Unsafe.AsPointer(ref item) - dataAddress) / itemSize));
+            return IsValid(i);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IntPtr GetAddress(uint index)
+        public ref T GetItem(uint index)
         {
-            return new IntPtr(Mask(index) & (dataAddress + index * itemSize));
+            return ref Unsafe.AsRef<T>(GetItemPointer(index));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void* GetItemPointer(uint index)
+        {
+            return (void*)(Mask(index) & (dataAddress + index * itemSize));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint GetIndex(void* item)
         {
-            IntPtr address = new IntPtr(item);
-            uint i = unchecked((uint)((address.ToInt64() - dataAddress) / itemSize));
+            uint i = unchecked((uint)(((long)item - dataAddress) / itemSize));
+            return i;
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public uint GetIndex(ref T item)
+        {
+            uint i = unchecked((uint)(((long)Unsafe.AsPointer(ref item) - dataAddress) / itemSize));
             return i;
         }
 
