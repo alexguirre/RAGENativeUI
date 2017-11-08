@@ -1,9 +1,6 @@
 namespace RAGENativeUI.Memory.GFx
 {
-    using System;
     using System.Runtime.InteropServices;
-
-    using Rage;
 
     [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct CScaleformStore

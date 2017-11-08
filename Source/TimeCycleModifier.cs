@@ -169,7 +169,7 @@ namespace RAGENativeUI
             Throw.IfOutOfRange(index, 0, NumberOfTimeCycleModifiers - 1, nameof(index));
 
             short i = (short)index;
-            ref CTimeCycleModifier native = ref GameMemory.TimeCycleModifiersManager.Modifiers[i];
+            ref CTimeCycleModifier native = ref GameMemory.TimeCycleModifiersManager.Modifiers[i].Ref;
 
             if (cache.TryGetValue(native.Name, out TimeCycleModifier p))
             {

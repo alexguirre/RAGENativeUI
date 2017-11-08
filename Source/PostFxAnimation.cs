@@ -295,7 +295,7 @@ namespace RAGENativeUI
         {
             get
             {
-                if (GetNative().LayerA == null)
+                if (GetNative().LayerA.IsNull)
                 {
                     return null;
                 }
@@ -309,7 +309,7 @@ namespace RAGENativeUI
                     {
                         for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            if (animation.Layers[i].MemoryAddress == (IntPtr)GetNative().LayerA)
+                            if (animation.Layers[i].MemoryAddress == GetNative().LayerA)
                             {
                                 layerA = animation.Layers[i];
                                 break;
@@ -327,7 +327,7 @@ namespace RAGENativeUI
         {
             get
             {
-                if (GetNative().LayerB == null)
+                if (GetNative().LayerB.IsNull)
                 {
                     return null;
                 }
@@ -341,7 +341,7 @@ namespace RAGENativeUI
                     {
                         for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            if (animation.Layers[i].MemoryAddress == (IntPtr)GetNative().LayerB)
+                            if (animation.Layers[i].MemoryAddress == GetNative().LayerB)
                             {
                                 layerB = animation.Layers[i];
                                 break;

@@ -27,23 +27,28 @@ namespace RAGENativeUI.Scaleforms
             {
                 if (!IsLoaded)
                     return Color.Empty;
-                GFxMovieRoot* movie = GetMovieRoot();
 
-                return movie != null ? Color.FromArgb(movie->BackgroundColorAlpha, movie->BackgroundColorRed, movie->BackgroundColorGreen, movie->BackgroundColorBlue) : Color.Empty;
+                Pointer<GFxMovieRoot> movie = GetMovieRoot();
+                if (movie.IsNull)
+                    return Color.Empty;
+
+                ref GFxMovieRoot m = ref movie.Ref;
+                return Color.FromArgb(m.BackgroundColorAlpha, m.BackgroundColorRed, m.BackgroundColorGreen, m.BackgroundColorBlue);
             }
             set
             {
                 if (!IsLoaded)
                     return;
-                GFxMovieRoot* movie = GetMovieRoot();
 
-                if (movie == null)
+                Pointer<GFxMovieRoot> movie = GetMovieRoot();
+                if (movie.IsNull)
                     return;
 
-                movie->BackgroundColorAlpha = value.A;
-                movie->BackgroundColorRed = value.R;
-                movie->BackgroundColorGreen = value.G;
-                movie->BackgroundColorBlue = value.B;
+                ref GFxMovieRoot m = ref movie.Ref;
+                m.BackgroundColorAlpha = value.A;
+                m.BackgroundColorRed = value.R;
+                m.BackgroundColorGreen = value.G;
+                m.BackgroundColorBlue = value.B;
             }
         }
 
@@ -173,12 +178,12 @@ namespace RAGENativeUI.Scaleforms
         }
 
 
-        internal GFxMovieRoot* GetMovieRoot()
+        internal Pointer<GFxMovieRoot> GetMovieRoot()
         {
             int index = Handle - 1;
             short data2Index = GameMemory.ScaleformData1Array[index].ScaleformIndex;
             int storeIndex = GameMemory.ScaleformData2Array[data2Index].ScaleformStorePoolIndex;
-            GFxMovieRoot* movieRoot = GameMemory.ScaleformStore.GetPoolItem(storeIndex).MovieObject->GetMovieRoot();
+            Pointer<GFxMovieRoot> movieRoot = GameMemory.ScaleformStore.GetPoolItem(storeIndex).MovieObject.Ref.GetMovieRoot();
             return movieRoot;
         }
     }

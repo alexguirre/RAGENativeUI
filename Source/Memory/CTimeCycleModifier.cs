@@ -87,9 +87,7 @@ namespace RAGENativeUI.Memory
         public struct SortedEntry
         {
             [FieldOffset(0x0000)] public uint Name;
-            [FieldOffset(0x0008)] public IntPtr ModifierPtr;
-
-            public ref CTimeCycleModifier Modifier => ref Unsafe.AsRef<CTimeCycleModifier>(ModifierPtr.ToPointer());
+            [FieldOffset(0x0008)] public Pointer<CTimeCycleModifier> Modifier;
         }
     }
 }

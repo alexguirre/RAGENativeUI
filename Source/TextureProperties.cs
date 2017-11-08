@@ -35,7 +35,7 @@ namespace RAGENativeUI
                     dictionary.LoadAndWait();
                 }
 
-                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary;
+                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary.Ref;
                 int index = dict.FindIndex(nameHash);
 
                 if(index == -1)
@@ -43,7 +43,7 @@ namespace RAGENativeUI
                     throw new InvalidOperationException($"The texture dictionary '{dictionary.Name}' doesn't contain the texture with hash 0x{nameHash:X8}.");
                 }
 
-                ref grcTexture texture = ref dict.Values[(short)index];
+                ref grcTexture texture = ref dict.Values[(short)index].Ref;
                 TextureProperties t = new TextureProperties(ref texture);
                 return t;
             }
@@ -62,11 +62,11 @@ namespace RAGENativeUI
                     dictionary.LoadAndWait();
                 }
 
-                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary;
+                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary.Ref;
 
                 Throw.IfOutOfRange(index, 0, dict.Values.Count - 1, nameof(index));
 
-                ref grcTexture texture = ref dict.Values[(short)index];
+                ref grcTexture texture = ref dict.Values[(short)index].Ref;
                 TextureProperties t = new TextureProperties(ref texture);
                 return t;
             }
@@ -86,13 +86,13 @@ namespace RAGENativeUI
                     dictionary.LoadAndWait();
                 }
 
-                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary;
+                ref pgDictionary<grcTexture> dict = ref GameMemory.TxdStore.Pool[unchecked((uint)dictIndex)].TexturesDictionary.Ref;
 
                 short count = dict.Values.Count;
                 TextureProperties[] textures = new TextureProperties[count];
                 for (short i = 0; i < count; i++)
                 {
-                    ref grcTexture texture = ref dict.Values[i];
+                    ref grcTexture texture = ref dict.Values[i].Ref;
                     TextureProperties t = new TextureProperties(ref texture);
                     textures[i] = t;
                 }

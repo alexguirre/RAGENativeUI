@@ -28,9 +28,9 @@ namespace RAGENativeUI.Memory
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsValid(void* item)
+        public bool IsValid(Pointer<T> item)
         {
-            uint i = unchecked((uint)(((long)item - dataAddress) / itemSize));
+            uint i = unchecked((uint)(((long)item.RawPointer - dataAddress) / itemSize));
             return IsValid(i);
         }
 
@@ -44,19 +44,19 @@ namespace RAGENativeUI.Memory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetItem(uint index)
         {
-            return ref Unsafe.AsRef<T>(GetItemPointer(index));
+            return ref GetItemPointer(index).Ref;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void* GetItemPointer(uint index)
+        public Pointer<T> GetItemPointer(uint index)
         {
             return (void*)(Mask(index) & (dataAddress + index * itemSize));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public uint GetIndex(void* item)
+        public uint GetIndex(Pointer<T> item)
         {
-            uint i = unchecked((uint)(((long)item - dataAddress) / itemSize));
+            uint i = unchecked((uint)(((long)item.RawPointer - dataAddress) / itemSize));
             return i;
         }
 

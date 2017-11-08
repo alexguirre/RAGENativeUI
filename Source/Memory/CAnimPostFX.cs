@@ -21,8 +21,8 @@ namespace RAGENativeUI.Memory
         [StructLayout(LayoutKind.Explicit, Size = 48)]
         internal unsafe struct LayerBlend
         {
-            [FieldOffset(0x0000)] public Layer* LayerA;
-            [FieldOffset(0x0008)] public Layer* LayerB;
+            [FieldOffset(0x0000)] public Pointer<Layer> LayerA;
+            [FieldOffset(0x0008)] public Pointer<Layer> LayerB;
             [FieldOffset(0x0010)] public float FrequencyNoise;
             [FieldOffset(0x0014)] public float AmplitudeNoise;
             [FieldOffset(0x0018)] public float Frequency;

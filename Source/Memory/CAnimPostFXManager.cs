@@ -1,44 +1,42 @@
 namespace RAGENativeUI.Memory
 {
-    using System;
     using System.Runtime.InteropServices;
     using System.Runtime.CompilerServices;
-
-    using Rage;
 
     [StructLayout(LayoutKind.Explicit, Size = 760)]
     internal unsafe struct CAnimPostFXManager
     {
         [FieldOffset(0x0000)] public CArray<CAnimPostFX> Effects;
 
-        [FieldOffset(0x0020)] private IntPtr currentActiveEffectPtr;
-        [FieldOffset(0x0050)] private IntPtr lastActiveEffectPtr;
+        [FieldOffset(0x0020)] private Pointer<Pointer<CAnimPostFX>> currentActiveEffectPtr;
+        [FieldOffset(0x0050)] private Pointer<Pointer<CAnimPostFX>> lastActiveEffectPtr;
 
-        public void* GetCurrentActiveEffect()
+        public Pointer<CAnimPostFX> GetCurrentActiveEffect()
         {
-            long v = *(long*)currentActiveEffectPtr;
-            void* activeEffect = null;
-            int index = unchecked((int)(v - (long)Effects.Offset) / Unsafe.SizeOf<CAnimPostFX>());
+            int index = unchecked((int)((long)currentActiveEffectPtr.Ref.RawPointer - (long)Effects.Offset) / Unsafe.SizeOf<CAnimPostFX>());
 
             if(index >= 0 && index < Effects.Count)
             {
-                activeEffect = (void*)v;
+                return currentActiveEffectPtr.Ref;
             }
-
-            return activeEffect;
+            
+            return null;
         }
 
-        public void* GetLastActiveEffect()
+        public Pointer<CAnimPostFX> GetLastActiveEffect()
         {
-            void* activeEffect = GetCurrentActiveEffect();
-            if (activeEffect == null)
+            Pointer<CAnimPostFX> activeEffect = GetCurrentActiveEffect();
+            if (activeEffect.IsNull)
             {
-                long v = *(long*)lastActiveEffectPtr;
-                int index = unchecked((int)(v - (long)Effects.Offset) / Unsafe.SizeOf<CAnimPostFX>());
+                int index = unchecked((int)((long)lastActiveEffectPtr.Ref.RawPointer - (long)Effects.Offset) / Unsafe.SizeOf<CAnimPostFX>());
 
                 if (index >= 0 && index < Effects.Count)
                 {
-                    activeEffect = (void*)v;
+                    return lastActiveEffectPtr.Ref;
+                }
+                else
+                {
+                    return null;
                 }
             }
 

@@ -11,7 +11,7 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0008)] public CArray<float> UnkArray;
 
-        [FieldOffset(0x0040)] public CPtrsArray<CTimeCycleModifier> Modifiers;
+        [FieldOffset(0x0040)] public CArray<Pointer<CTimeCycleModifier>> Modifiers;
 
         [FieldOffset(0x0058)] public CArray<CTimeCycleModifier.SortedEntry> SortedModifiers;
 
@@ -73,7 +73,7 @@ namespace RAGENativeUI.Memory
             *GetModifiersArrayUnusedEntry() = Unsafe.AsPointer(ref modifier);
             ref CTimeCycleModifier.SortedEntry entry = ref GetSortedModifiersArrayUnusedEntry();
             entry.Name = name;
-            entry.ModifierPtr = (IntPtr)Unsafe.AsPointer(ref modifier);
+            entry.Modifier = Unsafe.AsPointer(ref modifier);
 
             short newUnkArraySize = Modifiers.Count;
             float* newUnkArrayOffset = (float*)GameMemory.Allocator.Allocate(sizeof(float) * newUnkArraySize);
@@ -138,13 +138,13 @@ namespace RAGENativeUI.Memory
             {
                 short newSize = unchecked((short)(SortedModifiers.Size + increaseCountIfFull));
                 SortedModifiers.Size = newSize;
-                CTimeCycleModifier.SortedEntry* newOffset = (CTimeCycleModifier.SortedEntry*)GameMemory.Allocator.Allocate(Unsafe.SizeOf<CTimeCycleModifier.SortedEntry>() * newSize);
+                Pointer<CInlinedArray<CTimeCycleModifier.SortedEntry>> newOffset = GameMemory.Allocator.Allocate(Unsafe.SizeOf<CTimeCycleModifier.SortedEntry>() * newSize);
                 for (short i = 0; i < SortedModifiers.Count; i++)
                 {
-                    newOffset[i] = SortedModifiers[i];
+                    newOffset.Ref[i] = SortedModifiers[i];
                 }
                 GameMemory.Allocator.Free(SortedModifiers.Offset);
-                SortedModifiers.Offset = (IntPtr)newOffset;
+                SortedModifiers.Offset = newOffset;
             }
 
             short last = SortedModifiers.Count;

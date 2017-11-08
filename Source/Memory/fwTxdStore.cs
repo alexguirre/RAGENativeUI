@@ -25,13 +25,10 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0038)] public CPool<fwTxdDef> Pool;
 
-        [FieldOffset(0x0070)] public IntPtr HashesArrayPtr;
-        [FieldOffset(0x0078)] public IntPtr IndicesArrayPtr;
+        [FieldOffset(0x0070)] public Pointer<CInlinedArray<TxdNameHash>> HashesArray;
+        [FieldOffset(0x0078)] public Pointer<CInlinedArray<TxdIndex>> IndicesArray;
         [FieldOffset(0x0080)] public ushort IndicesArraySize;
         [FieldOffset(0x0082)] public ushort HashesArraySize;
-
-        public ref CInlinedArray<TxdNameHash> HashesArray => ref Unsafe.AsRef<CInlinedArray<TxdNameHash>>(HashesArrayPtr.ToPointer());
-        public ref CInlinedArray<TxdIndex> IndicesArray => ref Unsafe.AsRef<CInlinedArray<TxdIndex>>(IndicesArrayPtr.ToPointer());
 
         public ref pgDictionary<grcTexture> GetDictionaryByName(string name) => ref GetDictionaryByHash(Game.GetHashKey(name));
         public ref pgDictionary<grcTexture> GetDictionaryByHash(uint hash)
@@ -40,7 +37,7 @@ namespace RAGENativeUI.Memory
             if (poolIndex != 0xFFFFFFFF)
             {
                 ref fwTxdDef def = ref Pool[poolIndex];
-                return ref def.TexturesDictionary;
+                return ref def.TexturesDictionary.Ref;
             }
 
             throw new InvalidOperationException();
@@ -49,19 +46,19 @@ namespace RAGENativeUI.Memory
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint GetDictionaryPoolIndexByHash(uint hash)
         {
-            ushort index = IndicesArray[unchecked((int)(hash % IndicesArraySize))].HashIndex;
+            ushort index = IndicesArray.Ref[unchecked((int)(hash % IndicesArraySize))].HashIndex;
 
             if (index == 0xFFFF)
                 return 0xFFFFFFFF;
 
-            while (HashesArray[index].Hash != hash)
+            while (HashesArray.Ref[index].Hash != hash)
             {
-                index = HashesArray[index].NextIndex;
+                index = HashesArray.Ref[index].NextIndex;
                 if (index == 0xFFFF)
                     return 0xFFFFFFFF;
             }
 
-            return HashesArray[index].PoolIndex;
+            return HashesArray.Ref[index].PoolIndex;
         }
     }
 }

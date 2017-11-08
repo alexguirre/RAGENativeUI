@@ -5,24 +5,21 @@ namespace RAGENativeUI.Memory.GFx
     [StructLayout(LayoutKind.Explicit, Size = 40)]
     internal unsafe struct CScaleformMovieObject
     {
+        [FieldOffset(0x18)] private ulong field18;
 
-
-        public GFxMovieRoot* GetMovieRoot()
+        public Pointer<GFxMovieRoot> GetMovieRoot()
         {
-            fixed (CScaleformMovieObject* thisPtr = &this)
+            ulong tmp = field18;
+            if (tmp != 0)
             {
-                ulong tmp = (ulong)thisPtr;
-                tmp = *(ulong*)(tmp + 0x18);
+                tmp = *(ulong*)(tmp + 0x10);
                 if (tmp != 0)
                 {
-                    tmp = *(ulong*)(tmp + 0x10);
-                    if (tmp != 0)
-                    {
-                        return (GFxMovieRoot*)tmp;
-                    }
+                    return (void*)tmp;
                 }
-                return null;
             }
+
+            return null;
         }
     }
 }
