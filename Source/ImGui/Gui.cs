@@ -15,7 +15,6 @@ namespace RAGENativeUI.ImGui
         public delegate void GuiEventHandler();
         
         private static State state;
-
         private static Texture mouseTexture;
 
         public static event GuiEventHandler Do;
@@ -60,7 +59,7 @@ namespace RAGENativeUI.ImGui
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void EnsureCall()
         {
-            Throw.InvalidOperationIf(state.Graphics == null, $"{nameof(Gui)} methods cannot be called from outside the {nameof(Gui)}.{nameof(Do)} event.");
+            Throw.InvalidOperationIf(state.Graphics == null, "Gui methods cannot be called from outside the Gui.Do event.");
         }
 
         public static Vector2 Mouse(bool disableGameControls = true)
@@ -84,6 +83,11 @@ namespace RAGENativeUI.ImGui
             return state.MousePosition;
         }
         
+        public static void BeginWindow(ref RectangleF position, string title)
+        {
+            position = BeginWindow(position, title);
+        }
+
         public static RectangleF BeginWindow(RectangleF position, string title)
         {
             Throw.IfNull(title, nameof(title));
@@ -174,6 +178,11 @@ namespace RAGENativeUI.ImGui
             return down;
         }
 
+        public static void Toggle(RectangleF position, string text, ref bool value)
+        {
+            value = Toggle(position, text, value);
+        }
+
         public static bool Toggle(RectangleF position, string text, bool value)
         {
             Throw.IfNull(text, nameof(text));
@@ -233,6 +242,11 @@ namespace RAGENativeUI.ImGui
             DrawRectangleDebug(drawPos);
         }
 
+        public static void HorizontalSlider(RectangleF rectangle, ref float value, float minValue, float maxValue)
+        {
+            value = HorizontalSlider(rectangle, value, minValue, maxValue);
+        }
+
         public static float HorizontalSlider(RectangleF rectangle, float value, float minValue, float maxValue)
         {
             EnsureCall();
@@ -288,6 +302,11 @@ namespace RAGENativeUI.ImGui
             DrawTextDebug(drawPos.Location, $"HSlider {id.ToString("X8")}", 18.0f);
 
             return value;
+        }
+
+        public static void VerticalSlider(RectangleF rectangle, ref float value, float minValue, float maxValue)
+        {
+            value = VerticalSlider(rectangle, value, minValue, maxValue);
         }
 
         public static float VerticalSlider(RectangleF rectangle, float value, float minValue, float maxValue)
@@ -347,9 +366,19 @@ namespace RAGENativeUI.ImGui
             return value;
         }
 
+        public static void HorizontalSlider(RectangleF rectangle, ref int value, int minValue, int maxValue)
+        {
+            value = HorizontalSlider(rectangle, value, minValue, maxValue);
+        }
+
         public static int HorizontalSlider(RectangleF rectangle, int value, int minValue, int maxValue)
         {
             return (int)HorizontalSlider(rectangle, (float)value, (float)minValue, (float)maxValue);
+        }
+
+        public static void VerticalSlider(RectangleF rectangle, ref int value, int minValue, int maxValue)
+        {
+            value = VerticalSlider(rectangle, value, minValue, maxValue);
         }
 
         public static int VerticalSlider(RectangleF rectangle, int value, int minValue, int maxValue)
@@ -357,6 +386,10 @@ namespace RAGENativeUI.ImGui
             return (int)VerticalSlider(rectangle, (float)value, (float)minValue, (float)maxValue);
         }
 
+        public static void BeginScrollView(RectangleF position, ref Vector2 scrollPosition, SizeF viewSize, bool horizontalScrollbar = true, bool verticalScrollbar = true)
+        {
+            scrollPosition = BeginScrollView(position, scrollPosition, viewSize, horizontalScrollbar, verticalScrollbar);
+        }
 
         public static Vector2 BeginScrollView(RectangleF position, Vector2 scrollPosition, SizeF viewSize, bool horizontalScrollbar = true, bool verticalScrollbar = true)
         {

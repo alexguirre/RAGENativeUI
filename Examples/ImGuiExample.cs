@@ -26,12 +26,13 @@ namespace Examples
             Vector2 scrollView1Pos = new Vector2(0f, 0f);
             Vector2 scrollView2Pos = new Vector2(0f, 0f);
             string[] modelNames = { "RHINO", "POLICE", "FBI", "ZENTORNO", "ADDER" };
+
             Gui.Do += () =>
             {
                 Gui.Mouse(); // enable mouse
 
                 // main window
-                windowRect1 = Gui.BeginWindow(windowRect1, "Test");
+                Gui.BeginWindow(ref windowRect1, "Test");
 
                 Gui.Label(new RectangleF(5, 5, 100, 40), "Label");
 
@@ -41,36 +42,36 @@ namespace Examples
                 }
 
                 Gui.Label(new RectangleF(5, 110, 300, 25), $"{slider1Value.ToString("0.0000")}");
-                slider1Value = Gui.HorizontalSlider(new RectangleF(5, 145, 320, 30), slider1Value, 0.0f, 10.0f);
+                Gui.HorizontalSlider(new RectangleF(5, 145, 320, 30), ref slider1Value, 0.0f, 10.0f);
 
                 Gui.Label(new RectangleF(5, 180, 300, 25), $"{slider2Value.ToString("0.0000")}");
-                slider2Value = Gui.VerticalSlider(new RectangleF(5, 215, 30, 320), slider2Value, -1000.0f, 1000.0f);
+                Gui.VerticalSlider(new RectangleF(5, 215, 30, 320), ref slider2Value, -1000.0f, 1000.0f);
 
                 Gui.Label(new RectangleF(110, 225, 200, 30), $"{slider3Value}");
-                slider3Value = Gui.HorizontalSlider(new RectangleF(110, 260, 160, 20), slider3Value, 0, 255);
+                Gui.HorizontalSlider(new RectangleF(110, 260, 160, 20), ref slider3Value, 0, 255);
 
-                toggle1Value = Gui.Toggle(new RectangleF(180, 200, 140, 25), $"Toggle: {toggle1Value}", toggle1Value);
+                Gui.Toggle(new RectangleF(180, 200, 140, 25), $"Toggle: {toggle1Value}", ref toggle1Value);
 
-                scrollView1Pos = Gui.BeginScrollView(new RectangleF(80, 300, 250, 250), scrollView1Pos, new SizeF(400, 400));
+                Gui.BeginScrollView(new RectangleF(80, 300, 250, 250), ref scrollView1Pos, new SizeF(400, 400));
                 Gui.Label(new RectangleF(5f, 5f, 200f, 20f), "Scroll View");
                 Gui.Button(new RectangleF(5f, 30f, 200f, 20f), "Button");
-                toggle2Value = Gui.Toggle(new RectangleF(5f, 55f, 200f, 20f), "Toggle", toggle2Value);
-                slider4Value = Gui.HorizontalSlider(new RectangleF(5f, 80f, 200f, 20f), slider4Value, 0.0f, 1.0f);
-                slider4Value = Gui.VerticalSlider(new RectangleF(5f, 105f, 20f, 200f), slider4Value, 0.0f, 1.0f);
+                Gui.Toggle(new RectangleF(5f, 55f, 200f, 20f), "Toggle", ref toggle2Value);
+                Gui.HorizontalSlider(new RectangleF(5f, 80f, 200f, 20f), ref slider4Value, 0.0f, 1.0f);
+                Gui.VerticalSlider(new RectangleF(5f, 105f, 20f, 200f), ref slider4Value, 0.0f, 1.0f);
                 Gui.EndScrollView();
 
                 Gui.EndWindow();
 
 
                 // nested windows
-                windowRect2 = Gui.BeginWindow(windowRect2, "Test 2");
+                Gui.BeginWindow(ref windowRect2, "Test 2");
 
                 if (Gui.Button(new RectangleF(5, 5, 120, 35), "Button 1"))
                 {
                     Game.DisplayNotification("First button pressed from second window!");
                 }
 
-                scrollView2Pos = Gui.BeginScrollView(new RectangleF(5, 130, 200, 250), scrollView2Pos, new SizeF(200, 400));
+                Gui.BeginScrollView(new RectangleF(5, 130, 200, 250), ref scrollView2Pos, new SizeF(200, 400));
                 for (int i = 0; i < modelNames.Length; i++)
                 {
                     if (Gui.Button(new RectangleF(1, 1 + 20 * i, 198, 20), modelNames[i]))
@@ -81,13 +82,13 @@ namespace Examples
                 }
                 Gui.EndScrollView();
 
-                windowRect3 = Gui.BeginWindow(windowRect3, "Winception");
+                Gui.BeginWindow(ref windowRect3, "Winception");
                 if (Gui.Button(new RectangleF(5, 45, 120, 35), "Button 2"))
                 {
                     Game.DisplayNotification("Second button pressed from second window!");
                 }
 
-                windowRect4 = Gui.BeginWindow(windowRect4, "Winception");
+                Gui.BeginWindow(ref windowRect4, "Winception");
                 if (Gui.Button(new RectangleF(5, 45, 120, 35), "Button 3"))
                 {
                     Game.DisplayNotification("Third button pressed from second window!");
