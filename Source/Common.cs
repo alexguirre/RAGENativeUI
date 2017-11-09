@@ -12,11 +12,7 @@ namespace RAGENativeUI
     internal static class Common
     {
         public const string ResourcesFolder = @"RAGENativeUI Resources\";
-
-        public const string ObjectDisposedExceptionMessage = "Cannot access a disposed object.";
-
-        public static ObjectDisposedException NewDisposedException() => new ObjectDisposedException(null, ObjectDisposedExceptionMessage);
-
+        
         public static void EnsureResourcesFolder()
         {
             if (!Directory.Exists(ResourcesFolder))

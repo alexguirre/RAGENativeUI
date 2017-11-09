@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Elements\IScreenElement.cs" />
     <Compile Include="Elements\TimerBars\LabeledTimerBar.cs" />

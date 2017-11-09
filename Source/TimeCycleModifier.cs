@@ -79,6 +79,8 @@ namespace RAGENativeUI
             memAddress = (IntPtr)Unsafe.AsPointer(ref native);
             index = idx;
             Mods = new TimeCycleModifierMods(this);
+
+            Cache.Add(this);
         }
 
         // creates new timecycle modifier in memory
@@ -87,17 +89,17 @@ namespace RAGENativeUI
             Throw.IfNull(name, nameof(name));
             Throw.IfNull(mods, nameof(mods));
 
-            uint hash = Game.GetHashKey(name);
+            hash = Game.GetHashKey(name);
 
             Throw.InvalidOperationIf(GameMemory.TimeCycleModifiersManager.IsNameUsed(hash), $"The name '{name}' is already in use.");
 
             KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
-
-            this.hash = hash;
+            
             memAddress = (IntPtr)Unsafe.AsPointer(ref GameMemory.TimeCycleModifiersManager.NewTimeCycleModifier(hash, mods, flags));
             index = GameMemory.TimeCycleModifiersManager.Modifiers.Count - 1;
             Mods = new TimeCycleModifierMods(this);
-            cache[hash] = this;
+
+            Cache.Add(this);
         }
 
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor1"]/*' />
@@ -146,7 +148,7 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByHash"]/*' />
         public static TimeCycleModifier GetByHash(uint hash)
         {
-            if (cache.TryGetValue(hash, out TimeCycleModifier p))
+            if (Cache.Get(hash, out TimeCycleModifier p))
             {
                 return p;
             }
@@ -171,15 +173,13 @@ namespace RAGENativeUI
             short i = (short)index;
             ref CTimeCycleModifier native = ref GameMemory.TimeCycleModifiersManager.Modifiers[i].Ref;
 
-            if (cache.TryGetValue(native.Name, out TimeCycleModifier p))
+            if (Cache.Get(native.Name, out TimeCycleModifier p))
             {
                 return p;
             }
             else
             {
-                TimeCycleModifier m = new TimeCycleModifier(ref native, index);
-                cache[native.Name] = m;
-                return m;
+                return new TimeCycleModifier(ref native, index);
             }
         }
 
@@ -249,8 +249,6 @@ namespace RAGENativeUI
                 GameMemory.TimeCycleModifiersManager.CurrentModifierStrength = value;
             }
         }
-
-        private static Dictionary<uint, TimeCycleModifier> cache = new Dictionary<uint, TimeCycleModifier>();
 
     }
 

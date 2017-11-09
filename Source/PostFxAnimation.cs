@@ -56,6 +56,8 @@ namespace RAGENativeUI
             }
             LayerBlend = new PostFxAnimationLayerBlend(this);
             Layers = new PostFxAnimationLayersCollection(this);
+
+            Cache.Add(this);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -99,7 +101,7 @@ namespace RAGENativeUI
 
         public static PostFxAnimation GetByHash(uint hash)
         {
-            if (cache.TryGetValue(hash, out PostFxAnimation p))
+            if (Cache.Get(hash, out PostFxAnimation p))
             {
                 return p;
             }
@@ -109,9 +111,7 @@ namespace RAGENativeUI
 
                 if (native != IntPtr.Zero)
                 {
-                    PostFxAnimation e = new PostFxAnimation(ref Unsafe.AsRef<CAnimPostFX>(native.ToPointer()));
-                    cache[hash] = e;
-                    return e;
+                    return new PostFxAnimation(ref Unsafe.AsRef<CAnimPostFX>(native.ToPointer()));
                 }
             }
 
@@ -125,15 +125,13 @@ namespace RAGENativeUI
             short i = (short)index;
             ref CAnimPostFX native = ref GameMemory.AnimPostFXManager.Effects[i];
 
-            if (cache.TryGetValue(native.Name, out PostFxAnimation p))
+            if (Cache.Get(native.Name, out PostFxAnimation p))
             {
                 return p;
             }
             else
             {
-                PostFxAnimation e = new PostFxAnimation(ref native);
-                cache[native.Name] = e;
-                return e;
+                return new PostFxAnimation(ref native);
             }
         }
 
@@ -143,8 +141,7 @@ namespace RAGENativeUI
             PostFxAnimation[] effects = new PostFxAnimation[mgr.Effects.Count];
             for (short i = 0; i < mgr.Effects.Count; i++)
             {
-                ref CAnimPostFX e = ref mgr.Effects[i];
-                effects[i] = GetByHash(e.Name);
+                effects[i] = GetByIndex(i);
             }
 
             return effects;
@@ -154,10 +151,10 @@ namespace RAGENativeUI
         {
             get
             {
-                void* e = GameMemory.AnimPostFXManager.GetLastActiveEffect();
-                if (e != null)
+                Pointer<CAnimPostFX> e = GameMemory.AnimPostFXManager.GetLastActiveEffect();
+                if (!e.IsNull)
                 {
-                    return GetByHash(Unsafe.AsRef<CAnimPostFX>(e).Name);
+                    return GetByHash(e.Ref.Name);
                 }
 
                 return null;
@@ -168,10 +165,10 @@ namespace RAGENativeUI
         {
             get
             {
-                void* e = GameMemory.AnimPostFXManager.GetCurrentActiveEffect();
-                if (e != null)
+                Pointer<CAnimPostFX> e = GameMemory.AnimPostFXManager.GetCurrentActiveEffect();
+                if (!e.IsNull)
                 {
-                    return GetByHash(Unsafe.AsRef<CAnimPostFX>(e).Name);
+                    return GetByHash(e.Ref.Name);
                 }
 
                 return null;
@@ -185,8 +182,6 @@ namespace RAGENativeUI
                 return GameMemory.AnimPostFXManager.Effects.Count;
             }
         }
-
-        private static Dictionary<uint, PostFxAnimation> cache = new Dictionary<uint, PostFxAnimation>();
     }
 
     public enum PostFxAnimationLayerAnimationMode : uint
