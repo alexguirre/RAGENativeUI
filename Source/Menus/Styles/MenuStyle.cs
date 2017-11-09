@@ -9,6 +9,8 @@ namespace RAGENativeUI.Menus.Styles
     using Rage;
     using Graphics = Rage.Graphics;
 
+    using RAGENativeUI.Properties;
+
     public class MenuStyle : IMenuStyle
     {
         private const float ItemsBorderSafezone = 8.25f;
@@ -379,7 +381,6 @@ namespace RAGENativeUI.Menus.Styles
         }
 
         private const string DefaultSpriteSheetPath = Common.ResourcesFolder + @"menu-default.png";
-        private const string SpriteSheetResourceName = "RAGENativeUI.RAGENativeUI_Resources.menu-default.PNG";
 
         private static void EnsureDefaultSpriteSheetFile()
         {
@@ -387,11 +388,13 @@ namespace RAGENativeUI.Menus.Styles
             {
                 Common.EnsureResourcesFolder();
 
-                using (Stream skinResource = Assembly.GetExecutingAssembly().GetManifestResourceStream(SpriteSheetResourceName))
+                byte[] png = Resources.menu_default;
                 using (FileStream file = new FileStream(DefaultSpriteSheetPath, FileMode.Create))
                 {
-                    skinResource.CopyTo(file);
+                    file.Write(png, 0, png.Length);
                 }
+
+                png = null;
             }
         }
 

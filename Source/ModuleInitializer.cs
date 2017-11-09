@@ -7,6 +7,8 @@ internal static class ModuleInitializer
     // The actual module initializer is created with the InjectModuleInitializer.exe executed in the PostBuild event
     internal static void Run()
     {
+        AssemblyResolver.Initialize();
+
         bool gameFnInit = GameFunctions.Init();
         bool gameMemInit = GameMemory.Init();
 
