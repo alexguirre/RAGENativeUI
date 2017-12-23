@@ -278,12 +278,16 @@ namespace RAGENativeUI
         /// <param name="enable"></param>
         public static void DisEnableControls(bool enable)
         {
-            string thehash = enable ? "ENABLE_CONTROL_ACTION" : "DISABLE_CONTROL_ACTION";
             foreach (var con in Enum.GetValues(typeof(GameControl)))
             {
-                NativeFunction.CallByName<uint>(thehash, 0, (int)con);
-                NativeFunction.CallByName<uint>(thehash, 1, (int)con);
-                NativeFunction.CallByName<uint>(thehash, 2, (int)con);
+                if (enable)
+                {
+                    NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, (int)con);
+                }
+                else
+                {
+                    NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, (int)con);
+                }
             }
             //Controls we want
             // -Frontend
@@ -336,7 +340,7 @@ namespace RAGENativeUI
 
             foreach (var control in list)
             {
-                NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", 0, (int)control);
+                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, (int)control);
             }
         }
                
