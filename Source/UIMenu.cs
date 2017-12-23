@@ -278,72 +278,75 @@ namespace RAGENativeUI
         /// <param name="enable"></param>
         public static void DisEnableControls(bool enable)
         {
-            foreach (var con in Enum.GetValues(typeof(GameControl)))
+            if (enable)
             {
-                if (enable)
-                {
-                    NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, (int)con);
-                }
-                else
-                {
-                    NativeFunction.Natives.DISABLE_CONTROL_ACTION(0, (int)con);
-                }
+                NativeFunction.Natives.EnableAllControlActions(0);
+                return;
             }
+            else
+            {
+                NativeFunction.Natives.DisableAllControlActions(0);
+            }
+
             //Controls we want
             // -Frontend
             // -Mouse
             // -Walk/Move
             // -
 
-            if (enable) return;
-            var list = new List<GameControl>
+            for (int i = 0; i < menuNavigationNeededControls.Length; i++)
             {
-                GameControl.FrontendAccept,
-                GameControl.FrontendAxisX,
-                GameControl.FrontendAxisY,
-                GameControl.FrontendDown,
-                GameControl.FrontendUp,
-                GameControl.FrontendLeft,
-                GameControl.FrontendRight,
-                GameControl.FrontendCancel,
-                GameControl.FrontendSelect,
-                GameControl.CursorScrollDown,
-                GameControl.CursorScrollUp,
-                GameControl.CursorX,
-                GameControl.CursorY,
-                GameControl.MoveUpDown,
-                GameControl.MoveLeftRight,
-                GameControl.Sprint,
-                GameControl.Jump,
-                GameControl.Enter,
-                GameControl.VehicleExit,
-                GameControl.VehicleAccelerate,
-                GameControl.VehicleBrake,
-                GameControl.VehicleMoveLeftRight,
-                GameControl.VehicleFlyYawLeft,
-                GameControl.ScriptedFlyLeftRight,
-                GameControl.ScriptedFlyUpDown,
-                GameControl.VehicleFlyYawRight,
-                GameControl.VehicleHandbrake,
-            };
-
+                Common.EnableControl(0, menuNavigationNeededControls[i]);
+            }
+            
             if (IsUsingController)
             {
-                list.AddRange(new GameControl[]
+                for (int i = 0; i < menuNavigationControllerNeededControls.Length; i++)
                 {
-                    GameControl.LookUpDown,
-                    GameControl.LookLeftRight,
-                    GameControl.Aim,
-                    GameControl.Attack,
-                });
-            }
-
-            foreach (var control in list)
-            {
-                NativeFunction.Natives.ENABLE_CONTROL_ACTION(0, (int)control);
+                    Common.EnableControl(0, menuNavigationControllerNeededControls[i]);
+                }
             }
         }
-               
+
+        private static readonly GameControl[] menuNavigationNeededControls =
+        {
+            GameControl.FrontendAccept,
+            GameControl.FrontendAxisX,
+            GameControl.FrontendAxisY,
+            GameControl.FrontendDown,
+            GameControl.FrontendUp,
+            GameControl.FrontendLeft,
+            GameControl.FrontendRight,
+            GameControl.FrontendCancel,
+            GameControl.FrontendSelect,
+            GameControl.CursorScrollDown,
+            GameControl.CursorScrollUp,
+            GameControl.CursorX,
+            GameControl.CursorY,
+            GameControl.MoveUpDown,
+            GameControl.MoveLeftRight,
+            GameControl.Sprint,
+            GameControl.Jump,
+            GameControl.Enter,
+            GameControl.VehicleExit,
+            GameControl.VehicleAccelerate,
+            GameControl.VehicleBrake,
+            GameControl.VehicleMoveLeftRight,
+            GameControl.VehicleFlyYawLeft,
+            GameControl.ScriptedFlyLeftRight,
+            GameControl.ScriptedFlyUpDown,
+            GameControl.VehicleFlyYawRight,
+            GameControl.VehicleHandbrake,
+        };
+
+        private static readonly GameControl[] menuNavigationControllerNeededControls =
+        {
+            GameControl.LookUpDown,
+            GameControl.LookLeftRight,
+            GameControl.Aim,
+            GameControl.Attack,
+        };
+
         private bool _buttonsEnabled = true;
         /// <summary>
         /// Enable or disable the instructional buttons.
@@ -663,8 +666,8 @@ namespace RAGENativeUI
         {
             var res = GetScreenResolutionMantainRatio();
 
-            int mouseX = Convert.ToInt32(Math.Round(NativeFunction.CallByName<float>("GET_CONTROL_NORMAL", 0, (int)GameControl.CursorX) * res.Width));
-            int mouseY = Convert.ToInt32(Math.Round(NativeFunction.CallByName<float>("GET_CONTROL_NORMAL", 0, (int)GameControl.CursorY) * res.Height));
+            int mouseX = Convert.ToInt32(Math.Round(Common.GetControlNormal(0, GameControl.CursorX) * res.Width));
+            int mouseY = Convert.ToInt32(Math.Round(Common.GetControlNormal(0, GameControl.CursorY) * res.Height));
 
             return (mouseX >= topLeft.X && mouseX <= topLeft.X + boxSize.Width)
                    && (mouseY > topLeft.Y && mouseY < topLeft.Y + boxSize.Height);
@@ -925,10 +928,10 @@ namespace RAGENativeUI
         {
             if (!Visible || _justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
-                NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", (int)GameControl.LookUpDown);
-                NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", (int)GameControl.LookLeftRight);
-                NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", (int)GameControl.Aim);
-                NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", (int)GameControl.Attack);
+                Common.EnableControl(0, GameControl.LookUpDown);
+                Common.EnableControl(0, GameControl.LookLeftRight);
+                Common.EnableControl(0, GameControl.Aim);
+                Common.EnableControl(0, GameControl.Attack);
                 MenuItems.Where(i => i.Hovered).ToList().ForEach(i => i.Hovered = false);
                 return;
             }
@@ -1358,8 +1361,8 @@ namespace RAGENativeUI
 
         private void EnableCameraMovement()     
         {
-            NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", 0, (int)GameControl.LookLeftRight);
-            NativeFunction.CallByName<uint>("ENABLE_CONTROL_ACTION", 0, (int)GameControl.LookUpDown);
+            Common.EnableControl(0, GameControl.LookLeftRight);
+            Common.EnableControl(0, GameControl.LookUpDown);
         }
 
         /// <summary>

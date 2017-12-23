@@ -94,7 +94,7 @@ namespace RAGENativeUI.PauseMenu
         public void ProcessControls()
         {
             if (!Visible || TemporarilyHidden) return;
-            NativeFunction.CallByName<uint>("DISABLE_ALL_CONTROL_ACTIONS", 0);
+            NativeFunction.Natives.DisableAllControlActions(0);
 
             if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneLeft) && FocusLevel == 0)
             {
@@ -213,7 +213,7 @@ namespace RAGENativeUI.PauseMenu
             if (!Visible || TemporarilyHidden) return;
 
             ShowInstructionalButtons();
-            NativeFunction.CallByName<uint>("HIDE_HUD_AND_RADAR_THIS_FRAME");
+            NativeFunction.Natives.HideHudAndRadarThisFrame();
             //NativeFunction.CallByHash<uint>(0xaae7ce1d63167423); // _SHOW_CURSOR_THIS_FRAME
             
             ProcessControls();

@@ -22,9 +22,9 @@ namespace RAGENativeUI.Elements
             ResText.Draw(Label, new Point((int)res.Width - safe.X - 180, (int)res.Height - safe.Y - (30 + (4 * interval))), 0.3f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
             Sprite.Draw("timerbars", "all_black_bg", new Point((int)res.Width - safe.X - 298, (int)res.Height - safe.Y - (40 + (4 * interval))), new Size(300, 37), 0f, Color.FromArgb(180, 255, 255, 255));
            
-            NativeFunction.CallByName<uint>("HIDE_HUD_COMPONENT_THIS_FRAME", 7);//AreaName
-            NativeFunction.CallByName<uint>("HIDE_HUD_COMPONENT_THIS_FRAME", 9);//StreetName
-            NativeFunction.CallByName<uint>("HIDE_HUD_COMPONENT_THIS_FRAME", 6);//VehicleName
+            NativeFunction.Natives.HideHudComponentThisFrame(7);//AreaName
+            NativeFunction.Natives.HideHudComponentThisFrame(9);//StreetName
+            NativeFunction.Natives.HideHudComponentThisFrame(6);//VehicleName
         }
     }
 

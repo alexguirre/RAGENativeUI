@@ -44,7 +44,7 @@ namespace RAGENativeUI.Elements
             float x = ((Position.X + offset.Width) / width) + w * 0.5f;
             float y = ((Position.Y + offset.Height) / height) + h * 0.5f;
 
-            NativeFunction.CallByName<uint>("DRAW_RECT", x, y, w, h, (int)Color.R, (int)Color.G, (int)Color.B, (int)Color.A);
+            NativeFunction.Natives.DrawRect(x, y, w, h, (int)Color.R, (int)Color.G, (int)Color.B, (int)Color.A);
 
             foreach (IElement item in this.Items)
             {

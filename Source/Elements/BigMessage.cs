@@ -23,7 +23,7 @@ namespace RAGENativeUI.Elements
         {
             get
             {
-                return _sc == null || NativeFunction.CallByName<bool>("HAS_SCALEFORM_MOVIE_LOADED", _sc.Handle);
+                return _sc == null || NativeFunction.Natives.HasScaleformMovieLoaded(_sc.Handle);
             }
         }
 
@@ -37,7 +37,7 @@ namespace RAGENativeUI.Elements
             {
                 var timeout = 1000;
                 var start = System.DateTime.Now;
-                while (!NativeFunction.CallByName<bool>("HAS_SCALEFORM_MOVIE_LOADED", _sc.Handle) && System.DateTime.Now.Subtract(start).TotalMilliseconds < timeout)
+                while (!NativeFunction.Natives.HasScaleformMovieLoaded(_sc.Handle) && System.DateTime.Now.Subtract(start).TotalMilliseconds < timeout)
                     GameFiber.Yield();
             }
         }
@@ -47,7 +47,7 @@ namespace RAGENativeUI.Elements
             unsafe
             {
                 int handle = _sc.Handle;
-                NativeFunction.CallByName<uint>("SET_SCALEFORM_MOVIE_AS_NO_LONGER_NEEDED", &handle);
+                NativeFunction.Natives.SetScaleformMovieAsNoLongerNeeded(ref handle);
             }
             _sc = null;
         }

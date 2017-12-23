@@ -22,8 +22,8 @@ namespace RAGENativeUI.Elements
             set
             {
                 _textureDict = value;
-                if (!NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", value))
-                    NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", value, true);
+                if (!IsTextureDictionaryLoaded)
+                    LoadTextureDictionary();
             }
         }
 
@@ -33,8 +33,8 @@ namespace RAGENativeUI.Elements
             set
             {
                 _textureDict = value;
-                if (!NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", value))
-                    NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", value, true);
+                if (!IsTextureDictionaryLoaded)
+                    LoadTextureDictionary();
             }
         }
 
@@ -44,23 +44,23 @@ namespace RAGENativeUI.Elements
         [Obsolete("Use Sprite.IsTextureDictionaryLoaded instead.")]
         public bool IsTextureDictLoaded
         {
-            get { return NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", TextureDict); }
+            get { return IsTextureDictionaryLoaded; }
         }
 
         public bool IsTextureDictionaryLoaded
         {
-            get { return NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", TextureDictionary); }
+            get { return Common.IsTextureDictionaryLoaded(_textureDict); }
         }
 
         [Obsolete("Use Sprite.LoadTextureDictionary() instead.")]
         public void LoadTextureDict()
         {
-            NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", TextureDict, true);
+            LoadTextureDictionary();
         }
 
         public void LoadTextureDictionary()
         {
-            NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", TextureDictionary, true);
+            Common.LoadTextureDictionary(_textureDict);
         }
 
         /// <summary>
@@ -74,8 +74,6 @@ namespace RAGENativeUI.Elements
         /// <param name="color"></param>
         public Sprite(string textureDict, string textureName, Point position, Size size, float heading, Color color)
         {
-            if (!NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", textureDict))
-                NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", textureDict, true);
             TextureDictionary = textureDict;
             TextureName = textureName;
 
@@ -84,6 +82,9 @@ namespace RAGENativeUI.Elements
             Heading = heading;
             Color = color;
             Visible = true;
+
+            if (!IsTextureDictionaryLoaded)
+                LoadTextureDictionary();
         }
 
         /// <summary>
@@ -105,15 +106,15 @@ namespace RAGENativeUI.Elements
         {
             if (!Visible) return;
 
-            Draw(TextureDictionary, TextureName, Position, Size, Heading, Color, false);
+            Draw(_textureDict, TextureName, Position, Size, Heading, Color, false);
         }
 
         public static void Draw(string textureDictionary, string textureName, Point position, Size size, float heading, Color color, bool loadTexture = true)
         {
             if (loadTexture)
             {
-                if (!NativeFunction.CallByName<bool>("HAS_STREAMED_TEXTURE_DICT_LOADED", textureDictionary))
-                    NativeFunction.CallByName<uint>("REQUEST_STREAMED_TEXTURE_DICT", textureDictionary, true);
+                if (!Common.IsTextureDictionaryLoaded(textureDictionary))
+                    Common.LoadTextureDictionary(textureDictionary);
             }
 
             int screenw = Game.Resolution.Width;
@@ -128,7 +129,7 @@ namespace RAGENativeUI.Elements
             float x = (position.X / width) + w * 0.5f;
             float y = (position.Y / height) + h * 0.5f;
 
-            NativeFunction.CallByName<uint>("DRAW_SPRITE", textureDictionary, textureName, x, y, w, h, heading, color.R, color.G, color.B, color.A);
+            NativeFunction.Natives.DrawSprite(textureDictionary, textureName, x, y, w, h, heading, color.R, color.G, color.B, color.A);
         }
 
         /// <summary>

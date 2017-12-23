@@ -67,13 +67,13 @@ namespace RAGENativeUI.Elements
             float x = position.X / 1280.0f;
             float y = position.Y / 720.0f;
 
-            NativeFunction.CallByName<uint>("SET_TEXT_FONT", (int)font);
-            NativeFunction.CallByName<uint>("SET_TEXT_SCALE", scale, scale);
-            NativeFunction.CallByName<uint>("SET_TEXT_COLOUR", color.R, color.G, color.B, color.A);
-            NativeFunction.CallByName<uint>("SET_TEXT_CENTRE", centered);
-            NativeFunction.CallByHash<uint>(0x25fbb336df1804cb, "STRING"); // SetTextEntry native
-            NativeFunction.CallByHash<uint>(0x6c188be134e074aa, caption); // AddTextComponentString native
-            NativeFunction.CallByHash<uint>(0xcd015e5bb0d96a57, x, y); // DrawText native
+            NativeFunction.Natives.SetTextFont((int)font);
+            NativeFunction.Natives.SetTextScale(scale, scale);
+            NativeFunction.Natives.SetTextColour(color.R, color.G, color.B, color.A);
+            NativeFunction.Natives.SetTextCentre(centered);
+            NativeFunction.Natives.BeginTextCommandDisplayText("STRING");
+            NativeFunction.Natives.AddTextComponentSubstringPlayerName(caption);
+            NativeFunction.Natives.EndTextCommandDisplayText(x, y);
         }
     }
 }

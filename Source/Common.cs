@@ -31,10 +31,35 @@ namespace RAGENativeUI
             Back
         }
 
+        internal static void DisableControl(int index, GameControl control)
+        {
+            Game.DisableControlAction(index, control, true);
+        }
+
+        internal static void EnableControl(int index, GameControl control)
+        {
+            NativeFunction.Natives.EnableControlAction(index, (int)control, true);
+        }
+
+        internal static float GetControlNormal(int index, GameControl control)
+        {
+            return NativeFunction.Natives.GetControlNormal<float>(index, (int)control);
+        }
+
+
+        internal static bool IsTextureDictionaryLoaded(string name)
+        {
+            return NativeFunction.Natives.HasStreamedTextureDictLoaded<bool>(name);
+        }
+
+        internal static void LoadTextureDictionary(string name)
+        {
+            NativeFunction.Natives.RequestStreamedTextureDict(name, true);
+        }
 
         public static void PlaySound(string soundFile, string soundSet)
         {
-            NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, soundFile, soundSet, false);
+            NativeFunction.Natives.PlaySoundFrontend(-1, soundFile, soundSet, false);
         }
 
         /// <summary>
@@ -45,7 +70,7 @@ namespace RAGENativeUI
         /// <returns>true if a Rage.GameControl is pressed while it's disabled</returns>
         public static bool IsDisabledControlPressed(int index, GameControl control)
         {
-            return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_PRESSED", index, (int)control);
+            return NativeFunction.Natives.IsDisabledControlPressed<bool>(index, (int)control);
         }
 
         /// <summary>
@@ -56,7 +81,7 @@ namespace RAGENativeUI
         /// <returns>true if a Rage.GameControl is just pressed while it's disabled</returns>
         public static bool IsDisabledControlJustPressed(int index, GameControl control)
         {
-            return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_PRESSED", index, (int)control);
+            return NativeFunction.Natives.IsDisabledControlJustPressed<bool>(index, (int)control);
         }
 
         /// <summary>
@@ -67,7 +92,7 @@ namespace RAGENativeUI
         /// <returns>true if a Rage.GameControl is just released while it's disabled</returns>
         public static bool IsDisabledControlJustReleased(int index, GameControl control)
         {
-            return NativeFunction.CallByName<bool>("IS_DISABLED_CONTROL_JUST_RELEASED", index, (int)control);
+            return NativeFunction.Natives.IsDisabledControlJustReleased<bool>(index, (int)control);
         }
 
         /// <summary>

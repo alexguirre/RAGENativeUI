@@ -63,20 +63,18 @@ namespace RAGENativeUI.Elements
             float x = (position.X) / width;
             float y = (position.Y) / height;
 
-            NativeFunction.CallByName<uint>("SET_TEXT_FONT", (int)font);
-            NativeFunction.CallByName<uint>("SET_TEXT_SCALE", 1.0f, scale);
-            NativeFunction.CallByName<uint>("SET_TEXT_COLOUR", color.R, color.G, color.B, color.A);
+            NativeFunction.Natives.SetTextFont((int)font);
+            NativeFunction.Natives.SetTextScale(1.0f, scale);
+            NativeFunction.Natives.SetTextColour(color.R, color.G, color.B, color.A);
 
             if (centered)
             {
-                NativeFunction.CallByName<uint>("SET_TEXT_CENTRE", true);
+                NativeFunction.Natives.SetTextCentre(true);
             }
 
-            NativeFunction.CallByHash<uint>(0x25fbb336df1804cb, "jamyfafi");      // _SET_TEXT_ENTRY
+            NativeFunction.Natives.BeginTextCommandDisplayText("jamyfafi");
             AddLongString(caption);
-
-
-            NativeFunction.CallByHash<uint>(0xcd015e5bb0d96a57, x, y);     // _DRAW_TEXT
+            NativeFunction.Natives.EndTextCommandDisplayText(x, y);
         }
 
         public static void Draw(string caption, Point position, float scale, Color color, Common.EFont font, Alignment textAlignment, bool dropShadow, bool outline, Size wordWrap)
@@ -91,42 +89,40 @@ namespace RAGENativeUI.Elements
             float x = (position.X) / width;
             float y = (position.Y) / height;
 
-            NativeFunction.CallByName<uint>("SET_TEXT_FONT", (int)font);
-            NativeFunction.CallByName<uint>("SET_TEXT_SCALE", 1.0f, scale);
-            NativeFunction.CallByName<uint>("SET_TEXT_COLOUR", color.R, color.G, color.B, color.A);
+            NativeFunction.Natives.SetTextFont((int)font);
+            NativeFunction.Natives.SetTextScale(1.0f, scale);
+            NativeFunction.Natives.SetTextColour(color.R, color.G, color.B, color.A);
 
             if (dropShadow)
             {
-                NativeFunction.CallByName<uint>("SET_TEXT_DROP_SHADOW");
+                NativeFunction.Natives.SetTextDropShadow();
             }
 
             if (outline)
             {
-                NativeFunction.CallByName<uint>("SET_TEXT_OUTLINE");
+                NativeFunction.Natives.SetTextOutline();
             }
 
             switch (textAlignment)
             {
                 case Alignment.Centered:
-                    NativeFunction.CallByName<uint>("SET_TEXT_CENTRE", true);
+                    NativeFunction.Natives.SetTextCentre(true);
                     break;
                 case Alignment.Right:
-                    NativeFunction.CallByName<uint>("SET_TEXT_RIGHT_JUSTIFY", true);
-                    NativeFunction.CallByName<uint>("SET_TEXT_WRAP", 0, x);
+                    NativeFunction.Natives.SetTextRightJustify(true);
+                    NativeFunction.Natives.SetTextWrap(0.0f, x);
                     break;
             }
 
             if (wordWrap != new Size(0, 0))
             {
                 float xsize = (position.X + wordWrap.Width) / width;
-                NativeFunction.CallByName<uint>("SET_TEXT_WRAP", x, xsize);
+                NativeFunction.Natives.SetTextWrap(x, xsize);
             }
 
-            NativeFunction.CallByHash<uint>(0x25fbb336df1804cb, "jamyfafi");      // _SET_TEXT_ENTRY
+            NativeFunction.Natives.BeginTextCommandDisplayText("jamyfafi");
             AddLongString(caption);
-
-
-            NativeFunction.CallByHash<uint>(0xcd015e5bb0d96a57, x, y);     // _DRAW_TEXT
+            NativeFunction.Natives.EndTextCommandDisplayText(x, y);
         }
 
 
@@ -159,6 +155,7 @@ namespace RAGENativeUI.Elements
                 string substr = str.Substring(i, Math.Min(strLen, str.Length - i));
                 NativeFunction.CallByHash<uint>(0x6c188be134e074aa, substr);      // _ADD_TEXT_COMPONENT_STRING
             }
+            
         }
     }
 }
