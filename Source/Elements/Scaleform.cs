@@ -23,7 +23,7 @@ namespace RAGENativeUI.Elements
 
         public bool Load(string scaleformID)
         {
-            int handle = NativeFunction.CallByName<int>("REQUEST_SCALEFORM_MOVIE", scaleformID);
+            int handle = NativeFunction.Natives.RequestScaleformMovie<int>(scaleformID);
 
             if (handle == 0) return false;
 
@@ -46,7 +46,7 @@ namespace RAGENativeUI.Elements
             float width = size.X / 1280.0f;
             float height = size.Y / 720.0f;
 
-            NativeFunction.CallByName<uint>("DRAW_SCALEFORM_MOVIE", this._handle, x + (width / 2.0f), y + (height / 2.0f), width, height, 255, 255, 255, 255);
+            NativeFunction.Natives.DrawScaleformMovie(this._handle, x + (width / 2.0f), y + (height / 2.0f), width, height, 255, 255, 255, 255);
         }
 
 
