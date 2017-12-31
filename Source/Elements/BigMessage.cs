@@ -23,7 +23,7 @@ namespace RAGENativeUI.Elements
         {
             get
             {
-                return _sc == null || NativeFunction.Natives.HasScaleformMovieLoaded(_sc.Handle);
+                return _sc == null || NativeFunction.Natives.HasScaleformMovieLoaded<bool>(_sc.Handle);
             }
         }
 
@@ -37,7 +37,7 @@ namespace RAGENativeUI.Elements
             {
                 var timeout = 1000;
                 var start = System.DateTime.Now;
-                while (!NativeFunction.Natives.HasScaleformMovieLoaded(_sc.Handle) && System.DateTime.Now.Subtract(start).TotalMilliseconds < timeout)
+                while (!NativeFunction.Natives.HasScaleformMovieLoaded<bool>(_sc.Handle) && System.DateTime.Now.Subtract(start).TotalMilliseconds < timeout)
                     GameFiber.Yield();
             }
         }
