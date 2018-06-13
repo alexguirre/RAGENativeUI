@@ -26,7 +26,7 @@ namespace Examples
             
             Gui.Do += () =>
             {
-                if (Game.IsControlKeyDownRightNow)
+                if (Game.IsControlDown)
                 {
                     Gui.Mouse();
                 }
@@ -108,7 +108,7 @@ namespace Examples
 
                 if (showCurrentModsValues)
                 {
-                    if (Game.IsControlKeyDownRightNow)
+                    if (Game.IsControlDown)
                     {
                         Gui.Mouse();
                     }

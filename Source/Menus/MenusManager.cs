@@ -90,7 +90,7 @@ namespace RAGENativeUI.Menus
 
             for (int i = 0; i < visibleMenus.Count; i++)
             {
-                visibleMenus[i]?.OnDraw(g);
+                visibleMenus[i]?.Theme.Draw(g);
             }
         }
     }

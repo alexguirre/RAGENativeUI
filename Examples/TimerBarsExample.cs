@@ -40,21 +40,21 @@ namespace Examples
                     stack.Draw();
                     middleBar.Draw();
 
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                         progressBar.Percentage += 2.0f * Game.FrameTime;
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Subtract))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                         progressBar.Percentage -= 2.0f * Game.FrameTime;
 
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Multiply))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Multiply))
                     {
                         textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width + 0.5f * Game.FrameTime, textBar.Rectangle.Height + 0.5f * Game.FrameTime);
                     }
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Divide))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
                     {
                         textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width - 0.5f * Game.FrameTime, textBar.Rectangle.Height - 0.5f * Game.FrameTime);
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         if (stack.OriginPosition.HasValue)
                         {

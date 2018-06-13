@@ -1,7 +1,5 @@
 namespace RAGENativeUI.Elements.TimerBars
 {
-    using Rage.Native;
-
     public class TimerBarsStack : BaseCollection<TimerBar>
     {
         public ScreenPosition? OriginPosition { get; set; }
@@ -33,7 +31,7 @@ namespace RAGENativeUI.Elements.TimerBars
             }
             else
             {
-                x = y = 0.5f + (NativeFunction.Natives.GetSafeZoneSize<float>() / 2f); // safezone bottom-right corner
+                x = y = 0.5f + (N.GetSafeZoneSize() / 2f); // safezone bottom-right corner
             }
 
             for (int i = 0; i < InternalList.Count; i++)

@@ -6,51 +6,13 @@ namespace RAGENativeUI.Scaleforms
     using Rage;
     using Rage.Native;
 
-    using RAGENativeUI.Memory;
-    using RAGENativeUI.Memory.GFx;
-
-    public unsafe class Scaleform : IAddressable
+    public unsafe class Scaleform
     {
         private int handle;
 
         public string Name { get; }
         public int Handle { get { return handle; } }
         public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
-        /// <summary>
-        /// Gets the memory address of this instance. If this <see cref="Scaleform"/> isn't loaded, returns <see cref="IntPtr.Zero"/>.
-        /// </summary>
-        public IntPtr MemoryAddress { get { return IsLoaded ? (IntPtr)GetMovieRoot() : IntPtr.Zero; } }
-
-        public Color BoundingBoxColor
-        {
-            get
-            {
-                if (!IsLoaded)
-                    return Color.Empty;
-
-                Pointer<GFxMovieRoot> movie = GetMovieRoot();
-                if (movie.IsNull)
-                    return Color.Empty;
-
-                ref GFxMovieRoot m = ref movie.Ref;
-                return Color.FromArgb(m.BackgroundColorAlpha, m.BackgroundColorRed, m.BackgroundColorGreen, m.BackgroundColorBlue);
-            }
-            set
-            {
-                if (!IsLoaded)
-                    return;
-
-                Pointer<GFxMovieRoot> movie = GetMovieRoot();
-                if (movie.IsNull)
-                    return;
-
-                ref GFxMovieRoot m = ref movie.Ref;
-                m.BackgroundColorAlpha = value.A;
-                m.BackgroundColorRed = value.R;
-                m.BackgroundColorGreen = value.G;
-                m.BackgroundColorBlue = value.B;
-            }
-        }
 
         public Scaleform(string name)
         {
@@ -175,16 +137,6 @@ namespace RAGENativeUI.Scaleforms
                 LoadAndWait();
 
             NativeFunction.Natives.x1CE592FDC749D6F5(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
-        }
-
-
-        internal Pointer<GFxMovieRoot> GetMovieRoot()
-        {
-            int index = Handle - 1;
-            short data2Index = GameMemory.ScaleformData1Array[index].ScaleformIndex;
-            int storeIndex = GameMemory.ScaleformData2Array[data2Index].ScaleformStorePoolIndex;
-            Pointer<GFxMovieRoot> movieRoot = GameMemory.ScaleformStore.GetPoolItem(storeIndex).MovieObject.Ref.GetMovieRoot();
-            return movieRoot;
         }
     }
 }

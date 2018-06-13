@@ -35,11 +35,11 @@ namespace RAGENativeUI.Elements.TimerBars
             float barY = rect.Y;
             float barW = rect.Width / 2.25f;
             float barH = rect.Height / 3f;
-            Box.Draw(ScreenRectangle.FromRelativeCoords(barX, barY, barW, barH), BackColor);
+            Rect.Draw(ScreenRectangle.FromRelativeCoords(barX, barY, barW, barH), BackColor);
             
             float fillX = barX - barW * 0.5f + barW * 0.5f * percentage;
             float fillW = barW * percentage;
-            Box.Draw(ScreenRectangle.FromRelativeCoords(fillX, barY, fillW, barH), ForeColor);
+            Rect.Draw(ScreenRectangle.FromRelativeCoords(fillX, barY, fillW, barH), ForeColor);
         }
     }
 }

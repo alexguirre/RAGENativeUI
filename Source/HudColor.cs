@@ -10,14 +10,14 @@ namespace RAGENativeUI
         /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="GetColor"]/*' />
         public static Color GetColor(this HudColor hudColor)
         {
-            NativeFunction.Natives.GetHudColour((int)hudColor, out int r, out int g, out int b, out int a);
+            N.GetHudColour((int)hudColor, out int r, out int g, out int b, out int a);
             return Color.FromArgb(a, r, g, b);
         }
 
         /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="SetColor"]/*' />
         public static void SetColor(this HudColor hudColor, Color color)
         {
-            NativeFunction.Natives.xF314CF4F0211894E((int)hudColor, color.R, color.G, color.B, color.A); // _SET_HUD_COLOUR
+            N.SetHudColour((int)hudColor, color.R, color.G, color.B, color.A);
         }
 
         /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="GetName"]/*' />

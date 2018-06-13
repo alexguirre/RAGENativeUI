@@ -11,6 +11,9 @@ namespace RAGENativeUI.Menus
         private decimal minimum = 0.0m;
         private decimal maximum = 100.0m;
         private decimal increment = 0.5m;
+        private bool thousandsSeparator;
+        private bool hexadecimal;
+        private int decimalPlaces = 2;
 
         public decimal Value
         {
@@ -30,69 +33,124 @@ namespace RAGENativeUI.Menus
 
         public decimal Minimum
         {
-            get { return minimum; }
+            get => minimum;
             set
             {
-                minimum = value;
-                if (minimum > maximum)
+                if (value != minimum)
                 {
-                    maximum = minimum;
+                    minimum = value;
+                    if (minimum > maximum)
+                    {
+                        maximum = minimum;
+                        OnPropertyChanged(nameof(Maximum));
+                    }
+                    OnPropertyChanged(nameof(Minimum));
+
+                    Value = EnsureValue(Value);
+
+                    UpdateSelectedIndex();
                 }
-
-                Value = EnsureValue(Value);
-
-                UpdateSelectedIndex();
             }
         }
 
         public decimal Maximum
         {
-            get { return maximum; }
+            get => maximum;
             set
             {
-                maximum = value;
-                if (minimum > maximum)
+                if (value != maximum)
                 {
-                    minimum = maximum;
+                    maximum = value;
+                    if (minimum > maximum)
+                    {
+                        minimum = maximum;
+                        OnPropertyChanged(nameof(Minimum));
+                    }
+                    OnPropertyChanged(nameof(Maximum));
+
+                    Value = EnsureValue(Value);
+
+                    UpdateSelectedIndex();
                 }
-
-                Value = EnsureValue(Value);
-
-                UpdateSelectedIndex();
             }
         }
 
         public decimal Increment
         {
-            get { return increment; }
+            get => increment;
             set
             {
                 Throw.IfNegative(value, nameof(value));
 
-                increment = value;
-
-                UpdateSelectedIndex();
+                if (value != increment)
+                {
+                    increment = value;
+                    OnPropertyChanged(nameof(Increment));
+                    UpdateSelectedIndex();
+                }
             }
         }
 
         public override int SelectedIndex
         {
-            get { return base.SelectedIndex; }
+            get => base.SelectedIndex;
             set
             {
                 int newIndex = MathHelper.Clamp(value, 0, MathHelper.Max(0, GetOptionsCount() - 1));
-                currentValue = Minimum + newIndex * Increment;
-                base.SelectedIndex = newIndex;
+                if (newIndex != SelectedIndex)
+                {
+                    currentValue = Minimum + newIndex * Increment;
+                    base.SelectedIndex = newIndex;
+                }
             }
         }
 
-        public bool ThousandsSeparator { get; set; }
-        public bool Hexadecimal { get; set; }
-        public int DecimalPlaces { get; set; } = 2;
+        public bool ThousandsSeparator
+        {
+            get => thousandsSeparator;
+            set
+            {
+                if(value != thousandsSeparator)
+                {
+                    thousandsSeparator = value;
+                    OnPropertyChanged(nameof(ThousandsSeparator));
+                }
+            }
+        }
 
-        public MenuItemNumericScroller(string text) : base(text)
+        public bool Hexadecimal
+        {
+            get => hexadecimal;
+            set
+            {
+                if (value != hexadecimal)
+                {
+                    hexadecimal = value;
+                    OnPropertyChanged(nameof(Hexadecimal));
+                }
+            }
+        }
+
+        public int DecimalPlaces
+        {
+            get => decimalPlaces;
+            set
+            {
+                if (value != decimalPlaces)
+                {
+                    decimalPlaces = value;
+                    OnPropertyChanged(nameof(DecimalPlaces));
+                }
+            }
+        }
+
+        public MenuItemNumericScroller(string text, string description) : base(text, description)
         {
             SelectedIndex = GetOptionsCount() / 2;
+        }
+
+        public MenuItemNumericScroller(string text) : this(text, String.Empty)
+        {
         }
 
         private decimal EnsureValue(decimal value)
@@ -191,6 +249,16 @@ namespace RAGENativeUI.Menus
             Value = newValue;
 
             return base.OnMoveRight();
+        }
+
+        protected override void OnPropertyChanged(string propertyName)
+        {
+            base.OnPropertyChanged(propertyName);
+
+            if (propertyName == nameof(SelectedIndex))
+            {
+                OnPropertyChanged(nameof(Value));
+            }
         }
     }
 }

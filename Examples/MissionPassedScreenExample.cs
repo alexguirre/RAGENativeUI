@@ -29,32 +29,32 @@ namespace Examples
 
                     Game.DisplayHelp($"IsVisible: {missionPassedScreen.IsVisible}");
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         missionPassedScreen.Show();
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.H))
                     {
                         missionPassedScreen.Hide();
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.U))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
                     {
                         missionPassedScreen.IsCompletionVisible = !missionPassedScreen.IsCompletionVisible;
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.J))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.J))
                     {
                         missionPassedScreen.ShownEffect = PostFxAnimation.GetByName(MathHelper.Choose("SuccessFranklin", "SuccessTrevor", "SuccessMichael", "SuccessNeutral"));
                         Game.DisplayNotification(missionPassedScreen.ShownEffect.Name);
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Add))
                     {
                         missionPassedScreen.Items.Add(new MissionPassedScreenItem("Item #" + i++, MathHelper.Choose("Status", "", ""), MathHelper.Choose((MissionPassedScreenItem.TickboxState[])Enum.GetValues(typeof(MissionPassedScreenItem.TickboxState)))));
                     }
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Subtract))
                     {
                         if (missionPassedScreen.Items.Count > 0)
                         {

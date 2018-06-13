@@ -4,18 +4,30 @@ namespace RAGENativeUI.Elements
     using System.Drawing;
     using System.Collections.Generic;
     
-    using Rage.Native;
-
-    public class Text : IScreenElement
+    public class Text
     {
+        // "CELL_EMAIL_BCON" translates to "~a~~a~~a~~a~~a~~a~~a~~a~~a~~a~", 
+        // even though it has 10 substring placeholders ('~a~') only 4 are used
+        // (the classes that handle the DISPLAY_TEXT command are CDisplayTextZeroOrOneNumbers, 
+        // CDisplayTextOneSubstring and CDisplayTextFourSubstringsThreeNumbers, so this limit is obvious).
+        // Each substring max length is 99 + 1 (null terminating char), 
+        // so the max string length that can be displayed in one command is 99 * 4 = 396 chars
+        private const string DisplayTextFormat = "CELL_EMAIL_BCON";
+        private const int MaxSubstringsCount = 4;
+        private const int MaxSubstringLength = 99;
+
         private ScreenRectangle rectangle;
-        private List<string> splittedCaption = new List<string>();
+        private List<string> captionSubstrings = new List<string>();
         private string caption;
 
         public bool IsVisible { get; set; } = true;
         // Width = wrapWidth, Height = ignored
         public ScreenRectangle Rectangle { get => rectangle; set => rectangle = value; }
-        public ScreenPosition Position { get => ScreenPosition.FromRelativeCoords(rectangle.X, rectangle.Y); set => rectangle = ScreenRectangle.FromRelativeCoords(value.X, value.Y, rectangle.Width, rectangle.Height); }
+        public ScreenPosition Position
+        {
+            get => ScreenPosition.FromRelativeCoords(rectangle.X, rectangle.Y);
+            set => rectangle = ScreenRectangle.FromRelativeCoords(value.X, value.Y, rectangle.Width, rectangle.Height);
+        }
         public Color Color { get; set; }
         public float Scale { get; set; }
         public string Caption
@@ -29,12 +41,7 @@ namespace RAGENativeUI.Elements
                     return;
                 caption = value;
 
-                splittedCaption.Clear();
-
-                foreach (string str in GetSplittedCaption(caption))
-                {
-                    splittedCaption.Add(str);
-                }
+                AddCaptionSubstrings(caption, captionSubstrings);
             }
         }
         public TextFont Font { get; set; }
@@ -62,7 +69,7 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            Draw(Position, splittedCaption, Scale, Color, Font, Alignment, WrapWidth, DropShadow, Outline);
+            Draw(Position, captionSubstrings, Scale, Color, Font, Alignment, WrapWidth, DropShadow, Outline);
         }
 
 
@@ -72,23 +79,25 @@ namespace RAGENativeUI.Elements
 
             BeginDraw(position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
 
-            foreach(string str in GetSplittedCaption(caption))
+            for (int i = 0, c = 0; i < caption.Length && c < MaxSubstringsCount; i += MaxSubstringLength, c++)
             {
-                NativeFunction.Natives.AddTextComponentSubstringPlayerName(str);
+                string str = caption.Substring(i, Math.Min(MaxSubstringLength, caption.Length - i));
+                N.AddTextComponentSubstringPlayerName(str);
             }
 
             EndDraw(position);
         }
 
-        public static void Draw(ScreenPosition position, List<string> splittedCaption, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(ScreenPosition position, List<string> captionSubstrings, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
-            Throw.IfNull(splittedCaption, nameof(splittedCaption));
+            Throw.IfNull(captionSubstrings, nameof(captionSubstrings));
 
             BeginDraw(position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
 
-            for (int i = 0; i < splittedCaption.Count; i++)
+            int c = Math.Min(captionSubstrings.Count, MaxSubstringsCount);
+            for (int i = 0; i < c; i++)
             {
-                NativeFunction.Natives.AddTextComponentSubstringPlayerName(splittedCaption[i]);
+                N.AddTextComponentSubstringPlayerName(captionSubstrings[i]);
             }
             
             EndDraw(position);
@@ -96,21 +105,21 @@ namespace RAGENativeUI.Elements
 
         private static void BeginDraw(ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
-            NativeFunction.Natives.SetTextFont((int)font);
-            NativeFunction.Natives.SetTextScale(1.0f, scale);
-            NativeFunction.Natives.SetTextColour(color.R, color.G, color.B, color.A);
+            N.SetTextFont((int)font);
+            N.SetTextScale(1.0f, scale);
+            N.SetTextColour(color.R, color.G, color.B, color.A);
 
             if (dropShadow)
             {
-                NativeFunction.Natives.SetTextDropShadow();
+                N.SetTextDropShadow();
             }
 
             if (outline)
             {
-                NativeFunction.Natives.SetTextOutline();
+                N.SetTextOutline();
             }
 
-            NativeFunction.Natives.SetTextJustification((int)alignment);
+            N.SetTextJustification((int)alignment);
 
             if (wrapWidth > 0.0f)
             {
@@ -118,45 +127,44 @@ namespace RAGENativeUI.Elements
                 switch (alignment)
                 {
                     case TextAlignment.Center:
-                        NativeFunction.Natives.SetTextWrap(position.X - (w / 2.0f), position.X + (w / 2.0f));
+                        N.SetTextWrap(position.X - (w * 0.5f), position.X + (w * 0.5f));
                         break;
                     case TextAlignment.Left:
-                        NativeFunction.Natives.SetTextWrap(position.X, position.X + w);
+                        N.SetTextWrap(position.X, position.X + w);
                         break;
                     case TextAlignment.Right:
-                        NativeFunction.Natives.SetTextWrap(position.X - w, position.X);
+                        N.SetTextWrap(position.X - w, position.X);
                         break;
                 }
             }
             else if (alignment == TextAlignment.Right)
             {
-                NativeFunction.Natives.SetTextWrap(0.0f, position.X);
+                N.SetTextWrap(0.0f, position.X);
             }
-
-            NativeFunction.Natives.BeginTextCommandDisplayText("CELL_EMAIL_BCON");
+            
+            N.BeginTextCommandDisplayText(DisplayTextFormat);
         }
 
         private static void EndDraw(ScreenPosition position)
         {
-            NativeFunction.Natives.EndTextCommandDisplayText(position.X, position.Y);
+            N.EndTextCommandDisplayText(position.X, position.Y, 0);
         }
         
-        private static IEnumerable<string> GetSplittedCaption(string caption)
+        private static void AddCaptionSubstrings(string caption, List<string> to)
         {
-            const int MaxStringLenth = 99;
-
-            for (int i = 0; i < caption.Length; i += MaxStringLenth)
+            to.Clear();
+            for (int i = 0; i < caption.Length; i += MaxSubstringLength)
             {
-                string str = caption.Substring(i, Math.Min(MaxStringLenth, caption.Length - i));
-                yield return str;
+                string str = caption.Substring(i, Math.Min(MaxSubstringLength, caption.Length - i));
+                to.Add(str);
             }
         }
     }
 
     public enum TextAlignment
     {
-        Left,
         Center,
+        Left,
         Right,
     }
 

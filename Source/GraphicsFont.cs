@@ -29,11 +29,11 @@ namespace RAGENativeUI
             height = -1.0f;
         }
 
-        public SizeF Measure(string text)
+        public /** REDACTED **/ Measure(string text)
         {
             Throw.IfNull(text, nameof(text));
 
-            return Graphics.MeasureText(text, Name, Size);
+            return /** REDACTED **/
         }
     }
 }

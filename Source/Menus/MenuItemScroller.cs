@@ -1,5 +1,7 @@
 namespace RAGENativeUI.Menus
 {
+    using System;
+
     using Rage;
 
     public abstract class MenuItemScroller : MenuItem
@@ -19,12 +21,13 @@ namespace RAGENativeUI.Menus
                 {
                     int oldIndex = selectedIndex;
                     selectedIndex = newIndex;
+                    OnPropertyChanged(nameof(SelectedIndex));
                     OnSelectedIndexChanged(new SelectedIndexChangedEventArgs(oldIndex, newIndex));
                 }
             }
         }
 
-        public MenuItemScroller(string text) : base(text)
+        public MenuItemScroller(string text, string description) : base(text, description)
         {
         }
 

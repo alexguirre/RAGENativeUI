@@ -23,7 +23,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>
     </DocumentationFile>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -36,7 +36,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(RNUI_BUILD_PATH)\RAGENativeUI.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
@@ -46,10 +46,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
@@ -57,63 +53,49 @@
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="Elements\IScreenElement.cs" />
+    <Compile Include="Elements\Rect3D.cs" />
+    <Compile Include="Elements\Sprite3D.cs" />
     <Compile Include="Elements\TimerBars\LabeledTimerBar.cs" />
     <Compile Include="Elements\TimerBars\ProgressTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TimerBar.cs" />
     <Compile Include="Elements\TimerBars\TimerBarsStack.cs" />
-    <Compile Include="ImGui\Gui.cs" />
-    <Compile Include="ImGui\Gui.State.cs" />
     <Compile Include="KnownNames.cs" />
     <Compile Include="Memory\CAnimPostFX.cs" />
     <Compile Include="Memory\CAnimPostFXManager.cs" />
-    <Compile Include="Memory\CArray.cs" />
+    <Compile Include="Memory\Arrays.cs" />
     <Compile Include="Memory\CTimeCycleModifier.cs" />
-    <Compile Include="Memory\CTimeCycleModifiersManager.cs" />
+    <Compile Include="Memory\CTimeCycle.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
-    <Compile Include="Memory\pgDictionary.cs" />
-    <Compile Include="Memory\Pointer.cs" />
     <Compile Include="Memory\sysMemAllocator.cs" />
     <Compile Include="Menus\EventArgs.cs" />
     <Compile Include="Menus\MenuItemsCollection.cs" />
     <Compile Include="Menus\ScrollableMenu.cs" />
-    <Compile Include="Menus\Styles\IMenuStyle.cs" />
-    <Compile Include="Menus\Styles\MenuNativeStyle.cs" />
-    <Compile Include="Menus\Styles\MenuStyle.cs" />
+    <Compile Include="Menus\Themes\MenuDebugTheme.cs" />
+    <Compile Include="Menus\Themes\MenuDefaultTheme.cs" />
+    <Compile Include="Menus\Themes\MenuTheme.cs" />
     <Compile Include="ModuleInitializer.cs" />
+    <Compile Include="Natives.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TextureProperties.cs" />
+    <Compile Include="RNUI.cs" />
     <Compile Include="Throw.cs" />
     <Compile Include="TimeCycleModifier.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Scaleforms\InstructionalButtons.cs" />
     <Compile Include="Scaleforms\MissionPassedScreen.cs" />
-    <Compile Include="Elements\Box.cs" />
+    <Compile Include="Elements\Rect.cs" />
     <Compile Include="Scaleforms\Scaleform.cs" />
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="Elements\Text.cs" />
     <Compile Include="PostFxAnimation.cs" />
     <Compile Include="TextureDictionary.cs" />
-    <Compile Include="Memory\CPool.cs" />
-    <Compile Include="Memory\fwTxdDef.cs" />
-    <Compile Include="Memory\fwTxdStore.cs" />
-    <Compile Include="Memory\GFx\CScaleformDef.cs" />
-    <Compile Include="Memory\GFx\CScaleformMovieObject.cs" />
-    <Compile Include="Memory\GFx\CScaleformStore.cs" />
-    <Compile Include="Memory\GFx\GFxMovieRoot.cs" />
-    <Compile Include="Memory\grcTexture.cs" />
-    <Compile Include="Menus\IMenuComponent.cs" />
     <Compile Include="Menus\Menu.cs" />
-    <Compile Include="Menus\MenuBackground.cs" />
-    <Compile Include="Menus\MenuBanner.cs" />
-    <Compile Include="Menus\MenuDescription.cs" />
     <Compile Include="Menus\MenuItem.cs" />
     <Compile Include="Menus\MenuItemCheckbox.cs" />
     <Compile Include="Menus\MenuItemEnumScroller.cs" />
@@ -121,8 +103,6 @@
     <Compile Include="Menus\MenuItemNumericScroller.cs" />
     <Compile Include="Menus\MenuItemScroller.cs" />
     <Compile Include="Menus\MenusManager.cs" />
-    <Compile Include="Menus\MenuSubtitle.cs" />
-    <Compile Include="Menus\MenuUpDownDisplay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextAligment.cs" />
     <Compile Include="BaseCollection.cs" />
@@ -139,9 +119,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll">

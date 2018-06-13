@@ -122,13 +122,13 @@ namespace RAGENativeUI.Scaleforms
             {
                 case State.WaitForInputClosed:
                     {
-                        if (Game.IsControlJustPressed(0, ExpandControl))
+                        if (Game.WasControlActionJustPressed(0, ExpandControl))
                         {
                             ButtonPressedSound?.Play();
                             InstructionalButtons.Slots[instructionalButtonExpandIndex].IsVisible = false;
                             state = State.StartExpand;
                         }
-                        else if (Game.IsControlJustPressed(0, ContinueControl))
+                        else if (Game.WasControlActionJustPressed(0, ContinueControl))
                         {
                             ButtonPressedSound?.Play();
                             Hide();
@@ -157,7 +157,7 @@ namespace RAGENativeUI.Scaleforms
 
                 case State.WaitForInputExpanded:
                     {
-                        if (Game.IsControlJustPressed(0, ContinueControl))
+                        if (Game.WasControlActionJustPressed(0, ContinueControl))
                         {
                             ButtonPressedSound?.Play();
                             Hide();
@@ -212,7 +212,7 @@ namespace RAGENativeUI.Scaleforms
             if(state == State.WaitForInputExpanded)
             {
                 Color white = HudColor.White.GetColor();
-                Box.Draw(ScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
+                Rect.Draw(ScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
 
                 // TODO: show items as the background rolls down, instead of showing them all at once
                 float y = 0.3387495f;
@@ -238,7 +238,7 @@ namespace RAGENativeUI.Scaleforms
 
                 y += 27.5f * 0.2f * 0.001388889f;
 
-                Box.Draw(ScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
+                Rect.Draw(ScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
 
                 if (IsCompletionVisible)
                 {

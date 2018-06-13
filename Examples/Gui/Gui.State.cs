@@ -4,8 +4,8 @@ namespace RAGENativeUI.ImGui
 
     using Rage;
     using Graphics = Rage.Graphics;
-    
-    public static partial class Gui
+
+    internal static partial class Gui
     {
         internal struct State
         {

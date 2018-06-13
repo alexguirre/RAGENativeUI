@@ -5,7 +5,6 @@ namespace RAGENativeUI
     using System.Text;
 
     using Rage;
-    using Rage.Native;
     
     public delegate void TypedEventHandler<TSender, TArgs>(TSender sender, TArgs e) where TArgs : EventArgs;
 
@@ -23,12 +22,7 @@ namespace RAGENativeUI
         {
             return Graphics.MeasureText("A", fontName, fontSize).Height;
         }
-
-        public static void PlaySoundFrontend(string soundSet, string soundName)
-        {
-            NativeFunction.Natives.PlaySoundFrontend(-1, soundName, soundSet, false);
-        }
-
+        
         public static string WrapText(string text, GraphicsFont font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
         public static string WrapText(string text, string fontName, float fontSize, float widthLimit)
         {
@@ -77,6 +71,19 @@ namespace RAGENativeUI
         public static void Log(object o) => Game.LogTrivial($"[RAGENativeUI] {o}");
         [System.Diagnostics.Conditional("DEBUG")]
         public static void LogDebug(object o) => Log(o);
+
+
+        // https://code.google.com/archive/p/slimmath/
+        public static void TransformCoordinate(ref Vector3 coordinate, ref Matrix transform, out Vector3 result)
+        {
+            Vector4 vector = new Vector4();
+            vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
+            vector.Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + (coordinate.Z * transform.M32) + transform.M42;
+            vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
+            vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
+
+            result = new Vector3(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+        }
     }
 }
 

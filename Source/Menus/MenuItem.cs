@@ -1,71 +1,149 @@
 namespace RAGENativeUI.Menus
 {
-    using Graphics = Rage.Graphics;
+    using System;
+    using System.ComponentModel;
 
-    public class MenuItem
+    public class MenuItem : INotifyPropertyChanged
     {
         private Menu parent;
-        private bool selected;
+        private string text;
+        private string description;
+        private bool isVisible = true;
+        private Menu bindedMenu;
+        private bool isSelected;
+        private bool isDisabled;
+        private bool isSkippedIfDisabled;
 
+        public event PropertyChangedEventHandler PropertyChanged;
         public event TypedEventHandler<MenuItem, ActivatedEventArgs> Activated;
         public event TypedEventHandler<MenuItem, SelectedChangedEventArgs> SelectedChanged;
         
         public Menu Parent
         {
             get => parent;
-            set
+            internal set
             {
                 if(value != parent)
                 {
-                    if(value != null)
-                    {
-                        value.Items.Add(this);
-                    }
-                    else
-                    {
-                        parent.Items.Remove(this);
-                    }
+                    parent = value;
+                    OnPropertyChanged(nameof(Parent));
                 }
             }
         }
-        public string Text { get; set; }
-        public string Description { get; set; }
-        public bool IsVisible { get; set; } = true;
+
+        public string Text
+        {
+            get => text;
+            set
+            {
+                Throw.IfNull(value, nameof(value));
+                if(value != text)
+                {
+                    text = value;
+                    OnPropertyChanged(nameof(Text));
+                }
+            }
+        }
+
+        public string Description
+        {
+            get => description;
+            set
+            {
+                Throw.IfNull(value, nameof(value));
+                if (value != description)
+                {
+                    description = value;
+                    OnPropertyChanged(nameof(Description));
+                }
+            }
+        }
+
+        public bool IsVisible
+        {
+            get => isVisible;
+            set
+            {
+                if (value != isVisible)
+                {
+                    isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or sets the <see cref="Menu"/> that will be opened when this item is activated.
         /// </summary>
         /// <value>
         /// The binded <see cref="Menu"/> or <c>null</c> if no menu is binded.
         /// </value>
-        public Menu BindedMenu { get; set; }
-        public dynamic Metadata { get; } = new Metadata();
+        public Menu BindedMenu
+        {
+            get => bindedMenu;
+            set
+            {
+                if (value != bindedMenu)
+                {
+                    bindedMenu = value;
+                    OnPropertyChanged(nameof(BindedMenu));
+                }
+            }
+        }
+
         public bool IsSelected
         {
-            get => selected;
+            get => isSelected;
             internal set
             {
-                if (value == selected)
-                    return;
-                selected = value;
-                OnSelectedChanged(new SelectedChangedEventArgs(selected));
+                if (value != isSelected)
+                {
+                    isSelected = value;
+                    OnPropertyChanged(nameof(IsSelected));
+                    OnSelectedChanged(new SelectedChangedEventArgs(isSelected));
+                }
             }
         }
-        public bool IsDisabled { get; set; }
-        public bool IsSkippedIfDisabled { get; set; }
 
-        public MenuItem(string text)
+        public bool IsDisabled
         {
-            Text = text;
-        }
-
-        internal void SetParentInternal(Menu menu)
-        {
-            if (parent != null && menu != null)
+            get => isDisabled;
+            set
             {
-                parent.Items.Remove(this);
+                if (value != isDisabled)
+                {
+                    isDisabled = value;
+                    OnPropertyChanged(nameof(IsDisabled));
+                }
             }
+        }
 
-            parent = menu;
+        public bool IsSkippedIfDisabled
+        {
+            get => isSkippedIfDisabled;
+            set
+            {
+                if (value != isSkippedIfDisabled)
+                {
+                    isSkippedIfDisabled = value;
+                    OnPropertyChanged(nameof(IsSkippedIfDisabled));
+                }
+            }
+        }
+
+        public dynamic Metadata { get; } = new Metadata();
+
+        public MenuItem(string text, string description)
+        {
+            Throw.IfNull(text, nameof(text));
+            Throw.IfNull(description, nameof(description));
+
+            Text = text;
+            Description = description;
+        }
+
+        public MenuItem(string text) : this(text, String.Empty)
+        {
         }
 
         // return true for the menu to process the control input
@@ -86,12 +164,9 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal virtual void OnDraw(Graphics graphics, ref float x, ref float y)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (!IsVisible)
-                return;
-            
-            Parent.Style.DrawItem(graphics, this, ref x, ref y);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         protected virtual void OnActivated(ActivatedEventArgs e)

@@ -3,8 +3,6 @@ namespace RAGENativeUI.Menus
     using System;
     using System.Collections.Generic;
 
-    using RAGENativeUI.Menus.Styles;
-
     // note: do not modifiy the Items collection directly(Add, Remove, Clear,...), changes will be overwritten once UpdateItems() is called
     public class ScrollableMenu : Menu
     {
@@ -14,34 +12,31 @@ namespace RAGENativeUI.Menus
 
         public ScrollableMenuPagesCollection Pages
         {
-            get { return pages; }
-            set
+            get
             {
-                Throw.IfNull(value, nameof(value));
-                
-                if (value == pages)
-                    return;
-                pages = value;
-                pages.SetMenu(this);
-                if (ScrollerItem is MenuItemPagesScroller scroller)
+                if (pages == null)
                 {
-                    scroller.Pages = pages;
+                    pages = new ScrollableMenuPagesCollection(this);
                 }
+                return pages;
             }
         }
-        public ScrollableMenuPage SelectedPage { get { return (ScrollerItem.SelectedIndex >= 0 && ScrollerItem.SelectedIndex < Pages.Count) ? Pages[ScrollerItem.SelectedIndex] : null; } set { ScrollerItem.SelectedIndex = Pages.IndexOf(value); } }
-        public MenuItemScroller ScrollerItem { get; }
 
-        public ScrollableMenu(string title, string subtitle, string scrollerItemText, MenuStyle style) : base(title, subtitle, style)
+        public ScrollableMenuPage SelectedPage
         {
-            Pages = new ScrollableMenuPagesCollection();
-            ScrollerItem = new MenuItemPagesScroller(scrollerItemText, pages);
-            ScrollerItem.SelectedIndexChanged += OnScrollerSelectedIndexChanged;
-            Items.Add(ScrollerItem);
+            get => (ScrollerItem.SelectedIndex >= 0 && ScrollerItem.SelectedIndex < Pages.Count) ? Pages[ScrollerItem.SelectedIndex] : null;
+            set => ScrollerItem.SelectedIndex = Pages.IndexOf(value);
         }
 
-        public ScrollableMenu(string title, string subtitle, string scrollerItemText) : this(title, subtitle, scrollerItemText, MenuStyle.Default)
+        public MenuItemScroller ScrollerItem { get; }
+
+        public ScrollableMenu(string title, string subtitle, string scrollerItemText) : base(title, subtitle)
         {
+            Throw.IfNull(scrollerItemText, nameof(scrollerItemText));
+
+            ScrollerItem = new MenuItemPagesScroller(scrollerItemText, Pages);
+            ScrollerItem.SelectedIndexChanged += OnScrollerSelectedIndexChanged;
+            Items.Add(ScrollerItem);
         }
 
         protected override void OnVisibleChanged(VisibleChangedEventArgs e)
@@ -65,6 +60,7 @@ namespace RAGENativeUI.Menus
             int newIndex = e.NewIndex;
             ScrollableMenuPage oldPage = (oldIndex >= 0 && oldIndex < Pages.Count) ? Pages[oldIndex] : null;
             ScrollableMenuPage newPage = (newIndex >= 0 && newIndex < Pages.Count) ? Pages[newIndex] : null;
+            OnPropertyChanged(nameof(SelectedPage));
             OnSelectedPageChanged(new SelectedPageChangedEventArgs(oldIndex, newIndex, oldPage, newPage));
             UpdateItems();
         }
@@ -86,7 +82,7 @@ namespace RAGENativeUI.Menus
 
         protected override void Dispose(bool disposing)
         {
-            if(!IsDisposed && disposing)
+            if (!IsDisposed && disposing)
             {
                 ScrollerItem.SelectedIndexChanged -= OnScrollerSelectedIndexChanged;
             }
@@ -101,13 +97,12 @@ namespace RAGENativeUI.Menus
 
             public ScrollableMenuPagesCollection Pages { get { return pages; } set { Throw.IfNull(value, nameof(value)); pages = value; } }
 
-            public MenuItemPagesScroller(string text, ScrollableMenuPagesCollection pages) : base(text)
+            public MenuItemPagesScroller(string text, ScrollableMenuPagesCollection pages) : base(text, String.Empty)
             {
                 Throw.IfNull(pages, nameof(pages));
 
                 Pages = pages;
             }
-
 
             public override int GetOptionsCount()
             {
@@ -130,8 +125,25 @@ namespace RAGENativeUI.Menus
         private string text;
         private List<MenuItem> items;
 
-        public string Text { get { return text; } set { Throw.IfNull(value, nameof(value)); text = value; } }
-        public List<MenuItem> Items { get { return items; } set { Throw.IfNull(value, nameof(value)); items = value; } }
+        public string Text
+        {
+            get => text;
+            set
+            {
+                Throw.IfNull(value, nameof(value));
+                text = value;
+            }
+        }
+
+        public List<MenuItem> Items
+        {
+            get => items;
+            set
+            {
+                Throw.IfNull(value, nameof(value));
+                items = value;
+            }
+        }
 
         public ScrollableMenuPage(string text)
         {
@@ -145,54 +157,43 @@ namespace RAGENativeUI.Menus
 
     public sealed class ScrollableMenuPagesCollection : BaseCollection<ScrollableMenuPage>
     {
-        public ScrollableMenu Menu { get; private set; }
+        public ScrollableMenu Owner { get; }
 
-        public ScrollableMenuPagesCollection() : base()
+        public ScrollableMenuPagesCollection(ScrollableMenu owner) : base()
         {
-        }
-
-        public ScrollableMenuPagesCollection(IEnumerable<ScrollableMenuPage> collection) : base(collection)
-        {
-        }
-
-        internal void SetMenu(ScrollableMenu menu)
-        {
-            Throw.InvalidOperationIf(Menu != null && Menu != menu, $"{nameof(ScrollableMenuPagesCollection)} already set to a {nameof(Menus.Menu)}.");
-            Throw.IfNull(menu, nameof(menu));
-
-            Menu = menu;
+            Owner = owner;
         }
 
         public override void Add(ScrollableMenuPage item)
         {
             base.Add(item);
-            Menu.UpdateItems();
+            Owner.UpdateItems();
         }
 
         public override void Insert(int index, ScrollableMenuPage item)
         {
             base.Insert(index, item);
-            Menu.UpdateItems();
+            Owner.UpdateItems();
         }
 
         public override bool Remove(ScrollableMenuPage item)
         {
             bool b = base.Remove(item);
             if (b)
-                Menu.UpdateItems();
+                Owner.UpdateItems();
             return b;
         }
 
         public override void RemoveAt(int index)
         {
             base.RemoveAt(index);
-            Menu.UpdateItems();
+            Owner.UpdateItems();
         }
 
         public override void Clear()
         {
             base.Clear();
-            Menu.UpdateItems();
+            Owner.UpdateItems();
         }
     }
 }

@@ -6,7 +6,6 @@ namespace RAGENativeUI
     using System.Windows.Forms;
 
     using Rage;
-    using Rage.Native;
 
     public class Control
     {
@@ -14,7 +13,7 @@ namespace RAGENativeUI
         private const uint DefaultHeldCooldown = 180;
 
         public Keys? Key { get; set; }
-        public ControllerButtons? Button { get; set; }
+        //public ControllerButtons? Button { get; set; }
         public GameControl? NativeControl { get; set; }
         public TimeStep[] HeldTimeSteps { get; set; }
 
@@ -23,27 +22,27 @@ namespace RAGENativeUI
         private uint heldCooldown;
         private uint nextHeldTime;
 
-        public Control(Keys? key = null, ControllerButtons? button = null, GameControl? nativeControl = null)
+        public Control(Keys? key = null, /*ControllerButtons? button = null,*/ GameControl? nativeControl = null)
         {
             Key = key;
-            Button = button;
+            //Button = button;
             NativeControl = nativeControl;
             HeldTimeSteps = DefaultHeldTimeSteps.ToArray();
         }
 
-        public Control(GameControl? nativeControl = null) : this(null, null, nativeControl)
+        public Control(GameControl? nativeControl = null) : this(null, /*null,*/ nativeControl)
         {
         }
 
         public bool IsJustPressed()
         {
-            if (Key.HasValue && Game.IsKeyDown(Key.Value))
+            if (Key.HasValue && /** REDACTED **/)
                 return true;
 
-            if (Button.HasValue && Game.IsControllerButtonDown(Button.Value))
-                return true;
+            //if (Button.HasValue && Game.IsControllerButtonDown(Button.Value))
+            //    return true;
 
-            if (NativeControl.HasValue && (NativeFunction.Natives.IsControlJustPressed<bool>(0, (int)NativeControl.Value) || NativeFunction.Natives.IsDisabledControlJustPressed<bool>(0, (int)NativeControl.Value)))
+            if (NativeControl.HasValue && (N.IsControlJustPressed(0, (int)NativeControl.Value) || N.IsDisabledControlJustPressed(0, (int)NativeControl.Value)))
                 return true;
 
             ResetHeld();
@@ -52,13 +51,13 @@ namespace RAGENativeUI
 
         public bool IsPressed()
         {
-            if (Key.HasValue && Game.IsKeyDownRightNow(Key.Value))
+            if (Key.HasValue && Game.IsKeyDown(Key.Value))
                 return true;
 
-            if (Button.HasValue && Game.IsControllerButtonDownRightNow(Button.Value))
-                return true;
+            //if (Button.HasValue && Game.IsControllerButtonDownRightNow(Button.Value))
+            //    return true;
 
-            if (NativeControl.HasValue && (NativeFunction.Natives.IsControlPressed<bool>(0, (int)NativeControl.Value) || NativeFunction.Natives.IsDisabledControlPressed<bool>(0, (int)NativeControl.Value)))
+            if (NativeControl.HasValue && (N.IsControlPressed(0, (int)NativeControl.Value) || N.IsDisabledControlPressed(0, (int)NativeControl.Value)))
                 return true;
 
             ResetHeld();

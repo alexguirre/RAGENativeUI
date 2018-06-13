@@ -8,67 +8,27 @@ namespace RAGENativeUI.Menus
     using Graphics = Rage.Graphics;
 
     /// <include file='..\Documentation\RAGENativeUI.Menus.MenuItemsCollection.xml' path='D/MenuItemsCollection/Doc/*' />
-    public class MenuItemsCollection : BaseCollection<MenuItem>, IDynamicHeightMenuComponent
+    public class MenuItemsCollection : BaseCollection<MenuItem>
     {
-        public Menu Menu { get; private set; }
+        public Menu Owner { get; }
 
-        public MenuItemsCollection() : base()
+        public MenuItemsCollection(Menu owner) : base()
         {
-        }
-
-        public MenuItemsCollection(IEnumerable<MenuItem> items) : base(items)
-        {
-        }
-
-        internal void SetMenu(Menu menu)
-        {
-            Throw.InvalidOperationIf(Menu != null && Menu != menu, $"{nameof(MenuItemsCollection)} already set to a {nameof(Menus.Menu)}.");
-            Throw.IfNull(menu, nameof(menu));
-
-            Menu = menu;
-        }
-
-        public float GetHeight()
-        {
-            float h = 0f;
-            Menu.ForEachItemOnScreen((item, index) => h += Menu.Style.ItemHeight);
-            return h;
-        }
-
-        public void Process()
-        {
-            int selectedIndex = Menu.SelectedIndex;
-            for (int i = 0; i < Count; i++)
-            {
-                MenuItem item = this[i];
-                item.IsSelected = i == selectedIndex;
-                item?.OnProcess();
-            }
-        }
-
-        public void Draw(Graphics g, ref float x, ref float y)
-        {
-            float currentX = x, currentY = y;
-            Menu.ForEachItemOnScreen((item, index) =>
-            {
-                item.OnDraw(g, ref currentX, ref currentY);
-            });
-            x = currentX;
-            y = currentY;
+            Owner = owner;
         }
 
         public override void Add(MenuItem item)
         {
             base.Add(item);
-            item.SetParentInternal(Menu);
-            Menu.UpdateVisibleItemsIndices();
+            item.Parent = Owner;
+            Owner.UpdateVisibleItemsIndices();
         }
 
         public override void Insert(int index, MenuItem item)
         {
             base.Insert(index, item);
-            item.SetParentInternal(Menu);
-            Menu.UpdateVisibleItemsIndices();
+            item.Parent = Owner;
+            Owner.UpdateVisibleItemsIndices();
         }
 
         public override bool Remove(MenuItem item)
@@ -76,8 +36,8 @@ namespace RAGENativeUI.Menus
             bool b = base.Remove(item);
             if (b)
             {
-                item.SetParentInternal(null);
-                Menu.UpdateVisibleItemsIndices();
+                item.Parent = null;
+                Owner.UpdateVisibleItemsIndices();
             }
             return b;
         }
@@ -86,20 +46,37 @@ namespace RAGENativeUI.Menus
         {
             if (index >= 0 && index < Count)
             {
-                this[index].SetParentInternal(null);
+                this[index].Parent = null;
             }
             base.RemoveAt(index);
-            Menu.UpdateVisibleItemsIndices();
+            Owner.UpdateVisibleItemsIndices();
         }
 
         public override void Clear()
         {
             foreach (MenuItem item in this)
             {
-                item.SetParentInternal(null);
+                item.Parent = null;
             }
             base.Clear();
-            Menu.UpdateVisibleItemsIndices();
+            Owner.UpdateVisibleItemsIndices();
+        }
+
+        public virtual void ClearAndAdd(IEnumerable<MenuItem> items)
+        {
+            foreach (MenuItem item in this)
+            {
+                item.Parent = null;
+            }
+            base.Clear();
+
+            foreach (MenuItem item in items)
+            {
+                base.Add(item);
+                item.Parent = Owner;
+            }
+
+            Owner.UpdateVisibleItemsIndices();
         }
 
         public MenuItem FindByText(string regexSearchPattern) => FindByText(regexSearchPattern, 0, Count - 1);

@@ -100,12 +100,12 @@ namespace RAGENativeUI.Scaleforms
 
     public class InstructionalButtonControlSlot : InstructionalButtonSlot
     {
-        public int Index { get; set; }
+        public int InputGroup { get; set; }
         public GameControl Control { get; set; }
 
-        public InstructionalButtonControlSlot(string label, int index, GameControl control) : base(label)
+        public InstructionalButtonControlSlot(string label, int inputGroup, GameControl control) : base(label)
         {
-            Index = index;
+            InputGroup = inputGroup;
             Control = control;
         }
 
@@ -115,7 +115,7 @@ namespace RAGENativeUI.Scaleforms
 
         public override string GetButtonId()
         {
-            return NativeFunction.Natives.GetControlInstructionalButton<string>(Index, (int)Control, 0);
+            return N.GetControlInstructionalButton(InputGroup, (int)Control, 0);
         }
     }
 

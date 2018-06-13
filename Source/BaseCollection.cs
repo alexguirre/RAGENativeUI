@@ -8,7 +8,7 @@ namespace RAGENativeUI
     public class BaseCollection<T> : IList<T>
     {
         /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="InternalList"]/*' />
-        protected List<T> InternalList { get; set; }
+        protected virtual List<T> InternalList { get; set; }
 
         /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Count"]/*' />
         public virtual int Count { get { return InternalList.Count; } }

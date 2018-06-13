@@ -2,9 +2,7 @@ namespace RAGENativeUI.Elements.TimerBars
 {
     using System.Drawing;
     
-    using Rage.Native;
-
-    public abstract class TimerBar : IScreenElement
+    public abstract class TimerBar
     {
         public static readonly float DefaultWidth = 0.157f;
         public static readonly float DefaultHeight = 0.036f;
@@ -19,7 +17,7 @@ namespace RAGENativeUI.Elements.TimerBars
 
         public TimerBar()
         {
-            float x = 0.5f + (NativeFunction.Natives.GetSafeZoneSize<float>() / 2f);
+            float x = 0.5f + (N.GetSafeZoneSize() / 2f);
             float y = x;
             Rectangle = ScreenRectangle.FromRelativeCoords(x - DefaultWidth * 0.5f, y - DefaultHeight * 0.5f, DefaultWidth, DefaultHeight);
             Color = Color.White;
@@ -32,9 +30,9 @@ namespace RAGENativeUI.Elements.TimerBars
 
             Sprite.Draw(bgTextureDictionary, bgTextureName, Rectangle, 0.0f, Color.FromArgb(140, 255, 255, 255));
 
-            NativeFunction.Natives.HideHudComponentThisFrame(6); // VehicleName
-            NativeFunction.Natives.HideHudComponentThisFrame(7); // AreaName
-            NativeFunction.Natives.HideHudComponentThisFrame(9); // StreetName
+            N.HideHudComponentThisFrame(6); // VehicleName
+            N.HideHudComponentThisFrame(7); // AreaName
+            N.HideHudComponentThisFrame(9); // StreetName
         }
     }
 }

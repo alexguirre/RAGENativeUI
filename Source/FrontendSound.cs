@@ -1,7 +1,5 @@
 namespace RAGENativeUI
 {
-    using System;
-
     public class FrontendSound
     {
         private string set;
@@ -18,7 +16,7 @@ namespace RAGENativeUI
             Name = name;
         }
 
-        public void Play() => Common.PlaySoundFrontend(Set, Name);
+        public void Play() => N.PlaySoundFrontend(-1, Set, Name, false);
     }
 }
 

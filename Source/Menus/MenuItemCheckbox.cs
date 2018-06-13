@@ -1,5 +1,7 @@
 namespace RAGENativeUI.Menus
 {
+    using System;
+
     public class MenuItemCheckbox : MenuItem
     {
         private bool isChecked;
@@ -13,15 +15,20 @@ namespace RAGENativeUI.Menus
             get { return isChecked; }
             set
             {
-                if (value == isChecked)
-                    return;
-
-                isChecked = value;
-                OnCheckedChanged(new CheckedChangedEventArgs(isChecked));
+                if (value != isChecked)
+                {
+                    isChecked = value;
+                    OnPropertyChanged(nameof(IsChecked));
+                    OnCheckedChanged(new CheckedChangedEventArgs(isChecked));
+                }
             }
         }
 
-        public MenuItemCheckbox(string text) : base(text)
+        public MenuItemCheckbox(string text, string description) : base(text, description)
+        {
+        }
+
+        public MenuItemCheckbox(string text) : this(text, String.Empty)
         {
         }
 

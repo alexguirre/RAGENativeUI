@@ -59,23 +59,13 @@ namespace RAGENativeUI.Properties {
                 resourceCulture = value;
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] menu_default {
             get {
                 object obj = ResourceManager.GetObject("menu_default", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] System_Runtime_CompilerServices_Unsafe {
-            get {
-                object obj = ResourceManager.GetObject("System_Runtime_CompilerServices_Unsafe", resourceCulture);
                 return ((byte[])(obj));
             }
         }

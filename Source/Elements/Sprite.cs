@@ -2,9 +2,7 @@ namespace RAGENativeUI.Elements
 {
     using System.Drawing;
     
-    using Rage.Native;
-
-    public class Sprite : IScreenElement
+    public class Sprite
     {
         public bool IsVisible { get; set; } = true;
         public ScreenRectangle Rectangle { get; set; }
@@ -16,8 +14,6 @@ namespace RAGENativeUI.Elements
         public Sprite(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, Color color)
         {
             Throw.IfNull(textureName, nameof(textureName));
-            Throw.InvalidOperationIfNot(textureDictionary.IsValid, $"The texture dictionary '{textureDictionary.Name}' is invalid.");
-            Throw.InvalidOperationIfNot(textureDictionary.Contains(textureName), $"The texture dictionary '{textureDictionary.Name}' does contain the texture '{textureName}'.");
 
             TextureDictionary = textureDictionary;
             TextureName = textureName;
@@ -38,7 +34,6 @@ namespace RAGENativeUI.Elements
             Draw(TextureDictionary, TextureName, Rectangle, Rotation, Color);
         }
 
-
         public static void Draw(TextureDictionary textureDictionary, string textureName, ScreenRectangle rectangle, float rotation, Color color)
         {
             Throw.IfNull(textureName, nameof(textureName));
@@ -46,7 +41,7 @@ namespace RAGENativeUI.Elements
             if (!textureDictionary.IsLoaded)
                 textureDictionary.Load();
 
-            NativeFunction.Natives.DrawSprite(textureDictionary.Name, textureName, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, rotation, color.R, color.G, color.B, color.A);
+            N.DrawSprite(textureDictionary.Name, textureName, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, rotation, color.R, color.G, color.B, color.A, false);
         }
     }
 }

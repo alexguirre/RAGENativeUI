@@ -9,8 +9,8 @@ namespace RAGENativeUI.ImGui
     using Rage;
     using Rage.Native;
     using Graphics = Rage.Graphics;
-    
-    public static partial class Gui
+
+    internal static partial class Gui
     {
         public delegate void GuiEventHandler();
         
@@ -47,7 +47,7 @@ namespace RAGENativeUI.ImGui
                 {
                     if (mouseTexture == null)
                     {
-                        mouseTexture = Game.CreateTextureFromFile("cursor_32_2.png");
+                        mouseTexture = /** REDACTED **/;
                     }
 
                     state.Graphics.DrawTexture(mouseTexture, state.MousePosition.X, state.MousePosition.Y, 32.0f, 32.0f);
@@ -59,7 +59,8 @@ namespace RAGENativeUI.ImGui
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void EnsureCall()
         {
-            Throw.InvalidOperationIf(state.Graphics == null, "Gui methods cannot be called from outside the Gui.Do event.");
+            if(state.Graphics == null)
+                throw new InvalidOperationException("Gui methods cannot be called from outside the Gui.Do event.");
         }
 
         public static Vector2 Mouse(bool disableGameControls = true)
@@ -70,10 +71,10 @@ namespace RAGENativeUI.ImGui
             if (!state.HasMouseBeenCalled)
             {
                 state.LastMouseState = state.CurrentMouseState;
-                state.CurrentMouseState = Game.GetMouseState();
+                state.CurrentMouseState = /** REDACTED **/;
                 state.HasMouseBeenCalled = true;
             }
-            state.MousePosition = new Vector2(state.CurrentMouseState.X, state.CurrentMouseState.Y);
+            state.MousePosition = /** REDACTED **/;
 
             if (disableGameControls)
             {
@@ -90,7 +91,8 @@ namespace RAGENativeUI.ImGui
 
         public static RectangleF BeginWindow(RectangleF position, string title)
         {
-            Throw.IfNull(title, nameof(title));
+            if (title == null)
+                throw new ArgumentNullException(nameof(title));
 
             EnsureCall();
             uint id = state.Id(true, false);
@@ -111,7 +113,7 @@ namespace RAGENativeUI.ImGui
 
             DrawText(titleBarRect, title, 20f);
 
-            DrawTextDebug(titleBarRect.Location, $"Window {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(titleBarRect.X, titleBarRect.Y), $"Window {id.ToString("X8")}", 18.0f);
 
             if (state.IsMouseEnabled)
             {
@@ -131,7 +133,7 @@ namespace RAGENativeUI.ImGui
                         position.Location = new PointF(newX, newY);
                     }
                 }
-                else if(!state.IsDraggingAny() && titleBarRect.Contains(state.MousePosition.X, state.MousePosition.Y) && Game.IsKeyDown(Keys.LButton))
+                else if(!state.IsDraggingAny() && titleBarRect.Contains(state.MousePosition.X, state.MousePosition.Y) && /** REDACTED **/)
                 {
                     state.Drag(id);
                 }
@@ -147,7 +149,8 @@ namespace RAGENativeUI.ImGui
 
         public static bool Button(RectangleF position, string text)
         {
-            Throw.IfNull(text, nameof(text));
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
 
             EnsureCall();
             uint id = state.Id();
@@ -165,7 +168,7 @@ namespace RAGENativeUI.ImGui
                 hovered = buttonRect.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if(hovered)
                 {
-                    down = Game.IsKeyDown(Keys.LButton);
+                    down = /** REDACTED **/;
                 }
             }
 
@@ -173,7 +176,7 @@ namespace RAGENativeUI.ImGui
             
             DrawText(drawPos, clip, text);
 
-            DrawTextDebug(drawPos.Location, $"Button {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(drawPos.X, drawPos.Y), $"Button {id.ToString("X8")}", 18.0f);
 
             return down;
         }
@@ -185,7 +188,8 @@ namespace RAGENativeUI.ImGui
 
         public static bool Toggle(RectangleF position, string text, bool value)
         {
-            Throw.IfNull(text, nameof(text));
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
 
             EnsureCall();
             uint id = state.Id();
@@ -204,7 +208,7 @@ namespace RAGENativeUI.ImGui
                 hovered = bgRect.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if (hovered)
                 {
-                    if (Game.IsKeyDown(Keys.LButton))
+                    if (Game.WasKeyJustPressed(Keys.LButton))
                     {
                         down = true;
                         value = !value;
@@ -221,14 +225,15 @@ namespace RAGENativeUI.ImGui
             
             DrawText(drawPos, clip, text, 15.0f, TextHorizontalAligment.Right, TextVerticalAligment.Center);
 
-            DrawTextDebug(drawPos.Location, $"Toggle {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(drawPos.X, drawPos.Y), $"Toggle {id.ToString("X8")}", 18.0f);
 
             return value;
         }
 
         public static void Label(RectangleF rectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Left, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
-            Throw.IfNull(text, nameof(text));
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
 
             EnsureCall();
             uint id = state.Id();
@@ -238,7 +243,7 @@ namespace RAGENativeUI.ImGui
 
             DrawText(drawPos, clip, text, fontSize, hAlign, vAlign);
 
-            DrawTextDebug(drawPos.Location, $"Label {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(drawPos.X, drawPos.Y), $"Label {id.ToString("X8")}", 18.0f);
             DrawRectangleDebug(drawPos);
         }
 
@@ -288,7 +293,7 @@ namespace RAGENativeUI.ImGui
                 else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
                     hovered = true;
-                    if (Game.IsKeyDown(Keys.LButton))
+                    if (Game.WasKeyJustPressed(Keys.LButton))
                     {
                         down = true;
                         state.Drag(id);
@@ -299,7 +304,7 @@ namespace RAGENativeUI.ImGui
             state.Graphics.DrawRectangle(RectangleF.Intersect(drawPos, clip), Color.FromArgb(230, 10, 10, 10));
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
-            DrawTextDebug(drawPos.Location, $"HSlider {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(drawPos.X, drawPos.Y), $"HSlider {id.ToString("X8")}", 18.0f);
 
             return value;
         }
@@ -350,7 +355,7 @@ namespace RAGENativeUI.ImGui
                 else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
                     hovered = true;
-                    if (Game.IsKeyDown(Keys.LButton))
+                    if (Game.WasKeyJustPressed(Keys.LButton))
                     {
                         down = true;
                         state.Drag(id);
@@ -361,7 +366,7 @@ namespace RAGENativeUI.ImGui
             state.Graphics.DrawRectangle(RectangleF.Intersect(drawPos, clip), Color.FromArgb(230, 10, 10, 10));
             state.Graphics.DrawRectangle(handleRect, hovered ? down ? Color.FromArgb(240, 95, 95, 95) : Color.FromArgb(240, 70, 70, 70) : Color.FromArgb(240, 55, 55, 55));
 
-            DrawTextDebug(drawPos.Location, $"VSlider {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(drawPos.X, drawPos.Y), $"VSlider {id.ToString("X8")}", 18.0f);
 
             return value;
         }
@@ -404,7 +409,7 @@ namespace RAGENativeUI.ImGui
             RectangleF bgRect = state.CurrentContainer.ConvertToRootCoords(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f)));
             state.Graphics.DrawRectangle(bgRect, Color.FromArgb(180, 25, 25, 25));
 
-            DrawTextDebug(bgRect.Location, $"ScrollView {id.ToString("X8")}", 18.0f);
+            DrawTextDebug(new Vector2(bgRect.X, bgRect.Y), $"ScrollView {id.ToString("X8")}", 18.0f);
 
             state.PushContainer(new RectangleF(position.X, position.Y, position.Width - (horizontalScrollbar ? ScrollbarsSize : 0.0f), position.Height - (verticalScrollbar ? ScrollbarsSize : 0.0f)), new PointF(-scrollPosition.X, -scrollPosition.Y));
 
@@ -424,7 +429,7 @@ namespace RAGENativeUI.ImGui
 
         private static void DrawText(RectangleF rectangle, RectangleF clipRectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Center, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
-            SizeF textSize = Graphics.MeasureText(text, "Consolas", fontSize);
+            RectangleF textSize = Graphics.MeasureText(text, "Consolas", fontSize);
             float x = 0.0f, y = 0.0f;
 
             switch (hAlign)
@@ -453,13 +458,13 @@ namespace RAGENativeUI.ImGui
                     break;
             }
 
-            state.Graphics.DrawText(text, "Consolas", fontSize, new PointF(x, y), Color.White, clipRectangle);
+            state.Graphics.DrawText(text, "Consolas", fontSize, new Vector2(x, y), Color.White, clipRectangle);
         }
 
         [Conditional("DEBUG")]
-        private static void DrawTextDebug(PointF position, string text, float fontSize = 15.0f)
+        private static void DrawTextDebug(Vector2 position, string text, float fontSize = 15.0f)
         {
-            if (Game.IsShiftKeyDownRightNow)
+            if (Game.IsShiftDown)
             {
                 state.Graphics.DrawText(text, "Consolas", fontSize, position, Color.Red);
             }
@@ -468,7 +473,7 @@ namespace RAGENativeUI.ImGui
         [Conditional("DEBUG")]
         private static void DrawRectangleDebug(RectangleF position)
         {
-            if (Game.IsShiftKeyDownRightNow)
+            if (Game.IsShiftDown)
             {
                 state.Graphics.DrawRectangle(position, Color.FromArgb(50, 255, 0, 0));
             }

@@ -3,6 +3,7 @@ namespace RAGENativeUI.Menus
     using System;
     using System.Linq;
     using System.Drawing;
+    using System.ComponentModel;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
@@ -10,10 +11,10 @@ namespace RAGENativeUI.Menus
     using Rage.Native;
     using Graphics = Rage.Graphics;
 
-    using RAGENativeUI.Menus.Styles;
+    using RAGENativeUI.Menus.Themes;
 
     /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Doc/*' />
-    public class Menu : IDisposable
+    public class Menu : IDisposable, INotifyPropertyChanged
     {
         public delegate void ForEachItemOnScreenDelegate(MenuItem item, int index);
 
@@ -38,97 +39,127 @@ namespace RAGENativeUI.Menus
         });
 
 
-        private IMenuStyle style;
-        private MenuBanner banner;
-        private MenuSubtitle subtitle;
-        private MenuBackground background;
+        private bool isDisposed;
+        private MenuTheme theme;
+        private string title;
+        private string subtitle;
         private MenuItemsCollection items;
-        private MenuUpDownDisplay upDownDisplay;
-        private MenuDescription description;
+        private string currentDescription;
+        private string descriptionOverride;
         private int selectedIndex;
+        private MenuControls controls = new MenuControls();
+        private MenuSoundsSet soundsSet = new MenuSoundsSet();
+        private bool disableControlsActions = true;
+        private GameControl[] allowedControls = DefaultAllowedControls.ToArray();
+        private int minItemOnScreenIndex;
+        private int maxItemOnScreenIndex;
         private int maxItemsOnScreen = 10;
         private bool isVisible;
+        private bool justOpened;
+
         private Menu currentParent, currentChild;
 
+        public event PropertyChangedEventHandler PropertyChanged;
         public event TypedEventHandler<Menu, SelectedItemChangedEventArgs> SelectedItemChanged;
         public event TypedEventHandler<Menu, VisibleChangedEventArgs> VisibleChanged;
 
-        public bool IsDisposed { get; private set; }
-        public PointF Location { get; set; }
-        public IMenuStyle Style
+        public bool IsDisposed
         {
-            get => style;
+            get => isDisposed;
+            private set
+            {
+                if(value != isDisposed)
+                {
+                    isDisposed = value;
+                    OnPropertyChanged(nameof(IsDisposed));
+                }
+            }
+        }
+
+        public MenuTheme Theme
+        {
+            get => theme;
             set
             {
                 Throw.IfNull(value, nameof(value));
-                style = value;
+                if (value != theme)
+                {
+                    theme = value;
+                    OnPropertyChanged(nameof(Theme));
+                }
             }
         }
 
-        public MenuBanner Banner
+        public string Title
         {
-            get => banner;
+            get => title;
             set
             {
-                banner = value;
-                banner?.SetMenu(this);
+                Throw.IfNull(value, nameof(value));
+                if (value != title)
+                {
+                    title = value;
+                    OnPropertyChanged(nameof(Title));
+                }
             }
         }
 
-        public MenuSubtitle Subtitle
+        public string Subtitle   // TODO: in default theme, add Counter properties
         {
             get => subtitle;
             set
             {
-                subtitle = value;
-                subtitle?.SetMenu(this);
-            }
-        }
-
-        public MenuBackground Background
-        {
-            get => background;
-            set
-            {
-                background = value;
-                background?.SetMenu(this);
+                Throw.IfNull(value, nameof(value));
+                if (value != subtitle)
+                {
+                    subtitle = value;
+                    OnPropertyChanged(nameof(Subtitle));
+                }
             }
         }
 
         public MenuItemsCollection Items
         {
-            get => items;
-            set
+            get
             {
-                Throw.IfNull(value, nameof(value));
-                items = value;
-                items.SetMenu(this);
+                if(items == null)
+                {
+                    items = CreateItemsInstance();
+                }
+                return items;
             }
         }
 
-        public MenuUpDownDisplay UpDownDisplay
+        public string CurrentDescription
         {
-            get => upDownDisplay;
-            set
+            get => currentDescription;
+            private set
             {
-                upDownDisplay = value;
-                upDownDisplay?.SetMenu(this);
+                if (value != currentDescription)
+                {
+                    currentDescription = value;
+                    OnPropertyChanged(nameof(CurrentDescription));
+                }
             }
         }
 
-        public MenuDescription Description
+        public string DescriptionOverride
         {
-            get => description;
+            get => descriptionOverride;
             set
             {
-                description = value;
-                description?.SetMenu(this);
+                if (value != descriptionOverride)
+                {
+                    descriptionOverride = value;
+                    CurrentDescription = descriptionOverride;
+                    OnPropertyChanged(nameof(DescriptionOverride));
+                }
             }
         }
 
         public int SelectedIndex
         {
-            get { return selectedIndex; }
+            get => selectedIndex;
             set
             {
                 int newIndex = MathHelper.Clamp(value, 0, Items.Count);
@@ -138,39 +169,128 @@ namespace RAGENativeUI.Menus
                     int oldIndex = selectedIndex;
                     selectedIndex = newIndex;
                     UpdateVisibleItemsIndices();
+                    UpdateCurrentDescription();
+                    OnPropertyChanged(nameof(SelectedIndex));
+                    OnPropertyChanged(nameof(SelectedItem));
                     OnSelectedItemChanged(new SelectedItemChangedEventArgs(oldIndex, newIndex, Items[oldIndex], Items[newIndex]));
                 }
             }
         }
-        public MenuItem SelectedItem { get { return (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null; } set { SelectedIndex = Items.IndexOf(value); } }
-        public MenuControls Controls { get; set; }
-        public MenuSoundsSet SoundsSet { get; set; }
-        public bool DisableControlsActions { get; set; } = true;
+
+        public MenuItem SelectedItem
+        {
+            get => (selectedIndex >= 0 && selectedIndex < Items.Count) ? Items[selectedIndex] : null;
+            set => SelectedIndex = Items.IndexOf(value);
+        }
+
+        public MenuControls Controls
+        {
+            get => controls;
+            set
+            {
+                if (value != controls)
+                {
+                    controls = value;
+                    OnPropertyChanged(nameof(Controls));
+                }
+            }
+        }
+
+        public MenuSoundsSet SoundsSet
+        {
+            get => soundsSet;
+            set
+            {
+                if (value != soundsSet)
+                {
+                    soundsSet = value;
+                    OnPropertyChanged(nameof(SoundsSet));
+                }
+            }
+        }
+
+        public bool DisableControlsActions
+        {
+            get => disableControlsActions;
+            set
+            {
+                if(value != disableControlsActions)
+                {
+                    disableControlsActions = value;
+                    OnPropertyChanged(nameof(DisableControlsActions));
+                }
+            }
+        }
+
         /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="AllowedControls"]/*' />
-        public GameControl[] AllowedControls { get; set; } = DefaultAllowedControls.ToArray();
-        protected int MinVisibleItemIndex { get; set; }
-        protected int MaxVisibleItemIndex { get; set; }
+        public GameControl[] AllowedControls
+        {
+            get => allowedControls;
+            set
+            {
+                if(value != allowedControls)
+                {
+                    allowedControls = value;
+                    OnPropertyChanged(nameof(AllowedControls));
+                }
+            }
+        }
+
+        public int MinItemOnScreenIndex
+        {
+            get => minItemOnScreenIndex;
+            private set
+            {
+                if (value != minItemOnScreenIndex)
+                {
+                    minItemOnScreenIndex = value;
+                    OnPropertyChanged(nameof(MinItemOnScreenIndex));
+                }
+            }
+        }
+
+        public int MaxItemOnScreenIndex
+        {
+            get => maxItemOnScreenIndex;
+            private set
+            {
+                if (value != maxItemOnScreenIndex)
+                {
+                    maxItemOnScreenIndex = value;
+                    OnPropertyChanged(nameof(MaxItemOnScreenIndex));
+                }
+            }
+        }
+
         public int MaxItemsOnScreen
         {
-            get { return maxItemsOnScreen; }
+            get => maxItemsOnScreen;
             set
             {
                 Throw.IfNegative(value, nameof(value));
-                
-                maxItemsOnScreen = value;
-                UpdateVisibleItemsIndices();
+
+                if (value != maxItemsOnScreen)
+                {
+                    maxItemsOnScreen = value;
+                    UpdateVisibleItemsIndices();
+                    OnPropertyChanged(nameof(MaxItemsOnScreen));
+                }
             }
         }
-        public bool IsAnyItemOnScreen { get { return IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible); } }
+
+        public bool IsAnyItemOnScreen => true;//IsVisible && Items.Count > 0;// && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible);
+
         public bool IsVisible
         {
-            get { return isVisible; }
+            get => isVisible;
             private set
             {
-                if (value == isVisible)
-                    return;
-                isVisible = value;
-                OnVisibleChanged(new VisibleChangedEventArgs(isVisible));
+                if (value != isVisible)
+                {
+                    isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                    OnVisibleChanged(new VisibleChangedEventArgs(isVisible));
+                }
             }
         }
         // returns true if this menu is visible or any child menu in the hierarchy is visible
@@ -181,30 +301,32 @@ namespace RAGENativeUI.Menus
                 return IsVisible || (currentChild != null && currentChild.IsAnyChildMenuVisible);
             }
         }
-        public dynamic Metadata { get; } = new Metadata();
-        public bool JustOpened { get; private set; }
 
-        public Menu(string title, string subtitle, MenuStyle style)
+        public bool JustOpened
         {
-            Throw.IfNull(style, nameof(style));
-
-            Style = style;
-            Location = Style.InitialMenuLocation;
-            Banner = new MenuBanner(title);
-            Subtitle = new MenuSubtitle(subtitle);
-            Background = new MenuBackground();
-            Items = new MenuItemsCollection();
-            UpDownDisplay = new MenuUpDownDisplay();
-            Description = new MenuDescription();
-
-            Controls = new MenuControls();
-            SoundsSet = new MenuSoundsSet();
-
-            MenusManager.AddMenu(this);
+            get => justOpened;
+            private set
+            {
+                if (value != justOpened)
+                {
+                    justOpened = value;
+                    OnPropertyChanged(nameof(JustOpened));
+                }
+            }
         }
 
-        public Menu(string title, string subtitle) : this(title, subtitle, MenuStyle.Default)
+        public dynamic Metadata { get; } = new Metadata();
+
+        public Menu(string title, string subtitle)
         {
+            Throw.IfNull(title, nameof(title));
+            Throw.IfNull(subtitle, nameof(subtitle));
+
+            Title = title;
+            Subtitle = subtitle;
+            Theme = new MenuDefaultTheme(this);
+
+            MenusManager.AddMenu(this);
         }
 
         public void Show() => Show(null);
@@ -238,7 +360,7 @@ namespace RAGENativeUI.Menus
             currentChild = null;
             IsVisible = false;
         }
-
+        
         // only called if the Menu is visible
         protected internal virtual void OnProcess()
         {
@@ -255,21 +377,25 @@ namespace RAGENativeUI.Menus
             }
 
             ProcessInput();
-
-
-            foreach (IMenuComponent c in Style.EnumerateComponentsInDrawOrder(this))
+            
+            for (int i = 0; i < Items.Count; i++)
             {
-                c?.Process();
+                MenuItem item = Items[i];
+                if (item != null)
+                {
+                    item.IsSelected = i == SelectedIndex;
+                    item.OnProcess();
+                }
             }
         }
 
         protected virtual void DisableControls()
         {
-            NativeFunction.Natives.DisableAllControlActions(0);
+            N.DisableAllControlActions(0);
 
             for (int i = 0; i < AllowedControls.Length; i++)
             {
-                NativeFunction.Natives.EnableControlAction(0, (int)AllowedControls[i], true);
+                N.EnableControlAction(0, (int)AllowedControls[i], true);
             }
         }
 
@@ -392,49 +518,49 @@ namespace RAGENativeUI.Menus
 
         internal void UpdateVisibleItemsIndices()
         {
-            if (MaxItemsOnScreen == 0)
+            if (MaxItemsOnScreen == 0 || Items.All(i => !i.IsVisible))
             {
-                MinVisibleItemIndex = -1;
-                MaxVisibleItemIndex = -1;
+                MinItemOnScreenIndex = -1;
+                MaxItemOnScreenIndex = -1;
                 return;
             }
             else if (MaxItemsOnScreen >= Items.Count)
             {
-                MinVisibleItemIndex = 0;
-                MaxVisibleItemIndex = Items.Count - 1;
+                MinItemOnScreenIndex = 0;
+                MaxItemOnScreenIndex = Items.Count - 1;
                 return;
             }
 
             int index = SelectedIndex;
 
-            if (index < MinVisibleItemIndex)
+            if (index < MinItemOnScreenIndex)
             {
-                MinVisibleItemIndex = index;
+                MinItemOnScreenIndex = index;
                 int count = 0;
-                for (int i = MinVisibleItemIndex; i < Items.Count; i++)
+                for (int i = MinItemOnScreenIndex; i < Items.Count; i++)
                 {
                     if (Items[i].IsVisible)
                     {
                         count++;
                         if (count == MaxItemsOnScreen)
                         {
-                            MaxVisibleItemIndex = i;
+                            MaxItemOnScreenIndex = i;
                         }
                     }
                 }
             }
-            else if (index > MaxVisibleItemIndex)
+            else if (index > MaxItemOnScreenIndex)
             {
-                MaxVisibleItemIndex = index;
+                MaxItemOnScreenIndex = index;
                 int count = 0;
-                for (int i = MaxVisibleItemIndex; i >= 0; i--)
+                for (int i = MaxItemOnScreenIndex; i >= 0; i--)
                 {
                     if (Items[i].IsVisible)
                     {
                         count++;
                         if (count == MaxItemsOnScreen)
                         {
-                            MinVisibleItemIndex = i;
+                            MinItemOnScreenIndex = i;
                         }
                     }
                 }
@@ -442,14 +568,14 @@ namespace RAGENativeUI.Menus
             else
             {
                 int count = 0;
-                for (int i = MinVisibleItemIndex; i < Items.Count; i++)
+                for (int i = MinItemOnScreenIndex; i < Items.Count; i++)
                 {
                     if (Items[i].IsVisible)
                     {
                         count++;
                         if (count == MaxItemsOnScreen)
                         {
-                            MaxVisibleItemIndex = i;
+                            MaxItemOnScreenIndex = i;
                         }
                     }
                 }
@@ -458,31 +584,39 @@ namespace RAGENativeUI.Menus
             int min = GetMinVisibleItemIndex();
             int max = GetMaxVisibleItemIndex();
 
-            if (MinVisibleItemIndex < min)
-                MinVisibleItemIndex = min;
-            if (MaxVisibleItemIndex > max)
-                MaxVisibleItemIndex = max;
+            if (MinItemOnScreenIndex < min)
+                MinItemOnScreenIndex = min;
+            if (MaxItemOnScreenIndex > max)
+                MaxItemOnScreenIndex = max;
 
-            Throw.InvalidOperationIf(MaxVisibleItemIndex < MinVisibleItemIndex, $"MaxVisibleItemIndex({MaxVisibleItemIndex}) < MinVisibleItemIndex({MinVisibleItemIndex}): Shouldn't happen, notify a RAGENativeUI developer.");
+            Throw.InvalidOperationIf(MaxItemOnScreenIndex < MinItemOnScreenIndex, $"MaxVisibleItemIndex({MaxItemOnScreenIndex}) < MinVisibleItemIndex({MinItemOnScreenIndex}): this should never happen.");
         }
 
-        // only called if the Menu is visible
-        protected internal virtual void OnDraw(Graphics graphics)
+        internal void UpdateCurrentDescription()
         {
-            float x = Location.X, y = Location.Y;
-
-            foreach (IMenuComponent c in Style.EnumerateComponentsInDrawOrder(this))
+            if(DescriptionOverride == null)
             {
-                c?.Draw(graphics, ref x, ref y);
+                MenuItem item = SelectedItem;
+                if(item != null && item.IsVisible)
+                {
+                    CurrentDescription = item.Description;
+                }
+                else
+                {
+                    CurrentDescription = null;
+                }
             }
         }
 
         /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="ForEachItemOnScreen"]/*' />
         public void ForEachItemOnScreen(ForEachItemOnScreenDelegate action)
         {
+            if (MinItemOnScreenIndex == -1 || MaxItemOnScreenIndex == -1)
+                return;
+
             if (Items.Count > 0 && IsAnyItemOnScreen)
             {
-                for (int i = MinVisibleItemIndex; i <= MaxVisibleItemIndex; i++)
+                for (int i = MinItemOnScreenIndex; i <= MaxItemOnScreenIndex; i++)
                 {
                     MenuItem item = Items[i];
 
@@ -537,6 +671,16 @@ namespace RAGENativeUI.Menus
             }
 
             return max;
+        }
+
+        protected virtual MenuItemsCollection CreateItemsInstance()
+        {
+            return new MenuItemsCollection(this);
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         protected virtual void OnSelectedItemChanged(SelectedItemChangedEventArgs e)

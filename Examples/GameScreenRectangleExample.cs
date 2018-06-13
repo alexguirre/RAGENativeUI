@@ -1,10 +1,13 @@
 namespace Examples
 {
+    using System.Drawing;
+
     using Rage;
     using Rage.Native;
     using Rage.Attributes;
 
     using RAGENativeUI;
+    using RAGENativeUI.Elements;
 
     internal static class GameScreenRectangleExample
     {
@@ -27,20 +30,20 @@ namespace Examples
 
                     fromRelative = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, w, h);
 
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
                         w += 0.5f * Game.FrameTime;
                         h += 0.5f * Game.FrameTime;
                     }
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Subtract))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         w -= 0.5f * Game.FrameTime;
                         h -= 0.5f * Game.FrameTime;
                     }
                     
-                    NativeFunction.Natives.DrawRect(fromAbsolute.X, fromAbsolute.Y, fromAbsolute.Width, fromAbsolute.Height, 255, 0, 0, 100);
+                    Rect.Draw(fromAbsolute, Color.FromArgb(255, 0, 0, 100));
                     
-                    NativeFunction.Natives.DrawRect(fromRelative.X, fromRelative.Y, fromRelative.Width, fromRelative.Height, 0, 255, 0, 100);
+                    Rect.Draw(fromRelative, Color.FromArgb(0, 255, 0, 100));
                 }
             });
         }

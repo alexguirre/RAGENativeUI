@@ -905,6 +905,11 @@ namespace RAGENativeUI
                 { 0x889B892E, "BombCamFlash" },
                 { 0xCA702997, "BombCam01" },
                 { 0x0733A4F3, "WarpCheckpoint" },
+                { 0x19741B21, "TransformFlash" },
+                { 0x429B504F, "SmugglerFlash" },
+                { 0x1BEE873A, "SmugglerCheckpoint01" },
+                { 0x0E976C8C, "SmugglerCheckpoint02" },
+                { 0x6CDD6A6B, "OrbitalCannon" },
             };
         }
         #endregion

@@ -11,6 +11,9 @@ namespace RAGENativeUI
     {
         public static void Initialize()
         {
+            // disabled
+            return;
+
             Game.LogTrivialDebug($"Initializing {nameof(AssemblyResolver)}");
 
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
@@ -24,7 +27,6 @@ namespace RAGENativeUI
 
             switch (assemblyName)
             {
-                case "System.Runtime.CompilerServices.Unsafe": return Assembly.Load(Resources.System_Runtime_CompilerServices_Unsafe);
                 default: return null;
             }
         }

@@ -40,7 +40,7 @@ namespace Examples
                     
                     instructionalButtons.Draw();
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         if (instructionalButtons.Layout == InstructionalButtons.LayoutType.Horizontal)
                             instructionalButtons.Layout = InstructionalButtons.LayoutType.Vertical;
@@ -48,12 +48,12 @@ namespace Examples
                             instructionalButtons.Layout = InstructionalButtons.LayoutType.Horizontal;
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.U))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
                     {
                         instructionalButtons.BackgroundColor = Color.FromArgb(MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255));
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.I))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
                     {
                         instructionalButtons.BackgroundColor = Color.FromArgb(80, 0, 0, 0);
                     }

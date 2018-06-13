@@ -24,51 +24,51 @@ namespace Examples
 
                     bigMessage.Draw();
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.D1))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D1))
                     {
                         bigMessage.ShowMissionPassedMessage("message");
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.D2))
+                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D2))
                     {
                         bigMessage.ShowMissionPassedOldMessage("message", "subtitle");
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.D3))
+                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D3))
                     {
                         bigMessage.ShowColoredShard("message", "subtitle", HudColor.RedDark, HudColor.White);
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.D4))
+                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D4))
                     {
                         bigMessage.ShowMpMessageLarge("message", "subtitle");
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.D5))
+                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D5))
                     {
                         bigMessage.ShowRankupMessage("message", "subtitle", 42);
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.D6))
+                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D6))
                     {
                         bigMessage.ShowSimpleShard("message", "subtitle");
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.D7))
+                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D7))
                     {
                         bigMessage.ShowWeaponPurchasedMessage("message", "weapon name", WeaponHash.AssaultSMG);
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Y))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         bigMessage.OutTransition = MathHelper.Choose((BigMessage.OutTransitionType[])Enum.GetValues(typeof(BigMessage.OutTransitionType)));
                         Game.DisplayNotification(bigMessage.OutTransition.ToString());
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.H))
+                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.H))
                     {
                         bigMessage.Hide();
                     }
 
-                    if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Add))
+                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
                         bigMessage.SetVerticlePositionOverride(y += 0.5f * Game.FrameTime);
                     }
-                    else if (Game.IsKeyDownRightNow(System.Windows.Forms.Keys.Subtract))
+                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         bigMessage.SetVerticlePositionOverride(y -= 0.5f * Game.FrameTime);
                     }
