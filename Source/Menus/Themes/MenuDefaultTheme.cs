@@ -1,6 +1,7 @@
 namespace RAGENativeUI.Menus.Themes
 {
     using System.ComponentModel;
+
     using Rage;
 
     public class MenuDefaultTheme : MenuTheme

@@ -3,8 +3,8 @@ namespace RAGENativeUI.Menus.Themes
     public abstract class MenuTheme
     {
         public Menu Menu { get; }
-
-        public MenuTheme(Menu menu)
+        
+        public MenuTheme(Menu menu) // TODO: document that all MenuThemes need a constructor with this same signature for Menu.SetTheme to work
         {
             Menu = menu;
         }

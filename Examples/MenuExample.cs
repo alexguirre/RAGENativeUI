@@ -21,7 +21,7 @@ namespace Examples
             GameFiber.StartNew(() =>
             {
                 Menu menu = new Menu("title", "SUBTITLE");
-                menu.Theme = new MenuDebugTheme(menu);
+                menu.SetTheme<MenuDebugTheme>();
 
                 menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
                 menu.Items.Add(new MenuItemCheckbox("cb #0") { IsChecked = true, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
@@ -43,11 +43,11 @@ namespace Examples
                 menu.Items.Add(new MenuItemEnumScroller<PedFormationType>("skipped disabled item #1") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true });
 
                 Menu subMenu = new Menu("SubMenu", "SUB!");
-                subMenu.Theme = menu.Theme.Clone(subMenu);
+                subMenu.CopyThemeFrom(menu);
                 for (int i = 1; i <= 999; i++)
                 {
                     Menu subSubMenu = new Menu("SubSubMenu", "SUB! SUB! #" + i);
-                    subSubMenu.Theme = menu.Theme.Clone(subSubMenu);
+                    subSubMenu.CopyThemeFrom(menu);
                     subSubMenu.Items.Add(new MenuItem("An item in the SubSubMenu #" + i));
                     subMenu.Items.Add(new MenuItem("item #" + i) { BindedMenu = subSubMenu });
                 }
@@ -101,7 +101,7 @@ namespace Examples
                 }
 
                 ScrollableMenu scrollableMenu = new ScrollableMenu("Scrollable Menu", "Subtitle", "Page");
-                scrollableMenu.Theme = menu.Theme.Clone(scrollableMenu);
+                scrollableMenu.CopyThemeFrom(menu);
 
                 scrollableMenu.Pages.Add(CreatePageForScroller("First Page"));
                 scrollableMenu.Pages.Add(CreatePageForScroller("Second Page"));

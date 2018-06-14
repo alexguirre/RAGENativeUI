@@ -2,14 +2,11 @@ namespace RAGENativeUI.Menus
 {
     using System;
     using System.Linq;
-    using System.Drawing;
+    using System.Reflection;
     using System.ComponentModel;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
     using Rage;
-    using Rage.Native;
-    using Graphics = Rage.Graphics;
 
     using RAGENativeUI.Menus.Themes;
 
@@ -79,7 +76,7 @@ namespace RAGENativeUI.Menus
         public MenuTheme Theme
         {
             get => theme;
-            set
+            private set
             {
                 Throw.IfNull(value, nameof(value));
                 if (value != theme)
@@ -649,6 +646,32 @@ namespace RAGENativeUI.Menus
             return count;
         }
         
+        public T SetTheme<T>() where T : MenuTheme
+        {
+            ConstructorInfo ctor = typeof(T).GetConstructor(new[] { typeof(Menu) });
+            Throw.InvalidOperationIf(ctor == null, $"{nameof(T)} doesn't have a public constructor that takes a {nameof(Menu)}");
+
+            T t = (T)ctor.Invoke(new object[] { this });
+            Theme = t;
+            return t;
+        }
+
+        public T CopyThemeFrom<T>(T themeTemplate) where T : MenuTheme
+        {
+            Throw.IfNull(themeTemplate, nameof(themeTemplate));
+
+            T t = (T)themeTemplate.Clone(this);
+            Theme = t;
+            return t;
+        }
+
+        public MenuTheme CopyThemeFrom(Menu menu)
+        {
+            Throw.IfNull(menu, nameof(menu));
+            
+            return CopyThemeFrom(menu.Theme);
+        }
+
         private int GetMinItemWithInputIndex() => GetMinItemIndexForCondition(m => m.IsVisible && !(m.IsDisabled && m.IsSkippedIfDisabled));
         private int GetMaxItemWithInputIndex() => GetMaxItemIndexForCondition(m => m.IsVisible && !(m.IsDisabled && m.IsSkippedIfDisabled));
         private int GetMinVisibleItemIndex() => GetMinItemIndexForCondition(m => m.IsVisible);
