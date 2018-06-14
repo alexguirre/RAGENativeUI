@@ -287,7 +287,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public bool IsAnyItemOnScreen => true;//IsVisible && Items.Count > 0;// && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible);
+        public bool IsAnyItemOnScreen => IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible);
 
         public bool IsVisible
         {
