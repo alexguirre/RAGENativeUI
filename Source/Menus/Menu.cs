@@ -284,7 +284,17 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public bool IsAnyItemOnScreen => IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible);
+        public int NumberOfItemsOnScreen // TODO: invoke PropertyChanged for NumberOfItemsOnScreen
+        {
+            get
+            {
+                int count = 0;
+                ForEachItemOnScreen((item, index) => count++);
+                return count;
+            }
+        }
+
+        public bool IsAnyItemOnScreen => IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible); // TODO: invoke PropertyChanged for IsAnyItemOnScreen
 
         public bool IsVisible
         {
@@ -300,7 +310,7 @@ namespace RAGENativeUI.Menus
             }
         }
         // returns true if this menu is visible or any child menu in the hierarchy is visible
-        public bool IsAnyChildMenuVisible
+        public bool IsAnyChildMenuVisible // TODO: invoke PropertyChanged for IsAnyChildMenuVisible
         {
             get
             {
@@ -637,13 +647,6 @@ namespace RAGENativeUI.Menus
                     }
                 }
             }
-        }
-
-        public int GetOnScreenItemsCount()
-        {
-            int count = 0;
-            ForEachItemOnScreen((item, index) => count++);
-            return count;
         }
         
         public T SetTheme<T>() where T : MenuTheme
