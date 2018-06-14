@@ -51,8 +51,8 @@ namespace RAGENativeUI.Menus
         private MenuSoundsSet soundsSet = new MenuSoundsSet();
         private bool disableControlsActions = true;
         private GameControl[] allowedControls = DefaultAllowedControls.ToArray();
-        private int minItemOnScreenIndex;
-        private int maxItemOnScreenIndex;
+        private int itemsOnScreenStartIndex;
+        private int itemsOnScreenEndIndex;
         private int maxItemsOnScreen = 10;
         private bool isVisible;
         private bool justOpened;
@@ -236,32 +236,41 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public int MinItemOnScreenIndex
+        /// <summary>
+        /// Gets the index of the first item on-screen.
+        /// </summary>
+        public int ItemsOnScreenStartIndex
         {
-            get => minItemOnScreenIndex;
+            get => itemsOnScreenStartIndex;
             private set
             {
-                if (value != minItemOnScreenIndex)
+                if (value != itemsOnScreenStartIndex)
                 {
-                    minItemOnScreenIndex = value;
-                    OnPropertyChanged(nameof(MinItemOnScreenIndex));
+                    itemsOnScreenStartIndex = value;
+                    OnPropertyChanged(nameof(ItemsOnScreenStartIndex));
                 }
             }
         }
 
-        public int MaxItemOnScreenIndex
+        /// <summary>
+        /// Gets the index of the last item on-screen.
+        /// </summary>
+        public int ItemsOnScreenEndIndex
         {
-            get => maxItemOnScreenIndex;
+            get => itemsOnScreenEndIndex;
             private set
             {
-                if (value != maxItemOnScreenIndex)
+                if (value != itemsOnScreenEndIndex)
                 {
-                    maxItemOnScreenIndex = value;
-                    OnPropertyChanged(nameof(MaxItemOnScreenIndex));
+                    itemsOnScreenEndIndex = value;
+                    OnPropertyChanged(nameof(ItemsOnScreenEndIndex));
                 }
             }
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of items on-screen.
+        /// </summary>
         public int MaxItemsOnScreen
         {
             get => maxItemsOnScreen;
@@ -520,47 +529,47 @@ namespace RAGENativeUI.Menus
         {
             if (MaxItemsOnScreen == 0 || Items.All(i => !i.IsVisible))
             {
-                MinItemOnScreenIndex = -1;
-                MaxItemOnScreenIndex = -1;
+                ItemsOnScreenStartIndex = -1;
+                ItemsOnScreenEndIndex = -1;
                 return;
             }
             else if (MaxItemsOnScreen >= Items.Count)
             {
-                MinItemOnScreenIndex = 0;
-                MaxItemOnScreenIndex = Items.Count - 1;
+                ItemsOnScreenStartIndex = 0;
+                ItemsOnScreenEndIndex = Items.Count - 1;
                 return;
             }
 
             int index = SelectedIndex;
 
-            if (index < MinItemOnScreenIndex)
+            if (index < ItemsOnScreenStartIndex)
             {
-                MinItemOnScreenIndex = index;
+                ItemsOnScreenStartIndex = index;
                 int count = 0;
-                for (int i = MinItemOnScreenIndex; i < Items.Count; i++)
+                for (int i = ItemsOnScreenStartIndex; i < Items.Count; i++)
                 {
                     if (Items[i].IsVisible)
                     {
                         count++;
                         if (count == MaxItemsOnScreen)
                         {
-                            MaxItemOnScreenIndex = i;
+                            ItemsOnScreenEndIndex = i;
                         }
                     }
                 }
             }
-            else if (index > MaxItemOnScreenIndex)
+            else if (index > ItemsOnScreenEndIndex)
             {
-                MaxItemOnScreenIndex = index;
+                ItemsOnScreenEndIndex = index;
                 int count = 0;
-                for (int i = MaxItemOnScreenIndex; i >= 0; i--)
+                for (int i = ItemsOnScreenEndIndex; i >= 0; i--)
                 {
                     if (Items[i].IsVisible)
                     {
                         count++;
                         if (count == MaxItemsOnScreen)
                         {
-                            MinItemOnScreenIndex = i;
+                            ItemsOnScreenStartIndex = i;
                         }
                     }
                 }
@@ -568,14 +577,14 @@ namespace RAGENativeUI.Menus
             else
             {
                 int count = 0;
-                for (int i = MinItemOnScreenIndex; i < Items.Count; i++)
+                for (int i = ItemsOnScreenStartIndex; i < Items.Count; i++)
                 {
                     if (Items[i].IsVisible)
                     {
                         count++;
                         if (count == MaxItemsOnScreen)
                         {
-                            MaxItemOnScreenIndex = i;
+                            ItemsOnScreenEndIndex = i;
                         }
                     }
                 }
@@ -584,12 +593,12 @@ namespace RAGENativeUI.Menus
             int min = GetMinVisibleItemIndex();
             int max = GetMaxVisibleItemIndex();
 
-            if (MinItemOnScreenIndex < min)
-                MinItemOnScreenIndex = min;
-            if (MaxItemOnScreenIndex > max)
-                MaxItemOnScreenIndex = max;
+            if (ItemsOnScreenStartIndex < min)
+                ItemsOnScreenStartIndex = min;
+            if (ItemsOnScreenEndIndex > max)
+                ItemsOnScreenEndIndex = max;
 
-            Throw.InvalidOperationIf(MaxItemOnScreenIndex < MinItemOnScreenIndex, $"MaxVisibleItemIndex({MaxItemOnScreenIndex}) < MinVisibleItemIndex({MinItemOnScreenIndex}): this should never happen.");
+            Throw.InvalidOperationIf(ItemsOnScreenEndIndex < ItemsOnScreenStartIndex, $"ItemsOnScreenEndIndex({ItemsOnScreenEndIndex}) < ItemsOnScreenStartIndex({ItemsOnScreenStartIndex}): this should never happen.");
         }
 
         internal void UpdateCurrentDescription()
@@ -611,12 +620,12 @@ namespace RAGENativeUI.Menus
         /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Member[@name="ForEachItemOnScreen"]/*' />
         public void ForEachItemOnScreen(ForEachItemOnScreenDelegate action)
         {
-            if (MinItemOnScreenIndex == -1 || MaxItemOnScreenIndex == -1)
+            if (ItemsOnScreenStartIndex == -1 || ItemsOnScreenEndIndex == -1)
                 return;
 
             if (Items.Count > 0 && IsAnyItemOnScreen)
             {
-                for (int i = MinItemOnScreenIndex; i <= MaxItemOnScreenIndex; i++)
+                for (int i = ItemsOnScreenStartIndex; i <= ItemsOnScreenEndIndex; i++)
                 {
                     MenuItem item = Items[i];
 
