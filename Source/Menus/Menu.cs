@@ -340,7 +340,7 @@ namespace RAGENativeUI.Menus
 
             Title = title;
             Subtitle = subtitle;
-            Theme = new MenuDefaultTheme(this);
+            SetTheme<MenuDefaultTheme>();
 
             MenusManager.AddMenu(this);
         }
