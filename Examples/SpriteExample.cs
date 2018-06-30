@@ -11,14 +11,6 @@ namespace Examples
 
     internal static class SpriteExample
     {
-        struct KeyPos
-        {
-            public Vector3 pos;
-            public Vector3 up;
-            public Vector3 forward;
-            public float roll;
-        }
-
         [ConsoleCommand(Name = "SpriteExample", Description = "Example showing the Sprite class.")]
         private static void Command()
         {
@@ -39,8 +31,6 @@ namespace Examples
 
             GameFiber.StartNew(() =>
             {
-                KeyPos[] positions = new KeyPos[125];
-
                 float pitch = 0.0f, roll = 0.0f, yaw = 0.0f, scaleX = 1.0f, scaleY = 1.0f, zoom = 0.0f;
 
                 while (true)

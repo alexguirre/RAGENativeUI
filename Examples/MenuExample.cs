@@ -44,12 +44,15 @@ namespace Examples
 
                 Menu subMenu = new Menu("SubMenu", "SUB!");
                 subMenu.CopyThemeFrom(menu);
+                MenuDebugTheme subMenuTheme = subMenu.Theme as MenuDebugTheme;
                 for (int i = 1; i <= 999; i++)
                 {
                     Menu subSubMenu = new Menu("SubSubMenu", "SUB! SUB! #" + i);
                     subSubMenu.CopyThemeFrom(menu);
                     subSubMenu.Items.Add(new MenuItem("An item in the SubSubMenu #" + i));
-                    subMenu.Items.Add(new MenuItem("item #" + i) { BindedMenu = subSubMenu });
+                    MenuItem item = new MenuItem("item #" + i) { BindedMenu = subSubMenu };
+                    subMenu.Items.Add(item);
+                    subMenuTheme.SetItemTextColor(item, Color.FromArgb(255, MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256)));
                 }
 
                 menu.Items.Add(new MenuItem("item with binded menu #0") { BindedMenu = subMenu, Description = "If you click this item it opens a menu with a LOT of items." });

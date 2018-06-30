@@ -70,7 +70,7 @@ namespace RAGENativeUI.Menus.Themes
         private void DrawItem(Graphics g, MenuItem item, ref float y)
         {
             string t = item.IsSelected ? (" > " + item.Text) : item.Text;
-            Color c = item.IsDisabled ? Color.DimGray : Color.White;
+            Color c = item.IsDisabled ? Color.DimGray : GetItemTextColor(item);
 
             /** REDACTED **/
             switch (item)
@@ -89,6 +89,22 @@ namespace RAGENativeUI.Menus.Themes
             
             y += 4.0f + itemFont.Height;
         }
+
+        public void SetItemTextColor(MenuItem item, Color color)
+        {
+            item.Metadata[ItemTextColorMetadataKey] = color;
+        }
+
+        public Color GetItemTextColor(MenuItem item)
+        {
+            if (item.Metadata.TryGetValue<Color>(ItemTextColorMetadataKey, out Color c))
+            {
+                return c;
+            }
+            return Color.White;
+        }
+
+        public const string ItemTextColorMetadataKey = "TextColor";
     }
 }
 

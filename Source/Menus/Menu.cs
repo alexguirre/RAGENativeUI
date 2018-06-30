@@ -148,7 +148,7 @@ namespace RAGENativeUI.Menus
                 if (value != descriptionOverride)
                 {
                     descriptionOverride = value;
-                    CurrentDescription = descriptionOverride;
+                    UpdateCurrentDescription();
                     OnPropertyChanged(nameof(DescriptionOverride));
                 }
             }
@@ -621,6 +621,10 @@ namespace RAGENativeUI.Menus
                 {
                     CurrentDescription = null;
                 }
+            }
+            else
+            {
+                CurrentDescription = DescriptionOverride;
             }
         }
 
