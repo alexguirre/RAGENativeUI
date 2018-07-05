@@ -63,7 +63,7 @@
     <Compile Include="TimerBarsExample.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Source\RAGENativeUI.csproj">
+    <ProjectReference Include="..\Source\RAGENativeUI\RAGENativeUI.csproj">
       <Project>{fc3d6fad-db94-4c47-9b48-3b783398bdc5}</Project>
       <Name>RAGENativeUI</Name>
       <Private>False</Private>

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAGENativeUI", "RAGENativeUI.csproj", "{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAGENativeUI", "RAGENativeUI\RAGENativeUI.csproj", "{FC3D6FAD-DB94-4C47-9B48-3B783398BDC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "..\Examples\Examples.csproj", "{2E92E425-D307-4902-9DCE-BE8ADC5686FA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RAGENativeUI.Helper", "..\RAGENativeUI.Helper\RAGENativeUI.Helper.vcxproj", "{823850B4-62FA-45F0-A024-DE1E5476AFE0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RAGENativeUI.Helper", "RAGENativeUI.Helper\RAGENativeUI.Helper.vcxproj", "{823850B4-62FA-45F0-A024-DE1E5476AFE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

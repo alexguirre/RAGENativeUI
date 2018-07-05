@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
-      <HintPath>..\Dependencies\RagePluginHookSDK.dll</HintPath>
+      <HintPath>..\..\Dependencies\RagePluginHookSDK.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -133,7 +133,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(ProjectDir)
-..\PostBuild\InjectModuleInitializer.exe "$(TargetPath)"</PostBuildEvent>
+..\..\PostBuild\InjectModuleInitializer.exe "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

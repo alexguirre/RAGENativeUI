@@ -7,13 +7,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{70dce3a2-88ea-463d-9949-64fd1c26ad18}</ProjectGuid>
-    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2017.9.26.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
     <RootNamespace>Documentation</RootNamespace>
     <Name>Documentation</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>.NET Framework 4.6.2</FrameworkVersion>
+    <FrameworkVersion>.NET Framework 4.7</FrameworkVersion>
     <OutputPath>Build\</OutputPath>
     <HtmlHelpName>Documentation</HtmlHelpName>
     <Language>en-US</Language>
@@ -25,16 +25,16 @@
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
     <CleanIntermediates>True</CleanIntermediates>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\Source\RAGENativeUI.csproj" xmlns="" />
+      <DocumentationSource sourceFile="..\..\Source\RAGENativeUI\RAGENativeUI.csproj" />
     </DocumentationSources>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
-    <SyntaxFilters>Standard</SyntaxFilters>
+    <SyntaxFilters>C#, Visual Basic, Managed C++</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <PresentationStyle>VS2013</PresentationStyle>
-    <Preliminary>False</Preliminary>
+    <Preliminary>True</Preliminary>
     <NamingMethod>MemberName</NamingMethod>
     <HelpTitle>RAGENativeUI Documentation</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
@@ -51,7 +51,7 @@
     <CopyrightHref>
     </CopyrightHref>
     <RootNamespaceTitle>Reference</RootNamespaceTitle>
-    <Year>2017</Year>
+    <Year>2017-2018</Year>
     <WarnOnMissingSourceContext>False</WarnOnMissingSourceContext>
     <ProjectSummary>
     </ProjectSummary>
