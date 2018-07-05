@@ -53,6 +53,7 @@
     <Compile Include="Gui\Gui.State.cs" />
     <Compile Include="InstructionalButtonsExample.cs" />
     <Compile Include="MenuExample.cs" />
+    <Compile Include="Misc.cs" />
     <Compile Include="MissionPassedScreenExample.cs" />
     <Compile Include="TimeCycleModifierExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

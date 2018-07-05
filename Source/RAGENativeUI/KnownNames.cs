@@ -1139,6 +1139,10 @@ namespace RAGENativeUI
                 "HUD_COLOUR_SPECIAL_RACE_SERIES_DARK",
                 "HUD_COLOUR_CS",
                 "HUD_COLOUR_CS_DARK",
+                "HUD_COLOUR_TECH_GREEN",
+                "HUD_COLOUR_TECH_GREEN_DARK",
+                "HUD_COLOUR_TECH_RED",
+                "HUD_COLOUR_TECH_GREEN_VERY_DARK",
             };
         }
 #endregion

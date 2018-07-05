@@ -930,6 +930,22 @@ namespace RAGENativeUI
         /// Represents the HUD color "HUD_COLOUR_CS_DARK".
         /// </summary>
         CsDark = 219,
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TECH_GREEN".
+        /// </summary>
+        TechGreen = 220,
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TECH_GREEN_DARK".
+        /// </summary>
+        TechGreenDark = 221,
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TECH_RED".
+        /// </summary>
+        TechRed = 222,
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TECH_GREEN_VERY_DARK".
+        /// </summary>
+        TechGreenVeryDark = 223,
     }
 }
 
