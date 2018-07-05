@@ -19,12 +19,12 @@ namespace RAGENativeUI.Memory
             {
                 ushort newSize = (ushort)(Mods.Size + increaseCountIfFull);
                 Mods.Size = newSize;
-                Mod* newOffset = (Mod*)GameMemory.Allocator->Allocate(sizeof(Mod) * newSize);
+                Mod* newOffset = (Mod*)RNUI.Helper.Allocate(sizeof(Mod) * newSize);
                 for (ushort i = 0; i < Mods.Count; i++)
                 {
                     newOffset[i] = Mods.Items[i];
                 }
-                GameMemory.Allocator->Free((IntPtr)Mods.Items);
+                RNUI.Helper.Free((IntPtr)Mods.Items);
                 Mods.Items = newOffset;
             }
 

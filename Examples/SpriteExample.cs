@@ -14,23 +14,41 @@ namespace Examples
         [ConsoleCommand(Name = "SpriteExample", Description = "Example showing the Sprite class.")]
         private static void Command()
         {
-            Sprite sprite = new Sprite("3dtextures", "mpgroundlogo_cops", ScreenRectangle.FromAbsoluteCoords(1920f / 2f - 64f, 1080f / 2f - 64f, 128f, 128f));
-            Game.LogTrivial($"TextureDictionary: {sprite.TextureDictionary.Name}");
-            Game.LogTrivial($"TextureName: {sprite.TextureName}");
-            Game.LogTrivial($"Rectangle: {sprite.Rectangle}");
-            Game.LogTrivial($"Rotation: {sprite.Rotation}");
-            Game.LogTrivial($"Color: {sprite.Color}");
-            sprite.IsVisible = true;
-
-            Sprite3D s = new Sprite3D("3dtextures", "mpgroundlogo_cops");
-            s.BackFace = true;
-            s.UV = new UVCoords(0.25f, 0.25f, 0.75f, 0.75f);
-
-            Rect3D r = new Rect3D();
-            r.BackFace = true;
-
             GameFiber.StartNew(() =>
             {
+                Bitmap bmp = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+                Font f = new Font(FontFamily.GenericSansSerif, 15.0f);
+                Pen pe = new Pen(Color.Aquamarine, 5.0f);
+                Brush b = new SolidBrush(Color.Green);
+                g.Clear(Color.Red);
+                g.DrawEllipse(pe, 50.0f, 50.0f, 40.0f, 25.0f);
+                g.DrawString("Custom texture from Bitmap!", f, b, new PointF(5.0f, 5.0f));
+
+                f.Dispose();
+                pe.Dispose();
+                b.Dispose();
+                g.Dispose();
+
+                CustomTextureReference tex = CustomTextureReference.FromBitmap("my_own_texture", bmp, false);
+
+                bmp.Dispose();
+
+                Sprite sprite = new Sprite(tex.Dictionary, tex.Name, ScreenRectangle.FromAbsoluteCoords(1920f / 2f - 64f, 1080f / 2f - 64f, 128f, 128f));
+                Game.LogTrivial($"TextureDictionary: {sprite.TextureDictionary.Name}");
+                Game.LogTrivial($"TextureName: {sprite.TextureName}");
+                Game.LogTrivial($"Rectangle: {sprite.Rectangle}");
+                Game.LogTrivial($"Rotation: {sprite.Rotation}");
+                Game.LogTrivial($"Color: {sprite.Color}");
+                sprite.IsVisible = true;
+
+                Sprite3D s = new Sprite3D(tex.Dictionary, tex.Name);
+                s.BackFace = true;
+                s.UV = new UVCoords(0.25f, 0.25f, 0.75f, 0.75f);
+
+                Rect3D r = new Rect3D();
+                r.BackFace = true;
+
                 float pitch = 0.0f, roll = 0.0f, yaw = 0.0f, scaleX = 1.0f, scaleY = 1.0f, zoom = 0.0f;
 
                 while (true)

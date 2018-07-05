@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="RAGENativeUI.Helper.cpp" />
+    <ClCompile Include="Headers.cpp" />
+    <ClCompile Include="Hooking.Patterns.cpp" />
+    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="sysUseAllocator.cpp">
+      <Filter>rage</Filter>
+    </ClCompile>
+    <ClCompile Include="Hashing.cpp">
+      <Filter>rage</Filter>
+    </ClCompile>
+    <ClCompile Include="UsingAllocator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers.h" />
+    <ClInclude Include="strStreamingModule.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="atArray.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="sysMemAllocator.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h" />
+    <ClInclude Include="sysUseAllocator.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="pgDictionary.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="atHashValue.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="Hashing.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="grcTextureDX11.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="grcTextureFactoryDX11.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="CStreaming.h">
+      <Filter>rage</Filter>
+    </ClInclude>
+    <ClInclude Include="UsingAllocator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="rage">
+      <UniqueIdentifier>{d68b8c4c-bece-4a8e-b9c7-3eaf98a8f5bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Hooking.Patterns.h" />
+  </ItemGroup>
+</Project>

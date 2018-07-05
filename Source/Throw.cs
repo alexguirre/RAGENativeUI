@@ -73,6 +73,30 @@ namespace RAGENativeUI
             }
         }
 
+        public static void IfNegativeOrZero(int value, string parameterName)
+        {
+            if (value <= 0)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, value, $"Negative or zero values are invalid.");
+            }
+        }
+
+        public static void IfNegativeOrZero(float value, string parameterName)
+        {
+            if (value <= 0.0f)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, value, $"Negative or zero values are invalid.");
+            }
+        }
+
+        public static void IfNegativeOrZero(decimal value, string parameterName)
+        {
+            if (value <= 0.0m)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, value, $"Negative or zero values are invalid.");
+            }
+        }
+
         public static void InvalidOperationIf(bool value, string message = null)
         {
             if (value)

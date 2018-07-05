@@ -55,8 +55,8 @@ namespace RAGENativeUI.Memory
             // TODO: should improve NewTimeCycleModifier performance, it takes around 20ms to execute this(depending on how many mods there are, etc.)
             // improving sorting algorithms will probably help
             // not a priority for now
-            CTimeCycleModifier* modifier = (CTimeCycleModifier*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier)).ToPointer();
-            modifier->Mods.Items = (CTimeCycleModifier.Mod*)GameMemory.Allocator->Allocate(sizeof(CTimeCycleModifier.Mod) * mods.Length);
+            CTimeCycleModifier* modifier = (CTimeCycleModifier*)RNUI.Helper.Allocate(sizeof(CTimeCycleModifier)).ToPointer();
+            modifier->Mods.Items = (CTimeCycleModifier.Mod*)RNUI.Helper.Allocate(sizeof(CTimeCycleModifier.Mod) * mods.Length);
             modifier->Mods.Size = (ushort)mods.Length;
             modifier->Mods.Count = (ushort)mods.Length;
             for (ushort i = 0; i < mods.Length; i++)
@@ -75,14 +75,14 @@ namespace RAGENativeUI.Memory
             entry->Item = modifier;
 
             ushort newUnkArraySize = Modifiers.Count;
-            float* newUnkArrayOffset = (float*)GameMemory.Allocator->Allocate(sizeof(float) * newUnkArraySize);
+            float* newUnkArrayOffset = (float*)RNUI.Helper.Allocate(sizeof(float) * newUnkArraySize);
             for (short i = 0; i < UnkArray.Count; i++)
             {
                 newUnkArrayOffset[i] = UnkArray.Items[i];
             }
             UnkArray.Count = newUnkArraySize;
             UnkArray.Size = newUnkArraySize;
-            GameMemory.Allocator->Free((IntPtr)UnkArray.Items);
+            RNUI.Helper.Free((IntPtr)UnkArray.Items);
             UnkArray.Items = newUnkArrayOffset;
 
             SortModifiers();
@@ -117,12 +117,12 @@ namespace RAGENativeUI.Memory
             {
                 ushort newSize = (ushort)(Modifiers.Size + increaseCountIfFull);
                 Modifiers.Size = newSize;
-                CTimeCycleModifier** newItems = (CTimeCycleModifier**)GameMemory.Allocator->Allocate(8 * newSize);
+                CTimeCycleModifier** newItems = (CTimeCycleModifier**)RNUI.Helper.Allocate(8 * newSize);
                 for (short i = 0; i < Modifiers.Count; i++)
                 {
                     newItems[i] = Modifiers.Items[i];
                 }
-                GameMemory.Allocator->Free((IntPtr)Modifiers.Items);
+                RNUI.Helper.Free((IntPtr)Modifiers.Items);
                 Modifiers.Items = newItems;
             }
 
@@ -137,12 +137,12 @@ namespace RAGENativeUI.Memory
             {
                 ushort newSize = (ushort)(SortedModifiers.Size + increaseCountIfFull);
                 SortedModifiers.Size = newSize;
-                atHashSortedArray_CTimeCycleModifier.Entry* newEntries = (atHashSortedArray_CTimeCycleModifier.Entry*)GameMemory.Allocator->Allocate(sizeof(atHashSortedArray_CTimeCycleModifier.Entry) * newSize);
+                atHashSortedArray_CTimeCycleModifier.Entry* newEntries = (atHashSortedArray_CTimeCycleModifier.Entry*)RNUI.Helper.Allocate(sizeof(atHashSortedArray_CTimeCycleModifier.Entry) * newSize);
                 for (short i = 0; i < SortedModifiers.Count; i++)
                 {
                     newEntries[i] = SortedModifiers.Entries[i];
                 }
-                GameMemory.Allocator->Free((IntPtr)SortedModifiers.Entries);
+                RNUI.Helper.Free((IntPtr)SortedModifiers.Entries);
                 SortedModifiers.Entries = newEntries;
             }
 

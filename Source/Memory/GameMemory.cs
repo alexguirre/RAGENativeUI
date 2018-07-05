@@ -8,7 +8,6 @@ namespace RAGENativeUI.Memory
     {
         public static CAnimPostFXManager** AnimPostFXManager { get; private set; }
         public static CTimeCycle* TimeCycle { get; private set; }
-        public static sysMemAllocator* Allocator { get; private set; }
 
         internal static bool Init()
         {
@@ -24,12 +23,6 @@ namespace RAGENativeUI.Memory
             {
                 address = address + *(int*)(address + 3) + 7;
                 TimeCycle = (CTimeCycle*)address;
-            }
-            
-            if (AssertAddress(nameof(sysMemAllocator), address = Game.FindPattern("48 8D 1D ?? ?? ?? ?? A8 08 75 1D 83 C8 08 48 8B CB 89 05 ?? ?? ?? ??")))
-            {
-                address = address + *(int*)(address + 3) + 7;
-                Allocator = (sysMemAllocator*)address;
             }
             
             return !anyAssertFailed;

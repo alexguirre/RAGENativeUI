@@ -53,6 +53,7 @@
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="CustomTextureReference.cs" />
     <Compile Include="Elements\Rect3D.cs" />
     <Compile Include="Elements\Sprite3D.cs" />
     <Compile Include="Elements\TimerBars\LabeledTimerBar.cs" />
@@ -68,7 +69,6 @@
     <Compile Include="Memory\CTimeCycle.cs" />
     <Compile Include="Memory\GameFunctions.cs" />
     <Compile Include="Memory\GameMemory.cs" />
-    <Compile Include="Memory\sysMemAllocator.cs" />
     <Compile Include="Menus\EventArgs.cs" />
     <Compile Include="Menus\MenuItemsCollection.cs" />
     <Compile Include="Menus\ScrollableMenu.cs" />
@@ -83,6 +83,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RNUI.cs" />
+    <Compile Include="TextureReference.cs" />
     <Compile Include="Throw.cs" />
     <Compile Include="TimeCycleModifier.cs" />
     <Compile Include="Scaleforms\BigMessage.cs" />
