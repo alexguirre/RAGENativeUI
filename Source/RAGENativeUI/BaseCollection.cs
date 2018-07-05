@@ -3,20 +3,30 @@ namespace RAGENativeUI
     using System;
     using System.Collections;
     using System.Collections.Generic;
-
-    /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Doc/*' />
+    
     public class BaseCollection<T> : IList<T>
     {
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="InternalList"]/*' />
+        /// <summary>
+        /// Gets or sets the <see cref="List{T}"/> used internally by this <see cref="BaseCollection{T}"/>.
+        /// </summary>
         protected virtual List<T> InternalList { get; set; }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Count"]/*' />
+        /// <summary>
+        /// Gets the number of elements contained in this <see cref="BaseCollection{T}"/>.
+        /// </summary>
         public virtual int Count { get { return InternalList.Count; } }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Count"]/*' />
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="BaseCollection{T}"/> is read-only.
+        /// </summary>
         public virtual bool IsReadOnly { get { return false; } }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Indexer"]/*' />
+        /// <summary>
+        /// Gets or sets the element at the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns>The item at the specified index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"/>
         public virtual T this[int index]
         {
             get
@@ -33,13 +43,18 @@ namespace RAGENativeUI
             }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Ctor1"]/*' />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseCollection{T}"/> class that is empty.
+        /// </summary>
         public BaseCollection()
         {
             InternalList = new List<T>();
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Ctor2"]/*' />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseCollection{T}"/> class that contains elements copied from the specified collection.
+        /// </summary>
+        /// <param name="collection"></param>
         public BaseCollection(IEnumerable<T> collection)
         {
             Throw.IfNull(collection, nameof(collection));
@@ -47,63 +62,97 @@ namespace RAGENativeUI
             InternalList = new List<T>(collection);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Add"]/*' />
+        /// <summary>
+        /// Adds an item to this <see cref="BaseCollection{T}" />.
+        /// </summary>
+        /// <param name="item"></param>
         public virtual void Add(T item)
         {
             InternalList.Add(item);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Insert"]/*' />
+        /// <summary>
+        /// Inserts an item to this <see cref="BaseCollection{T}"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+        /// <param name="item">The object to insert into this <see cref="BaseCollection{T}"/>.</param>
         public virtual void Insert(int index, T item)
         {
             InternalList.Insert(index, item);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="RemoveAt"]/*' />
+        /// <summary>
+        /// Removes the item at the specified index from this <see cref="BaseCollection{T}"/>.
+        /// </summary>
+        /// <param name="index"></param>
         public virtual void RemoveAt(int index)
         {
             T i = InternalList[index];
             InternalList.RemoveAt(index);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Remove"]/*' />
+        /// <summary>
+        /// Removes the first occurrence of the specified item from this <see cref="BaseCollection{T}"/>.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns><see langword="true"/> if the <paramref name="item"/> was successfully removed from this <see cref="BaseCollection{T}"/>; otherwise, <see langword="false"/>. This method also returns <see langword="false"/> if <paramref name="item"/> is not found in the original <see cref="BaseCollection{T}"/>.</returns>
         public virtual bool Remove(T item)
         {
             bool result = InternalList.Remove(item);
             return result;
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Clear"]/*' />
+        /// <summary>
+        /// Removes all items from this <see cref="BaseCollection{T}"/>.
+        /// </summary>
         public virtual void Clear()
         {
             InternalList.Clear();
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="Contains"]/*' />
+        /// <summary>
+        /// Determines whether this <see cref="BaseCollection{T}"/> contains a specific item.
+        /// </summary>
+        /// <param name="item">The item to locate in this <see cref="BaseCollection{T}"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="item"/> is found in this <see cref="BaseCollection{T}"/>; otherwise, <see langword="false"/>.</returns>
         public virtual bool Contains(T item)
         {
             return InternalList.Contains(item);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="CopyTo"]/*' />
+        /// <summary>
+        /// Copies the elements of this <see cref="BaseCollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from this <see cref="BaseCollection{T}"/>. The <see cref="Array" /> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         public virtual void CopyTo(T[] array, int arrayIndex)
         {
             InternalList.CopyTo(array, arrayIndex);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="IndexOf"]/*' />
+        /// <summary>
+        /// Searches for the specified item and returns the zero-based index of the first occurrence within the entire <see cref="BaseCollection{T}"/>.
+        /// </summary>
+        /// <param name="item">The item to search for.</param>
+        /// <returns>The zero-based index of the first occurrence of the item within the entire <see cref="BaseCollection{T}"/>, if found; otherwise, –1.</returns>
         public virtual int IndexOf(T item)
         {
             return InternalList.IndexOf(item);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="GetEnumerator"]/*' />
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public virtual IEnumerator<T> GetEnumerator()
         {
             return InternalList.GetEnumerator();
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.BaseCollection.xml' path='D/BaseCollection/Member[@name="GetEnumerator"]/*' />
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return InternalList.GetEnumerator();

@@ -90,7 +90,7 @@ namespace Examples
                     s += $"Hash: 0x{effect.Hash.ToString("X8")}\r\n";
                     s += $"Index: {effect.Index}\r\n";
                     s += $"Active: {effect.IsActive}\r\n";
-                    s += $"Valid: {effect.IsValid()}\r\n";
+                    s += $"Valid: {effect.IsValid}\r\n";
                     s += $"Memory Address: {effect.MemoryAddress.ToString("X")}\r\n";
                     s += $"Layers Count: {effect.Layers.Count}\r\n";
                     s += $"Blend:\r\n";

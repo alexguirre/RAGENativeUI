@@ -6,8 +6,7 @@ namespace RAGENativeUI.Menus
     using System.Text.RegularExpressions;
     
     using Graphics = Rage.Graphics;
-
-    /// <include file='..\Documentation\RAGENativeUI.Menus.MenuItemsCollection.xml' path='D/MenuItemsCollection/Doc/*' />
+    
     public class MenuItemsCollection : BaseCollection<MenuItem>
     {
         public Menu Owner { get; }

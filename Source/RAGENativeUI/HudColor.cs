@@ -3,24 +3,39 @@ namespace RAGENativeUI
     using System.Drawing;
 
     using Rage.Native;
-
-    /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Doc/*' />
+    
     public static class HudColorExtensions
     {
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="GetColor"]/*' />
+        /// <summary>
+        /// Gets the RGBA value of the specified HUD color.
+        /// </summary>
+        ///<param name="hudColor">The HUD color.</param>
         public static Color GetColor(this HudColor hudColor)
         {
             N.GetHudColour((int)hudColor, out int r, out int g, out int b, out int a);
             return Color.FromArgb(a, r, g, b);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="SetColor"]/*' />
+        /// <summary>
+        /// Sets the RGBA value of the specified HUD color.
+        /// </summary>
+        /// <param name="hudColor">The HUD color.</param>
+        /// <param name="color">The new color value.</param>
         public static void SetColor(this HudColor hudColor, Color color)
         {
             N.SetHudColour((int)hudColor, color.R, color.G, color.B, color.A);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColorExtensions/Member[@name="GetName"]/*' />
+        /// <summary>
+        /// Gets the real name of the specified HUD color. For example, for <see cref="HudColor.PureWhite"/> it will return "HUD_COLOUR_PURE_WHITE".
+        /// </summary>
+        /// <remarks>
+        /// One of the uses of the returned name is changing the color of the text from notifications, help messages or subtitles.
+        /// <code language="C#" title="Usage example in a notification">
+        /// Game.DisplayHelp($"~{HudColor.Red.GetName()}~Now this text is red!");
+        /// </code>
+        /// </remarks>
+        /// <param name="hudColor">The HUD color.</param>
         public static string GetName(this HudColor hudColor)
         {
             int i = (int)hudColor;
@@ -30,448 +45,890 @@ namespace RAGENativeUI
         }
     }
 
-    /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Doc/*' />
+    /// <summary>
+    /// Defines identifiers that represent the game HUD colors.
+    /// </summary>
     public enum HudColor
     {
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PureWhite"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PURE_WHITE".
+        /// </summary>
         PureWhite = 0,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="White"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_WHITE".
+        /// </summary>
         White = 1,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Black"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_BLACK".
+        /// </summary>
         Black = 2,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Grey"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GREY".
+        /// </summary>
         Grey = 3,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GreyLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GREYLIGHT".
+        /// </summary>
         GreyLight = 4,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GreyDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GREYDARK".
+        /// </summary>
         GreyDark = 5,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Red"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_RED".
+        /// </summary>
         Red = 6,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="RedLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_REDLIGHT".
+        /// </summary>
         RedLight = 7,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="RedDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_REDDARK".
+        /// </summary>
         RedDark = 8,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Blue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_BLUE".
+        /// </summary>
         Blue = 9,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="BlueLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_BLUELIGHT".
+        /// </summary>
         BlueLight = 10,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="BlueDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_BLUEDARK".
+        /// </summary>
         BlueDark = 11,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Yellow"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_YELLOW".
+        /// </summary>
         Yellow = 12,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="YellowLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_YELLOWLIGHT".
+        /// </summary>
         YellowLight = 13,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="YellowDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_YELLOWDARK".
+        /// </summary>
         YellowDark = 14,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Orange"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_ORANGE".
+        /// </summary>
         Orange = 15,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="OrangeLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_ORANGELIGHT".
+        /// </summary>
         OrangeLight = 16,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="OrangeDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_ORANGEDARK".
+        /// </summary>
         OrangeDark = 17,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Green"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GREEN".
+        /// </summary>
         Green = 18,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GreenLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GREENLIGHT".
+        /// </summary>
         GreenLight = 19,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GreenDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GREENDARK".
+        /// </summary>
         GreenDark = 20,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Purple"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PURPLE".
+        /// </summary>
         Purple = 21,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PurpleLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PURPLELIGHT".
+        /// </summary>
         PurpleLight = 22,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PurpleDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PURPLEDARK".
+        /// </summary>
         PurpleDark = 23,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Pink"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PINK".
+        /// </summary>
         Pink = 24,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="RadarHealth"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_RADAR_HEALTH".
+        /// </summary>
         RadarHealth = 25,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="RadarArmour"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_RADAR_ARMOUR".
+        /// </summary>
         RadarArmour = 26,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="RadarDamage"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_RADAR_DAMAGE".
+        /// </summary>
         RadarDamage = 27,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer1"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER1".
+        /// </summary>
         NetPlayer1 = 28,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer2"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER2".
+        /// </summary>
         NetPlayer2 = 29,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer3"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER3".
+        /// </summary>
         NetPlayer3 = 30,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer4"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER4".
+        /// </summary>
         NetPlayer4 = 31,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer5"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER5".
+        /// </summary>
         NetPlayer5 = 32,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer6"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER6".
+        /// </summary>
         NetPlayer6 = 33,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer7"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER7".
+        /// </summary>
         NetPlayer7 = 34,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer8"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER8".
+        /// </summary>
         NetPlayer8 = 35,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer9"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER9".
+        /// </summary>
         NetPlayer9 = 36,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer10"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER10".
+        /// </summary>
         NetPlayer10 = 37,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer11"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER11".
+        /// </summary>
         NetPlayer11 = 38,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer12"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER12".
+        /// </summary>
         NetPlayer12 = 39,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer13"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER13".
+        /// </summary>
         NetPlayer13 = 40,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer14"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER14".
+        /// </summary>
         NetPlayer14 = 41,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer15"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER15".
+        /// </summary>
         NetPlayer15 = 42,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer16"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER16".
+        /// </summary>
         NetPlayer16 = 43,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer17"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER17".
+        /// </summary>
         NetPlayer17 = 44,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer18"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER18".
+        /// </summary>
         NetPlayer18 = 45,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer19"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER19".
+        /// </summary>
         NetPlayer19 = 46,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer20"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER20".
+        /// </summary>
         NetPlayer20 = 47,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer21"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER21".
+        /// </summary>
         NetPlayer21 = 48,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer22"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER22".
+        /// </summary>
         NetPlayer22 = 49,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer23"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER23".
+        /// </summary>
         NetPlayer23 = 50,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer24"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER24".
+        /// </summary>
         NetPlayer24 = 51,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer25"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER25".
+        /// </summary>
         NetPlayer25 = 52,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer26"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER26".
+        /// </summary>
         NetPlayer26 = 53,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer27"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER27".
+        /// </summary>
         NetPlayer27 = 54,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer28"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER28".
+        /// </summary>
         NetPlayer28 = 55,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer29"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER29".
+        /// </summary>
         NetPlayer29 = 56,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer30"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER30".
+        /// </summary>
         NetPlayer30 = 57,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer31"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER31".
+        /// </summary>
         NetPlayer31 = 58,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer32"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER32".
+        /// </summary>
         NetPlayer32 = 59,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="SimpleBlipDefault"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SIMPLEBLIP_DEFAULT".
+        /// </summary>
         SimpleBlipDefault = 60,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuBlue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_BLUE".
+        /// </summary>
         MenuBlue = 61,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuGreyLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_GREY_LIGHT".
+        /// </summary>
         MenuGreyLight = 62,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuBlueExtraDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_BLUE_EXTRA_DARK".
+        /// </summary>
         MenuBlueExtraDark = 63,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuYellow"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_YELLOW".
+        /// </summary>
         MenuYellow = 64,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuYellowDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_YELLOW_DARK".
+        /// </summary>
         MenuYellowDark = 65,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuGreen"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_GREEN".
+        /// </summary>
         MenuGreen = 66,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuGrey"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_GREY".
+        /// </summary>
         MenuGrey = 67,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuGreyDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_GREY_DARK".
+        /// </summary>
         MenuGreyDark = 68,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuHighlight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_HIGHLIGHT".
+        /// </summary>
         MenuHighlight = 69,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuStandard"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_STANDARD".
+        /// </summary>
         MenuStandard = 70,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuDimmed"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_DIMMED".
+        /// </summary>
         MenuDimmed = 71,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MenuExtraDimmed"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MENU_EXTRA_DIMMED".
+        /// </summary>
         MenuExtraDimmed = 72,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="BriefTitle"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_BRIEF_TITLE".
+        /// </summary>
         BriefTitle = 73,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MidGreyMultiplayer"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MID_GREY_MP".
+        /// </summary>
         MidGreyMultiplayer = 74,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer1Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER1_DARK".
+        /// </summary>
         NetPlayer1Dark = 75,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer2Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER2_DARK".
+        /// </summary>
         NetPlayer2Dark = 76,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer3Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER3_DARK".
+        /// </summary>
         NetPlayer3Dark = 77,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer4Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER4_DARK".
+        /// </summary>
         NetPlayer4Dark = 78,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer5Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER5_DARK".
+        /// </summary>
         NetPlayer5Dark = 79,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer6Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER6_DARK".
+        /// </summary>
         NetPlayer6Dark = 80,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer7Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER7_DARK".
+        /// </summary>
         NetPlayer7Dark = 81,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer8Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER8_DARK".
+        /// </summary>
         NetPlayer8Dark = 82,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer9Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER9_DARK".
+        /// </summary>
         NetPlayer9Dark = 83,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer10Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER10_DARK".
+        /// </summary>
         NetPlayer10Dark = 84,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer11Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER11_DARK".
+        /// </summary>
         NetPlayer11Dark = 85,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer12Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER12_DARK".
+        /// </summary>
         NetPlayer12Dark = 86,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer13Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER13_DARK".
+        /// </summary>
         NetPlayer13Dark = 87,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer14Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER14_DARK".
+        /// </summary>
         NetPlayer14Dark = 88,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer15Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER15_DARK".
+        /// </summary>
         NetPlayer15Dark = 89,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer16Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER16_DARK".
+        /// </summary>
         NetPlayer16Dark = 90,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer17Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER17_DARK".
+        /// </summary>
         NetPlayer17Dark = 91,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer18Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER18_DARK".
+        /// </summary>
         NetPlayer18Dark = 92,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer19Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER19_DARK".
+        /// </summary>
         NetPlayer19Dark = 93,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer20Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER20_DARK".
+        /// </summary>
         NetPlayer20Dark = 94,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer21Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER21_DARK".
+        /// </summary>
         NetPlayer21Dark = 95,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer22Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER22_DARK".
+        /// </summary>
         NetPlayer22Dark = 96,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer23Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER23_DARK".
+        /// </summary>
         NetPlayer23Dark = 97,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer24Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER24_DARK".
+        /// </summary>
         NetPlayer24Dark = 98,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer25Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER25_DARK".
+        /// </summary>
         NetPlayer25Dark = 99,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer26Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER26_DARK".
+        /// </summary>
         NetPlayer26Dark = 100,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer27Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER27_DARK".
+        /// </summary>
         NetPlayer27Dark = 101,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer28Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER28_DARK".
+        /// </summary>
         NetPlayer28Dark = 102,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer29Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER29_DARK".
+        /// </summary>
         NetPlayer29Dark = 103,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer30Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER30_DARK".
+        /// </summary>
         NetPlayer30Dark = 104,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer31Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER31_DARK".
+        /// </summary>
         NetPlayer31Dark = 105,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NetPlayer32Dark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NET_PLAYER32_DARK".
+        /// </summary>
         NetPlayer32Dark = 106,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Bronze"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_BRONZE".
+        /// </summary>
         Bronze = 107,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Silver"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SILVER".
+        /// </summary>
         Silver = 108,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Gold"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GOLD".
+        /// </summary>
         Gold = 109,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Platinum"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PLATINUM".
+        /// </summary>
         Platinum = 110,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Gang1"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GANG1".
+        /// </summary>
         Gang1 = 111,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Gang2"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GANG2".
+        /// </summary>
         Gang2 = 112,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Gang3"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GANG3".
+        /// </summary>
         Gang3 = 113,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Gang4"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GANG4".
+        /// </summary>
         Gang4 = 114,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="SameCrew"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SAME_CREW".
+        /// </summary>
         SameCrew = 115,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Freemode"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FREEMODE".
+        /// </summary>
         Freemode = 116,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PauseBackground"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PAUSE_BG".
+        /// </summary>
         PauseBackground = 117,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Friendly"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FRIENDLY".
+        /// </summary>
         Friendly = 118,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Enemy"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_ENEMY".
+        /// </summary>
         Enemy = 119,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Location"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_LOCATION".
+        /// </summary>
         Location = 120,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Pickup"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PICKUP".
+        /// </summary>
         Pickup = 121,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PauseSingleplayer"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PAUSE_SINGLEPLAYER".
+        /// </summary>
         PauseSingleplayer = 122,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="FreemodeDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FREEMODE_DARK".
+        /// </summary>
         FreemodeDark = 123,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="InactiveMission"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_INACTIVE_MISSION".
+        /// </summary>
         InactiveMission = 124,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Damage"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DAMAGE".
+        /// </summary>
         Damage = 125,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PinkLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PINKLIGHT".
+        /// </summary>
         PinkLight = 126,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PmMItemHighlight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PM_MITEM_HIGHLIGHT".
+        /// </summary>
         PmMItemHighlight = 127,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ScriptVariable"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SCRIPT_VARIABLE".
+        /// </summary>
         ScriptVariable = 128,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Yoga"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_YOGA".
+        /// </summary>
         Yoga = 129,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Tennis"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TENNIS".
+        /// </summary>
         Tennis = 130,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Golf"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GOLF".
+        /// </summary>
         Golf = 131,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ShootingRange"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SHOOTING_RANGE".
+        /// </summary>
         ShootingRange = 132,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="FlightSchool"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FLIGHT_SCHOOL".
+        /// </summary>
         FlightSchool = 133,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NorthBlue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NORTH_BLUE".
+        /// </summary>
         NorthBlue = 134,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="SocialClub"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SOCIAL_CLUB".
+        /// </summary>
         SocialClub = 135,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PlatformBlue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PLATFORM_BLUE".
+        /// </summary>
         PlatformBlue = 136,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PlatformGreen"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PLATFORM_GREEN".
+        /// </summary>
         PlatformGreen = 137,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PlatformGrey"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PLATFORM_GREY".
+        /// </summary>
         PlatformGrey = 138,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="FacebookBlue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FACEBOOK_BLUE".
+        /// </summary>
         FacebookBlue = 139,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="InGameBackground"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_INGAME_BG".
+        /// </summary>
         InGameBackground = 140,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Darts"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DARTS".
+        /// </summary>
         Darts = 141,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Waypoint"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_WAYPOINT".
+        /// </summary>
         Waypoint = 142,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Michael"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MICHAEL".
+        /// </summary>
         Michael = 143,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Franklin"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FRANKLIN".
+        /// </summary>
         Franklin = 144,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Trevor"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TREVOR".
+        /// </summary>
         Trevor = 145,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GolfP1"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GOLF_P1".
+        /// </summary>
         GolfP1 = 146,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GolfP2"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GOLF_P2".
+        /// </summary>
         GolfP2 = 147,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GolfP3"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GOLF_P3".
+        /// </summary>
         GolfP3 = 148,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="GolfP4"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GOLF_P4".
+        /// </summary>
         GolfP4 = 149,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="WaypointLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_WAYPOINTLIGHT".
+        /// </summary>
         WaypointLight = 150,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="WaypointDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_WAYPOINTDARK".
+        /// </summary>
         WaypointDark = 151,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PanelLight"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PANEL_LIGHT".
+        /// </summary>
         PanelLight = 152,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="MichaelDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_MICHAEL_DARK".
+        /// </summary>
         MichaelDark = 153,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="FranklinDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_FRANKLIN_DARK".
+        /// </summary>
         FranklinDark = 154,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="TrevorDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TREVOR_DARK".
+        /// </summary>
         TrevorDark = 155,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ObjectiveRoute"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_OBJECTIVE_ROUTE".
+        /// </summary>
         ObjectiveRoute = 156,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PauseMapTint"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PAUSEMAP_TINT".
+        /// </summary>
         PauseMapTint = 157,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PauseDeselect"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PAUSE_DESELECT".
+        /// </summary>
         PauseDeselect = 158,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PmWeaponsPurchasable"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PM_WEAPONS_PURCHASABLE".
+        /// </summary>
         PmWeaponsPurchasable = 159,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PmWeaponsLocked"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PM_WEAPONS_LOCKED".
+        /// </summary>
         PmWeaponsLocked = 160,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="EndScreenBackground"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_END_SCREEN_BG".
+        /// </summary>
         EndScreenBackground = 161,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Chop"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CHOP".
+        /// </summary>
         Chop = 162,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="PauseMapTintHalf"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_PAUSEMAP_TINT_HALF".
+        /// </summary>
         PauseMapTintHalf = 163,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="NorthBlueOfficial"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_NORTH_BLUE_OFFICIAL".
+        /// </summary>
         NorthBlueOfficial = 164,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ScriptVariable2"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SCRIPT_VARIABLE_2".
+        /// </summary>
         ScriptVariable2 = 165,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="H"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_H".
+        /// </summary>
         H = 166,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="HDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_HDARK".
+        /// </summary>
         HDark = 167,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="T"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_T".
+        /// </summary>
         T = 168,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="TDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_TDARK".
+        /// </summary>
         TDark = 169,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="HShard"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_HSHARD".
+        /// </summary>
         HShard = 170,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ControllerMichael"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CONTROLLER_MICHAEL".
+        /// </summary>
         ControllerMichael = 171,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ControllerFranklin"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CONTROLLER_FRANKLIN".
+        /// </summary>
         ControllerFranklin = 172,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ControllerTrevor"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CONTROLLER_TREVOR".
+        /// </summary>
         ControllerTrevor = 173,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="ControllerChop"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CONTROLLER_CHOP".
+        /// </summary>
         ControllerChop = 174,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorVideo"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_VIDEO".
+        /// </summary>
         VideoEditorVideo = 175,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorAudio"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AUDIO".
+        /// </summary>
         VideoEditorAudio = 176,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorText"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_TEXT".
+        /// </summary>
         VideoEditorText = 177,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="HbBlue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_HB_BLUE".
+        /// </summary>
         HbBlue = 178,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="HbYellow"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_HB_YELLOW".
+        /// </summary>
         HbYellow = 179,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorScore"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_SCORE".
+        /// </summary>
         VideoEditorScore = 180,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorAudioFadeout"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AUDIO_FADEOUT".
+        /// </summary>
         VideoEditorAudioFadeout = 181,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorTextFadeout"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_TEXT_FADEOUT".
+        /// </summary>
         VideoEditorTextFadeout = 182,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorScoreFadeout"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_SCORE_FADEOUT".
+        /// </summary>
         VideoEditorScoreFadeout = 183,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="HeistBackground"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_HEIST_BACKGROUND".
+        /// </summary>
         HeistBackground = 184,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorAmbient"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AMBIENT".
+        /// </summary>
         VideoEditorAmbient = 185,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="VideoEditorAmbientFadeout"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_VIDEO_EDITOR_AMBIENT_FADEOUT".
+        /// </summary>
         VideoEditorAmbientFadeout = 186,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Gb"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_GB".
+        /// </summary>
         Gb = 187,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G".
+        /// </summary>
         G = 188,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="B"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_B".
+        /// </summary>
         B = 189,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="LowFlow"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_LOW_FLOW".
+        /// </summary>
         LowFlow = 190,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="LowFlowDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_LOW_FLOW_DARK".
+        /// </summary>
         LowFlowDark = 191,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G1"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G1".
+        /// </summary>
         G1 = 192,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G2"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G2".
+        /// </summary>
         G2 = 193,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G3"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G3".
+        /// </summary>
         G3 = 194,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G4"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G4".
+        /// </summary>
         G4 = 195,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G5"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G5".
+        /// </summary>
         G5 = 196,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G6"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G6".
+        /// </summary>
         G6 = 197,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G7"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G7".
+        /// </summary>
         G7 = 198,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G8"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G8".
+        /// </summary>
         G8 = 199,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G9"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G9".
+        /// </summary>
         G9 = 200,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G10"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G10".
+        /// </summary>
         G10 = 201,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G11"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G11".
+        /// </summary>
         G11 = 202,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G12"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G12".
+        /// </summary>
         G12 = 203,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G13"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G13".
+        /// </summary>
         G13 = 204,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G14"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G14".
+        /// </summary>
         G14 = 205,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="G15"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_G15".
+        /// </summary>
         G15 = 206,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Adversary"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_ADVERSARY".
+        /// </summary>
         Adversary = 207,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="DegenRed"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DEGEN_RED".
+        /// </summary>
         DegenRed = 208,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="DegenYellow"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DEGEN_YELLOW".
+        /// </summary>
         DegenYellow = 209,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="DegenGreen"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DEGEN_GREEN".
+        /// </summary>
         DegenGreen = 210,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="DegenCyan"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DEGEN_CYAN".
+        /// </summary>
         DegenCyan = 211,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="DegenBlue"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DEGEN_BLUE".
+        /// </summary>
         DegenBlue = 212,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="DegenMagenta"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_DEGEN_MAGENTA".
+        /// </summary>
         DegenMagenta = 213,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Stunt1"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_STUNT_1".
+        /// </summary>
         Stunt1 = 214,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Stunt2"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_STUNT_2".
+        /// </summary>
         Stunt2 = 215,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="SpecialRaceSeries"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SPECIAL_RACE_SERIES".
+        /// </summary>
         SpecialRaceSeries = 216,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="SpecialRaceSeriesDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_SPECIAL_RACE_SERIES_DARK".
+        /// </summary>
         SpecialRaceSeriesDark = 217,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="Cs"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CS".
+        /// </summary>
         Cs = 218,
-        /// <include file='..\Documentation\RAGENativeUI.HudColor.xml' path='D/HudColor/Member[@name="CsDark"]/*' />
+        /// <summary>
+        /// Represents the HUD color "HUD_COLOUR_CS_DARK".
+        /// </summary>
         CsDark = 219,
     }
 }

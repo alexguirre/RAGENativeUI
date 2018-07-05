@@ -4,22 +4,32 @@ namespace RAGENativeUI
     using System.Linq;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
 
     using Rage;
 
     using RAGENativeUI.Memory;
 
-    // defined in timecycle_mods_*.xml
-    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Doc/*' />
-    public unsafe sealed class TimeCycleModifier : IAddressable
+    /// <summary>
+    /// Represents a time cycle modifier.
+    /// <para>
+    /// The default time cycle modifiers are defined in the "timecycle_mods_*.xml" from the game files.
+    /// </para>
+    /// </summary>
+    public unsafe sealed class TimeCycleModifier : IAddressable, IValidatable
     {
         internal readonly CTimeCycleModifier* Native;
-        private readonly int index = -1;
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Hash"]/*' />
+        /// <summary>
+        /// Gets the hash of the <see cref="TimeCycleModifier"/>.
+        /// </summary>
         public uint Hash { get { return Native->Name; } }
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Name"]/*' />
+
+        ///<summary>
+        ///Gets the name of the <see cref= "TimeCycleModifier"/>.
+        ///</summary>
+        ///<returns>
+        ///The name of the <see cref="TimeCycleModifier"/>, or if it's unknown, the hash in hexadecimal.
+        ///</returns>
         public string Name
         {
             get
@@ -33,13 +43,15 @@ namespace RAGENativeUI
             }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="IsActive"]/*' />
+        /// <summary>
+        /// Gets or sets whether the <see cref="TimeCycleModifier"/> is currently active.
+        /// </summary>
         public bool IsActive
         {
             get
             {
-                return GameMemory.TimeCycle->CurrentModifierIndex == index ||
-                       GameMemory.TimeCycle->TransitionModifierIndex == index;
+                return GameMemory.TimeCycle->CurrentModifierIndex == Index ||
+                       GameMemory.TimeCycle->TransitionModifierIndex == Index;
             }
             set
             {
@@ -54,34 +66,55 @@ namespace RAGENativeUI
             }
         }
 
+        /// <summary>
+        /// Gets whether the <see cref="TimeCycleModifier"> is currently transitioning.
+        /// </summary>
         public bool IsInTransition
         {
-            get { return GameMemory.TimeCycle->TransitionModifierIndex == index; }
+            get { return GameMemory.TimeCycle->TransitionModifierIndex == Index; }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="MemoryAddress"]/*' />
+        /// <summary>
+        /// Gets the memory address of the <see cref="TimeCycleModifier"/>.
+        /// </summary>
         public IntPtr MemoryAddress { get { return (IntPtr)Native; } }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Index"]/*' />
-        public int Index { get { return index; } }
+        /// <summary>
+        /// Gets the index of the <see cref="TimeCycleModifier"/>.
+        /// </summary>
+        public int Index { get; } = -1;
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Flags"]/*' />
+        /// <summary>
+        /// Gets the flags of the <see cref="TimeCycleModifier"/>.
+        /// </summary>
         public uint Flags { get { return Native->Flags; } }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Mods"]/*' />
+        /// <summary>
+        /// Gets a dictionary representing the mods of the <see cref="TimeCycleModifier"/>.
+        /// </summary>
         public TimeCycleModifierMods Mods { get; }
 
-        // from existing timecycle modifier in memory
+        /// <summary>
+        /// Checks whether the <see cref="TimeCycleModifier"/> is valid.
+        /// </summary>
+        /// <returns><c>true</c> if this instance is valid; otherwise, <c>false</c>.</returns>
+        public bool IsValid => Native != null;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeCycleModifier"/> class from existing timecycle modifier in memory.
+        /// </summary>
         private TimeCycleModifier(CTimeCycleModifier* native, int idx)
         {
             Native = native;
-            index = idx;
+            Index = idx;
             Mods = new TimeCycleModifierMods(this);
 
             Cache.Add(this);
         }
 
-        // creates new timecycle modifier in memory
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeCycleModifier"/> class, creating a new timecycle modifier in memory.
+        /// </summary>
         private TimeCycleModifier(string name, uint flags, CTimeCycleModifier.Mod[] mods)
         {
             Throw.IfNull(name, nameof(name));
@@ -94,28 +127,33 @@ namespace RAGENativeUI
             KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
 
             Native = GameMemory.TimeCycle->NewTimeCycleModifier(hash, mods, flags);
-            index = GameMemory.TimeCycle->Modifiers.Count - 1;
+            Index = GameMemory.TimeCycle->Modifiers.Count - 1;
             Mods = new TimeCycleModifierMods(this);
 
             Cache.Add(this);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor1"]/*' />
+        /// <summary>
+        /// Initializes a new instance of the<see cref="TimeCycleModifier"/> class using other <see cref="TimeCycleModifier"/> as template.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="template">The template from which the flags and mods will be copied to the new instance.</param>
+        /// <exception cref="InvalidOperationException"><paramref name="name"/> is already used by other <see cref="TimeCycleModifier"/>.</exception>
         public TimeCycleModifier(string name, TimeCycleModifier template)
             : this(name, template.Flags, template.Mods.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Key, Value1 = m.Value.Value1, Value2 = m.Value.Value2 }).ToArray())
         {
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Ctor2"]/*' />
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeCycleModifier"/> class with the specified flags and mods.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="mods">The mods.</param>
+        /// <exception cref="InvalidOperationException"><paramref name="name"/> is already used by other <see cref="TimeCycleModifier"/>.</exception>
         public TimeCycleModifier(string name, uint flags, params (TimeCycleModifierModType Type, float Value1, float Value2)[] mods)
             : this(name, flags, mods?.Select(m => new CTimeCycleModifier.Mod { ModType = (int)m.Type, Value1 = m.Value1, Value2 = m.Value2 }).ToArray())
         {
-        }
-        
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="IsValid"]/*' />
-        public bool IsValid()
-        {
-            return Native != null;
         }
 
         public void SetActiveWithTransition(float time) => SetActiveWithTransition(time, Strength);
@@ -130,7 +168,11 @@ namespace RAGENativeUI
         }
 
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByName"]/*' />
+        /// <summary>
+        /// Gets a <see cref="TimeCycleModifier"/> instance by its name.
+        /// </summary>
+        /// <param name="name">The case insensitive name of the instance to get.</param>
+        /// <returns>If an instance of <see cref="TimeCycleModifier"/> matches the specified name, returns that instance; otherwise, returns <c>null</c>.</returns>
         public static TimeCycleModifier GetByName(string name)
         {
             Throw.IfNull(name, nameof(name));
@@ -140,7 +182,11 @@ namespace RAGENativeUI
             return GetByHash(hash);
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByHash"]/*' />
+        /// <summary>
+        /// Gets a <see cref="TimeCycleModifier"/> instance by its hash.
+        /// </summary>
+        /// <param name="hash">The hash of the instance to get.</param>
+        /// <returns>If an instance of <see cref="TimeCycleModifier"/> matches the specified hash, returns that instance; otherwise, returns <c>null</c>.</returns>
         public static TimeCycleModifier GetByHash(uint hash)
         {
             if (Cache.Get(hash, out TimeCycleModifier p))
@@ -160,7 +206,16 @@ namespace RAGENativeUI
             return null;
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetByIndex"]/*' />
+        /// <summary>
+        /// Gets a <see cref="TimeCycleModifier"/> instance by its index.
+        /// <para>
+        /// Indices are between 0, inclusive, and<see cref="NumberOfTimeCycleModifiers"/>, exclusive.
+        /// </para>
+        /// </summary>
+        /// <param name="index">The index of the instance to get.</param>
+        /// <returns>If an instance of <see cref="TimeCycleModifier"/> matches the specified hash, returns that instance; otherwise, returns <c>null</c>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is equal to or greater than <see cref="NumberOfTimeCycleModifiers"/>.</exception>
         public static TimeCycleModifier GetByIndex(int index)
         {
             Throw.IfOutOfRange(index, 0, NumberOfTimeCycleModifiers - 1, nameof(index));
@@ -178,7 +233,10 @@ namespace RAGENativeUI
             }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="GetAll"]/*' />
+        /// <summary>
+        /// Gets all <see cref="TimeCycleModifier"/> instances currently in memory.
+        /// </summary>
+        /// <returns>An array that contains all <see cref="TimeCycleModifier"/> instances currently in memory.</returns>
         public static TimeCycleModifier[] GetAll()
         {
             TimeCycleModifier[] mods = new TimeCycleModifier[GameMemory.TimeCycle->Modifiers.Count];
@@ -190,7 +248,10 @@ namespace RAGENativeUI
             return mods;
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="NumberOfTimeCycleModifiers"]/*' />
+        /// <summary>
+        /// Gets the number of <see cref="TimeCycleModifier"/> instances currently in memory.
+        /// </summary>
+        /// <returns>The number of <see cref="TimeCycleModifier"/> instances currently in memory.</returns>
         public static int NumberOfTimeCycleModifiers
         {
             get
@@ -199,7 +260,10 @@ namespace RAGENativeUI
             }
         }
 
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="CurrentModifier"]/*' />
+        /// <summary>
+        /// Gets or sets the <see cref="TimeCycleModifier"/> instance that is currently active.
+        /// </summary>
+        /// <returns>The <see cref="TimeCycleModifier"/> instance that is currently active.</returns>
         public static TimeCycleModifier CurrentModifier
         {
             get
@@ -217,7 +281,7 @@ namespace RAGENativeUI
             {
                 CTimeCycle* timecycle = GameMemory.TimeCycle;
 
-                if (value == null || !value.IsValid())
+                if (value == null || !value.IsValid)
                 {
                     timecycle->CurrentModifierIndex = -1;
 
@@ -231,8 +295,7 @@ namespace RAGENativeUI
                 }
             }
         }
-
-        /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifier/Member[@name="Strength"]/*' />
+        
         public static float Strength
         {
             get
@@ -247,7 +310,9 @@ namespace RAGENativeUI
 
     }
 
-    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierMods/Doc/*' />
+    /// <summary>
+    /// Represents the mods dictionary of a <see cref="TimeCycleModifier"/>.
+    /// </summary>
     public sealed unsafe class TimeCycleModifierMods : IDictionary<TimeCycleModifierModType, (float Value1, float Value2)>
     {
         private readonly TimeCycleModifier modifier;
@@ -640,7 +705,9 @@ namespace RAGENativeUI
         }
     }
 
-    /// <include file='..\Documentation\RAGENativeUI.TimeCycleModifier.xml' path='D/TimeCycleModifierModType/Doc/*' />
+    /// <summary>
+    /// Represents the various <see cref="TimeCycleModifier"/> mod types.
+    /// </summary>
     public enum TimeCycleModifierModType
     {
         light_dir_col_r = 0,

@@ -13,7 +13,7 @@ namespace RAGENativeUI
     using RAGENativeUI.Memory;
 
     // defined in animpostfx.ymt
-    public unsafe sealed class PostFxAnimation : IAddressable
+    public unsafe sealed class PostFxAnimation : IAddressable, IValidatable
     {
         internal readonly CAnimPostFX* Native;
         private readonly int index = -1;
@@ -36,7 +36,7 @@ namespace RAGENativeUI
         {
             get
             {
-                return IsValid() && (GameFunctions.IsAnimPostFXActive(*GameMemory.AnimPostFXManager, &Native->Name) & 1) != 0;
+                return IsValid && (GameFunctions.IsAnimPostFXActive(*GameMemory.AnimPostFXManager, &Native->Name) & 1) != 0;
             }
         }
 
@@ -45,10 +45,12 @@ namespace RAGENativeUI
         public PostFxAnimationLayerBlend LayerBlend { get; }
         public PostFxAnimationLayersCollection Layers { get; }
 
+        public bool IsValid => Native != null;
+
         private PostFxAnimation(CAnimPostFX* native)
         {
             Native = native;
-            if (IsValid())
+            if (IsValid)
             {
                 index = unchecked((int)((long)Native - (long)(*GameMemory.AnimPostFXManager)->Effects.Items) / sizeof(CAnimPostFX));
             }
@@ -57,15 +59,10 @@ namespace RAGENativeUI
 
             Cache.Add(this);
         }
-        
-        public bool IsValid()
-        {
-            return MemoryAddress != IntPtr.Zero;
-        }
 
         public void Start(int duration, bool looped)
         {
-            if (!IsValid())
+            if (!IsValid)
                 return;
 
             GameFunctions.StartAnimPostFX(*GameMemory.AnimPostFXManager, &Native->Name, duration, looped, 0, 0, 0);
@@ -73,7 +70,7 @@ namespace RAGENativeUI
 
         public void Stop()
         {
-            if (!IsValid())
+            if (!IsValid)
                 return;
 
             GameFunctions.StopAnimPostFX(*GameMemory.AnimPostFXManager, &Native->Name);
