@@ -78,13 +78,13 @@ namespace rage
 
 		T* Find(atHashValue key)
 		{
-			uint16 index = 0xFFFF;
+			int16 index = 0xFFFF;
 
 			pgDictionary<T>* dict = this;
 			while (true)
 			{
-				uint16 left = 0;
-				uint16 right = dict->m_keys.m_nCount - 1;
+				int16 left = 0;
+				int16 right = dict->m_keys.m_nCount - 1;
 
 				if (right < 0)
 				{
@@ -114,6 +114,62 @@ namespace rage
 				dict = dict->m_pParent;
 				if (!dict)
 					return nullptr;
+			}
+		}
+
+		bool Remove(atHashValue key)
+		{
+			int16 index = 0xFFFF;
+
+			pgDictionary<T>* dict = this;
+			while (true)
+			{
+				int16 left = 0;
+				int16 right = dict->m_keys.m_nCount - 1;
+
+				if (right < 0)
+				{
+					index = 0xFFFF;
+				}
+				else
+				{
+					while (true)
+					{
+						index = ((right + left) >> 1);
+						if (key == dict->m_keys.m_pItems[index])
+							break;
+						if (key >= dict->m_keys.m_pItems[index])
+							left = index + 1;
+						else
+							right = index - 1;
+						if (left > right)
+						{
+							index = 0xFFFF;
+							break;
+						}
+					}
+				}
+				
+				if (index != 0xFFFF)
+				{
+					for (uint16 i = index; i < dict->m_keys.m_nCount - 1; i++)
+					{
+						dict->m_keys.m_pItems[i] = dict->m_keys.m_pItems[i + 1];
+					}
+					dict->m_keys.m_nCount--;
+
+					for (uint16 i = index; i < dict->m_values.m_nCount - 1; i++)
+					{
+						dict->m_values.m_pItems[i] = dict->m_values.m_pItems[i + 1];
+					}
+					dict->m_values.m_nCount--;
+
+					return true;
+				}
+
+				dict = dict->m_pParent;
+				if (!dict)
+					return false;
 			}
 		}
 
