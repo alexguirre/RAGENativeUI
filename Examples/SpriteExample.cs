@@ -1,5 +1,16 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using Game = rph1::Rage.Game;
+    using Rotator = rph1::Rage.Rotator;
+    using Vector2 = rph1::Rage.Vector2;
+    using Vector3 = rph1::Rage.Vector3;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
 
     using Rage;
@@ -14,7 +25,7 @@ namespace Examples
         [ConsoleCommand(Name = "SpriteExample", Description = "Example showing the Sprite class.")]
         private static void Command()
         {
-            GameFiber.StartNew(() =>
+            RPH.GameFiber.StartNew(() =>
             {
                 Bitmap bmp = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
@@ -53,52 +64,52 @@ namespace Examples
 
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
                         sprite.Rotation += 50f * Game.FrameTime;
                     }
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         sprite.Rotation -= 50f * Game.FrameTime;
                     }
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
-                        sprite.Color = s.Color = Color.FromArgb(MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255));
-                        r.Color = Color.FromArgb(MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255));
+                        sprite.Color = s.Color = Color.FromArgb(RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255));
+                        r.Color = Color.FromArgb(RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255));
                     }
 
                     sprite.Draw();
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad1))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad1))
                         zoom += 0.5f * Game.FrameTime;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad3))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad3))
                         zoom -= 0.5f * Game.FrameTime;
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad8))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad8))
                         pitch += 30.0f * Game.FrameTime;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad2))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad2))
                         pitch -= 30.0f * Game.FrameTime;
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad7))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad7))
                         roll += 30.0f * Game.FrameTime;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad9))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad9))
                         roll -= 30.0f * Game.FrameTime;
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad4))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad4))
                         yaw += 30.0f * Game.FrameTime;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.NumPad6))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.NumPad6))
                         yaw -= 30.0f * Game.FrameTime;
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                         scaleX += 5.0f * Game.FrameTime;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                         scaleX -= 5.0f * Game.FrameTime;
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Multiply))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Multiply))
                         scaleY += 5.0f * Game.FrameTime;
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
                         scaleY -= 5.0f * Game.FrameTime;
 
                     s.UV = new UVCoords(zoom, zoom, 1.0f - zoom, 1.0f - zoom);

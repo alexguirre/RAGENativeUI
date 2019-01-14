@@ -1,14 +1,16 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
-
-    using Rage;
-    using Rage.Attributes;
-
+    
     using RAGENativeUI;
     using RAGENativeUI.Elements;
-
-    using RAGENativeUI.ImGui;
 
     internal static class TextExample
     {
@@ -27,11 +29,11 @@ namespace Examples
             Text text7 = new Text(new string(System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Repeat('a', 396))),
                                   ScreenPosition.FromRelativeCoords(0.5f, 0.05f), 0.2f) { IsVisible = true, Alignment = TextAlignment.Left, Color = Color.Green, Outline = true};
 
-            GameFiber.StartNew(() =>
+            RPH.GameFiber.StartNew(() =>
             {
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
                     
                     text1.Draw();
                     text2.Draw();

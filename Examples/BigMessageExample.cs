@@ -1,10 +1,18 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using GameFiber = rph1::Rage.GameFiber;
+    using Game = rph1::Rage.Game;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+    using WeaponHash = rph1::Rage.WeaponHash;
+    using MathHelper = rph1::Rage.MathHelper;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
-
-    using Rage;
-    using Rage.Attributes;
-
+    
     using RAGENativeUI;
     using RAGENativeUI.Scaleforms;
 
@@ -20,55 +28,55 @@ namespace Examples
                 float y = 0f;
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
 
                     bigMessage.Draw();
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D1))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D1))
                     {
                         bigMessage.ShowMissionPassedMessage("message");
                     }
-                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D2))
+                    else if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D2))
                     {
                         bigMessage.ShowMissionPassedOldMessage("message", "subtitle");
                     }
-                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D3))
+                    else if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D3))
                     {
                         bigMessage.ShowColoredShard("message", "subtitle", HudColor.RedDark, HudColor.White);
                     }
-                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D4))
+                    else if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D4))
                     {
                         bigMessage.ShowMpMessageLarge("message", "subtitle");
                     }
-                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D5))
+                    else if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D5))
                     {
                         bigMessage.ShowRankupMessage("message", "subtitle", 42);
                     }
-                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D6))
+                    else if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D6))
                     {
                         bigMessage.ShowSimpleShard("message", "subtitle");
                     }
-                    else if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.D7))
+                    else if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.D7))
                     {
                         bigMessage.ShowWeaponPurchasedMessage("message", "weapon name", WeaponHash.AssaultSMG);
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         bigMessage.OutTransition = MathHelper.Choose((BigMessage.OutTransitionType[])Enum.GetValues(typeof(BigMessage.OutTransitionType)));
                         Game.DisplayNotification(bigMessage.OutTransition.ToString());
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.H))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.H))
                     {
                         bigMessage.Hide();
                     }
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
                         bigMessage.SetVerticlePositionOverride(y += 0.5f * Game.FrameTime);
                     }
-                    else if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         bigMessage.SetVerticlePositionOverride(y -= 0.5f * Game.FrameTime);
                     }

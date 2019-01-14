@@ -57,10 +57,12 @@
     <Reference Include="RagePluginHookSDK">
       <HintPath>..\Dependencies\RagePluginHookSDK.dll</HintPath>
       <Aliases>global,rph2</Aliases>
+      <Private>False</Private>
     </Reference>
     <Reference Include="RagePluginHookSDK_old">
       <HintPath>..\Dependencies\RagePluginHookSDK_old.dll</HintPath>
       <Aliases>global,rph1</Aliases>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,6 +71,12 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Source\RAGENativeUI\Natives.cs">
+      <Link>Natives.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\RAGENativeUI\RPH.cs">
+      <Link>RPH.cs</Link>
+    </Compile>
     <Compile Include="BigMessageExample.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="GameScreenRectangleExample.cs" />

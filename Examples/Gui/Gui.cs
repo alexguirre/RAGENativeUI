@@ -1,14 +1,21 @@
 namespace RAGENativeUI.ImGui
 {
+#if RPH1
+    extern alias rph1;
+    using Game = rph1::Rage.Game;
+    using Vector2 = rph1::Rage.Vector2;
+    using Texture = rph1::Rage.Texture;
+    using GraphicsEventArgs = rph1::Rage.GraphicsEventArgs;
+    using Graphics = rph1::Rage.Graphics;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Drawing;
     using System.Diagnostics;
     using System.Windows.Forms;
     using System.Runtime.CompilerServices;
-
-    using Rage;
-    using Rage.Native;
-    using Graphics = Rage.Graphics;
 
     internal static partial class Gui
     {
@@ -47,7 +54,7 @@ namespace RAGENativeUI.ImGui
                 {
                     if (mouseTexture == null)
                     {
-                        mouseTexture = /** REDACTED **/;
+                        mouseTexture = RPH.Texture.FromFile("cursor_32_2.png");
                     }
 
                     state.Graphics.DrawTexture(mouseTexture, state.MousePosition.X, state.MousePosition.Y, 32.0f, 32.0f);
@@ -71,14 +78,18 @@ namespace RAGENativeUI.ImGui
             if (!state.HasMouseBeenCalled)
             {
                 state.LastMouseState = state.CurrentMouseState;
-                state.CurrentMouseState = /** REDACTED **/;
+                state.CurrentMouseState = RPH.Game.MouseState;
+#if RPH1
+                state.MousePosition = new Vector2(state.CurrentMouseState.X, state.CurrentMouseState.Y);
+#else
+                /** REDACTED **/
+#endif
                 state.HasMouseBeenCalled = true;
             }
-            state.MousePosition = /** REDACTED **/;
 
             if (disableGameControls)
             {
-                NativeFunction.Natives.DisableAllControlActions(0);
+                N.DisableAllControlActions(0);
             }
 
             return state.MousePosition;
@@ -128,12 +139,12 @@ namespace RAGENativeUI.ImGui
                         Vector2 offset = state.DragOffset();
                         float newX = position.Location.X + offset.X;
                         float newY = position.Location.Y + offset.Y;
-                        newX = MathHelper.Clamp(newX, 0f, container.DrawArea.Width - position.Width);
-                        newY = MathHelper.Clamp(newY, 0f, container.DrawArea.Height - position.Height);
+                        newX = RPH.MathHelper.Clamp(newX, 0f, container.DrawArea.Width - position.Width);
+                        newY = RPH.MathHelper.Clamp(newY, 0f, container.DrawArea.Height - position.Height);
                         position.Location = new PointF(newX, newY);
                     }
                 }
-                else if(!state.IsDraggingAny() && titleBarRect.Contains(state.MousePosition.X, state.MousePosition.Y) && /** REDACTED **/)
+                else if(!state.IsDraggingAny() && titleBarRect.Contains(state.MousePosition.X, state.MousePosition.Y) && RPH.Game.WasKeyJustPressed(Keys.LButton))
                 {
                     state.Drag(id);
                 }
@@ -168,7 +179,7 @@ namespace RAGENativeUI.ImGui
                 hovered = buttonRect.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if(hovered)
                 {
-                    down = /** REDACTED **/;
+                    down = RPH.Game.WasKeyJustPressed(Keys.LButton);
                 }
             }
 
@@ -208,7 +219,7 @@ namespace RAGENativeUI.ImGui
                 hovered = bgRect.Contains(state.MousePosition.X, state.MousePosition.Y);
                 if (hovered)
                 {
-                    if (Game.WasKeyJustPressed(Keys.LButton))
+                    if (RPH.Game.WasKeyJustPressed(Keys.LButton))
                     {
                         down = true;
                         value = !value;
@@ -286,14 +297,14 @@ namespace RAGENativeUI.ImGui
 
                         if (offset != 0)
                         {
-                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / drawPos.Width), minValue, maxValue);
+                            value = RPH.MathHelper.Clamp(value + (offset * (maxValue - minValue) / drawPos.Width), minValue, maxValue);
                         }
                     }
                 }
                 else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
                     hovered = true;
-                    if (Game.WasKeyJustPressed(Keys.LButton))
+                    if (RPH.Game.WasKeyJustPressed(Keys.LButton))
                     {
                         down = true;
                         state.Drag(id);
@@ -348,14 +359,14 @@ namespace RAGENativeUI.ImGui
 
                         if (offset != 0)
                         {
-                            value = MathHelper.Clamp(value + (offset * (maxValue - minValue) / drawPos.Height), minValue, maxValue);
+                            value = RPH.MathHelper.Clamp(value + (offset * (maxValue - minValue) / drawPos.Height), minValue, maxValue);
                         }
                     }
                 }
                 else if (!state.IsDraggingAny() && handleRect.Contains(state.MousePosition.X, state.MousePosition.Y))
                 {
                     hovered = true;
-                    if (Game.WasKeyJustPressed(Keys.LButton))
+                    if (RPH.Game.WasKeyJustPressed(Keys.LButton))
                     {
                         down = true;
                         state.Drag(id);
@@ -429,7 +440,11 @@ namespace RAGENativeUI.ImGui
 
         private static void DrawText(RectangleF rectangle, RectangleF clipRectangle, string text, float fontSize = 15.0f, TextHorizontalAligment hAlign = TextHorizontalAligment.Center, TextVerticalAligment vAlign = TextVerticalAligment.Center)
         {
-            RectangleF textSize = Graphics.MeasureText(text, "Consolas", fontSize);
+#if RPH1
+            SizeF textSize = Graphics.MeasureText(text, "Consolas", fontSize);
+#else
+            /** REDACTED **/
+#endif
             float x = 0.0f, y = 0.0f;
 
             switch (hAlign)
@@ -458,22 +473,30 @@ namespace RAGENativeUI.ImGui
                     break;
             }
 
-            state.Graphics.DrawText(text, "Consolas", fontSize, new Vector2(x, y), Color.White, clipRectangle);
+#if RPH1
+            state.Graphics.DrawText(text, "Consolas", fontSize, new PointF(x, y), Color.White, clipRectangle);
+#else
+            /** REDACTED **/
+#endif
         }
 
         [Conditional("DEBUG")]
         private static void DrawTextDebug(Vector2 position, string text, float fontSize = 15.0f)
         {
-            if (Game.IsShiftDown)
+            if (RPH.Game.IsShiftDown)
             {
-                state.Graphics.DrawText(text, "Consolas", fontSize, position, Color.Red);
+#if RPH1
+                state.Graphics.DrawText(text, "Consolas", fontSize, new PointF(position.X, position.Y), Color.Red);
+#else
+                /** REDACTED **/
+#endif
             }
         }
 
         [Conditional("DEBUG")]
         private static void DrawRectangleDebug(RectangleF position)
         {
-            if (Game.IsShiftDown)
+            if (RPH.Game.IsShiftDown)
             {
                 state.Graphics.DrawRectangle(position, Color.FromArgb(50, 255, 0, 0));
             }

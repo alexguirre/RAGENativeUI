@@ -1,9 +1,15 @@
 namespace Examples
 {
-    using System;
+#if RPH1
+    extern alias rph1;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+    using Game = rph1::Rage.Game;
+    using MathHelper = rph1::Rage.MathHelper;
+#else
+    /** REDACTED **/
+#endif
 
-    using Rage;
-    using Rage.Attributes;
+    using System;
 
     using RAGENativeUI;
     using RAGENativeUI.Scaleforms;
@@ -21,40 +27,40 @@ namespace Examples
             missionPassedScreen.Continued += (s, e) => Game.DisplayHelp("OnContinued");
 
             int i = 0;
-            GameFiber.StartNew(() =>
+            RPH.GameFiber.StartNew(() =>
             {
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
 
                     Game.DisplayHelp($"IsVisible: {missionPassedScreen.IsVisible}");
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         missionPassedScreen.Show();
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.H))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.H))
                     {
                         missionPassedScreen.Hide();
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
                     {
                         missionPassedScreen.IsCompletionVisible = !missionPassedScreen.IsCompletionVisible;
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.J))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.J))
                     {
                         missionPassedScreen.ShownEffect = PostFxAnimation.GetByName(MathHelper.Choose("SuccessFranklin", "SuccessTrevor", "SuccessMichael", "SuccessNeutral"));
                         Game.DisplayNotification(missionPassedScreen.ShownEffect.Name);
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Add))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Add))
                     {
                         missionPassedScreen.Items.Add(new MissionPassedScreenItem("Item #" + i++, MathHelper.Choose("Status", "", ""), MathHelper.Choose((MissionPassedScreenItem.TickboxState[])Enum.GetValues(typeof(MissionPassedScreenItem.TickboxState)))));
                     }
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Subtract))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Subtract))
                     {
                         if (missionPassedScreen.Items.Count > 0)
                         {

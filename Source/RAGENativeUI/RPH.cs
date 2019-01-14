@@ -3,6 +3,9 @@ namespace RAGENativeUI
 #if RPH1
     extern alias rph1;
     using GameControl = rph1::Rage.GameControl;
+    using RPHTexture = rph1::Rage.Texture;
+    using RPHGameFiber = rph1::Rage.GameFiber;
+    using MouseState = rph1::Rage.MouseState;
 #else
     /** REDACTED **/
 #endif
@@ -34,12 +37,60 @@ namespace RAGENativeUI
                 }
             }
 
+            public static float FrameTime
+            {
+                get
+                {
+#if RPH1
+                    return rph1::Rage.Game.FrameTime;
+#else
+                    /** REDACTED **/
+#endif
+                }
+            }
+
             public static Size Resolution
             {
                 get
                 {
 #if RPH1
                     return rph1::Rage.Game.Resolution;
+#else
+                    /** REDACTED **/
+#endif
+                }
+            }
+
+            public static MouseState MouseState
+            {
+                get
+                {
+#if RPH1
+                    return rph1::Rage.Game.GetMouseState();
+#else
+                    /** REDACTED **/
+#endif
+                }
+            }
+
+            public static bool IsControlDown
+            {
+                get
+                {
+#if RPH1
+                    return IsKeyDown(Keys.ControlKey);
+#else
+                    /** REDACTED **/
+#endif
+                }
+            }
+
+            public static bool IsShiftDown
+            {
+                get
+                {
+#if RPH1
+                    return IsKeyDown(Keys.ShiftKey);
 #else
                     /** REDACTED **/
 #endif
@@ -120,6 +171,24 @@ namespace RAGENativeUI
                 /** REDACTED **/
 #endif
             }
+
+            public static int GetRandomInteger(int minimum, int maximum)
+            {
+#if RPH1
+                return rph1::Rage.MathHelper.GetRandomInteger(minimum, maximum);
+#else
+                /** REDACTED **/
+#endif
+            }
+
+            public static float GetRandomSingle(float minimum, float maximum)
+            {
+#if RPH1
+                return rph1::Rage.MathHelper.GetRandomSingle(minimum, maximum);
+#else
+                /** REDACTED **/
+#endif
+            }
         }
 
         public static class GameFiber
@@ -128,6 +197,45 @@ namespace RAGENativeUI
             {
 #if RPH1
                 rph1::Rage.GameFiber.Yield();
+#else
+                /** REDACTED **/
+#endif
+            }
+
+            public static void Hibernate()
+            {
+#if RPH1
+                rph1::Rage.GameFiber.Hibernate();
+#else
+                /** REDACTED **/
+#endif
+            }
+
+            public static void Sleep(int duration)
+            {
+#if RPH1
+                rph1::Rage.GameFiber.Sleep(duration);
+#else
+                /** REDACTED **/
+#endif
+            }
+
+            public static RPHGameFiber StartNew(System.Threading.ThreadStart start)
+            {
+#if RPH1
+                return rph1::Rage.GameFiber.StartNew(start);
+#else
+                /** REDACTED **/
+#endif
+            }
+        }
+
+        public static class Texture
+        {
+            public static RPHTexture FromFile(string file)
+            {
+#if RPH1
+                return rph1::Rage.Game.CreateTextureFromFile(file);
 #else
                 /** REDACTED **/
 #endif

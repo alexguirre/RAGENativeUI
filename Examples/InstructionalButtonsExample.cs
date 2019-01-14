@@ -1,11 +1,19 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using GameFiber = rph1::Rage.GameFiber;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+    using GameControl = rph1::Rage.GameControl;
+    using MathHelper = rph1::Rage.MathHelper;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Drawing;
 
-    using Rage;
-    using Rage.Attributes;
-    
+    using RAGENativeUI;
     using RAGENativeUI.Scaleforms;
 
     internal static class InstructionalButtonsExample
@@ -40,7 +48,7 @@ namespace Examples
                     
                     instructionalButtons.Draw();
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         if (instructionalButtons.Layout == InstructionalButtons.LayoutType.Horizontal)
                             instructionalButtons.Layout = InstructionalButtons.LayoutType.Vertical;
@@ -48,12 +56,12 @@ namespace Examples
                             instructionalButtons.Layout = InstructionalButtons.LayoutType.Horizontal;
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
                     {
                         instructionalButtons.BackgroundColor = Color.FromArgb(MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255), MathHelper.GetRandomInteger(0, 255));
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
                     {
                         instructionalButtons.BackgroundColor = Color.FromArgb(80, 0, 0, 0);
                     }

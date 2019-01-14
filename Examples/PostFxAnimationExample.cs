@@ -1,10 +1,14 @@
 namespace Examples
 {
-    using System;
-    using System.Drawing;
+#if RPH1
+    extern alias rph1;
+    using Game = rph1::Rage.Game;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
 
-    using Rage;
-    using Rage.Attributes;
+    using System.Drawing;
 
     using RAGENativeUI;
     using RAGENativeUI.ImGui;
@@ -29,7 +33,7 @@ namespace Examples
 
             Gui.Do += () =>
             {
-                if (Game.IsControlDown)
+                if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Control))
                 {
                     Gui.Mouse();
                 }

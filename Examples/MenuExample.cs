@@ -1,13 +1,19 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using GameControl = rph1::Rage.GameControl;
+    using Game = rph1::Rage.Game;
+    using MathHelper = rph1::Rage.MathHelper;
+    using Vector3 = rph1::Rage.Vector3;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Linq;
     using System.Drawing;
-    using System.Collections.Generic;
-
-    using Rage;
-    using Rage.Attributes;
-    using Graphics = Rage.Graphics;
 
     using RAGENativeUI;
     using RAGENativeUI.Menus;
@@ -18,7 +24,7 @@ namespace Examples
         [ConsoleCommand(Name = "MenuExample", Description = "Example showing RAGENativeUI menu API")]
         private static void Command()
         {
-            GameFiber.StartNew(() =>
+            RPH.GameFiber.StartNew(() =>
             {
                 Menu menu = new Menu("title", "SUBTITLE");
                 menu.SetTheme<MenuDebugTheme>();
@@ -38,9 +44,9 @@ namespace Examples
                 menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
                 menu.Items.Add(new MenuItem("disabled item #1") { Description = "I'm disabled.", IsDisabled = true });
                 menu.Items.Add(new MenuItemCheckbox("disabled item #1") { Description = "I'm disabled.", IsDisabled = true });
-                menu.Items.Add(new MenuItemEnumScroller<PedFormationType>("disabled item #2") { Description = "I'm disabled.", IsDisabled = true });
+                menu.Items.Add(new MenuItemEnumScroller<GameControl>("disabled item #2") { Description = "I'm disabled.", IsDisabled = true });
                 menu.Items.Add(new MenuItemCheckbox("skipped disabled item #0") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true, IsChecked = true });
-                menu.Items.Add(new MenuItemEnumScroller<PedFormationType>("skipped disabled item #1") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true });
+                menu.Items.Add(new MenuItemEnumScroller<GameControl>("skipped disabled item #1") { Description = "I'm disabled.", IsDisabled = true, IsSkippedIfDisabled = true });
 
                 Menu subMenu = new Menu("SubMenu", "SUB!");
                 subMenu.CopyThemeFrom(menu);
@@ -126,9 +132,9 @@ namespace Examples
 
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.T))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.T))
                     {
                         if (menu.IsAnyChildMenuVisible)
                         {
@@ -156,7 +162,7 @@ namespace Examples
                         menu.Items[0].Description = GetRandomString();
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
                     {
                         if (menu.DescriptionOverride == null)
                         {
@@ -168,7 +174,7 @@ namespace Examples
                         }
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.K))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.K))
                     {
                         foreach (MenuItem m in menu.Items)
                         {
@@ -176,7 +182,7 @@ namespace Examples
                         }
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.L))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.L))
                     {
                         foreach (MenuItem m in menu.Items)
                         {
@@ -184,7 +190,7 @@ namespace Examples
                         }
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         //if(menu.Style is MyCustomMenuStyle)
                         {
@@ -200,7 +206,7 @@ namespace Examples
                         //}
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.O))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.O))
                     {
                         menu.Items.ClearAndAdd(menu.Items.OrderBy(i => i.Text));
                     }

@@ -1,11 +1,18 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using GameFiber = rph1::Rage.GameFiber;
+    using Game = rph1::Rage.Game;
+    using Vector2 = rph1::Rage.Vector2;
+    using Vehicle = rph1::Rage.Vehicle;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
-
-    using Rage;
-    using Rage.Attributes;
-
-    using RAGENativeUI;
+    
     using RAGENativeUI.ImGui;
 
     internal static class ImGuiExample

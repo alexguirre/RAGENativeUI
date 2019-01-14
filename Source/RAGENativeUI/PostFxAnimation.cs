@@ -20,7 +20,10 @@ namespace RAGENativeUI
     using RAGENativeUI.Memory;
 
     // defined in animpostfx.ymt
-    public unsafe sealed class PostFxAnimation : IAddressable, IValidatable
+    public unsafe sealed class PostFxAnimation : IAddressable
+#if !RPH1
+        /** REDACTED **/
+#endif
     {
         internal readonly CAnimPostFX* Native;
         private readonly int index = -1;

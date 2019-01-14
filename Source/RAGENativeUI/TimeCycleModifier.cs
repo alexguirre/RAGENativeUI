@@ -22,7 +22,10 @@ namespace RAGENativeUI
     /// The default time cycle modifiers are defined in the "timecycle_mods_*.xml" from the game files.
     /// </para>
     /// </summary>
-    public unsafe sealed class TimeCycleModifier : IAddressable, IValidatable
+    public unsafe sealed class TimeCycleModifier : IAddressable
+#if !RPH1
+        /** REDACTED **/
+#endif
     {
         internal readonly CTimeCycleModifier* Native;
 

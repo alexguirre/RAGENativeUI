@@ -70,6 +70,7 @@ namespace RAGENativeUI.Menus.Themes
             if (Menu.CurrentDescription != null)
             {
 #if RPH1
+                // TODO: no description wrap in RPH1
                 g.DrawText(Menu.CurrentDescription, itemFont.Name, itemFont.Size, new PointF(position.X, y), Color.White);
 #else
                 /** REDACTED **/
@@ -101,25 +102,34 @@ namespace RAGENativeUI.Menus.Themes
             {
                 case MenuItemScroller scroller:
                     {
-#if RPH1
-                        g.DrawText("<" + scroller.GetSelectedOptionText() + ">", itemFont.Name, itemFont.Size, new PointF(position.X, y), c);
-#else
-                        /** REDACTED **/
-#endif
+                        DrawTextRightAligned(g, "<" + scroller.GetSelectedOptionText() + ">", itemFont.Name, itemFont.Size, c, new RectangleF(position.X, y, width, itemFont.Height));
                         break;
                     }
                 case MenuItemCheckbox checkbox:
                     {
-#if RPH1
-                        g.DrawText("[" + (checkbox.IsChecked ? "X" : " ") + "]", itemFont.Name, itemFont.Size, new PointF(position.X, y), c);
-#else
-                        /** REDACTED **/
-#endif
+                        DrawTextRightAligned(g, "[" + (checkbox.IsChecked ? "X" : " ") + "]", itemFont.Name, itemFont.Size, c, new RectangleF(position.X, y, width, itemFont.Height));
                         break;
                     }
             }
             
             y += 4.0f + itemFont.Height;
+        }
+
+        private void DrawTextRightAligned(Graphics g, string text, string fontName, float fontSize, Color color, RectangleF rectangle)
+        {
+#if RPH1
+            SizeF textSize = Graphics.MeasureText(text, fontName, fontSize);
+#else
+            /** REDACTED **/
+#endif
+            float x = rectangle.Right - textSize.Width - 2.0f;
+            float y = rectangle.Y;
+
+#if RPH1
+            g.DrawText(text, fontName, fontSize, new PointF(x, y), color);
+#else
+            /** REDACTED **/
+#endif
         }
 
         public void SetItemTextColor(MenuItem item, Color color)

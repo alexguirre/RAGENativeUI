@@ -12,7 +12,10 @@ namespace RAGENativeUI
 
     using Rage;
 
-    public unsafe struct TextureDictionary : INamedAsset, IValidatable
+    public unsafe struct TextureDictionary : INamedAsset
+#if !RPH1
+        /** REDACTED **/
+#endif
     {
         public string Name { get; }
         public bool IsLoaded => N.HasStreamedTextureDictLoaded(Name);

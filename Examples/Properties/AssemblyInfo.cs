@@ -1,6 +1,12 @@
+#if RPH1
+extern alias rph1;
+using PluginAttribute = rph1::Rage.Attributes.PluginAttribute;
+#else
+/** REDACTED **/
+#endif
+
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Rage.Attributes;
 
 [assembly: AssemblyTitle("RAGENativeUI Examples")]
 [assembly: AssemblyDescription("")]

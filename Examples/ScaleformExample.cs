@@ -1,8 +1,15 @@
 namespace Examples
 {
-    using Rage;
-    using Rage.Attributes;
-
+#if RPH1
+    extern alias rph1;
+    using Game = rph1::Rage.Game;
+    using Rotator = rph1::Rage.Rotator;
+    using Vector3 = rph1::Rage.Vector3;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+    
     using RAGENativeUI;
     using RAGENativeUI.Scaleforms;
 
@@ -15,15 +22,15 @@ namespace Examples
             Scaleform sc = new Scaleform("mp_car_stats_01");
             while (!sc.IsLoaded)
             {
-                GameFiber.Sleep(100);
+                RPH.GameFiber.Sleep(100);
             }
             sc.CallMethod("SET_VEHICLE_INFOR_AND_STATS", "Vacca", "Tracked and Registered", "MPCarHUD", "Pegassi", "Top Speed", "Accelrations", "Braking", "Traction", 21, 41, 61, 81);
 
-            GameFiber.StartNew(() =>
+            RPH.GameFiber.StartNew(() =>
             {
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
                     
                     sc.Draw(rect);
                     sc.Draw();

@@ -70,6 +70,7 @@
     <Reference Include="RagePluginHookSDK_old">
       <HintPath>..\..\Dependencies\RagePluginHookSDK_old.dll</HintPath>
       <Aliases>global,rph1</Aliases>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

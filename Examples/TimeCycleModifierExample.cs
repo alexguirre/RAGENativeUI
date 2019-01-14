@@ -1,14 +1,18 @@
 namespace Examples
 {
-    using System;
+#if RPH1
+    extern alias rph1;
+    using Game = rph1::Rage.Game;
+    using Vector2 = rph1::Rage.Vector2;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+    
     using System.Drawing;
     using System.Collections.Generic;
 
-    using Rage;
-    using Rage.Attributes;
-
     using RAGENativeUI;
-    using RAGENativeUI.Elements;
     using RAGENativeUI.ImGui;
 
     internal static class TimeCycleModifierExample
@@ -20,13 +24,13 @@ namespace Examples
             TimeCycleModifier mod = TimeCycleModifier.GetByIndex(i);
 
             RectangleF mainWindowRect = new RectangleF(10, 10, 350, 540);
-            RectangleF modsValuesWindowRect = new RectangleF(Game.Resolution.Width - 465, 10, 455, 650);
+            RectangleF modsValuesWindowRect = new RectangleF(RPH.Game.Resolution.Width - 465, 10, 455, 650);
             Vector2 modsValuesScrollViewPos = new Vector2(0f, 0f);
             bool showCurrentModsValues = false;
             
             Gui.Do += () =>
             {
-                if (Game.IsControlDown)
+                if (RPH.Game.IsControlDown)
                 {
                     Gui.Mouse();
                 }
@@ -82,7 +86,7 @@ namespace Examples
                 {
                     for (int j = 0; j < mod.Mods.Count; j++)
                     {
-                        mod.Mods[j] = (MathHelper.GetRandomSingle(0.0f, 15.0f), MathHelper.GetRandomSingle(0.0f, 15.0f));
+                        mod.Mods[j] = (RPH.MathHelper.GetRandomSingle(0.0f, 15.0f), RPH.MathHelper.GetRandomSingle(0.0f, 15.0f));
                     }
                 }
 
@@ -98,9 +102,9 @@ namespace Examples
                     Game.DisplayNotification("Creating new CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers);
                     Game.LogTrivial("Creating new CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers);
                     TimeCycleModifier m = new TimeCycleModifier("CUSTOM" + TimeCycleModifier.NumberOfTimeCycleModifiers, 0,
-                           (TimeCycleModifierModType.postfx_desaturation, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
-                           (TimeCycleModifierModType.postfx_bright_pass_thresh, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
-                           (TimeCycleModifierModType.postfx_exposure, MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
+                           (TimeCycleModifierModType.postfx_desaturation, RPH.MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
+                           (TimeCycleModifierModType.postfx_bright_pass_thresh, RPH.MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f),
+                           (TimeCycleModifierModType.postfx_exposure, RPH.MathHelper.GetRandomSingle(0.0f, 50.0f), 0.0f));
                 }
 
                 Gui.EndWindow();
@@ -108,7 +112,7 @@ namespace Examples
 
                 if (showCurrentModsValues)
                 {
-                    if (Game.IsControlDown)
+                    if (RPH.Game.IsControlDown)
                     {
                         Gui.Mouse();
                     }

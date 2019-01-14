@@ -1,10 +1,15 @@
 namespace Examples
 {
-    using System.Drawing;
+#if RPH1
+    extern alias rph1;
+    using GameFiber = rph1::Rage.GameFiber;
+    using Game = rph1::Rage.Game;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
 
-    using Rage;
-    using Rage.Native;
-    using Rage.Attributes;
+    using System.Drawing;
 
     using RAGENativeUI;
     using RAGENativeUI.Elements;
@@ -30,12 +35,12 @@ namespace Examples
 
                     fromRelative = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, w, h);
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                     {
                         w += 0.5f * Game.FrameTime;
                         h += 0.5f * Game.FrameTime;
                     }
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                     {
                         w -= 0.5f * Game.FrameTime;
                         h -= 0.5f * Game.FrameTime;

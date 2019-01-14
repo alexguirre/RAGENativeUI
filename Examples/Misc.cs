@@ -1,7 +1,11 @@
 namespace Examples
 {
-    using Rage;
-    using Rage.Attributes;
+#if RPH1
+    extern alias rph1;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
 
     using RAGENativeUI;
 

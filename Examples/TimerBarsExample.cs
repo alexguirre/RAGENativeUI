@@ -1,5 +1,12 @@
 namespace Examples
 {
+#if RPH1
+    extern alias rph1;
+    using ConsoleCommandAttribute = rph1::Rage.Attributes.ConsoleCommandAttribute;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
 
     using Rage;
@@ -31,30 +38,30 @@ namespace Examples
             LabeledTimerBar middleBar = new LabeledTimerBar("MIDDLE");
             middleBar.Rectangle = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, middleBar.Rectangle.Width, middleBar.Rectangle.Height);
 
-            GameFiber.StartNew(() =>
+            RPH.GameFiber.StartNew(() =>
             {
                 while (true)
                 {
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
 
                     stack.Draw();
                     middleBar.Draw();
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Add))
-                        progressBar.Percentage += 2.0f * Game.FrameTime;
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
-                        progressBar.Percentage -= 2.0f * Game.FrameTime;
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                        progressBar.Percentage += 2.0f * RPH.Game.FrameTime;
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                        progressBar.Percentage -= 2.0f * RPH.Game.FrameTime;
 
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Multiply))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Multiply))
                     {
-                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width + 0.5f * Game.FrameTime, textBar.Rectangle.Height + 0.5f * Game.FrameTime);
+                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width + 0.5f * RPH.Game.FrameTime, textBar.Rectangle.Height + 0.5f * RPH.Game.FrameTime);
                     }
-                    if (Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
                     {
-                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width - 0.5f * Game.FrameTime, textBar.Rectangle.Height - 0.5f * Game.FrameTime);
+                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width - 0.5f * RPH.Game.FrameTime, textBar.Rectangle.Height - 0.5f * RPH.Game.FrameTime);
                     }
 
-                    if (Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
                     {
                         if (stack.OriginPosition.HasValue)
                         {

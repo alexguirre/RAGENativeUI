@@ -1,9 +1,17 @@
 namespace RAGENativeUI.ImGui
 {
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+    using MouseState = rph1::Rage.MouseState;
+    using Graphics = rph1::Rage.Graphics;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
 
     using Rage;
-    using Graphics = Rage.Graphics;
 
     internal static partial class Gui
     {
