@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
-    <Compile Include="BlipSpriteExtensions.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="CustomTextureReference.cs" />
