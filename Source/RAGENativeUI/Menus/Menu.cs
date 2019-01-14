@@ -1,13 +1,18 @@
 namespace RAGENativeUI.Menus
 {
+#if RPH1
+    extern alias rph1;
+    using GameControl = rph1::Rage.GameControl;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Linq;
     using System.Reflection;
     using System.ComponentModel;
     using System.Collections.ObjectModel;
-
-    using Rage;
-
+    
     using RAGENativeUI.Menus.Themes;
 
     /// <include file='..\Documentation\RAGENativeUI.Menus.Menu.xml' path='D/Menu/Doc/*' />
@@ -159,7 +164,7 @@ namespace RAGENativeUI.Menus
             get => selectedIndex;
             set
             {
-                int newIndex = MathHelper.Clamp(value, 0, Items.Count);
+                int newIndex = RPH.MathHelper.Clamp(value, 0, Items.Count);
 
                 if (newIndex != selectedIndex)
                 {

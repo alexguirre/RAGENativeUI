@@ -1,5 +1,12 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using INamedAsset = rph1::Rage.INamedAsset;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Runtime.InteropServices;
 
@@ -36,7 +43,7 @@ namespace RAGENativeUI
 
                 int endTime = Environment.TickCount + 5000;
                 while (!IsLoaded && endTime > Environment.TickCount)
-                    GameFiber.Yield();
+                    RPH.GameFiber.Yield();
             }
         }
 

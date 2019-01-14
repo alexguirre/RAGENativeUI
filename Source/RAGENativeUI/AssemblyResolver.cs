@@ -14,7 +14,7 @@ namespace RAGENativeUI
             // disabled
             return;
 
-            Game.LogTrivialDebug($"Initializing {nameof(AssemblyResolver)}");
+            Common.LogDebug($"Initializing {nameof(AssemblyResolver)}");
 
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
         }
@@ -23,7 +23,7 @@ namespace RAGENativeUI
         {
             string assemblyName = args.Name.Substring(0, args.Name.IndexOf(','));
 
-            Game.LogTrivialDebug($"Resolving '{assemblyName}' ({args.Name})");
+            Common.LogDebug($"Resolving '{assemblyName}' ({args.Name})");
 
             switch (assemblyName)
             {

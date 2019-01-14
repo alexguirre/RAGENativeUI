@@ -1,5 +1,15 @@
 namespace RAGENativeUI.Menus
 {
+#if RPH1
+    extern alias rph1;
+    using GameFiber = rph1::Rage.GameFiber;
+    using Game = rph1::Rage.Game;
+    using GraphicsEventArgs = rph1::Rage.GraphicsEventArgs;
+    using Graphics = rph1::Rage.Graphics;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Collections.Generic;
 
     using Rage;

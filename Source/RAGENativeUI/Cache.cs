@@ -5,8 +5,8 @@ namespace RAGENativeUI
 
     internal static class Cache
     {
-        private static Dictionary<uint, TimeCycleModifier> timeCycleModifiers = new Dictionary<uint, TimeCycleModifier>();
-        private static Dictionary<uint, PostFxAnimation> postFxAnimations = new Dictionary<uint, PostFxAnimation>();
+        private static readonly Dictionary<uint, TimeCycleModifier> timeCycleModifiers = new Dictionary<uint, TimeCycleModifier>();
+        private static readonly Dictionary<uint, PostFxAnimation> postFxAnimations = new Dictionary<uint, PostFxAnimation>();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool Get<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)

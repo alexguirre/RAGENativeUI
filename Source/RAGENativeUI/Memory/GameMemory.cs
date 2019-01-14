@@ -13,13 +13,13 @@ namespace RAGENativeUI.Memory
         {
             IntPtr address = IntPtr.Zero;
             
-            if (AssertAddress(nameof(CAnimPostFXManager), address = Game.FindPattern("48 8B 0D ?? ?? ?? ?? C7 44 24 ?? ?? ?? ?? ?? 89 44 24 68 33 C0 89 44 24 30")))
+            if (AssertAddress(nameof(CAnimPostFXManager), address = RPH.FindPattern("48 8B 0D ?? ?? ?? ?? C7 44 24 ?? ?? ?? ?? ?? 89 44 24 68 33 C0 89 44 24 30")))
             {
                 address = address + *(int*)(address + 3) + 7;
                 AnimPostFXManager = (CAnimPostFXManager**)address;
             }
             
-            if (AssertAddress(nameof(CTimeCycle), address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 45 33 C9 89 44 24 38 E8 ?? ?? ?? ?? 83 0D")))
+            if (AssertAddress(nameof(CTimeCycle), address = RPH.FindPattern("48 8D 0D ?? ?? ?? ?? 45 33 C9 89 44 24 38 E8 ?? ?? ?? ?? 83 0D")))
             {
                 address = address + *(int*)(address + 3) + 7;
                 TimeCycle = (CTimeCycle*)address;
@@ -33,7 +33,7 @@ namespace RAGENativeUI.Memory
         {
             if (address == IntPtr.Zero)
             {
-                Game.LogTrivial($"Incompatible game version, couldn't find {name} instance.");
+                Common.Log($"Incompatible game version, couldn't find {name} instance.");
                 anyAssertFailed = true;
                 return false;
             }

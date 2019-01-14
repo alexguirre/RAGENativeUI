@@ -1,7 +1,12 @@
 namespace RAGENativeUI
 {
-    using Rage;
-    using static Rage.Native.NativeFunction;
+#if RPH1
+    extern alias rph1;
+    using static rph1::Rage.Native.NativeFunction;
+    using Vector3 = rph1::Rage.Vector3;
+#else
+    /** REDACTED **/
+#endif
 
     internal static class N
     {
@@ -68,7 +73,7 @@ namespace RAGENativeUI
         // Same as _GET_ACTIVE_SCREEN_RESOLUTION (0x873C9F3104101DD3)
         public static void GetActiveScreenResolution(out int x, out int y)
         {
-            System.Drawing.Size r = Game.Resolution;
+            System.Drawing.Size r = RPH.Resolution;
             x = r.Width;
             y = r.Height;
         }
@@ -120,6 +125,22 @@ namespace RAGENativeUI
         public static void ResetScriptGfxAlign() => Natives.xE3A3DB414A373DAB();
 
         public static Vector3 GetTextureResolution(string textureDict, string textureName) => Natives.x35736EE65BD00C11<Vector3>(textureDict, textureName);
+
+
+        public static bool HasScaleformMovieLoaded(int handle) => Natives.x85F01B8D5B90570E<bool>(handle);
+        public static int RequestScaleformMovie(string name) => Natives.x11FE353CF9733E6F<int>(name);
+        public static void SetScaleformMovieAsNoLongerNeeded(ref int handle) => Natives.x1D132D614DD86811(ref handle);
+        public static void CallScaleformMovieMethod(int handle, string methodName) => Natives.xFBD96D87AC96D533(handle, methodName);
+        public static bool BeginScaleformMovieMethod(int handle, string methodName) => Natives.xF6E48914C7A8694E<bool>(handle, methodName);
+        public static void EndScaleformMovieMethod() => Natives.xC6796A8FFA375E53();
+        public static void PushScaleformMovieMethodParameterInt(int value) => Natives.xC3D0841A0CC546A6(value);
+        public static void PushScaleformMovieMethodParameterBool(bool value) => Natives.xC58424BA936EB458(value);
+        public static void PushScaleformMovieMethodParameterFloat(float value) => Natives.xD69736AAE04DB51A(value);
+        public static void PushScaleformMovieMethodParameterString(string value) => Natives.xBA7148484BD90365(value);
+        public static void DrawScaleformMovieFullscreen(int handle, int r, int g, int b, int a, int unk) => Natives.x0DF606929C105BE1(handle, r, g, b, a, unk);
+        public static void DrawScaleformMovie(int handle, float x, float y, float w, float h, int r, int g, int b, int a, int unk) => Natives.x54972ADAF0294A93(handle, x, y, w, h, r, g, b, a, unk);
+        public static void DrawScaleformMovie3DNonAdditive(int handle, float posX, float posY, float posZ, float rotPitch, float rotRoll, float rotYaw, float p7, float p8, float p9, float scaleX, float scaleY, float scaleZ, int p13)
+            => Natives.x1CE592FDC749D6F5(handle, posX, posY, posZ, rotPitch, rotRoll, rotYaw, p7, p8, p9, scaleX, scaleY, scaleZ, p13);
     }
 }
 

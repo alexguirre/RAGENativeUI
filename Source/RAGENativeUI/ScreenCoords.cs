@@ -16,8 +16,8 @@ namespace RAGENativeUI
         {
             if (absolute)
             {
-                int screenWidth = Game.Resolution.Width;
-                int screenHeight = Game.Resolution.Height;
+                int screenWidth = RPH.Resolution.Width;
+                int screenHeight = RPH.Resolution.Height;
                 const float height = 1080f;
                 float ratio = (float)screenWidth / screenHeight;
                 var width = height * ratio;
@@ -65,8 +65,8 @@ namespace RAGENativeUI
         {
             if (absolute)
             {
-                int screenWidth = Game.Resolution.Width;
-                int screenHeight = Game.Resolution.Height;
+                int screenWidth = RPH.Resolution.Width;
+                int screenHeight = RPH.Resolution.Height;
                 const float height = 1080f;
                 float ratio = (float)screenWidth / screenHeight;
                 var width = height * ratio;

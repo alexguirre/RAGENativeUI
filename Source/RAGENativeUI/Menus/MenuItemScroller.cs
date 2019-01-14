@@ -15,7 +15,7 @@ namespace RAGENativeUI.Menus
             get { return selectedIndex; }
             set
             {
-                int newIndex = MathHelper.Clamp(value, 0, MathHelper.Max(0, GetOptionsCount() - 1));
+                int newIndex = RPH.MathHelper.Clamp(value, 0, RPH.MathHelper.Max(0, GetOptionsCount() - 1));
 
                 if (newIndex != selectedIndex)
                 {

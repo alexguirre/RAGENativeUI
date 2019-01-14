@@ -1,5 +1,16 @@
 namespace RAGENativeUI.Elements
 {
+#if RPH1
+    extern alias rph1;
+    using Vector3 = rph1::Rage.Vector3;
+    using Vector2 = rph1::Rage.Vector2;
+    using Matrix = rph1::Rage.Matrix;
+    using Quaternion = rph1::Rage.Quaternion;
+    using Debug = rph1::Rage.Debug;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
 
     using Rage;

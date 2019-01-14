@@ -1,5 +1,12 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using IAddressable = rph1::Rage.IAddressable;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Linq;
     using System.Diagnostics;
@@ -86,7 +93,7 @@ namespace RAGENativeUI
         {
             Throw.IfNull(name, nameof(name));
 
-            uint hash = Game.GetHashKey(name);
+            uint hash = RPH.GetHashKey(name);
             KnownNames.PostFxAnimations.Dictionary[hash] = name;
             return GetByHash(hash);
         }
@@ -222,8 +229,8 @@ namespace RAGENativeUI
 
     public unsafe sealed class PostFxAnimationLayersCollection : IReadOnlyCollection<PostFxAnimationLayer>, IEnumerable<PostFxAnimationLayer>
     {
-        private PostFxAnimation animation;
-        private PostFxAnimationLayer[] layers;
+        private readonly PostFxAnimation animation;
+        private readonly PostFxAnimationLayer[] layers;
 
         public int Count { get { return animation.Native->FXStack.LayersCount; } }
         public PostFxAnimationLayer this[int index]

@@ -1,9 +1,14 @@
 namespace RAGENativeUI.Menus.Themes
 {
+#if RPH1
+    extern alias rph1;
+    using Graphics = rph1::Rage.Graphics;
+#else
+    /** REDACTED **/
+#endif
+
     using System.ComponentModel;
-
-    using Rage;
-
+    
     public class MenuDefaultTheme : MenuTheme
     {
         public MenuDefaultTheme(Menu menu) : base(menu)

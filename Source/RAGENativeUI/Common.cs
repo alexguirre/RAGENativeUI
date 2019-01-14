@@ -1,10 +1,19 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using Vector3 = rph1::Rage.Vector3;
+    using Vector4 = rph1::Rage.Vector4;
+    using Matrix = rph1::Rage.Matrix;
+    using Graphics = rph1::Rage.Graphics;
+    using Game = rph1::Rage.Game;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.IO;
     using System.Text;
-
-    using Rage;
     
     public delegate void TypedEventHandler<TSender, TArgs>(TSender sender, TArgs e) where TArgs : EventArgs;
 
@@ -76,12 +85,13 @@ namespace RAGENativeUI
         // https://code.google.com/archive/p/slimmath/
         public static void TransformCoordinate(ref Vector3 coordinate, ref Matrix transform, out Vector3 result)
         {
-            Vector4 vector = new Vector4();
-            vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
-            vector.Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + (coordinate.Z * transform.M32) + transform.M42;
-            vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
-            vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
-
+            Vector4 vector = new Vector4
+            {
+                X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41,
+                Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + (coordinate.Z * transform.M32) + transform.M42,
+                Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43,
+                W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44),
+            };
             result = new Vector3(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
         }
     }

@@ -34,14 +34,42 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>$(RNUI_BUILD_PATH)\RAGENativeUI.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\RAGENativeUI.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_RPH1|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;RPH1</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_RPH1|x64'">
+    <OutputPath>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\</OutputPath>
+    <DefineConstants>TRACE;RPH1</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\RAGENativeUI.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
       <HintPath>..\..\Dependencies\RagePluginHookSDK.dll</HintPath>
       <Private>False</Private>
+      <Aliases>global,rph2</Aliases>
+    </Reference>
+    <Reference Include="RagePluginHookSDK_old">
+      <HintPath>..\..\Dependencies\RagePluginHookSDK_old.dll</HintPath>
+      <Aliases>global,rph1</Aliases>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,6 +81,7 @@
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="RPH.cs" />
     <Compile Include="CustomTextureReference.cs" />
     <Compile Include="Elements\Rect3D.cs" />
     <Compile Include="Elements\Sprite3D.cs" />

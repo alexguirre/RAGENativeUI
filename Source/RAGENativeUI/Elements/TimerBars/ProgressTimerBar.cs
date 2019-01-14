@@ -8,7 +8,7 @@ namespace RAGENativeUI.Elements.TimerBars
     {
         private float percentage;
 
-        public float Percentage { get => percentage; set => percentage = MathHelper.Clamp(value, 0.0f, 1.0f); }
+        public float Percentage { get => percentage; set => percentage = RPH.MathHelper.Clamp(value, 0.0f, 1.0f); }
         public Color BackColor { get; set; }
         public Color ForeColor { get; set; }
 

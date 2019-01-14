@@ -1,5 +1,12 @@
 namespace RAGENativeUI.Menus.Themes
 {
+#if RPH1
+    extern alias rph1;
+    using Graphics = rph1::Rage.Graphics;
+#else
+    /** REDACTED **/
+#endif
+
     public abstract class MenuTheme
     {
         public Menu Menu { get; }
@@ -10,6 +17,6 @@ namespace RAGENativeUI.Menus.Themes
         }
 
         public abstract MenuTheme Clone(Menu menu);
-        public abstract void Draw(Rage.Graphics g);
+        public abstract void Draw(Graphics g);
     }
 }

@@ -5,8 +5,6 @@ namespace RAGENativeUI.Menus
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
     
-    using Graphics = Rage.Graphics;
-    
     public class MenuItemsCollection : BaseCollection<MenuItem>
     {
         public Menu Owner { get; }

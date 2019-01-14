@@ -1,11 +1,15 @@
 namespace RAGENativeUI.Menus.Themes
 {
-    using System;
+#if RPH1
+    extern alias rph1;
+    using Graphics = rph1::Rage.Graphics;
+    using Vector2 = rph1::Rage.Vector2;
+#else
+    /** REDACTED **/
+#endif
+    
     using System.Drawing;
-
-    using Rage;
-    using Graphics = Rage.Graphics;
-
+    
     public class MenuDebugTheme : MenuTheme
     {
         readonly Vector2 position = new Vector2(15.0f, 65.0f);
@@ -25,18 +29,26 @@ namespace RAGENativeUI.Menus.Themes
 
         public override void Draw(Graphics g)
         {
-            g.DrawRectangle(new RectangleF(position.X, position.Y, width, Game.Resolution.Height - position.Y - 15.0f), Color.FromArgb(80, Color.Black));
+            g.DrawRectangle(new RectangleF(position.X, position.Y, width, RPH.Resolution.Height - position.Y - 15.0f), Color.FromArgb(80, Color.Black));
 
 
             float y = position.Y;
             if (Menu.Title != null)
             {
+#if RPH1
+                g.DrawText(Menu.Title, titleFont.Name, titleFont.Size, new PointF(position.X, y), Color.White);
+#else
                 /** REDACTED **/
+#endif
             }
             y += 6.0f + titleFont.Height;
             if (Menu.Subtitle != null)
             {
+#if RPH1
+                g.DrawText(Menu.Subtitle, subtitleFont.Name, subtitleFont.Size, new PointF(position.X, y), Color.White);
+#else
                 /** REDACTED **/
+#endif
             }
             y += 6.0f + subtitleFont.Height * 2.0f;
 
@@ -57,14 +69,22 @@ namespace RAGENativeUI.Menus.Themes
 
             if (Menu.CurrentDescription != null)
             {
-                g.DrawText(Menu.CurrentDescription, itemFont.Name, itemFont.Size, Color.White, new RectangleF(position.X, y, width, 100.0f), null);
+#if RPH1
+                g.DrawText(Menu.CurrentDescription, itemFont.Name, itemFont.Size, new PointF(position.X, y), Color.White);
+#else
+                /** REDACTED **/
+#endif
                 y += 4.0f + itemFont.Height;
             }
 
 
             y = position.Y;
             float x = position.X + width + 10.0f;
+#if RPH1
+            g.DrawText($"OnScreen -> Start {Menu.ItemsOnScreenStartIndex}, End {Menu.ItemsOnScreenEndIndex}, Max {Menu.MaxItemsOnScreen}", "Consolas", 25.0f, new PointF(x, y), Color.DarkRed);
+#else
             /** REDACTED **/
+#endif
         }
 
         private void DrawItem(Graphics g, MenuItem item, ref float y)
@@ -72,17 +92,29 @@ namespace RAGENativeUI.Menus.Themes
             string t = item.IsSelected ? (" > " + item.Text) : item.Text;
             Color c = item.IsDisabled ? Color.DimGray : GetItemTextColor(item);
 
+#if RPH1
+            g.DrawText(t, itemFont.Name, itemFont.Size, new PointF(position.X, y), c);
+#else
             /** REDACTED **/
+#endif
             switch (item)
             {
                 case MenuItemScroller scroller:
                     {
+#if RPH1
+                        g.DrawText("<" + scroller.GetSelectedOptionText() + ">", itemFont.Name, itemFont.Size, new PointF(position.X, y), c);
+#else
                         /** REDACTED **/
+#endif
                         break;
                     }
                 case MenuItemCheckbox checkbox:
                     {
+#if RPH1
+                        g.DrawText("[" + (checkbox.IsChecked ? "X" : " ") + "]", itemFont.Name, itemFont.Size, new PointF(position.X, y), c);
+#else
                         /** REDACTED **/
+#endif
                         break;
                     }
             }

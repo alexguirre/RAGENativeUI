@@ -1,8 +1,13 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using Graphics = rph1::Rage.Graphics;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
-    
-    using Graphics = Rage.Graphics;
 
     public struct GraphicsFont
     {
@@ -29,11 +34,14 @@ namespace RAGENativeUI
             height = -1.0f;
         }
 
-        public /** REDACTED **/ Measure(string text)
+        public RectangleF Measure(string text)
         {
             Throw.IfNull(text, nameof(text));
-
-            return /** REDACTED **/
+#if RPH1
+            return new RectangleF(PointF.Empty, Graphics.MeasureText(text, Name, Size));
+#else
+            /** REDACTED **/
+#endif
         }
     }
 }

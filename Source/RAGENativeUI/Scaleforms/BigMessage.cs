@@ -1,9 +1,15 @@
 namespace RAGENativeUI.Scaleforms
 {
-    using System;
-    using System.Drawing;
+#if RPH1
+    extern alias rph1;
+    using WeaponHash = rph1::Rage.WeaponHash;
+    using Vector3 = rph1::Rage.Vector3;
+    using Rotator = rph1::Rage.Rotator;
+#else
+    /** REDACTED **/
+#endif
 
-    using Rage;
+    using System.Drawing;
 
     public class BigMessage : Scaleform
     {
@@ -36,7 +42,7 @@ namespace RAGENativeUI.Scaleforms
 
         private void SetUpTimer(uint time)
         {
-            endTime = Game.GameTime + time;
+            endTime = RPH.GameTime + time;
             performedOutTransition = false;
         }
 
@@ -52,7 +58,7 @@ namespace RAGENativeUI.Scaleforms
             {
                 PerformOutTransition();
                 performedOutTransition = true;
-                endTime = Game.GameTime + outTransitionTimeInMilliseconds;
+                endTime = RPH.GameTime + outTransitionTimeInMilliseconds;
             }
         }
 
@@ -118,7 +124,7 @@ namespace RAGENativeUI.Scaleforms
         {
             if (endTime != 0)
             {
-                uint gameTime = Game.GameTime;
+                uint gameTime = RPH.GameTime;
 
                 if (gameTime > endTime + outTransitionTimeInMilliseconds)
                 {

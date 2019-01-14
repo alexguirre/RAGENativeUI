@@ -1,11 +1,16 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using GameControl = rph1::Rage.GameControl;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Linq;
     using System.Collections.ObjectModel;
     using System.Windows.Forms;
-
-    using Rage;
 
     public class Control
     {
@@ -36,7 +41,7 @@ namespace RAGENativeUI
 
         public bool IsJustPressed()
         {
-            if (Key.HasValue && /** REDACTED **/)
+            if (Key.HasValue && RPH.WasKeyJustPressed(Key.Value))
                 return true;
 
             //if (Button.HasValue && Game.IsControllerButtonDown(Button.Value))
@@ -51,7 +56,7 @@ namespace RAGENativeUI
 
         public bool IsPressed()
         {
-            if (Key.HasValue && Game.IsKeyDown(Key.Value))
+            if (Key.HasValue && RPH.IsKeyDown(Key.Value))
                 return true;
 
             //if (Button.HasValue && Game.IsControllerButtonDownRightNow(Button.Value))
@@ -68,7 +73,7 @@ namespace RAGENativeUI
         // TODO: maybe rename IsHeld to better reflect its behaviour
         public bool IsHeld()
         {
-            if(Game.GameTime <= nextHeldTime)
+            if(RPH.GameTime <= nextHeldTime)
             {
                 if(!IsPressed())
                 {
@@ -82,10 +87,10 @@ namespace RAGENativeUI
             {
                 if (heldStartTime == 0)
                 {
-                    heldStartTime = Game.GameTime;
+                    heldStartTime = RPH.GameTime;
                 }
                 UpdateHeldStep();
-                nextHeldTime = Game.GameTime + heldCooldown;
+                nextHeldTime = RPH.GameTime + heldCooldown;
                 return true;
             }
 
@@ -100,7 +105,7 @@ namespace RAGENativeUI
                 if (currentHeldStepIndex != HeldTimeSteps.Length - 1)
                 {
                     int newIndex = currentHeldStepIndex + 1;
-                    if ((Game.GameTime - heldStartTime) >= HeldTimeSteps[newIndex].Time)
+                    if ((RPH.GameTime - heldStartTime) >= HeldTimeSteps[newIndex].Time)
                         currentHeldStepIndex = newIndex;
                 }
 

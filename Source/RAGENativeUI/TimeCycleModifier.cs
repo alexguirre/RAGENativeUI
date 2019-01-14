@@ -1,5 +1,12 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using IAddressable = rph1::Rage.IAddressable;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Linq;
     using System.Collections;
@@ -120,7 +127,7 @@ namespace RAGENativeUI
             Throw.IfNull(name, nameof(name));
             Throw.IfNull(mods, nameof(mods));
 
-            uint hash = Game.GetHashKey(name);
+            uint hash = RPH.GetHashKey(name);
 
             Throw.InvalidOperationIf(GameMemory.TimeCycle->IsNameUsed(hash), $"The name '{name}' is already in use.");
 
@@ -177,7 +184,7 @@ namespace RAGENativeUI
         {
             Throw.IfNull(name, nameof(name));
 
-            uint hash = Game.GetHashKey(name);
+            uint hash = RPH.GetHashKey(name);
             KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
             return GetByHash(hash);
         }

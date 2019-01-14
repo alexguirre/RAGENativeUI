@@ -1,10 +1,15 @@
 namespace RAGENativeUI.Scaleforms
 {
+#if RPH1
+    extern alias rph1;
+    using Vector3 = rph1::Rage.Vector3;
+    using Rotator = rph1::Rage.Rotator;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Drawing;
-
-    using Rage;
-    using Rage.Native;
 
     public unsafe class Scaleform
     {
@@ -12,7 +17,7 @@ namespace RAGENativeUI.Scaleforms
 
         public string Name { get; }
         public int Handle { get { return handle; } }
-        public bool IsLoaded { get { return NativeFunction.Natives.HasScaleformMovieLoaded<bool>(handle); } }
+        public bool IsLoaded { get { return N.HasScaleformMovieLoaded(handle); } }
 
         public Scaleform(string name)
         {
@@ -24,7 +29,7 @@ namespace RAGENativeUI.Scaleforms
 
         public virtual void Load()
         {
-            handle = NativeFunction.Natives.RequestScaleformMovie<int>(Name);
+            handle = N.RequestScaleformMovie(Name);
         }
 
         public virtual void LoadAndWait()
@@ -33,14 +38,14 @@ namespace RAGENativeUI.Scaleforms
 
             int endTime = Environment.TickCount + 5000;
             while (!IsLoaded && endTime > Environment.TickCount)
-                GameFiber.Yield();
+                RPH.GameFiber.Yield();
         }
 
         public virtual void Dismiss()
         {
             if (IsLoaded)
             {
-                NativeFunction.Natives.SetScaleformMovieAsNoLongerNeeded(ref handle);
+                N.SetScaleformMovieAsNoLongerNeeded(ref handle);
             }
         }
 
@@ -51,7 +56,7 @@ namespace RAGENativeUI.Scaleforms
             if (!IsLoaded)
                 LoadAndWait();
 
-            NativeFunction.Natives.CallScaleformMovieMethod(handle, methodName);
+            N.CallScaleformMovieMethod(handle, methodName);
         }
 
         public virtual void CallMethod(string methodName, params object[] arguments)
@@ -61,7 +66,7 @@ namespace RAGENativeUI.Scaleforms
             if (!IsLoaded)
                 LoadAndWait();
 
-            NativeFunction.Natives.xF6E48914C7A8694E(handle, methodName); // _PUSH_SCALEFORM_MOVIE_FUNCTION
+            N.BeginScaleformMovieMethod(handle, methodName);
 
             if (arguments != null)
             {
@@ -70,37 +75,37 @@ namespace RAGENativeUI.Scaleforms
                     switch (arg)
                     {
                         case int intValue:
-                            NativeFunction.Natives.xC3D0841A0CC546A6(intValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                            N.PushScaleformMovieMethodParameterInt(intValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
                             break;
                         case uint uintValue:
-                            NativeFunction.Natives.xC3D0841A0CC546A6(uintValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                            N.PushScaleformMovieMethodParameterInt(unchecked((int)uintValue)); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
                             break;
                         case short shortValue:
-                            NativeFunction.Natives.xC3D0841A0CC546A6(shortValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                            N.PushScaleformMovieMethodParameterInt(shortValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
                             break;
                         case ushort ushortValue:
-                            NativeFunction.Natives.xC3D0841A0CC546A6(ushortValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                            N.PushScaleformMovieMethodParameterInt(ushortValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
                             break;
                         case sbyte sbyteValue:
-                            NativeFunction.Natives.xC3D0841A0CC546A6(sbyteValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                            N.PushScaleformMovieMethodParameterInt(sbyteValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
                             break;
                         case byte byteValue:
-                            NativeFunction.Natives.xC3D0841A0CC546A6(byteValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
+                            N.PushScaleformMovieMethodParameterInt(byteValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_INT
                             break;
                         case bool boolValue:
-                            NativeFunction.Natives.xC58424BA936EB458(boolValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_BOOL
+                            N.PushScaleformMovieMethodParameterBool(boolValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_BOOL
                             break;
                         case float floatValue:
-                            NativeFunction.Natives.xD69736AAE04DB51A(floatValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
+                            N.PushScaleformMovieMethodParameterFloat(floatValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
                             break;
                         case double doubleValue:
-                            NativeFunction.Natives.xD69736AAE04DB51A((float)doubleValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
+                            N.PushScaleformMovieMethodParameterFloat((float)doubleValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_FLOAT
                             break;
                         case string stringValue:
-                            NativeFunction.Natives.xBA7148484BD90365(stringValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
+                            N.PushScaleformMovieMethodParameterString(stringValue); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
                             break;
                         case char charValue:
-                            NativeFunction.Natives.xBA7148484BD90365(charValue.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
+                            N.PushScaleformMovieMethodParameterString(charValue.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
                             break;
                         case null: throw new ArgumentNullException($"Null argument passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.");
                         default: throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.");
@@ -108,7 +113,7 @@ namespace RAGENativeUI.Scaleforms
                 }
             }
 
-            NativeFunction.Natives.xC6796A8FFA375E53(); // _POP_SCALEFORM_MOVIE_FUNCTION_VOID
+            N.EndScaleformMovieMethod();
         }
 
         public virtual void Draw() => Draw(Color.White);
@@ -118,7 +123,7 @@ namespace RAGENativeUI.Scaleforms
             if (!IsLoaded)
                 LoadAndWait();
 
-            NativeFunction.Natives.DrawScaleformMovieFullscreen(handle, color.R, color.G, color.B, color.A, 0);
+            N.DrawScaleformMovieFullscreen(handle, color.R, color.G, color.B, color.A, 0);
         }
 
         public virtual void Draw(ScreenRectangle rectangle) => Draw(rectangle, Color.White);
@@ -128,7 +133,7 @@ namespace RAGENativeUI.Scaleforms
             if (!IsLoaded)
                 LoadAndWait();
 
-            NativeFunction.Natives.DrawScaleformMovie(handle, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color.R, color.G, color.B, color.A, 0);
+            N.DrawScaleformMovie(handle, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color.R, color.G, color.B, color.A, 0);
         }
 
         public virtual void Draw3D(Vector3 position, Rotator rotation, Vector3 scale)
@@ -136,7 +141,7 @@ namespace RAGENativeUI.Scaleforms
             if (!IsLoaded)
                 LoadAndWait();
 
-            NativeFunction.Natives.x1CE592FDC749D6F5(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
+            N.DrawScaleformMovie3DNonAdditive(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
         }
     }
 }

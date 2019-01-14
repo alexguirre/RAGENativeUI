@@ -1,10 +1,16 @@
 namespace RAGENativeUI.Scaleforms
 {
+#if RPH1
+    extern alias rph1;
+    using Vector3 = rph1::Rage.Vector3;
+    using Rotator = rph1::Rage.Rotator;
+    using GameControl = rph1::Rage.GameControl;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Drawing;
-
-    using Rage;
-    using Rage.Native;
     
     public class InstructionalButtons : Scaleform
     {

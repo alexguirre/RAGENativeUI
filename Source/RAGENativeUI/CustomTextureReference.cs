@@ -56,9 +56,9 @@ namespace RAGENativeUI
             uint id;
             fixed (byte* data = pixelData)
             {
-                Rage.Game.LogTrivial($"Calling CreateCustomTexture({name}, {width}, {height}, {((IntPtr)data).ToString("X16")}, {updatable})");
+                Common.LogDebug($"Calling CreateCustomTexture({name}, {width}, {height}, {((IntPtr)data).ToString("X16")}, {updatable})");
                 id = RNUI.Helper.CreateCustomTexture(name, (uint)width, (uint)height, (IntPtr)data, updatable);
-                Rage.Game.LogTrivial($"Id -> {id}");
+                Common.LogDebug($"Id -> {id}");
             }
 
             CustomTextureReference tex = new CustomTextureReference(name, id, width, height, updatable);
