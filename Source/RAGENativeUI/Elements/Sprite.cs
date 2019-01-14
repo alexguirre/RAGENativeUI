@@ -41,7 +41,7 @@ namespace RAGENativeUI.Elements
             if (!textureDictionary.IsLoaded)
                 textureDictionary.Load();
 
-            N.DrawSprite(textureDictionary.Name, textureName, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, rotation, color.R, color.G, color.B, color.A, false);
+            N.DrawSprite(textureDictionary.Name, textureName, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, rotation, color.R, color.G, color.B, color.A);
         }
     }
 }

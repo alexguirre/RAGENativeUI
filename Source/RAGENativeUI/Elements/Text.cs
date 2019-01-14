@@ -17,7 +17,7 @@ namespace RAGENativeUI.Elements
         private const int MaxSubstringLength = 99;
 
         private ScreenRectangle rectangle;
-        private List<string> captionSubstrings = new List<string>();
+        private readonly List<string> captionSubstrings = new List<string>();
         private string caption;
 
         public bool IsVisible { get; set; } = true;
@@ -147,7 +147,7 @@ namespace RAGENativeUI.Elements
 
         private static void EndDraw(ScreenPosition position)
         {
-            N.EndTextCommandDisplayText(position.X, position.Y, 0);
+            N.EndTextCommandDisplayText(position.X, position.Y);
         }
         
         private static void AddCaptionSubstrings(string caption, List<string> to)

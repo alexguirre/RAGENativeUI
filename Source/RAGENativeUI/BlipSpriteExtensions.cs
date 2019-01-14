@@ -2,6 +2,7 @@ namespace RAGENativeUI
 {
     using Rage;
 
+    // TODO: Remove BlipSpriteExtensions as RPH2 seems to have implemented it
     public static class BlipSpriteExtensions
     {
         /// <summary>
@@ -17,9 +18,9 @@ namespace RAGENativeUI
         public static string GetName(this BlipSprite sprite)
         {
             int i = (int)sprite;
-            Throw.IfOutOfRange(i, 0, KnownNames.BlipSpriteNames.Array.Length - 1, nameof(sprite));
+            Throw.IfOutOfRange(i, 0, KnownNames.BlipSprites.Array.Length - 1, nameof(sprite));
 
-            return KnownNames.BlipSpriteNames.Array[i];
+            return KnownNames.BlipSprites.Array[i];
         }
     }
 }
