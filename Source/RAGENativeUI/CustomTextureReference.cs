@@ -47,7 +47,7 @@ namespace RAGENativeUI
         public static unsafe CustomTextureReference FromPixelData(string name, int width, int height, byte[] pixelData, bool updatable)
         {
             Throw.IfNull(name, nameof(name));
-            Throw.InvalidOperationIf(RNUI.Helper.DoesCustomTextureExist(name), $"Custom texture with name '{nameof(name)}' already exists.");
+            Throw.InvalidOperationIf(RNUI.Helper.DoesCustomTextureExist(name), $"Custom texture with name '{name}' already exists.");
             Throw.IfNull(pixelData, nameof(pixelData));
             Throw.ArgumentExceptionIfNot((pixelData.Length == (width * 4 * height)));
             Throw.IfNegativeOrZero(width, nameof(width));

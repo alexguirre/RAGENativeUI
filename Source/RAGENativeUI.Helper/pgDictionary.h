@@ -78,13 +78,13 @@ namespace rage
 
 		T* Find(atHashValue key)
 		{
-			int16 index = 0xFFFF;
+			uint16 index = 0xFFFF;
 
 			pgDictionary<T>* dict = this;
 			while (true)
 			{
-				int16 left = 0;
-				int16 right = dict->m_keys.m_nCount - 1;
+				uint16 left = 0;
+				uint16 right = dict->m_keys.m_nCount - 1;
 
 				if (right < 0)
 				{

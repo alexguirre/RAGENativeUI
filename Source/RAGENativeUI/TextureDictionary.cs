@@ -59,6 +59,7 @@ namespace RAGENativeUI
 
             LoadAndWait();
 
+            TextureReference[] result;
             uint c = RNUI.Helper.GetNumberOfTexturesFromDictionary(Name);
 
             if (c != 0xFFFFFFFF && c > 0)
@@ -66,10 +67,15 @@ namespace RAGENativeUI
                 RNUI.Helper.TextureDesc[] textureDescs = new RNUI.Helper.TextureDesc[c];
                 RNUI.Helper.GetTexturesFromDictionary(Name, textureDescs);
                 string dictName = Name;
-                return Array.ConvertAll(textureDescs, (t) => { return new TextureReference(dictName, Marshal.PtrToStringAnsi(t.Name), (int)t.Width, (int)t.Height); });
+                result = Array.ConvertAll(textureDescs, (t) => new TextureReference(dictName, Marshal.PtrToStringAnsi(t.Name), (int)t.Width, (int)t.Height));
+            }
+            else
+            {
+                result = Array.Empty<TextureReference>();
             }
 
-            return Array.Empty<TextureReference>();
+            Dismiss();
+            return result;
         }
 
         public static implicit operator TextureDictionary(string name) => new TextureDictionary(name);
