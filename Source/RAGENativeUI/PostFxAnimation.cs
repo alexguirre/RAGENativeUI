@@ -93,7 +93,7 @@ namespace RAGENativeUI
         {
             Throw.IfNull(name, nameof(name));
 
-            uint hash = RPH.GetHashKey(name);
+            uint hash = RPH.Game.GetHashKey(name);
             KnownNames.PostFxAnimations.Dictionary[hash] = name;
             return GetByHash(hash);
         }

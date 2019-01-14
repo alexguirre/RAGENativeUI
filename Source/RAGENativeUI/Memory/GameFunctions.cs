@@ -20,31 +20,31 @@ namespace RAGENativeUI.Memory
 
         internal static bool Init()
         {
-            IntPtr address = RPH.FindPattern("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 56 48 83 EC 20 8B 02 48 8B DA 48 8D 54 24 ??");
+            IntPtr address = RPH.Game.FindPattern("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 56 48 83 EC 20 8B 02 48 8B DA 48 8D 54 24 ??");
             if (AssertAddress(address, nameof(StartAnimPostFX)))
             {
                 StartAnimPostFX = Marshal.GetDelegateForFunctionPointer<StartAnimPostFXDelegate>(address);
             }
             
-            address = RPH.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 38 E8 ?? ?? ?? ?? 48 8B D0 48 85 C0");
+            address = RPH.Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 38 E8 ?? ?? ?? ?? 48 8B D0 48 85 C0");
             if (AssertAddress(address, nameof(StopAnimPostFX)))
             {
                 StopAnimPostFX = Marshal.GetDelegateForFunctionPointer<StopAnimPostFXDelegate>(address);
             }
 
-            address = RPH.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 89 44 24 38");
+            address = RPH.Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 89 44 24 38");
             if (AssertAddress(address, nameof(IsAnimPostFXActive)))
             {
                 IsAnimPostFXActive = Marshal.GetDelegateForFunctionPointer<IsAnimPostFXActiveDelegate>(address);
             }
 
-            address = RPH.FindPattern("0F B7 41 08 45 33 C0 45 8B C8 44 8B D0 85 C0 7E 1A 8B 12");
+            address = RPH.Game.FindPattern("0F B7 41 08 45 33 C0 45 8B C8 44 8B D0 85 C0 7E 1A 8B 12");
             if (AssertAddress(address, nameof(GetAnimPostFXByHash)))
             {
                 GetAnimPostFXByHash = Marshal.GetDelegateForFunctionPointer<GetAnimPostFXByHashDelegate>(address);
             }
 
-            address = RPH.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 30 E8 ?? ?? ?? ?? 0F B7 53 48");
+            address = RPH.Game.FindPattern("40 53 48 83 EC 20 8B 02 48 8D 54 24 ?? 48 8B D9 89 44 24 30 E8 ?? ?? ?? ?? 0F B7 53 48");
             if (AssertAddress(address, nameof(GetTimeCycleModifierIndex)))
             {
                 GetTimeCycleModifierIndex = Marshal.GetDelegateForFunctionPointer<GetTimeCycleModifierIndexDelegate>(address);

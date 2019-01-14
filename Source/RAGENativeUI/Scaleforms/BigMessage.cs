@@ -42,7 +42,7 @@ namespace RAGENativeUI.Scaleforms
 
         private void SetUpTimer(uint time)
         {
-            endTime = RPH.GameTime + time;
+            endTime = RPH.Game.GameTime + time;
             performedOutTransition = false;
         }
 
@@ -58,7 +58,7 @@ namespace RAGENativeUI.Scaleforms
             {
                 PerformOutTransition();
                 performedOutTransition = true;
-                endTime = RPH.GameTime + outTransitionTimeInMilliseconds;
+                endTime = RPH.Game.GameTime + outTransitionTimeInMilliseconds;
             }
         }
 
@@ -124,7 +124,7 @@ namespace RAGENativeUI.Scaleforms
         {
             if (endTime != 0)
             {
-                uint gameTime = RPH.GameTime;
+                uint gameTime = RPH.Game.GameTime;
 
                 if (gameTime > endTime + outTransitionTimeInMilliseconds)
                 {

@@ -73,7 +73,7 @@ namespace RAGENativeUI
         // Same as _GET_ACTIVE_SCREEN_RESOLUTION (0x873C9F3104101DD3)
         public static void GetActiveScreenResolution(out int x, out int y)
         {
-            System.Drawing.Size r = RPH.Resolution;
+            System.Drawing.Size r = RPH.Game.Resolution;
             x = r.Width;
             y = r.Height;
         }

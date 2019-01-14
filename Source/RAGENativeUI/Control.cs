@@ -41,7 +41,7 @@ namespace RAGENativeUI
 
         public bool IsJustPressed()
         {
-            if (Key.HasValue && RPH.WasKeyJustPressed(Key.Value))
+            if (Key.HasValue && RPH.Game.WasKeyJustPressed(Key.Value))
                 return true;
 
             //if (Button.HasValue && Game.IsControllerButtonDown(Button.Value))
@@ -56,7 +56,7 @@ namespace RAGENativeUI
 
         public bool IsPressed()
         {
-            if (Key.HasValue && RPH.IsKeyDown(Key.Value))
+            if (Key.HasValue && RPH.Game.IsKeyDown(Key.Value))
                 return true;
 
             //if (Button.HasValue && Game.IsControllerButtonDownRightNow(Button.Value))
@@ -73,7 +73,7 @@ namespace RAGENativeUI
         // TODO: maybe rename IsHeld to better reflect its behaviour
         public bool IsHeld()
         {
-            if(RPH.GameTime <= nextHeldTime)
+            if(RPH.Game.GameTime <= nextHeldTime)
             {
                 if(!IsPressed())
                 {
@@ -87,10 +87,10 @@ namespace RAGENativeUI
             {
                 if (heldStartTime == 0)
                 {
-                    heldStartTime = RPH.GameTime;
+                    heldStartTime = RPH.Game.GameTime;
                 }
                 UpdateHeldStep();
-                nextHeldTime = RPH.GameTime + heldCooldown;
+                nextHeldTime = RPH.Game.GameTime + heldCooldown;
                 return true;
             }
 
@@ -105,7 +105,7 @@ namespace RAGENativeUI
                 if (currentHeldStepIndex != HeldTimeSteps.Length - 1)
                 {
                     int newIndex = currentHeldStepIndex + 1;
-                    if ((RPH.GameTime - heldStartTime) >= HeldTimeSteps[newIndex].Time)
+                    if ((RPH.Game.GameTime - heldStartTime) >= HeldTimeSteps[newIndex].Time)
                         currentHeldStepIndex = newIndex;
                 }
 

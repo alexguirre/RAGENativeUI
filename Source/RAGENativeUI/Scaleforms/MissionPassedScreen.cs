@@ -54,7 +54,7 @@ namespace RAGENativeUI.Scaleforms
         public GameFiber Fiber { get; private set; }
 
         public bool IsCompletionVisible { get; set; }
-        public string CompletionText { get; set; } = RPH.GetLocalizedString("MTPHPER"); // Completion
+        public string CompletionText { get; set; } = RPH.Game.GetLocalizedString("MTPHPER"); // Completion
         public int CompletionPercentage { get; set; } = 100;
         public Color CompletionMedalColor { get; set; } = HudColor.Gold.GetColor();
 
@@ -70,8 +70,8 @@ namespace RAGENativeUI.Scaleforms
             BigMessage.OutTransition = BigMessage.OutTransitionType.MoveUp;
             BigMessage.OutTransitionTime = 0.4f;
             InstructionalButtons = new InstructionalButtons();
-            instructionalButtonContinueIndex = InstructionalButtons.AddSlot(RPH.GetLocalizedString("ES_HELP"), GameControl.FrontendEndscreenAccept); // Continue
-            instructionalButtonExpandIndex = InstructionalButtons.AddSlot(RPH.GetLocalizedString("ES_XPAND"), GameControl.FrontendEndscreenExpand); // Expand
+            instructionalButtonContinueIndex = InstructionalButtons.AddSlot(RPH.Game.GetLocalizedString("ES_HELP"), GameControl.FrontendEndscreenAccept); // Continue
+            instructionalButtonExpandIndex = InstructionalButtons.AddSlot(RPH.Game.GetLocalizedString("ES_XPAND"), GameControl.FrontendEndscreenExpand); // Expand
 
             Title = title;
             Subtitle = subtitle;
@@ -127,13 +127,13 @@ namespace RAGENativeUI.Scaleforms
             {
                 case State.WaitForInputClosed:
                     {
-                        if (RPH.WasControlActionJustPressed(0, ExpandControl))
+                        if (RPH.Game.WasControlActionJustPressed(0, ExpandControl))
                         {
                             ButtonPressedSound?.Play();
                             InstructionalButtons.Slots[instructionalButtonExpandIndex].IsVisible = false;
                             state = State.StartExpand;
                         }
-                        else if (RPH.WasControlActionJustPressed(0, ContinueControl))
+                        else if (RPH.Game.WasControlActionJustPressed(0, ContinueControl))
                         {
                             ButtonPressedSound?.Play();
                             Hide();
@@ -144,14 +144,14 @@ namespace RAGENativeUI.Scaleforms
                 case State.StartExpand:
                     {
                         BigMessage.CallMethod("TRANSITION_UP", 0.15f, true);
-                        timer = RPH.GameTime;
+                        timer = RPH.Game.GameTime;
                         state = State.ExpandRollDown;
                         break;
                     }
 
                 case State.ExpandRollDown:
                     {
-                        if (RPH.GameTime > timer + 150)
+                        if (RPH.Game.GameTime > timer + 150)
                         {
                             BigMessage.CallMethod("ROLL_DOWN_BACKGROUND");
                             state = State.WaitForInputExpanded;
@@ -162,7 +162,7 @@ namespace RAGENativeUI.Scaleforms
 
                 case State.WaitForInputExpanded:
                     {
-                        if (RPH.WasControlActionJustPressed(0, ContinueControl))
+                        if (RPH.Game.WasControlActionJustPressed(0, ContinueControl))
                         {
                             ButtonPressedSound?.Play();
                             Hide();
@@ -173,17 +173,17 @@ namespace RAGENativeUI.Scaleforms
                 case State.CloseRollUp:
                     {
                         BigMessage.CallMethod("ROLL_UP_BACKGROUND");
-                        timer = RPH.GameTime;
+                        timer = RPH.Game.GameTime;
                         state = State.CloseHide;
                         break;
                     }
 
                 case State.CloseHide:
                     {
-                        if (RPH.GameTime > timer + 200)
+                        if (RPH.Game.GameTime > timer + 200)
                         {
                             BigMessage.Hide();
-                            timer = RPH.GameTime;
+                            timer = RPH.Game.GameTime;
                             state = State.WaitHide;
                         }
                         break;
@@ -191,7 +191,7 @@ namespace RAGENativeUI.Scaleforms
 
                 case State.WaitHide:
                     {
-                        if (RPH.GameTime > timer + 400)
+                        if (RPH.Game.GameTime > timer + 400)
                         {
                             state = State.Continue;
                         }

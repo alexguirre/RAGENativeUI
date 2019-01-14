@@ -20,83 +20,85 @@ namespace RAGENativeUI
 #else
         /** REDACTED **/
 #endif
-
-        public static uint GameTime
+        public static class Game
         {
-            get
+            public static uint GameTime
+            {
+                get
+                {
+#if RPH1
+                    return rph1::Rage.Game.GameTime;
+#else
+                    /** REDACTED **/
+#endif
+                }
+            }
+
+            public static Size Resolution
+            {
+                get
+                {
+#if RPH1
+                    return rph1::Rage.Game.Resolution;
+#else
+                    /** REDACTED **/
+#endif
+                }
+            }
+
+            public static uint GetHashKey(string text)
             {
 #if RPH1
-                return rph1::Rage.Game.GameTime;
+                return rph1::Rage.Game.GetHashKey(text);
 #else
                 /** REDACTED **/
 #endif
             }
-        }
 
-        public static Size Resolution
-        {
-            get
+            public static bool WasKeyJustPressed(Keys key)
             {
 #if RPH1
-                return rph1::Rage.Game.Resolution;
+                return rph1::Rage.Game.IsKeyDown(key);
 #else
                 /** REDACTED **/
 #endif
             }
-        }
-        
-        public static uint GetHashKey(string text)
-        {
-#if RPH1
-            return rph1::Rage.Game.GetHashKey(text);
-#else
-            /** REDACTED **/
-#endif
-        }
 
-        public static bool WasKeyJustPressed(Keys key)
-        {
+            public static bool IsKeyDown(Keys key)
+            {
 #if RPH1
-            return rph1::Rage.Game.IsKeyDown(key);
+                return rph1::Rage.Game.IsKeyDownRightNow(key);
 #else
-            /** REDACTED **/
+                /** REDACTED **/
 #endif
-        }
+            }
 
-        public static bool IsKeyDown(Keys key)
-        {
+            public static bool WasControlActionJustPressed(int index, GameControl control, bool evenIfDisabled = false)
+            {
 #if RPH1
-            return rph1::Rage.Game.IsKeyDownRightNow(key);
+                return evenIfDisabled ? N.IsDisabledControlJustPressed(index, (int)control) : rph1::Rage.Game.IsControlJustPressed(index, control);
 #else
-            /** REDACTED **/
+                /** REDACTED **/
 #endif
-        }
+            }
 
-        public static bool WasControlActionJustPressed(int index, GameControl control, bool evenIfDisabled = false)
-        {
+            public static string GetLocalizedString(string localizationStringId)
+            {
 #if RPH1
-            return evenIfDisabled ? N.IsDisabledControlJustPressed(index, (int)control) :  rph1::Rage.Game.IsControlJustPressed(index, control);
+                return rph1::Rage.Game.GetLocalizedString(localizationStringId);
 #else
-            /** REDACTED **/
+                /** REDACTED **/
 #endif
-        }
+            }
 
-        public static string GetLocalizedString(string localizationStringId)
-        {
+            public static System.IntPtr FindPattern(string pattern)
+            {
 #if RPH1
-            return rph1::Rage.Game.GetLocalizedString(localizationStringId);
+                return rph1::Rage.Game.FindPattern(pattern);
 #else
-            /** REDACTED **/
+                /** REDACTED **/
 #endif
-        }
-
-        public static System.IntPtr FindPattern(string pattern)
-        {
-#if RPH1
-            return rph1::Rage.Game.FindPattern(pattern);
-#else
-            /** REDACTED **/
-#endif
+            }
         }
 
         public static class MathHelper

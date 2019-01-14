@@ -127,7 +127,7 @@ namespace RAGENativeUI
             Throw.IfNull(name, nameof(name));
             Throw.IfNull(mods, nameof(mods));
 
-            uint hash = RPH.GetHashKey(name);
+            uint hash = RPH.Game.GetHashKey(name);
 
             Throw.InvalidOperationIf(GameMemory.TimeCycle->IsNameUsed(hash), $"The name '{name}' is already in use.");
 
@@ -184,7 +184,7 @@ namespace RAGENativeUI
         {
             Throw.IfNull(name, nameof(name));
 
-            uint hash = RPH.GetHashKey(name);
+            uint hash = RPH.Game.GetHashKey(name);
             KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
             return GetByHash(hash);
         }

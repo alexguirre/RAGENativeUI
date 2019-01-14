@@ -29,7 +29,7 @@ namespace RAGENativeUI.Menus.Themes
 
         public override void Draw(Graphics g)
         {
-            g.DrawRectangle(new RectangleF(position.X, position.Y, width, RPH.Resolution.Height - position.Y - 15.0f), Color.FromArgb(80, Color.Black));
+            g.DrawRectangle(new RectangleF(position.X, position.Y, width, RPH.Game.Resolution.Height - position.Y - 15.0f), Color.FromArgb(80, Color.Black));
 
 
             float y = position.Y;
