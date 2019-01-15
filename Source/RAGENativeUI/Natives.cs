@@ -61,6 +61,8 @@ namespace RAGENativeUI
         public static void BeginTextCommandDisplayText(string format) => Natives.x25FBB336DF1804CB(format);
         public static void EndTextCommandDisplayText(float x, float y) => Natives.xCD015E5BB0D96A57(x, y);
         public static float GetTextScaleHeight(float scale, int font) => Natives.xDB88A37483346780<float>(scale, font);
+        public static void BeginTextCommandGetWidth(string format) => Natives.x54CE8AC98E120CAB(format);
+        public static void EndTextCommandGetWidth(bool p0) => Natives.x85F061DA64ED2F67<float>(p0);
 
         public static float GetSafeZoneSize() => Natives.xBAF107B6BB2C97F0<float>();
 
@@ -123,6 +125,8 @@ namespace RAGENativeUI
         /// <param name="h">The height of the item to be drawn.</param>
         public static void SetScriptGfxAlignParams(float x, float y, float w, float h) => Natives.xF5A2C681787E579D(x, y, w, h);
         public static void ResetScriptGfxAlign() => Natives.xE3A3DB414A373DAB();
+        public static void SetScriptGfxDrawBehindPausemenu(bool flag) => Natives.xC6372ECD45D73BCD(flag);
+        public static void SetScriptGfxDrawOrder(int order) => Natives.x61BB1D9B3A95D802(order);
 
         public static Vector3 GetTextureResolution(string textureDict, string textureName) => Natives.x35736EE65BD00C11<Vector3>(textureDict, textureName);
 
