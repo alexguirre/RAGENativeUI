@@ -52,29 +52,44 @@ namespace RAGENativeUI
 
         public TextureReference[] GetTextures()
         {
-            if (!IsValid)
+            TextureReference[] result = Array.Empty<TextureReference>();
+            if (Name != CustomTexture.CustomTexturesDictionary.Name)
             {
-                return Array.Empty<TextureReference>();
-            }
+                if (IsValid)
+                {
+                    LoadAndWait();
 
-            LoadAndWait();
+                    uint c = RNUI.Helper.GetNumberOfTexturesFromDictionary(Name);
 
-            TextureReference[] result;
-            uint c = RNUI.Helper.GetNumberOfTexturesFromDictionary(Name);
+                    if (c != 0xFFFFFFFF && c > 0)
+                    {
+                        RNUI.Helper.TextureDesc[] textureDescs = new RNUI.Helper.TextureDesc[c];
+                        RNUI.Helper.GetTexturesFromDictionary(Name, textureDescs);
+                        string dictName = Name;
+                        result = Array.ConvertAll(textureDescs, (t) => new TextureReference(dictName, Marshal.PtrToStringAnsi(t.Name), (int)t.Width, (int)t.Height));
+                    }
 
-            if (c != 0xFFFFFFFF && c > 0)
-            {
-                RNUI.Helper.TextureDesc[] textureDescs = new RNUI.Helper.TextureDesc[c];
-                RNUI.Helper.GetTexturesFromDictionary(Name, textureDescs);
-                string dictName = Name;
-                result = Array.ConvertAll(textureDescs, (t) => new TextureReference(dictName, Marshal.PtrToStringAnsi(t.Name), (int)t.Width, (int)t.Height));
+                    Dismiss();
+                }
             }
             else
             {
-                result = Array.Empty<TextureReference>();
+                uint c = RNUI.Helper.GetNumberOfCustomTextures();
+                if (c > 0)
+                {
+                    RNUI.Helper.CustomTextureDesc[] textureDescs = new RNUI.Helper.CustomTextureDesc[c];
+                    RNUI.Helper.GetCustomTextures(textureDescs);
+                    result = Array.ConvertAll(textureDescs, (t) =>
+                    {
+                        if (!Cache.Get(t.NameHash, out CustomTexture customTexture))
+                        {
+                            customTexture = new CustomTexture(Marshal.PtrToStringAnsi(t.Name), (int)t.Width, (int)t.Height, t.Updatable);
+                        }
+                        return customTexture;
+                    });
+                }
             }
 
-            Dismiss();
             return result;
         }
 

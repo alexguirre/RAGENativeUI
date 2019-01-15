@@ -11,13 +11,13 @@ namespace rage
 	{
 	public:
 		T * m_pItems;
-		uint16 m_nCount;
-		uint16 m_nSize;
+		int16 m_nCount;
+		int16 m_nSize;
 		pad<0x4> field_C;
 
 		atArray() {}
 
-		atArray(uint16 size)
+		atArray(int16 size)
 		{
 			uint32 bytesCount = size * sizeof(T);
 			m_pItems = (T*)Memory::ms_pAllocator->Allocate(bytesCount);
@@ -37,7 +37,7 @@ namespace rage
 			m_nCount = 0;
 		}
 
-		T* Get(uint16 index)
+		T* Get(int16 index)
 		{
 			if (index >= m_nCount)
 			{
@@ -47,7 +47,7 @@ namespace rage
 			return &m_pItems[index];
 		}
 
-		void Set(uint16 index, const T& value)
+		void Set(int16 index, const T& value)
 		{
 			if (index >= m_nCount)
 			{
@@ -68,7 +68,7 @@ namespace rage
 			m_nCount++;
 		}
 
-		void Remove(uint16 index)
+		void Remove(int16 index)
 		{
 			if (index >= m_nCount)
 			{
@@ -88,14 +88,14 @@ namespace rage
 			m_nCount = 0;
 		}
 
-		void EnsureSize(uint16 min)
+		void EnsureSize(int16 min)
 		{
 			if (m_nSize >= min)
 			{
 				return;
 			}
 
-			uint16 newSize = m_nSize == 0 ? 8 : m_nSize * 2;
+			int16 newSize = m_nSize == 0 ? 8 : m_nSize * 2;
 			if (newSize < min)
 			{
 				newSize = min;

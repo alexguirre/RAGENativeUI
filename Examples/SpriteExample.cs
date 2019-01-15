@@ -24,26 +24,55 @@ namespace Examples
     {
         [ConsoleCommand(Name = "SpriteExample", Description = "Example showing the Sprite class.")]
         private static void Command()
-        {
+        {// TODO: crash on unload
             RPH.GameFiber.StartNew(() =>
             {
-                Bitmap bmp = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
-                Font f = new Font(FontFamily.GenericSansSerif, 15.0f);
-                Pen pe = new Pen(Color.Aquamarine, 5.0f);
-                Brush b = new SolidBrush(Color.Green);
-                g.Clear(Color.Red);
-                g.DrawEllipse(pe, 50.0f, 50.0f, 40.0f, 25.0f);
-                g.DrawString("Custom texture from Bitmap!", f, b, new PointF(5.0f, 5.0f));
+                CustomTexture tex = null;
+                for (int i = 0; i < 5; i++)
+                {
+                    Game.LogTrivial("my_own_texture_0 -> " + CustomTexture.DoesCustomTextureExists("my_own_texture_0"));
+                    Game.LogTrivial("my_own_texture_1 -> " + CustomTexture.DoesCustomTextureExists("my_own_texture_1"));
+                    Game.LogTrivial("my_own_texture_2 -> " + CustomTexture.DoesCustomTextureExists("my_own_texture_2"));
+                    Game.LogTrivial("my_own_texture_3 -> " + CustomTexture.DoesCustomTextureExists("my_own_texture_3"));
+                    Game.LogTrivial("my_own_texture_4 -> " + CustomTexture.DoesCustomTextureExists("my_own_texture_4"));
+                    Game.LogTrivial("Total -> " + CustomTexture.GetNumberOfCustomTextures());
+                    Game.LogTrivial("");
 
-                f.Dispose();
-                pe.Dispose();
-                b.Dispose();
-                g.Dispose();
+                    Bitmap bmp = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+                    Font f = new Font(FontFamily.GenericSansSerif, 11.0f);
+                    Pen pe = new Pen(Color.Aquamarine, 5.0f);
+                    Brush b = new SolidBrush(Color.Green);
+                    g.Clear(Color.Red);
+                    g.DrawEllipse(pe, 50.0f, 50.0f, 40.0f, 25.0f);
+                    g.DrawString("Custom texture from Bitmap! -> " + i, f, b, new PointF(5.0f, 5.0f));
 
-                CustomTextureReference tex = CustomTextureReference.FromBitmap("my_own_texture", bmp, false);
+                    f.Dispose();
+                    pe.Dispose();
+                    b.Dispose();
+                    g.Dispose();
+                    tex = CustomTexture.FromBitmap("my_own_texture_" + i, bmp, false);
 
-                bmp.Dispose();
+                    bmp.Dispose();
+
+                    RPH.GameFiber.Yield();
+                }
+                Game.LogTrivial("Finished texture creation");
+
+                foreach (TextureReference t in CustomTexture.CustomTexturesDictionary.GetTextures())
+                {
+                    Game.LogTrivial($"Is CustomTexture -> {t is CustomTexture}");
+                    Game.LogTrivial($"Name -> {t.Name}");
+                    Game.LogTrivial($"Dictionary -> {t.Dictionary.Name}");
+                    Game.LogTrivial($"Width -> {t.Width}");
+                    Game.LogTrivial($"Height -> {t.Height}");
+                    if (t is CustomTexture t2)
+                    {
+                        Game.LogTrivial($"IsUpdatable -> {t2.IsUpdatable}");
+                        Game.LogTrivial($"IsValid -> {t2.IsValid}");
+                    }
+                    Game.LogTrivial("");
+                }
 
                 Sprite sprite = new Sprite(tex.Dictionary, tex.Name, ScreenRectangle.FromAbsoluteCoords(1920f / 2f - 64f, 1080f / 2f - 64f, 128f, 128f));
                 Game.LogTrivial($"TextureDictionary: {sprite.TextureDictionary.Name}");

@@ -9,8 +9,7 @@ rage::strStreamingModule* Memory::ms_pTxdStore = nullptr;
 rage::CStreaming* Memory::ms_pStreaming = nullptr;
 rage::grcTextureFactoryDX11* Memory::m_pTextureFactory = nullptr;
 rage::pgDictionary<rage::grcTextureDX11>* Memory::ms_pCustomTextureDictionary = nullptr;
-std::vector<Memory::CustomTexture> Memory::ms_customTextures;
-uint32 Memory::m_nLastCustomTextureId = 0;
+std::unordered_map<uint32, Memory::CustomTexture> Memory::ms_customTextures;
 void(*Memory::m_pBeginUsingDeviceContext)() = nullptr;
 void(*Memory::m_pEndUsingDeviceContext)() = nullptr;
 uint32 Memory::m_nTlsAllocatorOffset1 = 0;
@@ -47,14 +46,10 @@ bool Memory::Init()
 	address = (uintptr_t)hook::get_pattern("40 53 48 83 EC 20 8B 1D ? ? ? ? 65 48 8B 04 25");
 	m_pEndUsingDeviceContext = (void(*)())address;
 
-	address = (uintptr_t)hook::get_pattern("48 8B 14 C8 B8 ? ? ? ? 48 89 1C 10", 23);
-	m_nTlsAllocatorOffset1 = *(uint32*)address;
-
-	address = (uintptr_t)hook::get_pattern("48 8B 14 C8 B8 ? ? ? ? 48 89 1C 10", 14);
-	m_nTlsAllocatorOffset2 = *(uint32*)address;
-
-	address = (uintptr_t)hook::get_pattern("48 8B 14 C8 B8 ? ? ? ? 48 89 1C 10", 5);
-	m_nTlsAllocatorOffset3 = *(uint32*)address;
+	address = (uintptr_t)hook::get_pattern("48 8B 14 C8 B8 ? ? ? ? 48 89 1C 10");
+	m_nTlsAllocatorOffset1 = *(uint32*)(address + 23);
+	m_nTlsAllocatorOffset2 = *(uint32*)(address + 14);
+	m_nTlsAllocatorOffset3 = *(uint32*)(address + 5);
 
 	ms_bInitialized = true;
 	return true;
@@ -67,7 +62,48 @@ bool Memory::DoesTextureDictionaryExist(const char* name)
 	return id != 0xFFFFFFFF;
 }
 
-bool Memory::DoesCustomTextureExist(const char* name) 
+uint32 Memory::GetNumberOfTexturesFromDictionary(const char* name)
+{
+	uint32 id = 0xFFFFFFFF;
+	ms_pTxdStore->GetIdByName(&id, name);
+
+	if (id != 0xFFFFFFFF)
+	{
+		rage::pgDictionary<rage::grcTextureDX11>* txd = (rage::pgDictionary<rage::grcTextureDX11>*)ms_pTxdStore->GetAsset(id);
+		if (txd)
+		{
+			return txd->GetCount();
+		}
+	}
+	return 0xFFFFFFFF;
+}
+
+void Memory::GetTexturesFromDictionary(const char* name, TextureDesc* outTextureDescs)
+{
+	uint32 id = 0xFFFFFFFF;
+	ms_pTxdStore->GetIdByName(&id, name);
+
+	if (id != 0xFFFFFFFF)
+	{
+		rage::pgDictionary<rage::grcTextureDX11>* txd = (rage::pgDictionary<rage::grcTextureDX11>*)ms_pTxdStore->GetAsset(id);
+		if (txd)
+		{
+			uint16 c = txd->GetCount();
+			if (c > 0)
+			{
+				for (uint16 i = 0; i < c; i++)
+				{
+					rage::grcTextureDX11* tex = txd->GetAt(i);
+					outTextureDescs[i].m_pName = tex->m_pName;
+					outTextureDescs[i].m_nWidth = tex->m_nWidth;
+					outTextureDescs[i].m_nHeight = tex->m_nHeight;
+				}
+			}
+		}
+	}
+}
+
+bool Memory::DoesCustomTextureExist(rage::atHashValue name) 
 {
 	if(!ms_pCustomTextureDictionary)
 	{
@@ -75,16 +111,17 @@ bool Memory::DoesCustomTextureExist(const char* name)
 	}
 
 	rage::grcTextureDX11* tex = ms_pCustomTextureDictionary->Find(name);
+	std::cout << "Find -> " << tex << std::endl;
 	return tex != nullptr;
 }
 
-uint32 Memory::CreateCustomTexture(const char* name, uint32 width, uint32 height, uint8* pixelData, bool updatable)
+bool Memory::CreateCustomTexture(const char* name, uint32 width, uint32 height, uint8* pixelData, bool updatable)
 {
 	UsingAllocator usingTlsAllocator;
 
 	if(DoesCustomTextureExist(name))
 	{
-		return 0xFFFFFFFF;
+		return false;
 	}
 
 	if(!ms_pCustomTextureDictionary)
@@ -147,59 +184,51 @@ uint32 Memory::CreateCustomTexture(const char* name, uint32 width, uint32 height
 		tex->m_pName = CloneString(name);
 	}
 	EndUsingDeviceContext();
-	std::cout << "No longer using D3D Device Context\n";
 
 	ms_pCustomTextureDictionary->Add(name, tex);
-	std::cout << "Added texture to custom dictionary\n";
 
-	std::cout << "Texture Id -> " << m_nLastCustomTextureId << "\n";
-	CustomTexture customTex{ m_nLastCustomTextureId, updatable, tex };
-	m_nLastCustomTextureId++;
-	ms_customTextures.push_back(customTex);
+	CustomTexture customTex{ name, updatable, tex };
+	ms_customTextures.insert({ customTex.m_nName, customTex });
 
-	return customTex.m_nId;
+	return true;
 }
 
-uint32 Memory::GetNumberOfTexturesFromDictionary(const char* name) 
+void Memory::DeleteCustomTexture(rage::atHashValue name)
 {
-	uint32 id = 0xFFFFFFFF;
-	ms_pTxdStore->GetIdByName(&id, name);
+	UsingAllocator usingTlsAllocator;
 
-	if (id != 0xFFFFFFFF)
+	if(ms_customTextures.find(name) == ms_customTextures.end())
 	{
-		rage::pgDictionary<rage::grcTextureDX11>* txd = (rage::pgDictionary<rage::grcTextureDX11>*)ms_pTxdStore->GetAsset(id);
-		if(txd)
-		{
-			return txd->GetCount();
-		}
+		return;
 	}
-	return 0xFFFFFFFF;
+
+	CustomTexture tex = ms_customTextures[name];
+	ms_customTextures.erase(name);
+
+	ms_pCustomTextureDictionary->Remove(name);
+
+	delete tex.m_pTexture;
 }
 
-void Memory::GetTexturesFromDictionary(const char* name, TextureDesc* outTextureDescs)
+uint32 Memory::GetNumberOfCustomTextures() 
 {
-	uint32 id = 0xFFFFFFFF;
-	ms_pTxdStore->GetIdByName(&id, name);
+	return ms_customTextures.size();
+}
 
-	if (id != 0xFFFFFFFF)
+void Memory::GetCustomTextures(Memory::CustomTextureDesc* outTextureDescs) 
+{
+	int i = 0;
+	std::cout << "Memory::GetCustomTextures : ms_customTextures.size() -> " << ms_customTextures.size() << std::endl;
+	for (auto& e : ms_customTextures)
 	{
-		rage::pgDictionary<rage::grcTextureDX11>* txd = (rage::pgDictionary<rage::grcTextureDX11>*)ms_pTxdStore->GetAsset(id);
-		if (txd)
-		{
-			uint16 c = txd->GetCount();
-			if(c > 0)
-			{
-				for (uint16 i = 0; i < c; i++)
-				{
-					rage::grcTextureDX11* tex = txd->GetAt(i);
-					outTextureDescs[i].m_pName = tex->m_pName;
-					outTextureDescs[i].m_nWidth = tex->m_nWidth;
-					outTextureDescs[i].m_nHeight = tex->m_nHeight;
-				}
-			}
-		}
+		std::cout << "Memory::GetCustomTextures :      Name -> " << e.second.m_pTexture->m_pName << " (" << (void*)e.second.m_pTexture->m_pName << ", hash " << std::hex << e.second.m_nName << ")" << std::endl;
+		outTextureDescs[i].m_pName = e.second.m_pTexture->m_pName;
+		outTextureDescs[i].m_nWidth = e.second.m_pTexture->m_nWidth;
+		outTextureDescs[i].m_nHeight = e.second.m_pTexture->m_nHeight;
+		outTextureDescs[i].m_nNameHash = e.second.m_nName;
+		outTextureDescs[i].m_bUpdatable = e.second.m_bUpdatable;
+		i++;
 	}
-
 }
 
 void Memory::CreateCustomTextureDictionary()
@@ -217,7 +246,6 @@ void Memory::CreateCustomTextureDictionary()
 		}
 		return;
 	}
-
 
 	ms_pTxdStore->GetOrCreate(&id, Name);
 

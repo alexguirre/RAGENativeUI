@@ -38,10 +38,10 @@ namespace rage
 
 		bool Add(atHashValue key, T* value)
 		{
-			uint16 insertIndex = 0;
+			int16 insertIndex = 0;
 			if (m_keys.m_nCount > 0)
 			{
-				for (uint16 i = 0; i < m_keys.m_nCount; i++)
+				for (int16 i = 0; i < m_keys.m_nCount; i++)
 				{
 					if (m_keys.m_pItems[i] == key)
 					{
@@ -60,14 +60,14 @@ namespace rage
 				EnsureSize(m_keys.m_nSize ? m_keys.m_nSize * 2 : 5);
 			}
 
-			for (uint16 i = m_keys.m_nCount; i > insertIndex; --i)
+			for (int16 i = m_keys.m_nCount; i > insertIndex; --i)
 			{
 				m_keys.m_pItems[i] = m_keys.m_pItems[i - 1];
 			}
 			++m_keys.m_nCount;
 			m_keys.m_pItems[insertIndex] = key;
 
-			for (uint16 i = m_values.m_nCount; i > insertIndex; --i)
+			for (int16 i = m_values.m_nCount; i > insertIndex; --i)
 			{
 				m_values.m_pItems[i] = m_values.m_pItems[i - 1];
 			}
@@ -78,17 +78,17 @@ namespace rage
 
 		T* Find(atHashValue key)
 		{
-			uint16 index = 0xFFFF;
+			int16 index = -1;
 
 			pgDictionary<T>* dict = this;
 			while (true)
 			{
-				uint16 left = 0;
-				uint16 right = dict->m_keys.m_nCount - 1;
+				int16 left = 0;
+				int16 right = dict->m_keys.m_nCount - 1;
 
 				if (right < 0)
 				{
-					index = 0xFFFF;
+					index = -1;
 				}
 				else
 				{
@@ -103,12 +103,12 @@ namespace rage
 							right = index - 1;
 						if (left > right)
 						{
-							index = 0xFFFF;
+							index = -1;
 							break;
 						}
 					}
 				}
-				if (index != 0xFFFF)
+				if (index != -1)
 					return dict->m_values.m_pItems[index];
 
 				dict = dict->m_pParent;
@@ -119,7 +119,7 @@ namespace rage
 
 		bool Remove(atHashValue key)
 		{
-			int16 index = 0xFFFF;
+			int16 index = -1;
 
 			pgDictionary<T>* dict = this;
 			while (true)
@@ -129,7 +129,7 @@ namespace rage
 
 				if (right < 0)
 				{
-					index = 0xFFFF;
+					index = -1;
 				}
 				else
 				{
@@ -144,21 +144,21 @@ namespace rage
 							right = index - 1;
 						if (left > right)
 						{
-							index = 0xFFFF;
+							index = -1;
 							break;
 						}
 					}
 				}
 				
-				if (index != 0xFFFF)
+				if (index != -1)
 				{
-					for (uint16 i = index; i < dict->m_keys.m_nCount - 1; i++)
+					for (int16 i = index; i < dict->m_keys.m_nCount - 1; i++)
 					{
 						dict->m_keys.m_pItems[i] = dict->m_keys.m_pItems[i + 1];
 					}
 					dict->m_keys.m_nCount--;
 
-					for (uint16 i = index; i < dict->m_values.m_nCount - 1; i++)
+					for (int16 i = index; i < dict->m_values.m_nCount - 1; i++)
 					{
 						dict->m_values.m_pItems[i] = dict->m_values.m_pItems[i + 1];
 					}
@@ -173,17 +173,17 @@ namespace rage
 			}
 		}
 
-		inline T* GetAt(uint16 index)
+		inline T* GetAt(int16 index)
 		{
 			return *m_values.Get(index);
 		}
 
-		inline uint16 GetCount() const
+		inline int16 GetCount() const
 		{
 			return m_keys.m_nCount;
 		}
 
-		void EnsureSize(uint16 min)
+		void EnsureSize(int16 min)
 		{
 			m_keys.EnsureSize(min);
 			m_values.EnsureSize(min);

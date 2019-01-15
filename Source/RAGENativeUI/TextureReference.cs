@@ -1,7 +1,5 @@
 namespace RAGENativeUI
 {
-    using Rage;
-
     public class TextureReference
     {
         public TextureDictionary Dictionary { get; }

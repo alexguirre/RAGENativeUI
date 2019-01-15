@@ -39,6 +39,26 @@ namespace rage
 			return m_nValue != other.m_nValue;
 		}
 
+		inline bool operator>(atHashValue other) const
+		{
+			return m_nValue > other.m_nValue;
+		}
+
+		inline bool operator<(atHashValue other) const
+		{
+			return m_nValue < other.m_nValue;
+		}
+
+		inline bool operator>=(atHashValue other) const
+		{
+			return m_nValue >= other.m_nValue;
+		}
+
+		inline bool operator<=(atHashValue other) const
+		{
+			return m_nValue <= other.m_nValue;
+		}
+
 		inline bool operator==(uint32 other) const
 		{
 			return m_nValue == other;
@@ -47,6 +67,26 @@ namespace rage
 		inline bool operator!=(uint32 other) const
 		{
 			return m_nValue != other;
+		}
+
+		inline bool operator>(uint32 other) const
+		{
+			return m_nValue > other;
+		}
+
+		inline bool operator<(uint32 other) const
+		{
+			return m_nValue < other;
+		}
+
+		inline bool operator>=(uint32 other) const
+		{
+			return m_nValue >= other;
+		}
+
+		inline bool operator<=(uint32 other) const
+		{
+			return m_nValue <= other;
 		}
 	};
 }

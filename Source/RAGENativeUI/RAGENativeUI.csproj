@@ -83,7 +83,7 @@
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="RPH.cs" />
-    <Compile Include="CustomTextureReference.cs" />
+    <Compile Include="CustomTexture.cs" />
     <Compile Include="Elements\Rect3D.cs" />
     <Compile Include="Elements\Sprite3D.cs" />
     <Compile Include="Elements\TimerBars\LabeledTimerBar.cs" />
