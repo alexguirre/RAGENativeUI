@@ -65,6 +65,8 @@ namespace RAGENativeUI.Menus.Themes
 
         public override void Draw(Graphics g)
         {
+            // Note: any magic constants found here were taken from the game scripts
+
             aspectRatio = N.GetAspectRatio(false);
             menuWidth = 0.225f;
             if (aspectRatio < 1.77777f) // less than 16:9
@@ -132,6 +134,45 @@ namespace RAGENativeUI.Menus.Themes
             {
                 Menu.ForEachItemOnScreen((item, index) =>
                 {
+                    void SetTextOptions(bool isSelected, bool isDisabled)
+                    {
+                        if (!isDisabled)
+                        {
+                            if (isSelected)
+                            {
+                                N.SetTextColour(0, 0, 0, (int)(255f * 0.8f));
+                            }
+                            else
+                            {
+                                N.GetHudColour((int)HudColor.White, out int red, out int green, out int blue, out int alpha);
+                                N.SetTextColour(red, green, blue, alpha);
+                            }
+                        }
+                        else if (isSelected)
+                        {
+                            N.SetTextColour(155, 155, 155, 255);
+                        }
+                        else
+                        {
+                            N.SetTextColour(155, 155, 155, 255);
+                        }
+                        N.SetTextScale(0f, 0.35f);
+                        N.SetTextJustification(1);
+                        N.SetTextFont(0);
+                        N.SetTextWrap(0f, 1f);
+                        N.SetTextCentre(false);
+                        N.SetTextDropshadow(0, 0, 0, 0, 0);
+                        N.SetTextEdge(0, 0, 0, 0, 0);
+                    }
+
+                    SetTextOptions(item.IsSelected, item.IsDisabled);
+                    N.BeginTextCommandDisplayText("STRING");
+                    N.AddTextComponentSubstringPlayerName(item.Text);
+                    N.EndTextCommandDisplayText(x - menuWidth * 0.5f + 0.0046875f, y + 0.00277776f);
+
+                    // TODO: implement MenuItemCheckbox drawing
+                    // TODO: implement MenuItemScroller drawing
+                    // TODO: implement MenuItem left/right badge drawing
 
                     y += itemHeight;
                 });

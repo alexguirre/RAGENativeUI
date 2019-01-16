@@ -43,6 +43,8 @@ namespace RAGENativeUI
         public static void SetTextDropShadow() => Natives.x1CA3E9EAC9D93E5E();
         public static void SetTextDropshadow(int distance, int r, int g, int b, int a) => Natives.x465C84BC39F1C351(distance, r, g, b, a);
         public static void SetTextOutline() => Natives.x2513DFB0FB8400FE();
+        public static void SetTextCentre(bool align) => Natives.xC02F4DBFB51D988B(align);
+        public static void SetTextEdge(int p0, int r, int g, int b, int a) => Natives.x441603240D202FA6(p0, r, g, b, a);
 
         /// <param name="type">
         /// <para>0: Center-Justify</para>
