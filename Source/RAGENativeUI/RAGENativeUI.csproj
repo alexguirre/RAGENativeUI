@@ -82,6 +82,7 @@
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Elements\TextComponent.cs" />
     <Compile Include="RPH.cs" />
     <Compile Include="CustomTexture.cs" />
     <Compile Include="Elements\Rect3D.cs" />

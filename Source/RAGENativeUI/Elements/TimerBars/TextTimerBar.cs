@@ -21,7 +21,8 @@ namespace RAGENativeUI.Elements.TimerBars
             base.Draw();
 
             ScreenRectangle r = Rectangle;
-            Elements.Text.Draw(ScreenPosition.FromRelativeCoords(r.X + r.Width * 0.48f, r.Y - r.Height * 0.5f), Text, GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
+            // TODO: fix TextTimerBar to accommodate the new changes in Text
+            Elements.Text.Draw(Text, ScreenPosition.FromRelativeCoords(r.X + r.Width * 0.48f, r.Y - r.Height * 0.5f), GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
         }
 
         private float GetTextScale() => (Rectangle.Height * 0.5f) / DefaultHeight;

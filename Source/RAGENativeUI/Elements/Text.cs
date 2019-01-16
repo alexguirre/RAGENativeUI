@@ -6,19 +6,8 @@ namespace RAGENativeUI.Elements
     
     public class Text
     {
-        // "CELL_EMAIL_BCON" translates to "~a~~a~~a~~a~~a~~a~~a~~a~~a~~a~", 
-        // even though it has 10 substring placeholders ('~a~') only 4 are used
-        // (the classes that handle the DISPLAY_TEXT command are CDisplayTextZeroOrOneNumbers, 
-        // CDisplayTextOneSubstring and CDisplayTextFourSubstringsThreeNumbers, so this limit is obvious).
-        // Each substring max length is 99 + 1 (null terminating char), 
-        // so the max string length that can be displayed in one command is 99 * 4 = 396 chars
-        private const string DisplayTextFormat = "CELL_EMAIL_BCON";
-        private const int MaxSubstringsCount = 4;
-        private const int MaxSubstringLength = 99;
-
         private ScreenRectangle rectangle;
-        private readonly List<string> captionSubstrings = new List<string>();
-        private string caption;
+        private string label;
 
         public bool IsVisible { get; set; } = true;
         // Width = wrapWidth, Height = ignored
@@ -30,38 +19,71 @@ namespace RAGENativeUI.Elements
         }
         public Color Color { get; set; }
         public float Scale { get; set; }
-        public string Caption
+        public string Label
         {
-            get { return caption; }
+            get { return label; }
             set
             {
                 Throw.IfNull(value, nameof(value));
 
-                if (value == caption)
+                if (value == label)
                     return;
-                caption = value;
-
-                AddCaptionSubstrings(caption, captionSubstrings);
+                label = value;
             }
         }
+        public List<TextComponent> Components { get; } = new List<TextComponent>();
         public TextFont Font { get; set; }
         public TextAlignment Alignment { get; set; }
         public bool DropShadow { get; set; }
         public bool Outline { get; set; }
-        public float WrapWidth { get => rectangle.Width; set => rectangle = ScreenRectangle.FromRelativeCoords(rectangle.X, rectangle.Y, value, rectangle.Height); }
-
-        public Text(string caption, ScreenPosition position, float scale, Color color)
+        public float WrapWidth
         {
-            Throw.IfNull(caption, nameof(caption));
+            get => rectangle.Width;
+            set => rectangle = ScreenRectangle.FromRelativeCoords(rectangle.X, rectangle.Y, value, rectangle.Height);
+        }
 
-            Caption = caption;
+        public Text(string label, ScreenPosition position, float scale, Color color)
+        {
+            Throw.IfNull(label, nameof(label));
+
+            Label = label;
             Position = position;
             Scale = scale;
             Color = color;
         }
 
-        public Text(string caption, ScreenPosition position, float scale) : this(caption, position, scale, Color.White)
+        public Text(string label, ScreenPosition position, float scale) : this(label, position, scale, Color.White)
         {
+        }
+
+        public Text(ScreenPosition position, float scale) : this(String.Empty, position, scale, Color.White)
+        {
+        }
+
+        public void SetText(string text)
+        {
+            Throw.IfNull(text, nameof(text));
+
+            const string ShortStringFormat = "STRING";
+            const string LongStringFormat = "CELL_EMAIL_BCON";
+            const int MaxSubstringLength = 99;
+
+            Components.Clear();
+            if (text.Length <= MaxSubstringLength)
+            {
+                Label = ShortStringFormat;
+                Components.Add(new TextComponentString { Value = text });
+            }
+            else
+            {
+                Label = LongStringFormat;
+                for (int i = 0; i < text.Length; i += MaxSubstringLength)
+                {
+                    string str = text.Substring(i, Math.Min(MaxSubstringLength, text.Length - i));
+                    Components.Add(new TextComponentString { Value = str });
+                }
+            }
+
         }
 
         public void Draw()
@@ -69,41 +91,37 @@ namespace RAGENativeUI.Elements
             if (!IsVisible)
                 return;
 
-            Draw(Position, captionSubstrings, Scale, Color, Font, Alignment, WrapWidth, DropShadow, Outline);
+            Draw(Label, Components, Position, Scale, Color, Font, Alignment, WrapWidth, DropShadow, Outline);
         }
 
 
-        public static void Draw(ScreenPosition position, string caption, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(string label, ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
-            Throw.IfNull(caption, nameof(caption));
-
-            BeginDraw(position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
-
-            for (int i = 0, c = 0; i < caption.Length && c < MaxSubstringsCount; i += MaxSubstringLength, c++)
-            {
-                string str = caption.Substring(i, Math.Min(MaxSubstringLength, caption.Length - i));
-                N.AddTextComponentSubstringPlayerName(str);
-            }
-
-            EndDraw(position);
+            Throw.IfNull(label, nameof(label));
+            Draw(label, null, position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
         }
 
-        public static void Draw(ScreenPosition position, List<string> captionSubstrings, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(string label, List<TextComponent> components, ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
-            Throw.IfNull(captionSubstrings, nameof(captionSubstrings));
+            Throw.IfNull(label, nameof(label));
 
-            BeginDraw(position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
-
-            int c = Math.Min(captionSubstrings.Count, MaxSubstringsCount);
-            for (int i = 0; i < c; i++)
+            BeginDraw(label, position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
+            
+            if (components != null && components.Count > 0)
             {
-                N.AddTextComponentSubstringPlayerName(captionSubstrings[i]);
+                foreach (TextComponent comp in components)
+                {
+                    if (comp != null)
+                    {
+                        comp.Push();
+                    }
+                }
             }
             
             EndDraw(position);
         }
 
-        private static void BeginDraw(ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        private static void BeginDraw(string label, ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
             N.SetTextFont((int)font);
             N.SetTextScale(1.0f, scale);
@@ -142,22 +160,12 @@ namespace RAGENativeUI.Elements
                 N.SetTextWrap(0.0f, position.X);
             }
             
-            N.BeginTextCommandDisplayText(DisplayTextFormat);
+            N.BeginTextCommandDisplayText(label);
         }
 
         private static void EndDraw(ScreenPosition position)
         {
             N.EndTextCommandDisplayText(position.X, position.Y);
-        }
-        
-        private static void AddCaptionSubstrings(string caption, List<string> to)
-        {
-            to.Clear();
-            for (int i = 0; i < caption.Length; i += MaxSubstringLength)
-            {
-                string str = caption.Substring(i, Math.Min(MaxSubstringLength, caption.Length - i));
-                to.Add(str);
-            }
         }
     }
 

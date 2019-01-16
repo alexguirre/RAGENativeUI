@@ -37,7 +37,6 @@ namespace RAGENativeUI
 
         public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a) => Natives.x3A618A217E5154F0(x, y, width, height, r, g, b, a);
 
-        public static void AddTextComponentSubstringPlayerName(string text) => Natives.x6C188BE134E074AA(text);
         public static void SetTextFont(int font) => Natives.x66E0276CC5F6B9DA(font);
         public static void SetTextScale(float scale, float size) => Natives.x07C837F9A01C34C9(scale, size);
         public static void SetTextColour(int r, int g, int b, int a) => Natives.xBE6B23FFA53FB442(r, g, b, a);
@@ -63,6 +62,14 @@ namespace RAGENativeUI
         public static float GetTextScaleHeight(float scale, int font) => Natives.xDB88A37483346780<float>(scale, font);
         public static void BeginTextCommandGetWidth(string format) => Natives.x54CE8AC98E120CAB(format);
         public static void EndTextCommandGetWidth(bool p0) => Natives.x85F061DA64ED2F67<float>(p0);
+        public static void AddTextComponentFloat(float value, int decimalPlaces) => Natives.xE7DCB5B874BCD96E(value, decimalPlaces);
+        public static void AddTextComponentInteger(int value) => Natives.x03B504CF259931BC(value);
+        public static void AddTextComponentFormattedInteger(int value, bool commaSeparated) => Natives.x0E4C749FF9DE9CC4(value, commaSeparated);
+        public static void AddTextComponentSubstringBlipName(uint blip) => Natives.x80EAD8E2E1D5D52E(blip);
+        public static void AddTextComponentSubstringPlayerName(string text) => Natives.x6C188BE134E074AA(text);
+        public static void AddTextComponentSubstringTextLabel(string labelName) => Natives.xC63CD5D2920ACBE7(labelName);
+        public static void AddTextComponentSubstringTextLabelHashKey(uint labelHash) => Natives.x17299B63C7683A2B(labelHash);
+        public static void AddTextComponentSubstringTime(int timestamp, int flags) => Natives.x1115F16B8AB9E8BF(timestamp, flags);
 
         public static float GetSafeZoneSize() => Natives.xBAF107B6BB2C97F0<float>();
 

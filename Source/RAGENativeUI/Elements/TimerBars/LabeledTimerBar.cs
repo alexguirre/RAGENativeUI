@@ -21,7 +21,8 @@ namespace RAGENativeUI.Elements.TimerBars
             base.Draw();
 
             ScreenRectangle r = Rectangle;
-            Text.Draw(ScreenPosition.FromRelativeCoords(r.X - r.Width * 0.065f, r.Y - r.Height * 0.275f), Label, GetLabelScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
+            // TODO: fix LabeledTimerBar to accommodate the new changes in Text
+            Text.Draw(Label, ScreenPosition.FromRelativeCoords(r.X - r.Width * 0.065f, r.Y - r.Height * 0.275f), GetLabelScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
         }
 
         private float GetLabelScale() => (Rectangle.Height * 0.288f) / DefaultHeight;

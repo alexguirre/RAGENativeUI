@@ -224,14 +224,15 @@ namespace RAGENativeUI.Scaleforms
                 for (int i = 0; i < Math.Min(Items.Count, MaxItemsOnScreenCount - (IsCompletionVisible ? 1 : 0)); i++)
                 {
                     MissionPassedScreenItem item = Items[i];
-                    Text.Draw(ScreenPosition.FromRelativeCoords(0.37f, y), item.Label, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                    // TODO: fix MissionPassedScreen to accommodate the new changes in Text
+                    Text.Draw(item.Label, ScreenPosition.FromRelativeCoords(0.37f, y), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
                     if (item.Tickbox == MissionPassedScreenItem.TickboxState.None)
                     {
-                        Text.Draw(ScreenPosition.FromRelativeCoords(0.63f, y), item.Status, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        Text.Draw(item.Status, ScreenPosition.FromRelativeCoords(0.63f, y), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
                     }
                     else
                     {
-                        Text.Draw(ScreenPosition.FromRelativeCoords(0.614f, y), item.Status, 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        Text.Draw(item.Status, ScreenPosition.FromRelativeCoords(0.614f, y), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
 
                         const float w = 0.00078125f * 24f * 2f * 0.65f;
                         const float h = 0.001388889f * 24f * 2f * 0.65f;
@@ -251,9 +252,9 @@ namespace RAGENativeUI.Scaleforms
 
                     if (CompletionText != null)
                     {
-                        Text.Draw(ScreenPosition.FromRelativeCoords(0.4175f, y), CompletionText, 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                        Text.Draw(CompletionText, ScreenPosition.FromRelativeCoords(0.4175f, y), 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
                     }
-                    Text.Draw(ScreenPosition.FromRelativeCoords(0.56895f, y), $"{CompletionPercentage}%", 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                    Text.Draw($"{CompletionPercentage}%", ScreenPosition.FromRelativeCoords(0.56895f, y), 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
 
                     y += 0.015715f;
 
