@@ -6,7 +6,8 @@ namespace RAGENativeUI.Menus.Themes
 #else
     /** REDACTED **/
 #endif
-    
+
+    using System;
     using System.Drawing;
 
     public class MenuDefaultTheme : MenuTheme
@@ -22,6 +23,10 @@ namespace RAGENativeUI.Menus.Themes
         public Color UpDownArrowsForeColor { get; set; } = Color.FromArgb(255, 255, 255);
         public TextureReference Background { get; set; }
         public Color BackgroundColor { get; set; } = Color.FromArgb(255, 255, 255);
+        public TextureReference DescriptionBackground { get; set; }
+        public Color DescriptionBackColor { get; set; } = Color.FromArgb(186, 0, 0, 0);
+        public Color DescriptionForeColor { get; set; } = Color.FromArgb(240, 240, 240);
+        public Color DescriptionSeparatorBarColor { get; set; } = Color.FromArgb(0, 0, 0);
 
 
         private float
@@ -40,7 +45,7 @@ namespace RAGENativeUI.Menus.Themes
                     case "interaction_bgd": Banner = t; break;
                     case "gradient_nav": Nav = t; break;
                     case "shop_arrows_upanddown": UpDownArrows = t; break;
-                    case "gradient_bgd": Background = t; break;
+                    case "gradient_bgd": Background = t; DescriptionBackground = t; break;
                 }
             }
         }
@@ -59,6 +64,10 @@ namespace RAGENativeUI.Menus.Themes
                 UpDownArrowsForeColor = UpDownArrowsForeColor,
                 Background = Background,
                 BackgroundColor = BackgroundColor,
+                DescriptionBackground = DescriptionBackground,
+                DescriptionBackColor = DescriptionBackColor,
+                DescriptionForeColor = DescriptionForeColor,
+                DescriptionSeparatorBarColor = DescriptionSeparatorBarColor,
             };
         }
 
@@ -259,7 +268,62 @@ namespace RAGENativeUI.Menus.Themes
             }
 
             // description
+            if (!String.IsNullOrWhiteSpace(Menu.CurrentDescription))
             {
+                y += 0.00277776f * 2f;
+
+                float textX = x - menuWidth * 0.5f + 0.0046875f;  // x - menuWidth * 0.5f + 0.0046875f
+                float textXEnd = x + menuWidth * 0.5f - 0.0046875f; // x - menuWidth * 0.5f + menuWidth - 0.0046875f
+
+                void SetDescriptionTextOptions()
+                {
+                    N.SetTextFont(0);
+                    N.SetTextScale(0f, 0.35f);
+                    N.SetTextLeading(2);
+                    N.SetTextColour(DescriptionForeColor.R, DescriptionForeColor.G, DescriptionForeColor.B, DescriptionForeColor.A);
+                    N.SetTextWrap(textX, textXEnd);
+                    N.SetTextCentre(false);
+                    N.SetTextDropshadow(0, 0, 0, 0, 0);
+                    N.SetTextEdge(0, 0, 0, 0, 0);
+                }
+
+                void PushDescriptionText()
+                {
+                    const int MaxSubstringLength = 99;
+                    const int MaxSubstrings = 4;
+
+                    string text = Menu.CurrentDescription;
+                    for (int i = 0, c = 0; i < text.Length && c < MaxSubstrings; i += MaxSubstringLength, c++)
+                    {
+                        // TODO: get description substrings only when it changes using Menu.PropertyChanged event 
+                        string str = text.Substring(i, Math.Min(MaxSubstringLength, text.Length - i));
+                        N.AddTextComponentSubstringPlayerName(str);
+                    }
+                }
+
+                const string DescFormat = "CELL_EMAIL_BCON";
+
+                SetDescriptionTextOptions();
+                N.BeginTextCommandGetLineCount(DescFormat);
+                PushDescriptionText();
+                int lineCount = N.EndTextCommandGetLineCount(textX, y + 0.00277776f);
+                
+                DrawRect(x, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, DescriptionSeparatorBarColor);
+
+                float descHeight = (N.GetTextScaleHeight(0.35f, 0) * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
+                DrawSprite(DescriptionBackground,
+                           x,
+                           y + (descHeight * 0.5f) - 0.00138888f,
+                           menuWidth,
+                           descHeight,
+                           DescriptionBackColor);
+
+                SetDescriptionTextOptions();
+                N.BeginTextCommandDisplayText(DescFormat);
+                PushDescriptionText();
+                N.EndTextCommandDisplayText(textX, y + 0.00277776f);
+
+                y += descHeight;
             }
 
             N.ResetScriptGfxAlign();

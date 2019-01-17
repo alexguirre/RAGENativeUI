@@ -45,6 +45,7 @@ namespace RAGENativeUI
         public static void SetTextOutline() => Natives.x2513DFB0FB8400FE();
         public static void SetTextCentre(bool align) => Natives.xC02F4DBFB51D988B(align);
         public static void SetTextEdge(int p0, int r, int g, int b, int a) => Natives.x441603240D202FA6(p0, r, g, b, a);
+        public static void SetTextLeading(int p0) => Natives.xA50ABC31E3CDFAFF(p0);
 
         /// <param name="type">
         /// <para>0: Center-Justify</para>
@@ -64,6 +65,8 @@ namespace RAGENativeUI
         public static float GetTextScaleHeight(float scale, int font) => Natives.xDB88A37483346780<float>(scale, font);
         public static void BeginTextCommandGetWidth(string format) => Natives.x54CE8AC98E120CAB(format);
         public static float EndTextCommandGetWidth(bool p0) => Natives.x85F061DA64ED2F67<float>(p0);
+        public static void BeginTextCommandGetLineCount(string format) => Natives.x521FB041D93DD0E4(format);
+        public static int EndTextCommandGetLineCount(float x, float y) => Natives.x9040DFB09BE75706<int>(x, y);
         public static void AddTextComponentFloat(float value, int decimalPlaces) => Natives.xE7DCB5B874BCD96E(value, decimalPlaces);
         public static void AddTextComponentInteger(int value) => Natives.x03B504CF259931BC(value);
         public static void AddTextComponentFormattedInteger(int value, bool commaSeparated) => Natives.x0E4C749FF9DE9CC4(value, commaSeparated);
