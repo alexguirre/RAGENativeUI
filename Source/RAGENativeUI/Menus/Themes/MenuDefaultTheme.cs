@@ -6,8 +6,7 @@ namespace RAGENativeUI.Menus.Themes
 #else
     /** REDACTED **/
 #endif
-
-    using System.ComponentModel;
+    
     using System.Drawing;
 
     public class MenuDefaultTheme : MenuTheme
@@ -130,12 +129,40 @@ namespace RAGENativeUI.Menus.Themes
                            BackgroundColor);
             }
 
+            // nav
+            {
+                float navWidth = menuWidth;
+                float navHeight = itemHeight;
+
+                int offset = Menu.SelectedIndex - Menu.ItemsOnScreenStartIndex;
+                float navY = headerBottom + navHeight * 0.5f + (navHeight * offset);
+
+                if (Nav != null)
+                {
+                    if (!Nav.Dictionary.IsLoaded) Nav.Dictionary.Load();
+
+                    DrawSprite(Nav,
+                               x, navY,
+                               navWidth,
+                               navHeight,
+                               NavColor);
+                }
+                else
+                {
+                    DrawRect(x, navY,
+                             navWidth,
+                             navHeight,
+                             NavColor);
+                }
+            }
+
             // items
             {
                 Menu.ForEachItemOnScreen((item, index) =>
                 {
                     void SetTextOptions(bool isSelected, bool isDisabled)
                     {
+                        // TODO: add fields for item colors
                         if (!isDisabled)
                         {
                             if (isSelected)
@@ -170,9 +197,41 @@ namespace RAGENativeUI.Menus.Themes
                     N.AddTextComponentSubstringPlayerName(item.Text);
                     N.EndTextCommandDisplayText(x - menuWidth * 0.5f + 0.0046875f, y + 0.00277776f);
 
+
                     // TODO: implement MenuItemCheckbox drawing
-                    // TODO: implement MenuItemScroller drawing
                     // TODO: implement MenuItem left/right badge drawing
+                    switch (item)
+                    {
+                        case MenuItemScroller scroller:
+                            {
+                                if (scroller.IsSelected)
+                                {
+                                    SetTextOptions(item.IsSelected, item.IsDisabled);
+                                    N.SetTextJustification(2);
+                                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                                    N.BeginTextCommandDisplayText("STRING");
+                                    N.AddTextComponentSubstringPlayerName(scroller.GetSelectedOptionText());
+                                    N.EndTextCommandDisplayText(0.0f, y + 0.00277776f);
+
+                                    //TODO: scroller arrows
+                                }
+                                else
+                                {
+                                    SetTextOptions(item.IsSelected, item.IsDisabled);
+                                    N.SetTextJustification(2);
+                                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                                    N.BeginTextCommandDisplayText("STRING");
+                                    N.AddTextComponentSubstringPlayerName(scroller.GetSelectedOptionText());
+                                    N.EndTextCommandDisplayText(0.0f, y + 0.00277776f);
+                                }
+                            }
+                            break;
+                        case MenuItemCheckbox checkbox:
+                            {
+
+                            }
+                            break;
+                    }
 
                     y += itemHeight;
                 });
@@ -203,50 +262,7 @@ namespace RAGENativeUI.Menus.Themes
             {
             }
 
-            // nav
-            {
-                float navWidth = menuWidth;
-                float navHeight = itemHeight;
-
-                int offset = Menu.SelectedIndex - Menu.ItemsOnScreenStartIndex;
-                float navY = headerBottom + navHeight * 0.5f + (navHeight * offset);
-
-                if (Nav != null)
-                {
-                    if (!Nav.Dictionary.IsLoaded) Nav.Dictionary.Load();
-
-                    DrawSprite(Nav,
-                               x, navY,
-                               navWidth,
-                               navHeight,
-                               NavColor);
-                }
-                else
-                {
-                    DrawRect(x, navY,
-                             navWidth,
-                             navHeight,
-                             NavColor);
-                }
-            }
-
             N.ResetScriptGfxAlign();
-        }
-
-        private void FormatDescription()
-        {
-        }
-
-        private void OnMenuPropertyChanged(PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(Menu.CurrentDescription):
-                    {
-                        FormatDescription();
-                        break;
-                    }
-            }
         }
 
 

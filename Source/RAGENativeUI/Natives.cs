@@ -63,7 +63,7 @@ namespace RAGENativeUI
         public static void EndTextCommandDisplayText(float x, float y) => Natives.xCD015E5BB0D96A57(x, y);
         public static float GetTextScaleHeight(float scale, int font) => Natives.xDB88A37483346780<float>(scale, font);
         public static void BeginTextCommandGetWidth(string format) => Natives.x54CE8AC98E120CAB(format);
-        public static void EndTextCommandGetWidth(bool p0) => Natives.x85F061DA64ED2F67<float>(p0);
+        public static float EndTextCommandGetWidth(bool p0) => Natives.x85F061DA64ED2F67<float>(p0);
         public static void AddTextComponentFloat(float value, int decimalPlaces) => Natives.xE7DCB5B874BCD96E(value, decimalPlaces);
         public static void AddTextComponentInteger(int value) => Natives.x03B504CF259931BC(value);
         public static void AddTextComponentFormattedInteger(int value, bool commaSeparated) => Natives.x0E4C749FF9DE9CC4(value, commaSeparated);
