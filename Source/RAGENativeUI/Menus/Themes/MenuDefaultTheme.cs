@@ -123,6 +123,23 @@ namespace RAGENativeUI.Menus.Themes
 
                 DrawRect(x, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, SubtitleBackColor);
 
+                // subtitle text
+                {
+                    float subTextX = x - menuWidth * 0.5f + 0.00390625f;
+                    float subTextY = y + 0.00416664f;
+
+                    N.SetTextFont(0);
+                    N.SetTextScale(0f, 0.35f);
+                    N.SetTextColour(SubtitleForeColor.R, SubtitleForeColor.G, SubtitleForeColor.B, SubtitleForeColor.A);
+                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                    N.SetTextCentre(false);
+                    N.SetTextDropshadow(0, 0, 0, 0, 0);
+                    N.SetTextEdge(0, 0, 0, 0, 0);
+
+                    N.BeginTextCommandDisplayText("STRING");
+                    N.AddTextComponentSubstringPlayerName(Menu.Subtitle);
+                    N.EndTextCommandDisplayText(subTextX, subTextY);
+                }
 
                 // counter
                 {
