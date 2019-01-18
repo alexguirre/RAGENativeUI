@@ -295,25 +295,73 @@ namespace RAGENativeUI.Menus.Themes
                     {
                         case MenuItemScroller scroller:
                             {
+                                void SetScrollerTextOptions()
+                                {
+                                    if (!scroller.IsDisabled)
+                                    {
+                                        if (scroller.IsSelected)
+                                        {
+                                            N.SetTextColour(0, 0, 0, (int)(255f * 0.8f));
+                                        }
+                                        else
+                                        {
+                                            N.GetHudColour((int)HudColor.White, out int red, out int green, out int blue, out int alpha);
+                                            N.SetTextColour(red, green, blue, alpha);
+                                        }
+                                    }
+                                    else if (scroller.IsSelected)
+                                    {
+                                        N.SetTextColour(155, 155, 155, 255);
+                                    }
+                                    else
+                                    {
+                                        N.SetTextColour(155, 155, 155, 255);
+                                    }
+                                    N.SetTextFont(0);
+                                    N.SetTextScale(0f, 0.35f);
+                                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                                    N.SetTextCentre(false);
+                                    N.SetTextDropshadow(0, 0, 0, 0, 0);
+                                    N.SetTextEdge(0, 0, 0, 0, 0);
+                                }
+
+                                const string ScrollerOptionTextFormat = "STRING";
+
                                 if (scroller.IsSelected)
                                 {
-                                    SetTextOptions(item.IsSelected, item.IsDisabled);
-                                    N.SetTextJustification(2);
-                                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
-                                    N.BeginTextCommandDisplayText("STRING");
-                                    N.AddTextComponentSubstringPlayerName(scroller.GetSelectedOptionText());
-                                    N.EndTextCommandDisplayText(0.0f, y + 0.00277776f);
+                                    string selectedOption = scroller.GetSelectedOptionText();
+
+                                    SetScrollerTextOptions();
+                                    N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
+                                    N.AddTextComponentSubstringPlayerName(selectedOption);
+                                    float optTextWidth = N.EndTextCommandGetWidth(true);
+
+                                    float optTextX = x + menuWidth * 0.5f - 0.00390625f - optTextWidth;
+                                    float optTextY = y + 0.00277776f;// + 0.00416664f;
+
+                                    SetScrollerTextOptions();
+                                    N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
+                                    N.AddTextComponentSubstringPlayerName(selectedOption);
+                                    N.EndTextCommandDisplayText(optTextX, optTextY);
 
                                     //TODO: scroller arrows
                                 }
                                 else
                                 {
-                                    SetTextOptions(item.IsSelected, item.IsDisabled);
-                                    N.SetTextJustification(2);
-                                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
-                                    N.BeginTextCommandDisplayText("STRING");
-                                    N.AddTextComponentSubstringPlayerName(scroller.GetSelectedOptionText());
-                                    N.EndTextCommandDisplayText(0.0f, y + 0.00277776f);
+                                    string selectedOption = scroller.GetSelectedOptionText();
+
+                                    SetScrollerTextOptions();
+                                    N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
+                                    N.AddTextComponentSubstringPlayerName(selectedOption);
+                                    float optTextWidth = N.EndTextCommandGetWidth(true);
+
+                                    float optTextX = x + menuWidth * 0.5f - 0.00390625f - optTextWidth;
+                                    float optTextY = y + 0.00277776f;// + 0.00416664f;
+
+                                    SetScrollerTextOptions();
+                                    N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
+                                    N.AddTextComponentSubstringPlayerName(selectedOption);
+                                    N.EndTextCommandDisplayText(optTextX, optTextY);
                                 }
                             }
                             break;
