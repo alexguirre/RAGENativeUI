@@ -28,7 +28,11 @@ namespace RAGENativeUI.Menus.Themes
         public Color DescriptionBackColor { get; set; } = Color.FromArgb(186, 0, 0, 0);
         public Color DescriptionForeColor { get; set; } = Color.FromArgb(240, 240, 240);
         public Color DescriptionSeparatorBarColor { get; set; } = Color.FromArgb(0, 0, 0);
-
+        // TODO: implement per item colors using MenuItem.Metadata
+        public Color ItemEnabledColor { get; set; } = Color.FromArgb(240, 240, 240);
+        public Color ItemEnabledAndSelectedColor { get; set; } = Color.FromArgb(204, 0, 0, 0);
+        public Color ItemDisabledColor { get; set; } = Color.FromArgb(155, 155, 155, 155);
+        public Color ItemDisabledAndSelectedColor { get; set; } = Color.FromArgb(155, 155, 155, 155);
 
         private float
             aspectRatio,
@@ -69,6 +73,10 @@ namespace RAGENativeUI.Menus.Themes
                 DescriptionBackColor = DescriptionBackColor,
                 DescriptionForeColor = DescriptionForeColor,
                 DescriptionSeparatorBarColor = DescriptionSeparatorBarColor,
+                ItemEnabledColor = ItemEnabledColor,
+                ItemEnabledAndSelectedColor = ItemEnabledAndSelectedColor,
+                ItemDisabledColor = ItemDisabledColor,
+                ItemDisabledAndSelectedColor = ItemDisabledAndSelectedColor,
             };
         }
 
@@ -253,27 +261,8 @@ namespace RAGENativeUI.Menus.Themes
                 {
                     void SetTextOptions(bool isSelected, bool isDisabled)
                     {
-                        // TODO: add fields for item colors
-                        if (!isDisabled)
-                        {
-                            if (isSelected)
-                            {
-                                N.SetTextColour(0, 0, 0, (int)(255f * 0.8f));
-                            }
-                            else
-                            {
-                                N.GetHudColour((int)HudColor.White, out int red, out int green, out int blue, out int alpha);
-                                N.SetTextColour(red, green, blue, alpha);
-                            }
-                        }
-                        else if (isSelected)
-                        {
-                            N.SetTextColour(155, 155, 155, 255);
-                        }
-                        else
-                        {
-                            N.SetTextColour(155, 155, 155, 255);
-                        }
+                        Color c = GetItemColor(item.IsDisabled, item.IsSelected);
+                        N.SetTextColour(c.R, c.G, c.B, c.A);
                         N.SetTextScale(0f, 0.35f);
                         N.SetTextJustification(1);
                         N.SetTextFont(0);
@@ -297,26 +286,8 @@ namespace RAGENativeUI.Menus.Themes
                             {
                                 void SetScrollerTextOptions()
                                 {
-                                    if (!scroller.IsDisabled)
-                                    {
-                                        if (scroller.IsSelected)
-                                        {
-                                            N.SetTextColour(0, 0, 0, (int)(255f * 0.8f));
-                                        }
-                                        else
-                                        {
-                                            N.GetHudColour((int)HudColor.White, out int red, out int green, out int blue, out int alpha);
-                                            N.SetTextColour(red, green, blue, alpha);
-                                        }
-                                    }
-                                    else if (scroller.IsSelected)
-                                    {
-                                        N.SetTextColour(155, 155, 155, 255);
-                                    }
-                                    else
-                                    {
-                                        N.SetTextColour(155, 155, 155, 255);
-                                    }
+                                    Color c = GetItemColor(scroller.IsDisabled, scroller.IsSelected);
+                                    N.SetTextColour(c.R, c.G, c.B, c.A);
                                     N.SetTextFont(0);
                                     N.SetTextScale(0f, 0.35f);
                                     N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
@@ -468,6 +439,29 @@ namespace RAGENativeUI.Menus.Themes
 
         private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
         private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
+
+        private Color GetItemColor(bool disabled, bool selected)
+        {
+            if (!disabled)
+            {
+                if (selected)
+                {
+                    return ItemEnabledAndSelectedColor;
+                }
+                else
+                {
+                    return ItemEnabledColor;
+                }
+            }
+            else if (selected)
+            {
+                return ItemDisabledAndSelectedColor;
+            }
+            else
+            {
+                return ItemDisabledColor;
+            }
+        }
     }
 }
 
