@@ -780,8 +780,9 @@ namespace RAGENativeUI.Menus
         public Control Accept { get; set; } = new Control(GameControl.FrontendAccept);
         public Control Back { get; set; } = new Control(GameControl.FrontendCancel);
     }
-    
 
+
+    // TODO: should MenuSoundsSet be part of MenuTheme?
     public class MenuSoundsSet
     {
         public FrontendSound Up { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "NAV_UP_DOWN");
