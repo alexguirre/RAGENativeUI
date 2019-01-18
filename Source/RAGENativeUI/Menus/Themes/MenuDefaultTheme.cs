@@ -9,6 +9,7 @@ namespace RAGENativeUI.Menus.Themes
 
     using System;
     using System.Drawing;
+    using System.Linq;
 
     public class MenuDefaultTheme : MenuTheme
     {
@@ -75,6 +76,13 @@ namespace RAGENativeUI.Menus.Themes
         {
             // Note: any magic constants found here were taken from the game scripts
 
+            // TODO: resolution 1280x768  | 5:3   - the menu appears a bit to the left compared to game menus
+            // TODO: resolution 1280x800  | 16:10 - the menu appears a bit to the left compared to game menus
+            // TODO: resolution 1280x1024 | 5:4   - the menu appears a bit to the left (out of screen) compared to game menus
+            // TODO: resolution 1440x990  | 16:11 - the menu appears a bit to the left compared to game menus
+            // TODO: resolution 1600x1024 | 25:16 - the menu appears a bit to the left (out of screen) compared to game menus
+            // TODO: resolution 1680x1050 | 16:10 - the menu appears a bit to the left compared to game menus
+
             aspectRatio = N.GetAspectRatio(false);
             menuWidth = 0.225f;
             if (aspectRatio < 1.77777f) // less than 16:9
@@ -93,7 +101,7 @@ namespace RAGENativeUI.Menus.Themes
             float y = 0.045f + (0.00277776f * 2.0f) - 0.001f - 0.05f;
 
             // testoffset
-            x += 0.02222f;
+            //x += 0.02222f;
 
 
             // banner
@@ -114,6 +122,63 @@ namespace RAGENativeUI.Menus.Themes
                 float subtitleHeight = itemHeight;
 
                 DrawRect(x, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, SubtitleBackColor);
+
+
+                // counter
+                {
+                    int visibleItems = Menu.Items.Count(i => i.IsVisible);
+                    if (visibleItems > Menu.MaxItemsOnScreen)
+                    {
+                        const string CounterFormat = "CM_ITEM_COUNT";
+
+
+                        int pos = 0;
+                        for (int i = 0; i < Menu.ItemsOnScreenEndIndex + 1; i++)
+                        {
+                            if (Menu.Items[i].IsVisible)
+                            {
+                                pos++;
+                            }
+
+                            if (i == Menu.SelectedIndex)
+                            {
+                                break;
+                            }
+                        }
+
+                        void SetCounterTextOptions()
+                        {
+                            N.SetTextFont(0);
+                            N.SetTextScale(0f, 0.35f);
+                            N.SetTextColour(SubtitleForeColor.R, SubtitleForeColor.G, SubtitleForeColor.B, SubtitleForeColor.A);
+                            N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                            N.SetTextCentre(false);
+                            N.SetTextDropshadow(0, 0, 0, 0, 0);
+                            N.SetTextEdge(0, 0, 0, 0, 0);
+                        }
+
+                        void PushCounterComponents()
+                        {
+                            N.AddTextComponentInteger(pos);
+                            N.AddTextComponentInteger(visibleItems);
+                        }
+
+                        SetCounterTextOptions();
+                        N.BeginTextCommandGetWidth(CounterFormat);
+                        PushCounterComponents();
+                        float counterWidth = N.EndTextCommandGetWidth(true);
+
+                        float counterX = x + menuWidth * 0.5f - 0.00390625f - counterWidth;
+                        float counterY = y + 0.00416664f;
+
+                        SetCounterTextOptions();
+                        N.BeginTextCommandDisplayText(CounterFormat);
+                        PushCounterComponents();
+                        N.EndTextCommandDisplayText(counterX, counterY);
+
+                    }
+                }
+
                 y += subtitleHeight;
             }
 
