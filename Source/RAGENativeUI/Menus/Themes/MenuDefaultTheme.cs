@@ -3,6 +3,7 @@ namespace RAGENativeUI.Menus.Themes
 #if RPH1
     extern alias rph1;
     using Graphics = rph1::Rage.Graphics;
+    using Vector2 = rph1::Rage.Vector2;
 #else
     /** REDACTED **/
 #endif
@@ -83,44 +84,31 @@ namespace RAGENativeUI.Menus.Themes
         public override void Draw(Graphics g)
         {
             // Note: any magic constants found here were taken from the game scripts
-
-            // TODO: resolution 1280x768  | 5:3   - the menu appears a bit to the left compared to game menus
-            // TODO: resolution 1280x800  | 16:10 - the menu appears a bit to the left compared to game menus
-            // TODO: resolution 1280x1024 | 5:4   - the menu appears a bit to the left (out of screen) compared to game menus
-            // TODO: resolution 1440x990  | 16:11 - the menu appears a bit to the left compared to game menus
-            // TODO: resolution 1600x1024 | 25:16 - the menu appears a bit to the left (out of screen) compared to game menus
-            // TODO: resolution 1680x1050 | 16:10 - the menu appears a bit to the left compared to game menus
-
+            
             aspectRatio = N.GetAspectRatio(false);
             menuWidth = 0.225f;
             if (aspectRatio < 1.77777f) // less than 16:9
             {
-                menuWidth = (0.225f * ((16f / 9f) / aspectRatio));
+                menuWidth = 0.225f * (16f / 9f / aspectRatio);
             }
 
             N.SetScriptGfxAlign('L', 'T');
-            N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.0f, 0.0f);
-
-            float x = 0.1125f;
-            if (aspectRatio > 1.33f && aspectRatio < 1.34f) // == 4:3
-            {
-                x = 0.15f;
-            }
-            float y = 0.045f + (0.00277776f * 2.0f) - 0.001f - 0.05f;
+            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+            
+            float x = 0.05f;
+            float y = 0.05f;
 
             // testoffset
             //x += 0.02222f;
-
 
             // banner
             if (Banner != null)
             {
                 if (!Banner.Dictionary.IsLoaded) Banner.Dictionary.Load();
 
-                float bannerWidth = menuWidth;
-                float bannerHeight = 0.1f;
+                GetTextureDrawSize(Banner, true, out float bannerWidth, out float bannerHeight, false);
 
-                DrawSprite(Banner, x, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, BannerColor);
+                DrawSprite(Banner, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, BannerColor);
                 y += bannerHeight;
             }
 
@@ -129,17 +117,17 @@ namespace RAGENativeUI.Menus.Themes
                 float subtitleWidth = menuWidth;
                 float subtitleHeight = itemHeight;
 
-                DrawRect(x, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, SubtitleBackColor);
+                DrawRect(x + menuWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, SubtitleBackColor);
 
                 // subtitle text
                 {
-                    float subTextX = x - menuWidth * 0.5f + 0.00390625f;
+                    float subTextX = x + 0.00390625f;
                     float subTextY = y + 0.00416664f;
 
                     N.SetTextFont(0);
                     N.SetTextScale(0f, 0.35f);
                     N.SetTextColour(SubtitleForeColor.R, SubtitleForeColor.G, SubtitleForeColor.B, SubtitleForeColor.A);
-                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                    N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
                     N.SetTextCentre(false);
                     N.SetTextDropshadow(0, 0, 0, 0, 0);
                     N.SetTextEdge(0, 0, 0, 0, 0);
@@ -176,7 +164,7 @@ namespace RAGENativeUI.Menus.Themes
                             N.SetTextFont(0);
                             N.SetTextScale(0f, 0.35f);
                             N.SetTextColour(SubtitleForeColor.R, SubtitleForeColor.G, SubtitleForeColor.B, SubtitleForeColor.A);
-                            N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
+                            N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
                             N.SetTextCentre(false);
                             N.SetTextDropshadow(0, 0, 0, 0, 0);
                             N.SetTextEdge(0, 0, 0, 0, 0);
@@ -193,7 +181,7 @@ namespace RAGENativeUI.Menus.Themes
                         PushCounterComponents();
                         float counterWidth = N.EndTextCommandGetWidth(true);
 
-                        float counterX = x + menuWidth * 0.5f - 0.00390625f - counterWidth;
+                        float counterX = x + menuWidth - 0.00390625f - counterWidth;
                         float counterY = y + 0.00416664f;
 
                         SetCounterTextOptions();
@@ -221,19 +209,20 @@ namespace RAGENativeUI.Menus.Themes
                 float bgHeight = bgBottom - headerBottom;
 
                 DrawSprite(Background,
-                           x,
+                           x + bgWidth * 0.5f,
                            headerBottom + bgHeight * 0.5f - 0.00138888f,
                            bgWidth,
                            bgHeight,
                            BackgroundColor);
             }
-
+            
             // nav
             {
                 float navWidth = menuWidth;
                 float navHeight = itemHeight;
 
                 int offset = Menu.SelectedIndex - Menu.ItemsOnScreenStartIndex;
+                float navX = x + navWidth * 0.5f;
                 float navY = headerBottom + navHeight * 0.5f + (navHeight * offset);
 
                 if (Nav != null)
@@ -241,14 +230,14 @@ namespace RAGENativeUI.Menus.Themes
                     if (!Nav.Dictionary.IsLoaded) Nav.Dictionary.Load();
 
                     DrawSprite(Nav,
-                               x, navY,
+                               navX, navY,
                                navWidth,
                                navHeight,
                                NavColor);
                 }
                 else
                 {
-                    DrawRect(x, navY,
+                    DrawRect(navX, navY,
                              navWidth,
                              navHeight,
                              NavColor);
@@ -259,7 +248,7 @@ namespace RAGENativeUI.Menus.Themes
             {
                 Menu.ForEachItemOnScreen((item, index) =>
                 {
-                    void SetTextOptions(bool isSelected, bool isDisabled)
+                    void SetTextOptions()
                     {
                         Color c = GetItemColor(item.IsDisabled, item.IsSelected);
                         N.SetTextColour(c.R, c.G, c.B, c.A);
@@ -272,10 +261,10 @@ namespace RAGENativeUI.Menus.Themes
                         N.SetTextEdge(0, 0, 0, 0, 0);
                     }
 
-                    SetTextOptions(item.IsSelected, item.IsDisabled);
+                    SetTextOptions();
                     N.BeginTextCommandDisplayText("STRING");
                     N.AddTextComponentSubstringPlayerName(item.Text);
-                    N.EndTextCommandDisplayText(x - menuWidth * 0.5f + 0.0046875f, y + 0.00277776f);
+                    N.EndTextCommandDisplayText(x + 0.0046875f, y + 0.00277776f);
 
 
                     // TODO: implement MenuItemCheckbox drawing
@@ -284,33 +273,21 @@ namespace RAGENativeUI.Menus.Themes
                     {
                         case MenuItemScroller scroller:
                             {
-                                void SetScrollerTextOptions()
-                                {
-                                    Color c = GetItemColor(scroller.IsDisabled, scroller.IsSelected);
-                                    N.SetTextColour(c.R, c.G, c.B, c.A);
-                                    N.SetTextFont(0);
-                                    N.SetTextScale(0f, 0.35f);
-                                    N.SetTextWrap(x - menuWidth * 0.5f + 0.0046875f, x + menuWidth * 0.5f - 0.0046875f);
-                                    N.SetTextCentre(false);
-                                    N.SetTextDropshadow(0, 0, 0, 0, 0);
-                                    N.SetTextEdge(0, 0, 0, 0, 0);
-                                }
-
                                 const string ScrollerOptionTextFormat = "STRING";
 
                                 if (scroller.IsSelected)
                                 {
                                     string selectedOption = scroller.GetSelectedOptionText();
 
-                                    SetScrollerTextOptions();
+                                    SetTextOptions();
                                     N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
                                     N.AddTextComponentSubstringPlayerName(selectedOption);
                                     float optTextWidth = N.EndTextCommandGetWidth(true);
 
-                                    float optTextX = x + menuWidth * 0.5f - 0.00390625f - optTextWidth;
-                                    float optTextY = y + 0.00277776f;// + 0.00416664f;
+                                    float optTextX = x + menuWidth - 0.00390625f - optTextWidth;
+                                    float optTextY = y + 0.00277776f;
 
-                                    SetScrollerTextOptions();
+                                    SetTextOptions();
                                     N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
                                     N.AddTextComponentSubstringPlayerName(selectedOption);
                                     N.EndTextCommandDisplayText(optTextX, optTextY);
@@ -321,15 +298,15 @@ namespace RAGENativeUI.Menus.Themes
                                 {
                                     string selectedOption = scroller.GetSelectedOptionText();
 
-                                    SetScrollerTextOptions();
+                                    SetTextOptions();
                                     N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
                                     N.AddTextComponentSubstringPlayerName(selectedOption);
                                     float optTextWidth = N.EndTextCommandGetWidth(true);
 
-                                    float optTextX = x + menuWidth * 0.5f - 0.00390625f - optTextWidth;
+                                    float optTextX = x + menuWidth - 0.00390625f - optTextWidth;
                                     float optTextY = y + 0.00277776f;// + 0.00416664f;
 
-                                    SetScrollerTextOptions();
+                                    SetTextOptions();
                                     N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
                                     N.AddTextComponentSubstringPlayerName(selectedOption);
                                     N.EndTextCommandDisplayText(optTextX, optTextY);
@@ -356,14 +333,14 @@ namespace RAGENativeUI.Menus.Themes
                 float upDownRectHeight = itemHeight;
 
                 y += 0.0001f;
-                DrawRect(x, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, UpDownArrowsBackColor);
+                DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, UpDownArrowsBackColor);
 
                 float fVar61 = 1.0f; // TODO: this may need to be calculated based on current resolution
                 float upDownWidth = UpDownArrows.Width * (0.5f / fVar61);
                 float upDownHeight = UpDownArrows.Height * (0.5f / fVar61);
                 upDownWidth = upDownWidth / 1280.0f * fVar61;
                 upDownHeight = upDownHeight / 720f * fVar61;
-                DrawSprite(UpDownArrows, x, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, UpDownArrowsForeColor);
+                DrawSprite(UpDownArrows, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, UpDownArrowsForeColor);
 
                 y += itemHeight;
             }
@@ -373,8 +350,8 @@ namespace RAGENativeUI.Menus.Themes
             {
                 y += 0.00277776f * 2f;
 
-                float textX = x - menuWidth * 0.5f + 0.0046875f;  // x - menuWidth * 0.5f + 0.0046875f
-                float textXEnd = x + menuWidth * 0.5f - 0.0046875f; // x - menuWidth * 0.5f + menuWidth - 0.0046875f
+                float textX = x + 0.0046875f;  // x - menuWidth * 0.5f + 0.0046875f
+                float textXEnd = x + menuWidth - 0.0046875f; // x - menuWidth * 0.5f + menuWidth - 0.0046875f
 
                 void SetDescriptionTextOptions()
                 {
@@ -409,11 +386,11 @@ namespace RAGENativeUI.Menus.Themes
                 PushDescriptionText();
                 int lineCount = N.EndTextCommandGetLineCount(textX, y + 0.00277776f);
                 
-                DrawRect(x, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, DescriptionSeparatorBarColor);
+                DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, DescriptionSeparatorBarColor);
 
                 float descHeight = (N.GetTextScaleHeight(0.35f, 0) * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
                 DrawSprite(DescriptionBackground,
-                           x,
+                           x + menuWidth * 0.5f,
                            y + (descHeight * 0.5f) - 0.00138888f,
                            menuWidth,
                            descHeight,
@@ -430,6 +407,91 @@ namespace RAGENativeUI.Menus.Themes
             N.ResetScriptGfxAlign();
         }
 
+        // Converted from game scripts
+        void GetTextureDrawSize(TextureReference texture, bool bParam2, out float width, out float height, bool bParam5)
+        {
+            float func_341()
+            {
+                if (texture == Banner)
+                {
+                    return 1.0f;
+                }
+                else
+                {
+                    return 0.5f;
+                }
+            }
+
+            string dictName;
+            string texName;
+            int screenWidth;
+            int screenHeight;
+            float fVar4;
+            Vector2 texSize;
+
+            dictName = texture.Dictionary;
+            texName = texture.Name;
+            fVar4 = 1f;
+            if (bParam5)
+            {
+                N.GetActiveScreenResolution(out screenWidth, out screenHeight);
+                if (IsUltraWideScreen)
+                {
+                    screenWidth = (int)Math.Round(screenHeight * aspectRatio);
+                }
+                float screenRatio = (float)screenWidth / screenHeight;
+                fVar4 = screenRatio / aspectRatio;
+                if (IsUltraWideScreen)
+                {
+                    fVar4 = 1f;
+                }
+                //if (SCRIPT::_GET_NUMBER_OF_INSTANCES_OF_SCRIPT_WITH_NAME_HASH(joaat("director_mode")) > 0)
+                //{
+                //    N.GetScreenResolution(out iVar2, out iVar3);
+                //}
+                screenWidth = (int)Math.Round(screenWidth / fVar4);
+                screenHeight = (int)Math.Round(screenHeight / fVar4);
+            }
+            else
+            {
+                N.GetScreenResolution(out screenWidth, out screenHeight);
+            }
+            texSize = new Vector2(texture.Width, texture.Height);
+            texSize.X = (texSize.X * (func_341() / fVar4));
+            texSize.Y = (texSize.Y * (func_341() / fVar4));
+            if (!bParam2)
+            {
+                texSize.X = (texSize.X - 2f);
+                texSize.Y = (texSize.Y - 2f);
+            }
+            //if (iParam0 == 30) // texture with id 30 is unused for menu drawing
+            //{
+            //    vVar7.x = 288f;
+            //    vVar7.y = 106f;
+            //}
+            //if (iParam0 == Banner && MISC::GET_HASH_KEY(&(Global_17345.f_6719[29 /*16*/])) == -1487683087/*crew_logo*/) // no crew logos here
+            //{
+            //    vVar7.x = 106f;
+            //    vVar7.y = 106f;
+            //}
+            width = texSize.X / screenWidth * (screenWidth / screenHeight);
+            height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
+            if (!bParam5)
+            {
+                if (!IsWideScreen && true/*iParam0 != 30*/) // texture with id 30 is unused for menu drawing, so it's always not equal to 30
+                {
+                    width = width * 1.33f;
+                }
+            }
+            if (texture == Banner)
+            {
+                if (width > menuWidth)
+                {
+                    height = (height * (menuWidth / width));
+                    width = menuWidth;
+                }
+            }
+        }
 
         private void DrawSprite(TextureReference tex, float x, float y, float w, float h, Color c)
             => N.DrawSprite(tex.Dictionary, tex.Name, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
