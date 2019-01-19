@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Elements.TimerBars
+namespace RAGENativeUI.TimerBars
 {
 #if RPH1
     extern alias rph1;
