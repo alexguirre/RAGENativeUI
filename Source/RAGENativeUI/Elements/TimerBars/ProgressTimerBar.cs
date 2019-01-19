@@ -1,8 +1,13 @@
 namespace RAGENativeUI.Elements.TimerBars
 {
-    using System.Drawing;
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+#else
+    /** REDACTED **/
+#endif
 
-    using Rage;
+    using System.Drawing;
 
     public class ProgressTimerBar : LabeledTimerBar
     {
@@ -29,17 +34,18 @@ namespace RAGENativeUI.Elements.TimerBars
 
             base.Draw();
 
-            ScreenRectangle rect = Rectangle;
+            Vector2 pos = Position;
+            Vector2 size = Size;
 
-            float barX = rect.X + 0.04f;
-            float barY = rect.Y;
-            float barW = rect.Width / 2.25f;
-            float barH = rect.Height / 3f;
-            Rect.Draw(ScreenRectangle.FromRelativeCoords(barX, barY, barW, barH), BackColor);
+            float barX = pos.X + 0.04f;
+            float barY = pos.Y;
+            float barW = size.X / 2.25f;
+            float barH = size.Y / 3f;
+            Rect.Draw((barX, barY).Rel(), (barW, barH).Rel(), BackColor);
             
             float fillX = barX - barW * 0.5f + barW * 0.5f * percentage;
             float fillW = barW * percentage;
-            Rect.Draw(ScreenRectangle.FromRelativeCoords(fillX, barY, fillW, barH), ForeColor);
+            Rect.Draw((fillX, barY).Rel(), (fillW, barH).Rel(), ForeColor);
         }
     }
 }

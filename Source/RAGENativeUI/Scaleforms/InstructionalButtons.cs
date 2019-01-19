@@ -2,6 +2,7 @@ namespace RAGENativeUI.Scaleforms
 {
 #if RPH1
     extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
     using Vector3 = rph1::Rage.Vector3;
     using Rotator = rph1::Rage.Rotator;
     using GameControl = rph1::Rage.GameControl;
@@ -53,10 +54,10 @@ namespace RAGENativeUI.Scaleforms
             base.Draw(color);
         }
 
-        public override void Draw(ScreenRectangle rectangle, Color color)
+        public override void Draw(Vector2 position, Vector2 size, Color color)
         {
             Update();
-            base.Draw(rectangle, color);
+            base.Draw(position, size, color);
         }
 
         public override void Draw3D(Vector3 position, Rotator rotation, Vector3 scale)

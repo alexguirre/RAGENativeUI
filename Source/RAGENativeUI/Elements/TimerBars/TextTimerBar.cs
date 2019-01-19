@@ -1,5 +1,12 @@
 namespace RAGENativeUI.Elements.TimerBars
 {
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+#else
+    /** REDACTED **/
+#endif
+
     public class TextTimerBar : LabeledTimerBar
     {
         private string text;
@@ -20,12 +27,13 @@ namespace RAGENativeUI.Elements.TimerBars
             
             base.Draw();
 
-            ScreenRectangle r = Rectangle;
+            Vector2 p = Position;
+            Vector2 s = Size;
             // TODO: fix TextTimerBar to accommodate the new changes in Text
-            Elements.Text.Draw(Text, ScreenPosition.FromRelativeCoords(r.X + r.Width * 0.48f, r.Y - r.Height * 0.5f), GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
+            Elements.Text.Draw(Text, (p.X + s.X * 0.48f, p.Y - s.Y * 0.5f).Rel(), GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
         }
 
-        private float GetTextScale() => (Rectangle.Height * 0.5f) / DefaultHeight;
+        private float GetTextScale() => (Size.Y * 0.5f) / DefaultHeight;
     }
 }
 

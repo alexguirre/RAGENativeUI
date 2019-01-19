@@ -1,22 +1,22 @@
 namespace RAGENativeUI.Elements
 {
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+#else
+    /** REDACTED **/
+#endif
+
     using System;
     using System.Drawing;
     using System.Collections.Generic;
     
     public class Text
     {
-        private ScreenRectangle rectangle;
         private string label;
 
         public bool IsVisible { get; set; } = true;
-        // Width = wrapWidth, Height = ignored
-        public ScreenRectangle Rectangle { get => rectangle; set => rectangle = value; }
-        public ScreenPosition Position
-        {
-            get => ScreenPosition.FromRelativeCoords(rectangle.X, rectangle.Y);
-            set => rectangle = ScreenRectangle.FromRelativeCoords(value.X, value.Y, rectangle.Width, rectangle.Height);
-        }
+        public Vector2 Position { get; set; }
         public Color Color { get; set; }
         public float Scale { get; set; }
         public string Label
@@ -36,13 +36,9 @@ namespace RAGENativeUI.Elements
         public TextAlignment Alignment { get; set; }
         public bool DropShadow { get; set; }
         public bool Outline { get; set; }
-        public float WrapWidth
-        {
-            get => rectangle.Width;
-            set => rectangle = ScreenRectangle.FromRelativeCoords(rectangle.X, rectangle.Y, value, rectangle.Height);
-        }
+        public float WrapWidth { get; set; }
 
-        public Text(string label, ScreenPosition position, float scale, Color color)
+        public Text(string label, Vector2 position, float scale, Color color)
         {
             Throw.IfNull(label, nameof(label));
 
@@ -52,11 +48,11 @@ namespace RAGENativeUI.Elements
             Color = color;
         }
 
-        public Text(string label, ScreenPosition position, float scale) : this(label, position, scale, Color.White)
+        public Text(string label, Vector2 position, float scale) : this(label, position, scale, Color.White)
         {
         }
 
-        public Text(ScreenPosition position, float scale) : this(String.Empty, position, scale, Color.White)
+        public Text(Vector2 position, float scale) : this(String.Empty, position, scale, Color.White)
         {
         }
 
@@ -95,13 +91,13 @@ namespace RAGENativeUI.Elements
         }
 
 
-        public static void Draw(string label, ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(string label, Vector2 position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
             Throw.IfNull(label, nameof(label));
             Draw(label, null, position, scale, color, font, alignment, wrapWidth, dropShadow, outline);
         }
 
-        public static void Draw(string label, List<TextComponent> components, ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        public static void Draw(string label, List<TextComponent> components, Vector2 position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
             Throw.IfNull(label, nameof(label));
 
@@ -121,7 +117,7 @@ namespace RAGENativeUI.Elements
             EndDraw(position);
         }
 
-        private static void BeginDraw(string label, ScreenPosition position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
+        private static void BeginDraw(string label, Vector2 position, float scale, Color color, TextFont font, TextAlignment alignment, float wrapWidth, bool dropShadow, bool outline)
         {
             N.SetTextFont((int)font);
             N.SetTextScale(1.0f, scale);
@@ -163,7 +159,7 @@ namespace RAGENativeUI.Elements
             N.BeginTextCommandDisplayText(label);
         }
 
-        private static void EndDraw(ScreenPosition position)
+        private static void EndDraw(Vector2 position)
         {
             N.EndTextCommandDisplayText(position.X, position.Y);
         }

@@ -1,99 +1,49 @@
 namespace RAGENativeUI
 {
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+    using Vector4 = rph1::Rage.Vector4;
+    using Matrix = rph1::Rage.Matrix;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
-
-    using Rage;
     
-    public struct ScreenRectangle
+    public static class ScreenCoordsExtension
     {
-        // relative coords
-        public float X { get; }
-        public float Y { get; }
-        public float Width{ get; }
-        public float Height { get; }
+        // Example:
+        // 
+        // 0.5f.XRel() + 100.XPx() = 100 pixels to the right from the middle of the screen
 
-        private ScreenRectangle(RectangleF coords, bool absolute)
+        private static Size transformRes;
+        private static Matrix pxToRelTransform;
+
+        private static Vector2 PxToRel(float x, float y)
         {
-            if (absolute)
+            Size currentRes = RPH.Game.Resolution;
+            if (transformRes != currentRes)
             {
-                int screenWidth = RPH.Game.Resolution.Width;
-                int screenHeight = RPH.Game.Resolution.Height;
-                const float height = 1080f;
-                float ratio = (float)screenWidth / screenHeight;
-                var width = height * ratio;
-
-                float w = coords.Width / width;
-                float h = coords.Height / height;
-                float x = (coords.X / width) + w * 0.5f;
-                float y = (coords.Y / height) + h * 0.5f;
-
-                X = x;
-                Y = y;
-                Width = w;
-                Height = h;
+                transformRes = currentRes;
+                pxToRelTransform = Matrix.OrthoOffCenterRH(-transformRes.Width, transformRes.Width, -transformRes.Height, transformRes.Height, -1.0f, 1.0f);
             }
-            else
-            {
-                X = coords.X;
-                Y = coords.Y;
-                Width = coords.Width;
-                Height = coords.Height;
-            }
+
+            Vector4 tmp = Vector4.Transform(new Vector4(x, y, 0.0f, 1.0f), pxToRelTransform);
+            return new Vector2(tmp.X, tmp.Y);
         }
 
-        public override string ToString()
-        {
-            return $"X: {X} Y: {Y} Width: {Width} Height: {Height}";
-        }
+        public static Vector2 XRel(this float value) => new Vector2(value, 0.0f);
+        public static Vector2 YRel(this float value) => new Vector2(0.0f, value);
+        public static Vector2 Rel(this (float X, float Y) value) => new Vector2(value.X, value.Y);
 
-        public static ScreenRectangle FromAbsoluteCoords(float x, float y, float width, float height) => FromAbsoluteCoords(new RectangleF(x, y, width, height));
-        public static ScreenRectangle FromAbsoluteCoords(PointF position, SizeF size) => FromAbsoluteCoords(new RectangleF(position.X, position.Y, size.Width, size.Height));
-        public static ScreenRectangle FromAbsoluteCoords(RectangleF rectangle) => new ScreenRectangle(rectangle, true);
+        public static Vector2 XPx(this float value) => PxToRel(value, 0.0f);
+        public static Vector2 YPx(this float value) => PxToRel(0.0f, value);
+        public static Vector2 Px(this (float X, float Y) value)  => PxToRel(value.X, value.Y);
 
-        public static ScreenRectangle FromRelativeCoords(float x, float y, float width, float height) => FromRelativeCoords(new RectangleF(x, y, width, height));
-        public static ScreenRectangle FromRelativeCoords(PointF position, SizeF size) => FromRelativeCoords(new RectangleF(position.X, position.Y, size.Width, size.Height));
-        public static ScreenRectangle FromRelativeCoords(RectangleF rectangle) => new ScreenRectangle(rectangle, false);
-    }
-
-    public struct ScreenPosition
-    {
-        // relative coords
-        public float X { get; }
-        public float Y { get; }
-
-        private ScreenPosition(PointF coords, bool absolute)
-        {
-            if (absolute)
-            {
-                int screenWidth = RPH.Game.Resolution.Width;
-                int screenHeight = RPH.Game.Resolution.Height;
-                const float height = 1080f;
-                float ratio = (float)screenWidth / screenHeight;
-                var width = height * ratio;
-                
-                float x = (coords.X / width);
-                float y = (coords.Y / height);
-
-                X = x;
-                Y = y;
-            }
-            else
-            {
-                X = coords.X;
-                Y = coords.Y;
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"X: {X} Y: {Y}";
-        }
-
-        public static ScreenPosition FromAbsoluteCoords(float x, float y) => FromAbsoluteCoords(new PointF(x, y));
-        public static ScreenPosition FromAbsoluteCoords(PointF position) => new ScreenPosition(position, true);
-
-        public static ScreenPosition FromRelativeCoords(float x, float y) => FromRelativeCoords(new PointF(x, y));
-        public static ScreenPosition FromRelativeCoords(PointF position) => new ScreenPosition(position, false);
+        public static Vector2 XPx(this int value) => XPx((float)value);
+        public static Vector2 YPx(this int value) => YPx((float)value);
+        public static Vector2 Px(this (int X, int Y) value) => Px(((float)value.X, (float)value.Y));
     }
 }
 

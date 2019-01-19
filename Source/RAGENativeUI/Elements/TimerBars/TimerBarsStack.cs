@@ -1,8 +1,15 @@
 namespace RAGENativeUI.Elements.TimerBars
 {
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+#else
+    /** REDACTED **/
+#endif
+
     public class TimerBarsStack : BaseCollection<TimerBar>
     {
-        public ScreenPosition? OriginPosition { get; set; }
+        public Vector2? OriginPosition { get; set; }
 
         public void ShowAll()
         {
@@ -39,10 +46,11 @@ namespace RAGENativeUI.Elements.TimerBars
                 TimerBar b = InternalList[i];
                 if (b != null && b.IsVisible)
                 {
-                    ScreenRectangle r = b.Rectangle;
-                    b.Rectangle = ScreenRectangle.FromRelativeCoords(x - r.Width * 0.5f, y - r.Height * 0.5f, r.Width, r.Height);
+                    Vector2 s = b.Size;
+                    b.Position = (x - s.X * 0.5f, y - s.Y * 0.5f).Rel();
+                    b.Size = (s.X, s.Y).Rel();
                     b.Draw();
-                    y -= r.Height + 0.003f;
+                    y -= s.Y + 0.003f;
                 }
             }
         }

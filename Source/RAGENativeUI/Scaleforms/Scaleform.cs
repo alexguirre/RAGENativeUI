@@ -2,6 +2,7 @@ namespace RAGENativeUI.Scaleforms
 {
 #if RPH1
     extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
     using Vector3 = rph1::Rage.Vector3;
     using Rotator = rph1::Rage.Rotator;
 #else
@@ -126,14 +127,14 @@ namespace RAGENativeUI.Scaleforms
             N.DrawScaleformMovieFullscreen(handle, color.R, color.G, color.B, color.A, 0);
         }
 
-        public virtual void Draw(ScreenRectangle rectangle) => Draw(rectangle, Color.White);
+        public virtual void Draw(Vector2 position, Vector2 size) => Draw(position, size, Color.White);
 
-        public virtual void Draw(ScreenRectangle rectangle, Color color)
+        public virtual void Draw(Vector2 position, Vector2 size, Color color)
         {
             if (!IsLoaded)
                 LoadAndWait();
 
-            N.DrawScaleformMovie(handle, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color.R, color.G, color.B, color.A, 0);
+            N.DrawScaleformMovie(handle, position.X, position.Y, size.X, size.Y, color.R, color.G, color.B, color.A, 0);
         }
 
         public virtual void Draw3D(Vector3 position, Rotator rotation, Vector3 scale)
@@ -141,7 +142,7 @@ namespace RAGENativeUI.Scaleforms
             if (!IsLoaded)
                 LoadAndWait();
 
-            N.DrawScaleformMovie3DNonAdditive(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2); // _DRAW_SCALEFORM_MOVIE_3D_NON_ADDITIVE
+            N.DrawScaleformMovie3DNonAdditive(handle, position.X, position.Y, position.Z, rotation.Pitch, rotation.Roll, rotation.Yaw, 2f, 2f, 1f, scale.X, scale.Y, scale.Z, 2);
         }
     }
 }

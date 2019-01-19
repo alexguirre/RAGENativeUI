@@ -217,7 +217,7 @@ namespace RAGENativeUI.Scaleforms
             if(state == State.WaitForInputExpanded)
             {
                 Color white = HudColor.White.GetColor();
-                Rect.Draw(ScreenRectangle.FromRelativeCoords(0.5f, 0.3275f, 0.27f, 0.0009259259f), white);
+                Rect.Draw((0.5f, 0.3275f).Rel(), (0.27f, 0.0009259259f).Rel(), white);
 
                 // TODO: show items as the background rolls down, instead of showing them all at once
                 float y = 0.3387495f;
@@ -225,26 +225,26 @@ namespace RAGENativeUI.Scaleforms
                 {
                     MissionPassedScreenItem item = Items[i];
                     // TODO: fix MissionPassedScreen to accommodate the new changes in Text
-                    Text.Draw(item.Label, ScreenPosition.FromRelativeCoords(0.37f, y), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                    Text.Draw(item.Label, (0.37f, y).Rel(), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
                     if (item.Tickbox == MissionPassedScreenItem.TickboxState.None)
                     {
-                        Text.Draw(item.Status, ScreenPosition.FromRelativeCoords(0.63f, y), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        Text.Draw(item.Status, (0.63f, y).Rel(), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
                     }
                     else
                     {
-                        Text.Draw(item.Status, ScreenPosition.FromRelativeCoords(0.614f, y), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        Text.Draw(item.Status, (0.614f, y).Rel(), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
 
                         const float w = 0.00078125f * 24f * 2f * 0.65f;
                         const float h = 0.001388889f * 24f * 2f * 0.65f;
                         float spriteY = y + 0.014f;
-                        Sprite.Draw("commonmenu", GetTickboxTextureName(item.Tickbox), ScreenRectangle.FromRelativeCoords(0.622f, spriteY, w, h), 0f, Color.White);
+                        Sprite.Draw("commonmenu", GetTickboxTextureName(item.Tickbox), (0.622f, spriteY).Rel(), (w, h).Rel(), 0f, Color.White);
                     }
                     y += 125f * 0.2f * 0.001388889f;
                 }
 
                 y += 27.5f * 0.2f * 0.001388889f;
 
-                Rect.Draw(ScreenRectangle.FromRelativeCoords(0.5f, y, 0.27f, 0.0009259259f), white);
+                Rect.Draw((0.5f, y).Rel(), (0.27f, 0.0009259259f).Rel(), white);
 
                 if (IsCompletionVisible)
                 {
@@ -252,15 +252,15 @@ namespace RAGENativeUI.Scaleforms
 
                     if (CompletionText != null)
                     {
-                        Text.Draw(CompletionText, ScreenPosition.FromRelativeCoords(0.4175f, y), 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                        Text.Draw(CompletionText, (0.4175f, y).Rel(), 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
                     }
-                    Text.Draw($"{CompletionPercentage}%", ScreenPosition.FromRelativeCoords(0.56895f, y), 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                    Text.Draw($"{CompletionPercentage}%", (0.56895f, y).Rel(), 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
 
                     y += 0.015715f;
 
                     const float w = 0.00078125f * 16f * 2f * 0.65f;
                     const float h = 0.001388889f * 16f * 2f * 0.65f;
-                    Sprite.Draw("mphud", "missionpassedmedal", ScreenRectangle.FromRelativeCoords(0.57875f, y, w, h), 0f, CompletionMedalColor);
+                    Sprite.Draw("mphud", "missionpassedmedal", (0.57875f, y).Rel(), (w, h).Rel(), 0f, CompletionMedalColor);
                 }
             }
         }

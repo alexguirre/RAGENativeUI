@@ -1,5 +1,12 @@
 namespace RAGENativeUI.Elements.TimerBars
 {
+#if RPH1
+    extern alias rph1;
+    using Vector2 = rph1::Rage.Vector2;
+#else
+    /** REDACTED **/
+#endif
+
     using System.Drawing;
     
     public abstract class TimerBar
@@ -12,14 +19,16 @@ namespace RAGENativeUI.Elements.TimerBars
         private readonly string bgTextureName = "all_black_bg";
 
         public bool IsVisible { get; set; } = true;
-        public ScreenRectangle Rectangle { get; set; }
+        public Vector2 Position { get; set; }
+        public Vector2 Size { get; set; }
         public Color Color { get; set; }
 
         public TimerBar()
         {
             float x = 0.5f + (N.GetSafeZoneSize() / 2f);
             float y = x;
-            Rectangle = ScreenRectangle.FromRelativeCoords(x - DefaultWidth * 0.5f, y - DefaultHeight * 0.5f, DefaultWidth, DefaultHeight);
+            Position = (x - DefaultWidth * 0.5f, y - DefaultHeight * 0.5f).Rel();
+            Size = (DefaultWidth, DefaultHeight).Rel();
             Color = Color.White;
         }
 
@@ -28,7 +37,7 @@ namespace RAGENativeUI.Elements.TimerBars
             if (!IsVisible)
                 return;
 
-            Sprite.Draw(bgTextureDictionary, bgTextureName, Rectangle, 0.0f, Color.FromArgb(140, 255, 255, 255));
+            Sprite.Draw(bgTextureDictionary, bgTextureName, Position, Size, 0.0f, Color.FromArgb(140, 255, 255, 255));
 
             N.HideHudComponentThisFrame(6); // VehicleName
             N.HideHudComponentThisFrame(7); // AreaName

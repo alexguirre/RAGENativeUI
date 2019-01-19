@@ -36,7 +36,7 @@ namespace Examples
 
 
             LabeledTimerBar middleBar = new LabeledTimerBar("MIDDLE");
-            middleBar.Rectangle = ScreenRectangle.FromRelativeCoords(0.5f, 0.5f, middleBar.Rectangle.Width, middleBar.Rectangle.Height);
+            middleBar.Position = (0.5f, 0.5f).Rel();
 
             RPH.GameFiber.StartNew(() =>
             {
@@ -54,11 +54,11 @@ namespace Examples
 
                     if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Multiply))
                     {
-                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width + 0.5f * RPH.Game.FrameTime, textBar.Rectangle.Height + 0.5f * RPH.Game.FrameTime);
+                        textBar.Size = (textBar.Size.X + 0.5f * RPH.Game.FrameTime, textBar.Size.Y + 0.5f * RPH.Game.FrameTime).Rel();
                     }
                     if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
                     {
-                        textBar.Rectangle = ScreenRectangle.FromRelativeCoords(textBar.Rectangle.X, textBar.Rectangle.Y, textBar.Rectangle.Width - 0.5f * RPH.Game.FrameTime, textBar.Rectangle.Height - 0.5f * RPH.Game.FrameTime);
+                        textBar.Size = (textBar.Size.X - 0.5f * RPH.Game.FrameTime, textBar.Size.Y - 0.5f * RPH.Game.FrameTime).Rel();
                     }
 
                     if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
@@ -69,7 +69,7 @@ namespace Examples
                         }
                         else
                         {
-                            stack.OriginPosition = ScreenPosition.FromRelativeCoords(0.5f, 0.5f);
+                            stack.OriginPosition = (0.5f, 0.5f).Rel();
                         }
                     }
                 }

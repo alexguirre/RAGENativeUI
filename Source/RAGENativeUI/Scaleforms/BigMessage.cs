@@ -3,6 +3,7 @@ namespace RAGENativeUI.Scaleforms
 #if RPH1
     extern alias rph1;
     using WeaponHash = rph1::Rage.WeaponHash;
+    using Vector2 = rph1::Rage.Vector2;
     using Vector3 = rph1::Rage.Vector3;
     using Rotator = rph1::Rage.Rotator;
 #else
@@ -164,11 +165,11 @@ namespace RAGENativeUI.Scaleforms
             }
         }
 
-        public override void Draw(ScreenRectangle rectangle, Color color)
+        public override void Draw(Vector2 position, Vector2 size, Color color)
         {
             if (Update())
             {
-                base.Draw(rectangle, color);
+                base.Draw(position, size, color);
             }
         }
 
