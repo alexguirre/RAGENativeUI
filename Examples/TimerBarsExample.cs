@@ -13,7 +13,7 @@ namespace Examples
     using Rage.Attributes;
 
     using RAGENativeUI;
-    using RAGENativeUI.Elements.TimerBars;
+    using RAGENativeUI.TimerBars;
 
     internal static class TimerBarsExample
     {

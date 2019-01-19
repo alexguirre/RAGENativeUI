@@ -7,6 +7,8 @@ namespace RAGENativeUI.TimerBars
     /** REDACTED **/
 #endif
 
+    using RAGENativeUI.Drawing;
+
     public class TextTimerBar : LabeledTimerBar
     {
         private string text;
@@ -30,7 +32,7 @@ namespace RAGENativeUI.TimerBars
             Vector2 p = Position;
             Vector2 s = Size;
             // TODO: fix TextTimerBar to accommodate the new changes in Text
-            Elements.Text.Draw(Text, (p.X + s.X * 0.48f, p.Y - s.Y * 0.5f).Rel(), GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
+            Drawing.Text.Draw(Text, (p.X + s.X * 0.48f, p.Y - s.Y * 0.5f).Rel(), GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
         }
 
         private float GetTextScale() => (Size.Y * 0.5f) / DefaultHeight;

@@ -17,7 +17,7 @@ namespace Examples
     using Rage.Attributes;
 
     using RAGENativeUI;
-    using RAGENativeUI.Elements;
+    using RAGENativeUI.Drawing;
     using RAGENativeUI.ImGui;
 
     internal static class SpriteExample

@@ -7,6 +7,8 @@ namespace RAGENativeUI.TimerBars
     /** REDACTED **/
 #endif
 
+    using RAGENativeUI.Drawing;
+
     public class LabeledTimerBar : TimerBar
     {
         private string label;

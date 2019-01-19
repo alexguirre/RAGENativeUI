@@ -8,6 +8,7 @@ namespace RAGENativeUI.TimerBars
 #endif
 
     using System.Drawing;
+    using RAGENativeUI.Drawing;
 
     public class ProgressTimerBar : LabeledTimerBar
     {

@@ -8,7 +8,9 @@ namespace RAGENativeUI.TimerBars
 #endif
 
     using System.Drawing;
-    
+
+    using RAGENativeUI.Drawing;
+
     public abstract class TimerBar
     {
         public static readonly float DefaultWidth = 0.157f;

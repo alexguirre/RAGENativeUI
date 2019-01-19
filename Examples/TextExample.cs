@@ -11,7 +11,7 @@ namespace Examples
     using System.Drawing;
     
     using RAGENativeUI;
-    using RAGENativeUI.Elements;
+    using RAGENativeUI.Drawing;
 
     internal static class TextExample
     {
