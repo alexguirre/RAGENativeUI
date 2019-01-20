@@ -26,7 +26,9 @@ namespace Examples
             TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");
             LabeledTimerBar labelBar = new LabeledTimerBar("LABEL") { LabelColor = HudColor.Red.GetColor() };
             TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { TextColor = HudColor.Red.GetColor(), HighlightColor = HudColor.Red.GetColor() };
-            ProgressTimerBar progressBar = new ProgressTimerBar("PROGRESS") { Percentage = 0.5f }; 
+            ProgressTimerBar progressBar = new ProgressTimerBar("") { Percentage = 0.5f };
+            progressBar.Markers.Add(0.3333f);
+            progressBar.Markers.Add(0.6666f);
 
             stack.Add(timeBar);
             stack.Add(positionBar);
@@ -46,6 +48,8 @@ namespace Examples
                         progressBar.Percentage += 2.0f * RPH.Game.FrameTime;
                     if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
                         progressBar.Percentage -= 2.0f * RPH.Game.FrameTime;
+
+                    progressBar.Label = $"{progressBar.Percentage:P}";
                 }
             });
         }
