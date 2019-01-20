@@ -44,11 +44,6 @@ namespace RAGENativeUI.TimerBars
                 N.DrawSprite(BgTextureDictionary, BgHighlightTextureName, pos.X, pos.Y, Width, Height, 0.0f, HighlightColor.Value.R, HighlightColor.Value.G, HighlightColor.Value.B, 140);
             }
             N.DrawSprite(BgTextureDictionary, BgTextureName, pos.X, pos.Y, Width, Height, 0.0f, 255, 255, 255, 140);
-
-            N.HideHudComponentThisFrame(6); // VehicleName
-            N.HideHudComponentThisFrame(7); // AreaName
-            N.HideHudComponentThisFrame(8); // ?
-            N.HideHudComponentThisFrame(9); // StreetName
         }
         
         protected static Vector2 Position(int index)

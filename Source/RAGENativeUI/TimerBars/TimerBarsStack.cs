@@ -27,17 +27,25 @@ namespace RAGENativeUI.TimerBars
 
         public void Draw()
         {
-            N.SetScriptGfxAlign('R', 'B');
-            N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
-            for (int i = 0; i < InternalList.Count; i++)
+            if (InternalList.Count > 0)
             {
-                TimerBar b = InternalList[i];
-                if (b != null && b.IsVisible)
+                N.SetScriptGfxAlign('R', 'B');
+                N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
+                for (int i = 0; i < InternalList.Count; i++)
                 {
-                    b.Draw(i);
+                    TimerBar b = InternalList[i];
+                    if (b != null && b.IsVisible)
+                    {
+                        b.Draw(i);
+                    }
                 }
+                N.ResetScriptGfxAlign();
+                
+                N.HideHudComponentThisFrame(6); // VehicleName
+                N.HideHudComponentThisFrame(7); // AreaName
+                N.HideHudComponentThisFrame(8); // ?
+                N.HideHudComponentThisFrame(9); // StreetName
             }
-            N.ResetScriptGfxAlign();
         }
     }
 }

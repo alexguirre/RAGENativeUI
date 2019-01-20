@@ -15,8 +15,8 @@ namespace RAGENativeUI.TimerBars
         private float percentage;
 
         public float Percentage { get => percentage; set => percentage = RPH.MathHelper.Clamp(value, 0.0f, 1.0f); }
-        public Color BackColor { get; set; }
-        public Color ForeColor { get; set; }
+        public Color BackColor { get; set; } = HudColor.RedDark.GetColor();
+        public Color ForeColor { get; set; } = HudColor.Red.GetColor();
 
         public ProgressTimerBar(string label, Color backColor, Color foreColor) : base(label)
         {
@@ -24,7 +24,7 @@ namespace RAGENativeUI.TimerBars
             ForeColor = foreColor;
         }
 
-        public ProgressTimerBar(string label) : this(label, Color.DarkRed, Color.Red)
+        public ProgressTimerBar(string label) : base(label)
         {
         }
 

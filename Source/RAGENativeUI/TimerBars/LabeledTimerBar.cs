@@ -7,6 +7,8 @@ namespace RAGENativeUI.TimerBars
     /** REDACTED **/
 #endif
 
+    using System.Drawing;
+
     using RAGENativeUI.Drawing;
 
     public class LabeledTimerBar : TimerBar
@@ -14,6 +16,7 @@ namespace RAGENativeUI.TimerBars
         private string label;
 
         public string Label { get { return label; } set { Throw.IfNull(value, nameof(value)); label = value; } }
+        public Color LabelColor { get; set; } = HudColor.White.GetColor();
 
         public LabeledTimerBar(string label)
         {
@@ -47,7 +50,7 @@ namespace RAGENativeUI.TimerBars
             N.SetTextFont(0);
             N.SetTextWrap(0.0f, wrapEnd);
             N.SetTextScale(ScaleScale, ScaleSize);
-            N.SetTextColour(240, 240, 240, 255);
+            N.SetTextColour(LabelColor.R, LabelColor.G, LabelColor.B, LabelColor.A);
             N.SetTextJustification((int)TextAlignment.Right);
 
             N.BeginTextCommandDisplayText("STRING");

@@ -24,15 +24,15 @@ namespace Examples
 
             TextTimerBar timeBar = new TextTimerBar("TIEMPO", "00:00.00");
             TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");
-            LabeledTimerBar labelBar = new LabeledTimerBar("LABEL");
-            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { HighlightColor = Color.Red };
+            LabeledTimerBar labelBar = new LabeledTimerBar("LABEL") { LabelColor = HudColor.Red.GetColor() };
+            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { TextColor = HudColor.Red.GetColor(), HighlightColor = HudColor.Red.GetColor() };
             ProgressTimerBar progressBar = new ProgressTimerBar("PROGRESS") { Percentage = 0.5f }; 
 
             stack.Add(timeBar);
             stack.Add(positionBar);
             stack.Add(labelBar);
-            stack.Add(textBar);
             stack.Add(progressBar);
+            stack.Add(textBar);
 
             RPH.GameFiber.StartNew(() =>
             {
