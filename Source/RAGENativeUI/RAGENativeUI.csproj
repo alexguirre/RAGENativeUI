@@ -91,7 +91,7 @@
     <Compile Include="TimerBars\ProgressTimerBar.cs" />
     <Compile Include="TimerBars\TextTimerBar.cs" />
     <Compile Include="TimerBars\TimerBar.cs" />
-    <Compile Include="TimerBars\TimerBarsStack.cs" />
+    <Compile Include="TimerBars\TimerBarManager.cs" />
     <Compile Include="KnownNames.cs" />
     <Compile Include="Memory\CAnimPostFX.cs" />
     <Compile Include="Memory\CAnimPostFXManager.cs" />

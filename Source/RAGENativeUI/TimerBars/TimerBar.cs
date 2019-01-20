@@ -20,6 +20,12 @@ namespace RAGENativeUI.TimerBars
 
         public TimerBar()
         {
+            TimerBarManager.AddTimerBar(this);
+        }
+
+        ~TimerBar()
+        {
+            TimerBarManager.RemoveTimerBar(this);
         }
 
         public virtual void Draw(int index)

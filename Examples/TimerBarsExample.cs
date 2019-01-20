@@ -20,8 +20,6 @@ namespace Examples
         [ConsoleCommand(Name = "TimerBarsExample", Description = "Example showing the TimerBars classes.")]
         private static void Command()
         {
-            TimerBarsStack stack = new TimerBarsStack();
-
             TextTimerBar timeBar = new TextTimerBar("TIEMPO", "00:00.00");
             TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");
             LabeledTimerBar labelBar = new LabeledTimerBar("LABEL") { LabelColor = HudColor.Red.GetColor() };
@@ -30,19 +28,14 @@ namespace Examples
             progressBar.Markers.Add(0.3333f);
             progressBar.Markers.Add(0.6666f);
 
-            stack.Add(timeBar);
-            stack.Add(positionBar);
-            stack.Add(labelBar);
-            stack.Add(progressBar);
-            stack.Add(textBar);
-
             RPH.GameFiber.StartNew(() =>
             {
                 while (true)
                 {
                     RPH.GameFiber.Yield();
 
-                    stack.Draw();
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                        labelBar.IsVisible = !labelBar.IsVisible;
 
                     if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
                         progressBar.Percentage += 2.0f * RPH.Game.FrameTime;
