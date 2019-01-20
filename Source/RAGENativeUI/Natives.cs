@@ -157,6 +157,8 @@ namespace RAGENativeUI
         public static void DrawScaleformMovie(int handle, float x, float y, float w, float h, int r, int g, int b, int a, int unk) => Natives.x54972ADAF0294A93(handle, x, y, w, h, r, g, b, a, unk);
         public static void DrawScaleformMovie3DNonAdditive(int handle, float posX, float posY, float posZ, float rotPitch, float rotRoll, float rotYaw, float p7, float p8, float p9, float scaleX, float scaleY, float scaleZ, int p13)
             => Natives.x1CE592FDC749D6F5(handle, posX, posY, posZ, rotPitch, rotRoll, rotYaw, p7, p8, p9, scaleX, scaleY, scaleZ, p13);
+
+        public static bool IsLoadingPromptBeingDisplayed() => Natives.xD422FCC5F239A915<bool>();
     }
 }
 

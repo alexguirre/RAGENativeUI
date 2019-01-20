@@ -55,10 +55,12 @@ namespace RAGENativeUI.TimerBars
         protected static Vector2 Position(int index)
         {
             // Constants from the game scripts
+            const float InitialX = 0.795f;
             const float InitialY = 0.925f - 0.002f;
             const float HeightWithGap = 0.035f + 0.023f - 0.003f + 0.001f - 0.007f - 0.012f + 0.001f + 0.002f + 0.0003f;
+            const float LoadingPromptYOffset = 0.036f;
 
-            return new Vector2(0.795f, InitialY - HeightWithGap * index);
+            return new Vector2(InitialX, InitialY - HeightWithGap * index - (N.IsLoadingPromptBeingDisplayed() ? LoadingPromptYOffset : 0.0f));
         }
     }
 }
