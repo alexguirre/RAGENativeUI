@@ -134,7 +134,7 @@
     <Compile Include="Menus\MenuItemListScroller.cs" />
     <Compile Include="Menus\MenuItemNumericScroller.cs" />
     <Compile Include="Menus\MenuItemScroller.cs" />
-    <Compile Include="Menus\MenusManager.cs" />
+    <Compile Include="Menus\MenuManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseCollection.cs" />
     <Compile Include="Control.cs" />

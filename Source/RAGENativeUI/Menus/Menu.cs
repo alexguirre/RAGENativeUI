@@ -21,7 +21,7 @@ namespace RAGENativeUI.Menus
         public delegate void ForEachItemOnScreenDelegate(MenuItem item, int index);
 
 
-        public static bool IsAnyMenuVisible => MenusManager.IsAnyMenuVisible;
+        public static bool IsAnyMenuVisible => MenuManager.IsAnyMenuVisible;
         public static readonly ReadOnlyCollection<GameControl> DefaultAllowedControls = Array.AsReadOnly(new[]
         {
             GameControl.MoveUpDown,
@@ -355,7 +355,7 @@ namespace RAGENativeUI.Menus
             Subtitle = subtitle;
             SetTheme<MenuDefaultTheme>();
 
-            MenusManager.AddMenu(this);
+            MenuManager.AddMenu(this);
         }
 
         public void Show() => Show(null);
@@ -756,7 +756,7 @@ namespace RAGENativeUI.Menus
             {
                 if (disposing)
                 {
-                    MenusManager.RemoveMenu(this);
+                    MenuManager.RemoveMenu(this);
                 }
 
                 IsDisposed = true;

@@ -14,7 +14,7 @@ namespace RAGENativeUI.Menus
 
     using Rage;
 
-    internal static class MenusManager
+    internal static class MenuManager
     {
         private static readonly List<Menu> menus;
         private static readonly List<Menu> visibleMenus;
@@ -23,7 +23,7 @@ namespace RAGENativeUI.Menus
         public static bool IsProcessRunning => processFiber != null && processFiber.IsAlive;
         public static bool IsAnyMenuVisible => visibleMenus.Count > 0;
 
-        static MenusManager()
+        static MenuManager()
         {
             menus = new List<Menu>();
             visibleMenus = new List<Menu>();
@@ -53,7 +53,7 @@ namespace RAGENativeUI.Menus
 
         private static void StartProcess()
         {
-            processFiber = GameFiber.StartNew(ProcessLoop, "RAGENativeUI - Menus Manager");
+            processFiber = GameFiber.StartNew(ProcessLoop, $"RAGENativeUI - {nameof(MenuManager)}");
             Game.FrameRender += OnFrameRender;
         }
 
