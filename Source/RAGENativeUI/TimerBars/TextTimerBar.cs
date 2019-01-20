@@ -22,20 +22,33 @@ namespace RAGENativeUI.TimerBars
             Text = text;
         }
 
-        public override void Draw()
+        public override void Draw(int index)
         {
+
             if (!IsVisible)
                 return;
             
-            base.Draw();
+            base.Draw(index);
 
-            Vector2 p = Position;
-            Vector2 s = Size;
-            // TODO: fix TextTimerBar to accommodate the new changes in Text
-            Drawing.Text.Draw(Text, (p.X + s.X * 0.48f, p.Y - s.Y * 0.5f).Rel(), GetTextScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
+            // Constants from the game scripts
+            const float YOffset = ((((-0.01f - 0.005f) + 0.004f) - 0.001f) + 0.001f);
+            const float WrapEnd = (((((0.95f - 0.047f) + 0.001f) + 0.047f) - 0.002f) + 0.001f);
+            const float ScaleScale = 0.332f;
+            const float ScaleSize = ((((((0.469f + 0.096f) - 0.017f) + 0.022f) - 0.062f) - 0.001f) - 0.013f);
+
+            Vector2 pos = Position(index);
+            pos.Y += YOffset;
+
+            N.SetTextFont(0);
+            N.SetTextWrap(0.0f, WrapEnd);
+            N.SetTextScale(ScaleScale, ScaleSize);
+            N.SetTextColour(240, 240, 240, 255);
+            N.SetTextJustification((int)TextAlignment.Right);
+
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Text);
+            N.EndTextCommandDisplayText(pos.X, pos.Y);
         }
-
-        private float GetTextScale() => (Size.Y * 0.5f) / DefaultHeight;
     }
 }
 

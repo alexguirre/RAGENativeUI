@@ -22,20 +22,69 @@ namespace RAGENativeUI.TimerBars
             Label = label;
         }
 
-        public override void Draw()
+        public override void Draw(int index)
         {
+
             if (!IsVisible)
                 return;
 
-            base.Draw();
+            base.Draw(index);
 
-            Vector2 p = Position;
-            Vector2 s = Size;
-            // TODO: fix LabeledTimerBar to accommodate the new changes in Text
-            Text.Draw(Label, (p.X - s.X * 0.065f, p.Y - s.Y * 0.275f).Rel(), GetLabelScale(), Color, TextFont.ChaletLondon, TextAlignment.Right, 0.0f, false, false);
+            // Constants from the game scripts
+            const float InitialWrapEnd = ((((0.88f - 0.062f) + 0.026f) + 0.027f) + 0.03f) - 0.034f;
+            const float ScaleScale = 0.202f;
+            const float ScaleSize = 0.288f;
+
+            Vector2 pos = Position(index);
+
+            float wrapEnd = InitialWrapEnd;
+            if (!N.GetIsWidescreen())
+            {
+                wrapEnd -= 0.02f;
+            }
+            wrapEnd = wrapEnd - (0.03f * WrapEndMultiplier);
+
+            N.SetTextFont(0);
+            N.SetTextWrap(0.0f, wrapEnd);
+            N.SetTextScale(ScaleScale, ScaleSize);
+            N.SetTextColour(240, 240, 240, 255);
+            N.SetTextJustification((int)TextAlignment.Right);
+
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Label);
+            N.EndTextCommandDisplayText(pos.X, pos.Y);
         }
 
-        private float GetLabelScale() => (Size.Y * 0.288f) / DefaultHeight;
+        private static float WrapEndMultiplier
+        {
+            get
+            {
+                float aspectRatio = N.GetAspectRatio(false);
+                N.GetActiveScreenResolution(out int screenWidth, out int screenHeight);
+                float screenRatio = (float)screenWidth / screenHeight;
+                aspectRatio = System.Math.Min(aspectRatio, screenRatio);
+                if (screenRatio > 3.5f && aspectRatio > 1.7f)
+                {
+                    return 0.4f;
+                }
+                else if (aspectRatio > 1.7f)
+                {
+                    return 0.0f;
+                }
+                else if (aspectRatio > 1.5f)
+                {
+                    return 0.2f;
+                }
+                else if (aspectRatio > 1.3f)
+                {
+                    return 0.3f;
+                }
+                else
+                {
+                    return 0.4f;
+                }
+            }
+        }
     }
 }
 

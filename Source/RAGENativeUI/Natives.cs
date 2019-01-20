@@ -46,7 +46,7 @@ namespace RAGENativeUI
         public static void SetTextCentre(bool align) => Natives.xC02F4DBFB51D988B(align);
         public static void SetTextEdge(int p0, int r, int g, int b, int a) => Natives.x441603240D202FA6(p0, r, g, b, a);
         public static void SetTextLeading(int p0) => Natives.xA50ABC31E3CDFAFF(p0);
-
+        public static void SetTextRightJustify(bool flag) => Natives.x6B3C4650BC8BEE47(flag);
         /// <param name="type">
         /// <para>0: Center-Justify</para>
         /// <para>1: Left-Justify</para>

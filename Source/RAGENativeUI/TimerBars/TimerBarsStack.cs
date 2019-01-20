@@ -9,8 +9,6 @@ namespace RAGENativeUI.TimerBars
 
     public class TimerBarsStack : BaseCollection<TimerBar>
     {
-        public Vector2? OriginPosition { get; set; }
-
         public void ShowAll()
         {
             foreach (TimerBar t in InternalList)
@@ -29,30 +27,17 @@ namespace RAGENativeUI.TimerBars
 
         public void Draw()
         {
-            float x, y;
-
-            if (OriginPosition.HasValue)
-            {
-                x = OriginPosition.Value.X;
-                y = OriginPosition.Value.Y;
-            }
-            else
-            {
-                x = y = 0.5f + (N.GetSafeZoneSize() / 2f); // safezone bottom-right corner
-            }
-
+            N.SetScriptGfxAlign('R', 'B');
+            N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
             for (int i = 0; i < InternalList.Count; i++)
             {
                 TimerBar b = InternalList[i];
                 if (b != null && b.IsVisible)
                 {
-                    Vector2 s = b.Size;
-                    b.Position = (x - s.X * 0.5f, y - s.Y * 0.5f).Rel();
-                    b.Size = (s.X, s.Y).Rel();
-                    b.Draw();
-                    y -= s.Y + 0.003f;
+                    b.Draw(i);
                 }
             }
+            N.ResetScriptGfxAlign();
         }
     }
 }
