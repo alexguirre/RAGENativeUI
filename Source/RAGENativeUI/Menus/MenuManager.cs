@@ -16,18 +16,12 @@ namespace RAGENativeUI.Menus
 
     internal static class MenuManager
     {
-        private static readonly List<Menu> menus;
-        private static readonly List<Menu> visibleMenus;
+        private static readonly List<Menu> menus = new List<Menu>();
+        private static readonly List<Menu> visibleMenus = new List<Menu>();
         private static GameFiber processFiber;
 
         public static bool IsProcessRunning => processFiber != null && processFiber.IsAlive;
         public static bool IsAnyMenuVisible => visibleMenus.Count > 0;
-
-        static MenuManager()
-        {
-            menus = new List<Menu>();
-            visibleMenus = new List<Menu>();
-        }
 
         public static void AddMenu(Menu menu)
         {
