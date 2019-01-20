@@ -219,7 +219,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets a <see cref="TimeCycleModifier"/> instance by its index.
         /// <para>
-        /// Indices are between 0, inclusive, and<see cref="NumberOfTimeCycleModifiers"/>, exclusive.
+        /// Indices are between 0, inclusive, and <see cref="NumberOfTimeCycleModifiers"/>, exclusive.
         /// </para>
         /// </summary>
         /// <param name="index">The index of the instance to get.</param>
