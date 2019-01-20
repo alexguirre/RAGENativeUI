@@ -17,6 +17,20 @@ namespace RAGENativeUI.ImGui
     using System.Windows.Forms;
     using System.Runtime.CompilerServices;
 
+    internal enum TextHorizontalAligment
+    {
+        Left,
+        Center,
+        Right,
+    }
+
+    internal enum TextVerticalAligment
+    {
+        Top,
+        Center,
+        Down,
+    }
+
     internal static partial class Gui
     {
         public delegate void GuiEventHandler();
