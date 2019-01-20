@@ -23,10 +23,10 @@ namespace Examples
             TimerBarsStack stack = new TimerBarsStack();
 
             TextTimerBar timeBar = new TextTimerBar("TIEMPO", "00:00.00");
-            TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");// { Color = Color.Cyan };
+            TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");
             LabeledTimerBar labelBar = new LabeledTimerBar("LABEL");
-            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT");// { Color = Color.Orange };
-            ProgressTimerBar progressBar = new ProgressTimerBar("PROGRESS") { Percentage = 0.5f }; //, Color = Color.Aquamarine };
+            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { HighlightColor = Color.Red };
+            ProgressTimerBar progressBar = new ProgressTimerBar("PROGRESS") { Percentage = 0.5f }; 
 
             stack.Add(timeBar);
             stack.Add(positionBar);

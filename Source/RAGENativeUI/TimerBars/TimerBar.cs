@@ -9,14 +9,14 @@ namespace RAGENativeUI.TimerBars
 
     using System.Drawing;
 
-    using RAGENativeUI.Drawing;
-
     public abstract class TimerBar
     {
-        private readonly TextureDictionary bgTextureDictionary = "timerbars";
-        private readonly string bgTextureName = "all_black_bg";
+        private static readonly TextureDictionary BgTextureDictionary = "timerbars";
+        private const string BgTextureName = "all_black_bg";
+        private const string BgHighlightTextureName = "all_white_bg";
 
         public bool IsVisible { get; set; } = true;
+        public Color? HighlightColor { get; set; }
 
         public TimerBar()
         {
@@ -27,7 +27,7 @@ namespace RAGENativeUI.TimerBars
             if (!IsVisible)
                 return;
 
-            if (!bgTextureDictionary.IsLoaded) bgTextureDictionary.Load();
+            if (!BgTextureDictionary.IsLoaded) BgTextureDictionary.Load();
 
             // Constants from the game scripts
             const float XOffset = 0.079f;
@@ -39,7 +39,11 @@ namespace RAGENativeUI.TimerBars
             pos.X += XOffset;
             pos.Y += YOffset;
 
-            N.DrawSprite(bgTextureDictionary, bgTextureName, pos.X, pos.Y, Width, Height, 0.0f, 255, 255, 255, 140);
+            if (HighlightColor.HasValue)
+            {
+                N.DrawSprite(BgTextureDictionary, BgHighlightTextureName, pos.X, pos.Y, Width, Height, 0.0f, HighlightColor.Value.R, HighlightColor.Value.G, HighlightColor.Value.B, 140);
+            }
+            N.DrawSprite(BgTextureDictionary, BgTextureName, pos.X, pos.Y, Width, Height, 0.0f, 255, 255, 255, 140);
 
             N.HideHudComponentThisFrame(6); // VehicleName
             N.HideHudComponentThisFrame(7); // AreaName
