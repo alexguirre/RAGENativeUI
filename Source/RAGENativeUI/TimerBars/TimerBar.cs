@@ -7,9 +7,10 @@ namespace RAGENativeUI.TimerBars
     /** REDACTED **/
 #endif
 
+    using System;
     using System.Drawing;
 
-    public abstract class TimerBar
+    public abstract class TimerBar : IDisposable
     {
         private static readonly TextureDictionary BgTextureDictionary = "timerbars";
         private const string BgTextureName = "all_black_bg";
@@ -18,7 +19,20 @@ namespace RAGENativeUI.TimerBars
         public const uint DefaultOrderPriority = uint.MaxValue;
 
 
+        private bool isDisposed = false;
         private uint orderPriority = DefaultOrderPriority;
+
+        public bool IsDisposed
+        {
+            get => isDisposed;
+            private set
+            {
+                if (value != isDisposed)
+                {
+                    isDisposed = value;
+                }
+            }
+        }
 
         public bool IsVisible { get; set; } = true;
         public Color? HighlightColor { get; set; }
@@ -50,7 +64,7 @@ namespace RAGENativeUI.TimerBars
 
         ~TimerBar()
         {
-            TimerBarManager.RemoveTimerBar(this);
+            Dispose(false);
         }
 
         public virtual void Draw(int index)
@@ -87,6 +101,26 @@ namespace RAGENativeUI.TimerBars
 
             return new Vector2(InitialX, InitialY - HeightWithGap * index - (N.IsLoadingPromptBeingDisplayed() ? LoadingPromptYOffset : 0.0f));
         }
+
+        #region IDisposable Support
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    TimerBarManager.RemoveTimerBar(this);
+                }
+
+                IsDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 }
 

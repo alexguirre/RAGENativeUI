@@ -52,6 +52,12 @@ namespace Examples
                         labelBar.OrderPriority = 2;
                         textBar.OrderPriority = 0;
                     }
+
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
+                    {
+                        positionBar.Dispose();
+                        positionBar = null;
+                    }
                 }
             });
         }
