@@ -7,16 +7,14 @@ namespace RAGENativeUI.TimerBars
     /** REDACTED **/
 #endif
 
+    using System.Linq;
     using System.Collections.Generic;
-
-    // TODO: how can the user specify the timerbars order
-    // currently they are ordered in the order of construction
-    // which is not very good nor obvious
-
+    
     internal static class TimerBarManager
     {
         private static readonly List<TimerBar> timerBars = new List<TimerBar>();
         private static GameFiber processFiber;
+        private static bool orderPriorityChanged;
 
         public static bool IsProcessRunning => processFiber != null && processFiber.IsAlive;
 
@@ -38,6 +36,11 @@ namespace RAGENativeUI.TimerBars
             {
                 AbortProcess();
             }
+        }
+
+        public static void NotifyOrderPriorityChanged()
+        {
+            orderPriorityChanged = true;
         }
 
         private static void StartProcess()
@@ -65,6 +68,15 @@ namespace RAGENativeUI.TimerBars
         {
             if (timerBars.Count > 0)
             {
+                if (orderPriorityChanged)
+                {
+                    // OrderBy instead of List<T>.Sort because OrderBy uses a stable sort
+                    TimerBar[] tmp = timerBars.OrderBy(t => t.OrderPriority).ToArray();
+                    timerBars.Clear();
+                    timerBars.AddRange(tmp);
+                    orderPriorityChanged = false;
+                }
+
                 bool anyVisible = false;
                 int visiblePos = 0;
                 for (int i = 0; i < timerBars.Count; i++)

@@ -28,6 +28,9 @@ namespace Examples
             progressBar.Markers.Add(0.3333f);
             progressBar.Markers.Add(0.6666f);
 
+            labelBar.OrderPriority = 0;
+            progressBar.OrderPriority = 1;
+
             RPH.GameFiber.StartNew(() =>
             {
                 while (true)
@@ -43,6 +46,12 @@ namespace Examples
                         progressBar.Percentage -= 2.0f * RPH.Game.FrameTime;
 
                     progressBar.Label = $"{progressBar.Percentage:P}";
+
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.U))
+                    {
+                        labelBar.OrderPriority = 2;
+                        textBar.OrderPriority = 0;
+                    }
                 }
             });
         }

@@ -15,8 +15,33 @@ namespace RAGENativeUI.TimerBars
         private const string BgTextureName = "all_black_bg";
         private const string BgHighlightTextureName = "all_white_bg";
 
+        public const uint DefaultOrderPriority = uint.MaxValue;
+
+
+        private uint orderPriority = DefaultOrderPriority;
+
         public bool IsVisible { get; set; } = true;
         public Color? HighlightColor { get; set; }
+        /// <summary>
+        /// Gets or sets the order priority. This value is used to determine the prefered position at which this <see cref="TimerBar"/>
+        /// will be drawn.
+        /// <para><see cref="TimerBar"/>s with a lower priority are drawn first, starting from the bottom.</para>
+        /// </summary>
+        /// <value>
+        /// An unsigned integer that contains the order priority. The default value is <see cref="DefaultOrderPriority"/>.
+        /// </value>
+        public uint OrderPriority
+        {
+            get => orderPriority;
+            set
+            {
+                if (value != orderPriority)
+                {
+                    orderPriority = value;
+                    TimerBarManager.NotifyOrderPriorityChanged();
+                }
+            }
+        }
 
         public TimerBar()
         {
