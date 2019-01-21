@@ -13,6 +13,12 @@ namespace RAGENativeUI.TimerBars
 
     public class LabeledTimerBar : TimerBar
     {
+        // Constants from the game scripts
+        private const float LabelInitialWrapEnd = ((((0.88f - 0.062f) + 0.026f) + 0.027f) + 0.03f) - 0.034f;
+        private const float LabelScale = 0.202f;
+        private const float LabelSize = 0.288f;
+
+
         private string label;
 
         public string Label { get { return label; } set { Throw.IfNull(value, nameof(value)); label = value; } }
@@ -25,22 +31,15 @@ namespace RAGENativeUI.TimerBars
             Label = label;
         }
 
-        public override void Draw(int index)
+        public override void Draw(Vector2 position)
         {
 
             if (!IsVisible)
                 return;
 
-            base.Draw(index);
-
-            // Constants from the game scripts
-            const float InitialWrapEnd = ((((0.88f - 0.062f) + 0.026f) + 0.027f) + 0.03f) - 0.034f;
-            const float ScaleScale = 0.202f;
-            const float ScaleSize = 0.288f;
-
-            Vector2 pos = Position(index);
-
-            float wrapEnd = InitialWrapEnd;
+            base.Draw(position);
+            
+            float wrapEnd = LabelInitialWrapEnd;
             if (!N.GetIsWidescreen())
             {
                 wrapEnd -= 0.02f;
@@ -49,13 +48,13 @@ namespace RAGENativeUI.TimerBars
 
             N.SetTextFont(0);
             N.SetTextWrap(0.0f, wrapEnd);
-            N.SetTextScale(ScaleScale, ScaleSize);
+            N.SetTextScale(LabelScale, LabelSize);
             N.SetTextColour(LabelColor.R, LabelColor.G, LabelColor.B, LabelColor.A);
             N.SetTextJustification((int)TextAlignment.Right);
 
             N.BeginTextCommandDisplayText("STRING");
             N.AddTextComponentSubstringPlayerName(Label);
-            N.EndTextCommandDisplayText(pos.X, pos.Y);
+            N.EndTextCommandDisplayText(position.X, position.Y);
         }
 
         private static float WrapEndMultiplier

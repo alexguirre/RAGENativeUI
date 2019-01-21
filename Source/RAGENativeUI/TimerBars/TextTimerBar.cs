@@ -13,6 +13,13 @@ namespace RAGENativeUI.TimerBars
 
     public class TextTimerBar : LabeledTimerBar
     {
+        // Constants from the game scripts
+        private const float TextYOffset = ((((-0.01f - 0.005f) + 0.004f) - 0.001f) + 0.001f);
+        private const float TextWrapEnd = (((((0.95f - 0.047f) + 0.001f) + 0.047f) - 0.002f) + 0.001f);
+        private const float TextScale = 0.332f;
+        private const float TextSize = ((((((0.469f + 0.096f) - 0.017f) + 0.022f) - 0.062f) - 0.001f) - 0.013f);
+
+
         private string text;
 
         public string Text { get { return text; } set { Throw.IfNull(value, nameof(value)); text = value; } }
@@ -25,32 +32,25 @@ namespace RAGENativeUI.TimerBars
             Text = text;
         }
 
-        public override void Draw(int index)
+        public override void Draw(Vector2 position)
         {
 
             if (!IsVisible)
                 return;
             
-            base.Draw(index);
+            base.Draw(position);
 
-            // Constants from the game scripts
-            const float YOffset = ((((-0.01f - 0.005f) + 0.004f) - 0.001f) + 0.001f);
-            const float WrapEnd = (((((0.95f - 0.047f) + 0.001f) + 0.047f) - 0.002f) + 0.001f);
-            const float ScaleScale = 0.332f;
-            const float ScaleSize = ((((((0.469f + 0.096f) - 0.017f) + 0.022f) - 0.062f) - 0.001f) - 0.013f);
-
-            Vector2 pos = Position(index);
-            pos.Y += YOffset;
+            position.Y += TextYOffset;
 
             N.SetTextFont(0);
-            N.SetTextWrap(0.0f, WrapEnd);
-            N.SetTextScale(ScaleScale, ScaleSize);
+            N.SetTextWrap(0.0f, TextWrapEnd);
+            N.SetTextScale(TextScale, TextSize);
             N.SetTextColour(TextColor.R, TextColor.G, TextColor.B, TextColor.A);
             N.SetTextJustification((int)TextAlignment.Right);
 
             N.BeginTextCommandDisplayText("STRING");
             N.AddTextComponentSubstringPlayerName(Text);
-            N.EndTextCommandDisplayText(pos.X, pos.Y);
+            N.EndTextCommandDisplayText(position.X, position.Y);
         }
     }
 }

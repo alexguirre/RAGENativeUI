@@ -18,6 +18,12 @@ namespace RAGENativeUI.TimerBars
         /// but here we support any percentage and the 50% texture is the easiest one to offset.
         /// </summary>
         private const string MarkerTextureName = "linemarker50_128";
+        // Constants from the game scripts
+        private const float BarXOffset = 0.118f; // == (((((0.919f - 0.081f) + 0.028f) + 0.05f) - 0.001f) - 0.002f) - TimerBarManager.InitialX
+        private const float BarYOffset = ((((0.013f - 0.002f) + 0.001f) + 0.001f) - 0.001f);
+        private const float BarWidth = 0.069f;
+        private const float BarHeight = 0.011f;
+
 
         private float percentage;
 
@@ -34,6 +40,8 @@ namespace RAGENativeUI.TimerBars
         /// </summary>
         public List<float> Markers { get; } = new List<float>();
         public Color MarkersColor { get; set; } = HudColor.Black.GetColor();
+        /// <inheritdoc/>
+        protected internal override bool SmallHeight => true;
 
         public ProgressTimerBar(string label, Color backColor, Color foreColor) : base(label)
         {
@@ -45,39 +53,30 @@ namespace RAGENativeUI.TimerBars
         {
         }
 
-        public override void Draw(int index)
+        public override void Draw(Vector2 position)
         {
             if (!IsVisible)
                 return;
 
-            base.Draw(index);
+            base.Draw(position);
 
-            // TODO: ProgressTimerBar background should be lower
+            position.X += BarXOffset;
+            position.Y += BarYOffset;
 
-            // Constants from the game scripts
-            const float X = (((((0.919f - 0.081f) + 0.028f) + 0.05f) - 0.001f) - 0.002f);
-            const float YOffset = ((((0.013f - 0.002f) + 0.001f) + 0.001f) - 0.001f);
-            const float Width = 0.069f;
-            const float Height = 0.011f;
-
-            Vector2 pos = Position(index);
-            pos.X = X;
-            pos.Y += YOffset;
-
-            N.DrawRect(pos.X, pos.Y, Width, Height, BackColor.R, BackColor.G, BackColor.B, BackColor.A);
+            N.DrawRect(position.X, position.Y, BarWidth, BarHeight, BackColor.R, BackColor.G, BackColor.B, BackColor.A);
             
-            float fillX = pos.X - Width * 0.5f + Width * 0.5f * percentage;
-            N.DrawRect(fillX, pos.Y, Width * percentage, Height, ForeColor.R, ForeColor.G, ForeColor.B, ForeColor.A);
+            float fillX = position.X - BarWidth * 0.5f + BarWidth * 0.5f * percentage;
+            N.DrawRect(fillX, position.Y, BarWidth * percentage, BarHeight, ForeColor.R, ForeColor.G, ForeColor.B, ForeColor.A);
             
             if (Markers.Count > 0)
             {
                 if (!MarkerTextureDictionary.IsLoaded) MarkerTextureDictionary.Load();
 
-                float markerOrigX = pos.X - Width * 0.5f;
+                float markerOrigX = position.X - BarWidth * 0.5f;
                 foreach (float markerPercentage in Markers)
                 {
-                    float x = markerOrigX + Width * RPH.MathHelper.Clamp(markerPercentage, 0.0f, 1.0f);
-                    N.DrawSprite(MarkerTextureDictionary, MarkerTextureName, x, pos.Y, Width, Height * 2.0f, 0.0f, 0, 0, 0, 255);
+                    float x = markerOrigX + BarWidth * RPH.MathHelper.Clamp(markerPercentage, 0.0f, 1.0f);
+                    N.DrawSprite(MarkerTextureDictionary, MarkerTextureName, x, position.Y, BarWidth, BarHeight * 2.0f, 0.0f, 0, 0, 0, 255);
                 }
             }
         }

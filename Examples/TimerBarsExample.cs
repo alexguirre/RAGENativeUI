@@ -27,7 +27,6 @@ namespace Examples
             ProgressTimerBar progressBar = new ProgressTimerBar("") { Percentage = 0.5f };
             progressBar.Markers.Add(0.3333f);
             progressBar.Markers.Add(0.6666f);
-
             labelBar.OrderPriority = 0;
             progressBar.OrderPriority = 1;
 

@@ -12,9 +12,18 @@ namespace RAGENativeUI.TimerBars
 
     public abstract class TimerBar : IDisposable
     {
+        // Constants from the game scripts
         private static readonly TextureDictionary BgTextureDictionary = "timerbars";
         private const string BgTextureName = "all_black_bg";
         private const string BgHighlightTextureName = "all_white_bg";
+        private const float BgXOffset = 0.079f;
+        private const float BgDefaultYOffset = 0.008f;
+        private const float BgSmallYOffset = 0.012f;
+        private const float BgWidth = 0.157f;
+        private const float BgDefaultHeight = 0.036f;
+        private const float BgSmallHeight = 0.028f;
+        internal const float DefaultHeightWithGap = ((0.025f + 0.006f) + 0.0009f) + 0.008f;
+        internal const float SmallHeightWithGap = ((0.025f + 0.006f) + 0.0009f);
 
         public const uint DefaultOrderPriority = uint.MaxValue;
 
@@ -57,6 +66,11 @@ namespace RAGENativeUI.TimerBars
             }
         }
 
+        /// <summary>
+        /// Gets whether the heights of this <see cref="TimerBar"/> is small or default.
+        /// </summary>
+        protected internal virtual bool SmallHeight => false;
+
         public TimerBar()
         {
             TimerBarManager.AddTimerBar(this);
@@ -67,39 +81,22 @@ namespace RAGENativeUI.TimerBars
             Dispose(false);
         }
 
-        public virtual void Draw(int index)
+        public virtual void Draw(Vector2 position)
         {
             if (!IsVisible)
                 return;
 
             if (!BgTextureDictionary.IsLoaded) BgTextureDictionary.Load();
-
-            // Constants from the game scripts
-            const float XOffset = 0.079f;
-            const float YOffset = 0.008f;
-            const float Width = 0.157f;
-            const float Height = 0.036f;
-
-            Vector2 pos = Position(index);
-            pos.X += XOffset;
-            pos.Y += YOffset;
+            
+            position.X += BgXOffset;
+            position.Y += SmallHeight ? BgSmallYOffset : BgDefaultYOffset;
+            float height = SmallHeight ? BgSmallHeight : BgDefaultHeight;
 
             if (HighlightColor.HasValue)
             {
-                N.DrawSprite(BgTextureDictionary, BgHighlightTextureName, pos.X, pos.Y, Width, Height, 0.0f, HighlightColor.Value.R, HighlightColor.Value.G, HighlightColor.Value.B, 140);
+                N.DrawSprite(BgTextureDictionary, BgHighlightTextureName, position.X, position.Y, BgWidth, height, 0.0f, HighlightColor.Value.R, HighlightColor.Value.G, HighlightColor.Value.B, 140);
             }
-            N.DrawSprite(BgTextureDictionary, BgTextureName, pos.X, pos.Y, Width, Height, 0.0f, 255, 255, 255, 140);
-        }
-        
-        protected static Vector2 Position(int index)
-        {
-            // Constants from the game scripts
-            const float InitialX = 0.795f;
-            const float InitialY = 0.925f - 0.002f;
-            const float HeightWithGap = 0.035f + 0.023f - 0.003f + 0.001f - 0.007f - 0.012f + 0.001f + 0.002f + 0.0003f;
-            const float LoadingPromptYOffset = 0.036f;
-
-            return new Vector2(InitialX, InitialY - HeightWithGap * index - (N.IsLoadingPromptBeingDisplayed() ? LoadingPromptYOffset : 0.0f));
+            N.DrawSprite(BgTextureDictionary, BgTextureName, position.X, position.Y, BgWidth, height, 0.0f, 255, 255, 255, 140);
         }
 
         #region IDisposable Support

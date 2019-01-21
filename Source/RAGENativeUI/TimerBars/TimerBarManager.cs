@@ -3,6 +3,7 @@ namespace RAGENativeUI.TimerBars
 #if RPH1
     extern alias rph1;
     using GameFiber = rph1::Rage.GameFiber;
+    using Vector2 = rph1::Rage.Vector2;
 #else
     /** REDACTED **/
 #endif
@@ -12,6 +13,10 @@ namespace RAGENativeUI.TimerBars
     
     internal static class TimerBarManager
     {
+        private const float InitialX = 0.795f;
+        private const float InitialY = 0.925f - 0.002f;
+        private const float LoadingPromptYOffset = 0.036f;
+
         private static readonly List<TimerBar> timerBars = new List<TimerBar>();
         private static GameFiber processFiber;
         private static bool orderPriorityChanged;
@@ -78,7 +83,7 @@ namespace RAGENativeUI.TimerBars
                 }
 
                 bool anyVisible = false;
-                int visiblePos = 0;
+                Vector2 pos = new Vector2(InitialX, InitialY - (N.IsLoadingPromptBeingDisplayed() ? LoadingPromptYOffset : 0.0f));
                 for (int i = 0; i < timerBars.Count; i++)
                 {
                     TimerBar b = timerBars[i];
@@ -91,7 +96,8 @@ namespace RAGENativeUI.TimerBars
                             N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
                         }
 
-                        b.Draw(visiblePos++);
+                        b.Draw(pos);
+                        pos.Y -= b.SmallHeight ? TimerBar.SmallHeightWithGap : TimerBar.DefaultHeightWithGap;
                     }
                 }
 
