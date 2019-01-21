@@ -67,7 +67,7 @@ namespace RAGENativeUI.TimerBars
         }
 
         /// <summary>
-        /// Gets whether the heights of this <see cref="TimerBar"/> is small or default.
+        /// Gets whether the height of this <see cref="TimerBar"/> is small or default.
         /// </summary>
         protected internal virtual bool SmallHeight => false;
 
