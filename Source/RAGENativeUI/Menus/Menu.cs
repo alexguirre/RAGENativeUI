@@ -358,6 +358,11 @@ namespace RAGENativeUI.Menus
             MenuManager.AddMenu(this);
         }
 
+        ~Menu()
+        {
+            Dispose(false);
+        }
+
         public void Show() => Show(null);
         public void Show(Menu parent)
         {
