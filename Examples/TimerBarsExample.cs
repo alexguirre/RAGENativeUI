@@ -27,6 +27,21 @@ namespace Examples
             ProgressTimerBar progressBar = new ProgressTimerBar("") { Percentage = 0.5f };
             progressBar.Markers.Add(0.3333f);
             progressBar.Markers.Add(0.6666f);
+            CheckpointsTimerBar checkpointsBar = new CheckpointsTimerBar("CHECKPOINTS", 8) { LabelColor = HudColor.Blue.GetColor() };
+            for (int i = 0; i < checkpointsBar.Checkpoints.Length; i++)
+            {
+                checkpointsBar.Checkpoints[i].IsCompleted = false;
+                checkpointsBar.Checkpoints[i].CompletedColor = HudColor.Blue.GetColor();
+                checkpointsBar.Checkpoints[i].HasCross = false;
+                checkpointsBar.Checkpoints[i].CrossColor = HudColor.Black.GetColor();
+            }
+            checkpointsBar.Checkpoints[1].IsCompleted = true;
+            checkpointsBar.Checkpoints[2].HasCross = true;
+            checkpointsBar.Checkpoints[3].IsCompleted = true;
+            checkpointsBar.Checkpoints[3].HasCross = true;
+            checkpointsBar.Checkpoints[6].IsCompleted = true;
+
+
             labelBar.OrderPriority = 0;
             progressBar.OrderPriority = 1;
 
@@ -54,8 +69,16 @@ namespace Examples
 
                     if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.I))
                     {
-                        positionBar.Dispose();
-                        positionBar = null;
+                        if (positionBar != null)
+                        {
+                            positionBar.Dispose();
+                            positionBar = null;
+                        }
+                    }
+
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.O))
+                    {
+                        checkpointsBar.VisibleCheckpoints = checkpointsBar.VisibleCheckpoints == 8 ? 4 : 8;
                     }
                 }
             });
