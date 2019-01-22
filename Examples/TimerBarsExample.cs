@@ -20,7 +20,7 @@ namespace Examples
         [ConsoleCommand(Name = "TimerBarsExample", Description = "Example showing the TimerBars classes.")]
         private static void Command()
         {
-            TextTimerBar timeBar = new TextTimerBar("TIEMPO", "00:00.00");
+            //TextTimerBar timeBar = new TextTimerBar("TIEMPO", "00:00.00");
             TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");
             LabeledTimerBar labelBar = new LabeledTimerBar("LABEL") { LabelColor = HudColor.Red.GetColor() };
             TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { TextColor = HudColor.Red.GetColor(), HighlightColor = HudColor.Red.GetColor() };
@@ -40,6 +40,26 @@ namespace Examples
             checkpointsBar.Checkpoints[3].IsCompleted = true;
             checkpointsBar.Checkpoints[3].HasCross = true;
             checkpointsBar.Checkpoints[6].IsCompleted = true;
+            new LabeledTimerBar(nameof(TimerBarIcons.RP)) { Icon = TimerBarIcons.RP };
+            new LabeledTimerBar(nameof(TimerBarIcons.Rockets)) { Icon = TimerBarIcons.Rockets };
+            new LabeledTimerBar(nameof(TimerBarIcons.Spikes)) { Icon = TimerBarIcons.Spikes };
+            new LabeledTimerBar(nameof(TimerBarIcons.Boost)) { Icon = TimerBarIcons.Boost };
+            new LabeledTimerBar(nameof(TimerBarIcons.HomingRocket)) { Icon = TimerBarIcons.HomingRocket };
+            new LabeledTimerBar(nameof(TimerBarIcons.Hop)) { Icon = TimerBarIcons.Hop };
+            new LabeledTimerBar(nameof(TimerBarIcons.MachineGun)) { Icon = TimerBarIcons.MachineGun };
+            new LabeledTimerBar(nameof(TimerBarIcons.Parachute)) { Icon = TimerBarIcons.Parachute };
+            new LabeledTimerBar(nameof(TimerBarIcons.RocketBoost)) { Icon = TimerBarIcons.RocketBoost };
+            new LabeledTimerBar(nameof(TimerBarIcons.Tick)) { Icon = TimerBarIcons.Tick };
+            new LabeledTimerBar(nameof(TimerBarIcons.Cross)) { Icon = TimerBarIcons.Cross };
+            new LabeledTimerBar(nameof(TimerBarIcons.Beast)) { Icon = TimerBarIcons.Beast };
+            new LabeledTimerBar(nameof(TimerBarIcons.Random)) { Icon = TimerBarIcons.Random };
+            new LabeledTimerBar(nameof(TimerBarIcons.SlowTime)) { Icon = TimerBarIcons.SlowTime };
+            new LabeledTimerBar(nameof(TimerBarIcons.Swap)) { Icon = TimerBarIcons.Swap };
+            new LabeledTimerBar(nameof(TimerBarIcons.Testosterone)) { Icon = TimerBarIcons.Testosterone };
+            new LabeledTimerBar(nameof(TimerBarIcons.Thermal)) { Icon = TimerBarIcons.Thermal };
+            new LabeledTimerBar(nameof(TimerBarIcons.Weed)) { Icon = TimerBarIcons.Weed };
+            new LabeledTimerBar(nameof(TimerBarIcons.Hidden)) { Icon = TimerBarIcons.Hidden };
+            new LabeledTimerBar(nameof(TimerBarIcons.Time)) { Icon = TimerBarIcons.Time };
 
 
             labelBar.OrderPriority = 0;
