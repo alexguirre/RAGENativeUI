@@ -45,10 +45,6 @@ namespace RAGENativeUI.TimerBars
 
         public bool IsVisible { get; set; } = true;
         public Color? HighlightColor { get; set; }
-        // TODO: decide how to finally implement TimerBar icons
-        // maybe have an IconsTimerBar class which can have up to ~5 icons
-        // and allow TextTimerBar to have 1 icon which will offset the text to the left
-        public TimerBarIcon Icon { get; set; }
         /// <summary>
         /// Gets or sets the order priority. This value is used to determine the prefered position at which this <see cref="TimerBar"/>
         /// will be drawn.
@@ -102,15 +98,6 @@ namespace RAGENativeUI.TimerBars
                 N.DrawSprite(BgTextureDictionary, BgHighlightTextureName, bgPos.X, bgPos.Y, BgWidth, height, 0.0f, HighlightColor.Value.R, HighlightColor.Value.G, HighlightColor.Value.B, 140);
             }
             N.DrawSprite(BgTextureDictionary, BgTextureName, bgPos.X, bgPos.Y, BgWidth, height, 0.0f, 255, 255, 255, 140);
-
-            if (Icon != null)
-            {
-                if (!Icon.Texture.Dictionary.IsLoaded) Icon.Texture.Dictionary.Load();
-
-                Vector2 iconPos = position + Icon.Offset;
-                Color c = Icon.Color;
-                N.DrawSprite(Icon.Texture.Dictionary, Icon.Texture.Name, iconPos.X, iconPos.Y, Icon.Size.X, Icon.Size.Y, 0.0f, c.R, c.G, c.B, c.A);
-            }
         }
 
         #region IDisposable Support

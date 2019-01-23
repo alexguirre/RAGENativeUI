@@ -24,6 +24,7 @@ namespace RAGENativeUI.TimerBars
 
         public string Text { get { return text; } set { Throw.IfNull(value, nameof(value)); text = value; } }
         public Color TextColor { get; set; } = HudColor.White.GetColor();
+        public TimerBarIcon Icon { get; set; }
 
         public TextTimerBar(string label, string text) : base(label)
         {
@@ -40,10 +41,22 @@ namespace RAGENativeUI.TimerBars
             
             base.Draw(position);
 
+            float wrapEnd = TextWrapEnd;
+
+            if (Icon != null)
+            {
+                if (!Icon.Texture.Dictionary.IsLoaded) Icon.Texture.Dictionary.Load();
+
+                Vector2 iconPos = position + new Vector2(TimerBarIcon.XOffset, TimerBarIcon.YOffset);
+                Color c = Icon.Color;
+                N.DrawSprite(Icon.Texture.Dictionary, Icon.Texture.Name, iconPos.X, iconPos.Y, Icon.Size.X, Icon.Size.Y, 0.0f, c.R, c.G, c.B, c.A);
+                wrapEnd -= Icon.Size.X;
+            }
+
             position.Y += TextYOffset;
 
             N.SetTextFont(0);
-            N.SetTextWrap(0.0f, TextWrapEnd);
+            N.SetTextWrap(0.0f, wrapEnd);
             N.SetTextScale(TextScale, TextSize);
             N.SetTextColour(TextColor.R, TextColor.G, TextColor.B, TextColor.A);
             N.SetTextJustification((int)TextAlignment.Right);
