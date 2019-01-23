@@ -40,6 +40,17 @@ namespace Examples
             checkpointsBar.Checkpoints[3].IsCompleted = true;
             checkpointsBar.Checkpoints[3].HasCross = true;
             checkpointsBar.Checkpoints[6].IsCompleted = true;
+            IconsTimerBar iconsBar = new IconsTimerBar("ICONS");
+            iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            Color c = iconsBar.Icons[2].Color;
+            c = Color.FromArgb(51, c.R, c.G, c.B);
+            iconsBar.Icons[2].Color = c;
+            iconsBar.Icons[3].Color = c;
+            iconsBar.Icons[4].Color = c;
 
 
             labelBar.OrderPriority = 0;

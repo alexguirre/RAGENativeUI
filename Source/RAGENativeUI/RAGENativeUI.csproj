@@ -88,6 +88,7 @@
     <Compile Include="Drawing\Rect3D.cs" />
     <Compile Include="Drawing\Sprite3D.cs" />
     <Compile Include="TimerBars\CheckpointsTimerBar.cs" />
+    <Compile Include="TimerBars\IconsTimerBar.cs" />
     <Compile Include="TimerBars\LabeledTimerBar.cs" />
     <Compile Include="TimerBars\ProgressTimerBar.cs" />
     <Compile Include="TimerBars\TextTimerBar.cs" />
