@@ -36,6 +36,9 @@ namespace RAGENativeUI.TimerBars
                 for (int i = 0; i < Icons.Count; i++)
                 {
                     TimerBarIcon icon = Icons[i];
+
+                    if (!icon.Texture.Dictionary.IsLoaded) icon.Texture.Dictionary.Load();
+
                     Color c = icon.Color;
                     N.DrawSprite(icon.Texture.Dictionary, icon.Texture.Name, position.X, position.Y, icon.Size.X, icon.Size.Y, 0.0f, c.R, c.G, c.B, c.A);
                     position.X -= Spacing;
