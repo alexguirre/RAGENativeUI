@@ -9,9 +9,6 @@ namespace RAGENativeUI.TimerBars
 
     using System.Drawing;
 
-    // TODO: IconsTimerBar class
-    // timerbar that inherits LabeledTimerBar and can have many icons
-
     public sealed class TimerBarIcon
     {
         internal const float XOffset = 0.145f + 0.001f;

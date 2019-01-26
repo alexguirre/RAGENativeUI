@@ -9,7 +9,6 @@ namespace RAGENativeUI.TimerBars
 
     public static class TimerBarIcons
     {
-        // TODO: set textures
         // Dict 'MPRPSymbol'
         private static bool mpRPSymbolDictSet = false;
         private static TextureReference rpSymbolTexture;

@@ -23,7 +23,7 @@ namespace Examples
             TextTimerBar timeBar = new TextTimerBar("TIEMPO", "00:00.00");
             TextTimerBar positionBar = new TextTimerBar("POSICIÓN", "8/8");
             LabeledTimerBar labelBar = new LabeledTimerBar("LABEL") { LabelColor = HudColor.Red.GetColor() };
-            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { TextColor = HudColor.Red.GetColor(), HighlightColor = HudColor.Red.GetColor(), Icon = TimerBarIcons.Hop };
+            TextTimerBar textBar = new TextTimerBar("LABEL", "TEXT") { TextColor = HudColor.Red.GetColor(), HighlightColor = HudColor.Red.GetColor()/*, Icon = TimerBarIcons.Hop*/ };
             ProgressTimerBar progressBar = new ProgressTimerBar("") { Percentage = 0.5f };
             progressBar.Markers.Add(0.3333f);
             progressBar.Markers.Add(0.6666f);
@@ -41,16 +41,16 @@ namespace Examples
             checkpointsBar.Checkpoints[3].HasCross = true;
             checkpointsBar.Checkpoints[6].IsCompleted = true;
             IconsTimerBar iconsBar = new IconsTimerBar("ICONS");
-            iconsBar.Icons.Add(TimerBarIcons.Rockets);
-            iconsBar.Icons.Add(TimerBarIcons.Rockets);
-            iconsBar.Icons.Add(TimerBarIcons.Rockets);
-            iconsBar.Icons.Add(TimerBarIcons.Rockets);
-            iconsBar.Icons.Add(TimerBarIcons.Rockets);
-            Color c = iconsBar.Icons[2].Color;
-            c = Color.FromArgb(51, c.R, c.G, c.B);
-            iconsBar.Icons[2].Color = c;
-            iconsBar.Icons[3].Color = c;
-            iconsBar.Icons[4].Color = c;
+            //iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            //iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            //iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            //iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            //iconsBar.Icons.Add(TimerBarIcons.Rockets);
+            //Color c = iconsBar.Icons[2].Color;
+            //c = Color.FromArgb(51, c.R, c.G, c.B);
+            //iconsBar.Icons[2].Color = c;
+            //iconsBar.Icons[3].Color = c;
+            //iconsBar.Icons[4].Color = c;
 
 
             labelBar.OrderPriority = 0;
