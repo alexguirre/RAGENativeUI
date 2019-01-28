@@ -79,7 +79,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Drawing\TextComponent.cs" />
