@@ -27,7 +27,7 @@ namespace Examples
             RPH.GameFiber.StartNew(() =>
             {
                 Menu menu = new Menu("title", "SUBTITLE");
-                menu.SetTheme<MenuDebugTheme>();
+                //menu.SetTheme<MenuDebugTheme>();
 
                 menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
                 menu.Items.Add(new MenuItemCheckbox("cb #0") { IsChecked = true, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
@@ -50,7 +50,7 @@ namespace Examples
 
                 Menu subMenu = new Menu("SubMenu", "SUB!");
                 subMenu.CopyThemeFrom(menu);
-                MenuDebugTheme subMenuTheme = subMenu.Theme as MenuDebugTheme;
+                MenuDebugTheme subMenuDbgTheme = subMenu.Theme as MenuDebugTheme;
                 for (int i = 1; i <= 999; i++)
                 {
                     Menu subSubMenu = new Menu("SubSubMenu", "SUB! SUB! #" + i);
@@ -58,7 +58,10 @@ namespace Examples
                     subSubMenu.Items.Add(new MenuItem("An item in the SubSubMenu #" + i));
                     MenuItem item = new MenuItem("item #" + i) { BindedMenu = subSubMenu };
                     subMenu.Items.Add(item);
-                    subMenuTheme.SetItemTextColor(item, Color.FromArgb(255, MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256)));
+                    if (subMenuDbgTheme != null)
+                    {
+                        subMenuDbgTheme.SetItemTextColor(item, Color.FromArgb(255, MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256), MathHelper.GetRandomInteger(256)));
+                    }
                 }
 
                 menu.Items.Add(new MenuItem("item with binded menu #0") { BindedMenu = subMenu, Description = "If you click this item it opens a menu with a LOT of items." });
