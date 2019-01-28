@@ -133,6 +133,15 @@ namespace RAGENativeUI
 #endif
             }
 
+            public static bool IsControlActionDown(int index, GameControl control, bool evenIfDisabled = false)
+            {
+#if RPH1
+                return evenIfDisabled ? N.IsDisabledControlPressed(index, (int)control) : rph1::Rage.Game.IsControlPressed(index, control);
+#else
+                /** REDACTED **/
+#endif
+            }
+
             public static string GetLocalizedString(string localizationStringId)
             {
 #if RPH1

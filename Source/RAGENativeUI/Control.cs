@@ -14,47 +14,66 @@ namespace RAGENativeUI
 
     public class Control
     {
-        // used if HeldTimeSteps is null or empty
-        private const uint DefaultHeldCooldown = 180;
+        // used if RepeatSteps is null or empty
+        private const uint DefaultRepeatInterval = 180;
 
         public Keys? Key { get; set; }
         //public ControllerButtons? Button { get; set; }
         public GameControl? NativeControl { get; set; }
-        public TimeStep[] HeldTimeSteps { get; set; }
+        public RepeatStep[] RepeatSteps { get; set; } // TODO: ensure that RepeatSteps is ordered by RepeatStep.Time
 
-        private uint heldStartTime;
-        private int currentHeldStepIndex;
-        private uint heldCooldown;
-        private uint nextHeldTime;
+        private uint repeatStartTime;
+        private int currentRepeatStepIndex;
+        private uint repeatInterval;
+        private uint nextRepeatTime;
 
         public Control(Keys? key = null, /*ControllerButtons? button = null,*/ GameControl? nativeControl = null)
         {
             Key = key;
             //Button = button;
             NativeControl = nativeControl;
-            HeldTimeSteps = DefaultHeldTimeSteps.ToArray();
+            RepeatSteps = DefaultRepeatSteps.ToArray();
         }
 
         public Control(GameControl? nativeControl = null) : this(null, /*null,*/ nativeControl)
         {
         }
 
-        public bool IsJustPressed()
+        /// <summary>
+        /// Checks whether the <see cref="Control"/> was just pressed.
+        /// </summary>
+        /// <param name="repeat">
+        /// <see langword="true"/> to return <see langword="true"/> on every interval defined by <see cref="RepeatSteps"/>,
+        /// not only if the <see cref="Control"/> was just pressed; otherwise, <see langword="false"/>.
+        /// </param>
+        /// <returns><see langword="true"/> is the <see cref="Control"/> was just pressed; otherwise, <see langword="false"/>.</returns>
+        public bool WasJustPressed(bool repeat = false)
         {
-            if (Key.HasValue && RPH.Game.WasKeyJustPressed(Key.Value))
-                return true;
+            if (repeat)
+            {
+                return WasJustPressedRepeated();
+            }
+            else
+            {
+                if (Key.HasValue && RPH.Game.WasKeyJustPressed(Key.Value))
+                    return true;
 
-            //if (Button.HasValue && Game.IsControllerButtonDown(Button.Value))
-            //    return true;
+                //if (Button.HasValue && Game.IsControllerButtonDown(Button.Value))
+                //    return true;
 
-            if (NativeControl.HasValue && (N.IsControlJustPressed(0, (int)NativeControl.Value) || N.IsDisabledControlJustPressed(0, (int)NativeControl.Value)))
-                return true;
+                if (NativeControl.HasValue && RPH.Game.WasControlActionJustPressed(0, NativeControl.Value, true))
+                    return true;
 
-            ResetHeld();
-            return false;
+                ResetRepeat();
+                return false;
+            }
         }
 
-        public bool IsPressed()
+        /// <summary>
+        /// Checks whether the <see cref="Control"/> is currently down.
+        /// </summary>
+        /// <returns><see langword="true"/> is the <see cref="Control"/> is currently down; otherwise, <see langword="false"/>.</returns>
+        public bool IsDown()
         {
             if (Key.HasValue && RPH.Game.IsKeyDown(Key.Value))
                 return true;
@@ -62,84 +81,103 @@ namespace RAGENativeUI
             //if (Button.HasValue && Game.IsControllerButtonDownRightNow(Button.Value))
             //    return true;
 
-            if (NativeControl.HasValue && (N.IsControlPressed(0, (int)NativeControl.Value) || N.IsDisabledControlPressed(0, (int)NativeControl.Value)))
+            if (NativeControl.HasValue && RPH.Game.IsControlActionDown(0, NativeControl.Value, true))
                 return true;
 
-            ResetHeld();
+            ResetRepeat();
             return false;
         }
 
-        // returns true every X time(defined by the HeldTimeSteps) while the key/button/control is pressed, instead of returning true every tick like IsPressed
-        // TODO: maybe rename IsHeld to better reflect its behaviour
-        public bool IsHeld()
+        private bool WasJustPressedRepeated()
         {
-            if(RPH.Game.GameTime <= nextHeldTime)
+            if(RPH.Game.GameTime <= nextRepeatTime)
             {
-                if(!IsPressed())
+                if(!IsDown())
                 {
-                    ResetHeld();
+                    ResetRepeat();
                 }
 
                 return false;
             }
 
-            if (IsPressed())
+            if (IsDown())
             {
-                if (heldStartTime == 0)
-                {
-                    heldStartTime = RPH.Game.GameTime;
-                }
-                UpdateHeldStep();
-                nextHeldTime = RPH.Game.GameTime + heldCooldown;
+                UpdateRepeat();
                 return true;
             }
 
-            ResetHeld();
+            ResetRepeat();
             return false;
         }
 
-        private void UpdateHeldStep()
+        private void UpdateRepeat()
         {
-            if (HeldTimeSteps != null && heldStartTime != 0 && HeldTimeSteps.Length > 0)
+            repeatStartTime = RPH.Game.GameTime;
+            if (RepeatSteps != null && RepeatSteps.Length > 0)
             {
-                if (currentHeldStepIndex != HeldTimeSteps.Length - 1)
+                if (currentRepeatStepIndex != RepeatSteps.Length - 1)
                 {
-                    int newIndex = currentHeldStepIndex + 1;
-                    if ((RPH.Game.GameTime - heldStartTime) >= HeldTimeSteps[newIndex].Time)
-                        currentHeldStepIndex = newIndex;
+                    int newIndex = currentRepeatStepIndex + 1;
+                    if ((RPH.Game.GameTime - repeatStartTime) >= RepeatSteps[newIndex].Time)
+                        currentRepeatStepIndex = newIndex;
                 }
 
-                heldCooldown = HeldTimeSteps[currentHeldStepIndex].HeldCooldown;
+                repeatInterval = RepeatSteps[currentRepeatStepIndex].Interval;
             }
             else
             {
-                heldCooldown = DefaultHeldCooldown;
+                repeatInterval = DefaultRepeatInterval;
             }
+
+            nextRepeatTime = RPH.Game.GameTime + repeatInterval;
         }
 
-        private void ResetHeld()
+        private void ResetRepeat()
         {
-            heldStartTime = 0;
-            currentHeldStepIndex = 0;
-            nextHeldTime = 0;
+            repeatStartTime = 0;
+            currentRepeatStepIndex = 0;
+            repeatInterval = 0;
+            nextRepeatTime = 0;
         }
 
-        public static readonly ReadOnlyCollection<TimeStep> DefaultHeldTimeSteps = Array.AsReadOnly(new[]
+        /// <summary>
+        /// Specifies the default <see cref="RepeatStep"/>s for the <see cref="RepeatSteps"/> property.
+        /// </summary>
+        public static readonly ReadOnlyCollection<RepeatStep> DefaultRepeatSteps = Array.AsReadOnly(new[]
         {
-            new TimeStep(0, 180),
-            new TimeStep(2000, 110),
-            new TimeStep(6000, 50),
+            new RepeatStep(0, 180),
+            new RepeatStep(2000, 110),
+            new RepeatStep(6000, 50),
         });
 
-        public struct TimeStep
+        /// <summary>
+        /// Defines an <see cref="Interval"/> for a <see cref="Control"/> press repeats after
+        /// the <see cref="Control"/> was down for a specific <see cref="Time"/>.
+        /// </summary>
+        public struct RepeatStep
         {
+            /// <summary>
+            /// Gets or sets the number of milliseconds that a <see cref="Control"/> must be down to
+            /// use this <see cref="RepeatStep"/>.
+            /// </summary>
+            /// <value>The number of milliseconds that a <see cref="Control"/> must be down to use this <see cref="RepeatStep"/>.</value>
             public uint Time { get; }
-            public uint HeldCooldown { get; }
+            /// <summary>
+            /// Gets or sets the number of milliseconds between a <see cref="Control"/> press repeats.
+            /// </summary>
+            /// <value>The number of milliseconds between a <see cref="Control"/> press repeats.</value>
+            public uint Interval { get; }
 
-            public TimeStep(uint time, uint heldCooldown)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="RepeatStep"/> structure with the specified
+            /// time and interval.
+            /// </summary>
+            /// <param name="time">The number of milliseconds that a <see cref="Control"/> must be down to use this <see cref="RepeatStep"/>.</param>
+            /// <param name="interval">The number of milliseconds between a <see cref="Control"/> press repeats.</param>
+            public RepeatStep(uint time, uint interval)
             {
                 Time = time;
-                HeldCooldown = heldCooldown;
+                Interval = interval;
             }
         }
     }

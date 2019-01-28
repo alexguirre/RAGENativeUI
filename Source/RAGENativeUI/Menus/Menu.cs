@@ -437,7 +437,7 @@ namespace RAGENativeUI.Menus
         {
             if (Controls != null && IsAnyItemOnScreen)
             {
-                if (Controls.Up != null && Controls.Up.IsHeld())
+                if (Controls.Up != null && Controls.Up.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || item.OnMoveUp())
@@ -446,7 +446,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Down != null && Controls.Down.IsHeld())
+                if (Controls.Down != null && Controls.Down.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || item.OnMoveDown())
@@ -455,7 +455,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Right != null && Controls.Right.IsHeld())
+                if (Controls.Right != null && Controls.Right.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || (!item.IsDisabled && item.OnMoveRight()))
@@ -464,7 +464,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Left != null && Controls.Left.IsHeld())
+                if (Controls.Left != null && Controls.Left.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || (!item.IsDisabled && item.OnMoveLeft()))
@@ -473,7 +473,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Accept != null && Controls.Accept.IsJustPressed())
+                if (Controls.Accept != null && Controls.Accept.WasJustPressed())
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || (!item.IsDisabled && item.OnAccept()))
@@ -482,7 +482,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Back != null && Controls.Back.IsJustPressed())
+                if (Controls.Back != null && Controls.Back.WasJustPressed())
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || item.OnBack())
