@@ -16,7 +16,7 @@ namespace RAGENativeUI.Menus
 
         public MenuItemEnumScroller(string text, string description, Type enumType) : base(text, description)
         {
-            Throw.InvalidOperationIfNot(enumType.IsEnum, $"The type {enumType.Name} isn't an enum.");
+            Throw.InvalidOperationIfNot(enumType.IsEnum, $"The type '{enumType.Name}' isn't an enum.");
             
             EnumType = enumType;
             Values = Enum.GetValues(enumType);
@@ -47,15 +47,15 @@ namespace RAGENativeUI.Menus
         }
     }
 
-    public class MenuItemEnumScroller<TEnum> : MenuItemEnumScroller where TEnum : struct
+    public class MenuItemEnumScroller<T> : MenuItemEnumScroller where T : Enum
     {
-        public TEnum SelectedEnumValue
+        public T SelectedEnumValue
         {
-            get => (TEnum)Values.GetValue(SelectedIndex);
+            get => (T)Values.GetValue(SelectedIndex);
             set => SelectedIndex = Array.IndexOf(Values, value);
         }
 
-        public MenuItemEnumScroller(string text, string description) : base(text, description, typeof(TEnum))
+        public MenuItemEnumScroller(string text, string description) : base(text, description, typeof(T))
         {
         }
 
