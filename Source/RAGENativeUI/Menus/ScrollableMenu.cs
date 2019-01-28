@@ -124,7 +124,7 @@ namespace RAGENativeUI.Menus
     public sealed class ScrollableMenuPage
     {
         private string text;
-        private List<MenuItem> items;
+        private IList<MenuItem> items;
 
         public string Text
         {
@@ -136,7 +136,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public List<MenuItem> Items
+        public IList<MenuItem> Items
         {
             get => items;
             set
