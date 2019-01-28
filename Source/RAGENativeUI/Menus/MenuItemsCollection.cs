@@ -3,9 +3,10 @@ namespace RAGENativeUI.Menus
     using System;
     using System.Linq;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Text.RegularExpressions;
     
-    public class MenuItemsCollection : BaseCollection<MenuItem>
+    public class MenuItemsCollection : Collection<MenuItem>
     {
         public Menu Owner { get; }
 
@@ -14,62 +15,57 @@ namespace RAGENativeUI.Menus
             Owner = owner;
         }
 
-        public override void Add(MenuItem item)
+        protected override void ClearItems()
         {
-            base.Add(item);
-            item.Parent = Owner;
-            Owner.UpdateVisibleItemsIndices();
-        }
-
-        public override void Insert(int index, MenuItem item)
-        {
-            base.Insert(index, item);
-            item.Parent = Owner;
-            Owner.UpdateVisibleItemsIndices();
-        }
-
-        public override bool Remove(MenuItem item)
-        {
-            bool b = base.Remove(item);
-            if (b)
+            foreach (MenuItem item in this)
             {
                 item.Parent = null;
+            }
+            base.ClearItems();
+            Owner.UpdateVisibleItemsIndices();
+        }
+
+        protected override void InsertItem(int index, MenuItem item)
+        {
+            base.InsertItem(index, item);
+            item.Parent = Owner;
+            Owner.UpdateVisibleItemsIndices();
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            Items[index].Parent = null;
+            base.RemoveItem(index);
+            Owner.UpdateVisibleItemsIndices();
+        }
+
+        protected override void SetItem(int index, MenuItem item)
+        {
+            if (Items[index] != item)
+            {
+                Items[index].Parent = null;
+                base.SetItem(index, item);
+                item.Parent = Owner;
                 Owner.UpdateVisibleItemsIndices();
             }
-            return b;
         }
 
-        public override void RemoveAt(int index)
+        public virtual void Replace(IEnumerable<MenuItem> items)
         {
-            if (index >= 0 && index < Count)
-            {
-                this[index].Parent = null;
-            }
-            base.RemoveAt(index);
-            Owner.UpdateVisibleItemsIndices();
-        }
+            // the enumerable may reference the internal list,
+            // which will be empty after Clear(), so get all the
+            // enumerable contents
+            MenuItem[] copy = items.ToArray(); 
 
-        public override void Clear()
-        {
             foreach (MenuItem item in this)
             {
                 item.Parent = null;
             }
-            base.Clear();
-            Owner.UpdateVisibleItemsIndices();
-        }
+            Items.Clear();
 
-        public virtual void ClearAndAdd(IEnumerable<MenuItem> items)
-        {
-            foreach (MenuItem item in this)
+            foreach (MenuItem item in copy)
             {
-                item.Parent = null;
-            }
-            base.Clear();
-
-            foreach (MenuItem item in items)
-            {
-                base.Add(item);
+                Items.Add(item);
                 item.Parent = Owner;
             }
 

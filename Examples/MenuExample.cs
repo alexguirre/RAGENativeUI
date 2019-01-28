@@ -208,7 +208,7 @@ namespace Examples
 
                     if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.O))
                     {
-                        menu.Items.ClearAndAdd(menu.Items.OrderBy(i => i.Text));
+                        menu.Items.Replace(menu.Items.OrderBy(i => i.Text));
                     }
                 }
             });

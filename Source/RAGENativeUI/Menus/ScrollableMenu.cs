@@ -2,6 +2,7 @@ namespace RAGENativeUI.Menus
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     // note: do not modifiy the Items collection directly(Add, Remove, Clear,...), changes will be overwritten once UpdateItems() is called
     public class ScrollableMenu : Menu
@@ -155,7 +156,7 @@ namespace RAGENativeUI.Menus
     }
 
 
-    public sealed class ScrollableMenuPagesCollection : BaseCollection<ScrollableMenuPage>
+    public sealed class ScrollableMenuPagesCollection : Collection<ScrollableMenuPage>
     {
         public ScrollableMenu Owner { get; }
 
@@ -164,35 +165,27 @@ namespace RAGENativeUI.Menus
             Owner = owner;
         }
 
-        public override void Add(ScrollableMenuPage item)
+        protected override void ClearItems()
         {
-            base.Add(item);
+            base.ClearItems();
             Owner.UpdateItems();
         }
 
-        public override void Insert(int index, ScrollableMenuPage item)
+        protected override void InsertItem(int index, ScrollableMenuPage item)
         {
-            base.Insert(index, item);
+            base.InsertItem(index, item);
             Owner.UpdateItems();
         }
 
-        public override bool Remove(ScrollableMenuPage item)
+        protected override void RemoveItem(int index)
         {
-            bool b = base.Remove(item);
-            if (b)
-                Owner.UpdateItems();
-            return b;
-        }
-
-        public override void RemoveAt(int index)
-        {
-            base.RemoveAt(index);
+            base.RemoveItem(index);
             Owner.UpdateItems();
         }
 
-        public override void Clear()
+        protected override void SetItem(int index, ScrollableMenuPage item)
         {
-            base.Clear();
+            base.SetItem(index, item);
             Owner.UpdateItems();
         }
     }

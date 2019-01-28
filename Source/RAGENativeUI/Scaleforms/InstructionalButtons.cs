@@ -12,7 +12,8 @@ namespace RAGENativeUI.Scaleforms
 
     using System;
     using System.Drawing;
-    
+    using System.Collections.ObjectModel;
+
     public class InstructionalButtons : Scaleform
     {
         private InstructionalButtonsSlots slots;
@@ -79,7 +80,7 @@ namespace RAGENativeUI.Scaleforms
         public int AddSlot(string label, string text) => AddSlot(new InstructionalButtonTextSlot(label, text));
 
 
-        public class InstructionalButtonsSlots : BaseCollection<InstructionalButtonSlot>
+        public class InstructionalButtonsSlots : Collection<InstructionalButtonSlot>
         {
         }
 

@@ -10,6 +10,7 @@ namespace RAGENativeUI.Scaleforms
 
     using System;
     using System.Drawing;
+    using System.Collections.ObjectModel;
 
     using RAGENativeUI.Drawing;
 
@@ -348,7 +349,7 @@ namespace RAGENativeUI.Scaleforms
         }
     }
 
-    public class MissionPassedScreenItemsCollection : BaseCollection<MissionPassedScreenItem>
+    public class MissionPassedScreenItemsCollection : Collection<MissionPassedScreenItem>
     {
     }
 }

@@ -2,6 +2,7 @@ namespace RAGENativeUI
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Represents an object with a value and the text that represents the value.
@@ -107,7 +108,7 @@ namespace RAGENativeUI
     /// Represents a collection of <see cref="IDisplayItem"/>. 
     /// </summary>
     /// <seealso cref="BaseCollection{IDisplayItem}" />
-    public class DisplayItemsCollection : BaseCollection<IDisplayItem>
+    public class DisplayItemsCollection : Collection<IDisplayItem>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayItemsCollection"/> class that is empty.
@@ -120,7 +121,7 @@ namespace RAGENativeUI
         /// Initializes a new instance of the <see cref="DisplayItemsCollection"/> class that contains elements copied from the specified collection.
         /// </summary>
         /// <param name="collection"></param>
-        public DisplayItemsCollection(IEnumerable<IDisplayItem> collection) : base(collection)
+        public DisplayItemsCollection(IEnumerable<IDisplayItem> collection) : base(new List<IDisplayItem>(collection))
         {
         }
 
@@ -151,8 +152,8 @@ namespace RAGENativeUI
         {
             for (int i = Count - 1; i >= 0; i--)
             {
-                if ((InternalList[i].Value == null && value == null) ||
-                    (InternalList[i].Value.Equals(value)))
+                if ((Items[i].Value == null && value == null) ||
+                    (Items[i].Value.Equals(value)))
                     RemoveAt(i);
             }
         }
@@ -166,8 +167,8 @@ namespace RAGENativeUI
         {
             for (int i = 0; i < Count; i++)
             {
-                if ((InternalList[i].Value == null && value == null) ||
-                    (InternalList[i].Value.Equals(value)))
+                if ((Items[i].Value == null && value == null) ||
+                    (Items[i].Value.Equals(value)))
                     return true;
             }
             return false;
@@ -184,7 +185,7 @@ namespace RAGENativeUI
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (InternalList[i].Value == null)
+                    if (Items[i].Value == null)
                         return i;
                 }
             }
@@ -192,7 +193,7 @@ namespace RAGENativeUI
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (value.Equals(InternalList[i].Value))
+                    if (value.Equals(Items[i].Value))
                         return i;
                 }
             }
