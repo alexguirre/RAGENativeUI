@@ -74,8 +74,6 @@ namespace RAGENativeUI
 
             AppDomain.CurrentDomain.DomainUnload += Shutdown;
 
-            AssemblyResolver.Initialize();
-
             Helper.Init();
             bool gameFnInit = GameFunctions.Init();
             bool gameMemInit = GameMemory.Init();
