@@ -25,7 +25,7 @@ namespace RAGENativeUI.Drawing
         public Vector3 UpperRight { get; set; }
         public Vector3 BottomLeft { get; set; }
         public Vector3 BottomRight { get; set; }
-        public UVCoords UV { get; set; }
+        public RectangleF UV { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether the back-face should be drawn. If <c>true</c> both front and back faces will be drawn, 
         /// otherwise only the face that heads to (UpperRight-UpperLeft)x(UpperLeft-BottomLeft) is drawn.
@@ -46,7 +46,7 @@ namespace RAGENativeUI.Drawing
             BottomLeft = bottomLeft;
             BottomRight = bottomRight;
             Color = color;
-            UV = new UVCoords(0.0f, 0.0f, 1.0f, 1.0f);
+            UV = new RectangleF(0.0f, 0.0f, 1.0f, 1.0f);
             BackFace = false;
         }
 
@@ -92,7 +92,7 @@ namespace RAGENativeUI.Drawing
             Draw(TextureDictionary, TextureName, UpperLeft, UpperRight, BottomLeft, BottomRight, Color, UV, BackFace);
         }
 
-        public static void Draw(TextureDictionary textureDictionary, string textureName, Vector3 upperLeft, Vector3 upperRight, Vector3 bottomLeft, Vector3 bottomRight, Color color, UVCoords uv, bool backFace = false)
+        public static void Draw(TextureDictionary textureDictionary, string textureName, Vector3 upperLeft, Vector3 upperRight, Vector3 bottomLeft, Vector3 bottomRight, Color color, RectangleF uv, bool backFace = false)
         {
             Throw.IfNull(textureName, nameof(textureName));
 
@@ -110,18 +110,18 @@ namespace RAGENativeUI.Drawing
             Debug.DrawLineDebug(ur, bl, Color.FromArgb(200, Color.Blue));
 
             Debug.DrawLineDebug(ul, ul + Vector3.Cross(ur - ul, ul - bl), Color.Green);
-
-            N.DrawTriangle3D(ul, bl, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.U1, uv.V1, 1f), new Vector3(uv.U1, uv.V2, 1f), new Vector3(uv.U2, uv.V1, 1f));
-            N.DrawTriangle3D(bl, br, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.U1, uv.V2, 1f), new Vector3(uv.U2, uv.V2, 1f), new Vector3(uv.U2, uv.V1, 1f));
+            
+            N.DrawTriangle3D(ul, bl, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Left, uv.Top, 1f), new Vector3(uv.Left, uv.Bottom, 1f), new Vector3(uv.Right, uv.Top, 1f));
+            N.DrawTriangle3D(bl, br, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Left, uv.Bottom, 1f), new Vector3(uv.Right, uv.Bottom, 1f), new Vector3(uv.Right, uv.Top, 1f));
 
             if (backFace)
             {
                 // TODO: Sprite3D should back-face UV be flipped horizontally/vertically? or add the option via a property?
-                //N.DrawTriangle3D(ur, bl, ul, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(-uv.U2, uv.V1, 1f), new Vector3(-uv.U1, uv.V2, 1f), new Vector3(-uv.U1, uv.V1, 1f));
-                //N.DrawTriangle3D(ur, br, bl, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(-uv.U2, uv.V1, 1f), new Vector3(-uv.U2, uv.V2, 1f), new Vector3(-uv.U1, uv.V2, 1f));
+                //N.DrawTriangle3D(ur, bl, ul, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(-uv.Right, uv.Top, 1f), new Vector3(-uv.Left, uv.Bottom, 1f), new Vector3(-uv.Left, uv.V1, 1f));
+                //N.DrawTriangle3D(ur, br, bl, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(-uv.Right, uv.Top, 1f), new Vector3(-uv.Right, uv.Bottom, 1f), new Vector3(-uv.Left, uv.Bottom, 1f));
 
-                N.DrawTriangle3D(ur, bl, ul, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.U2, uv.V1, 1f), new Vector3(uv.U1, uv.V2, 1f), new Vector3(uv.U1, uv.V1, 1f));
-                N.DrawTriangle3D(ur, br, bl, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.U2, uv.V1, 1f), new Vector3(uv.U2, uv.V2, 1f), new Vector3(uv.U1, uv.V2, 1f));
+                N.DrawTriangle3D(ur, bl, ul, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Right, uv.Top, 1f), new Vector3(uv.Left, uv.Bottom, 1f), new Vector3(uv.Left, uv.Top, 1f));
+                N.DrawTriangle3D(ur, br, bl, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Right, uv.Top, 1f), new Vector3(uv.Right, uv.Bottom, 1f), new Vector3(uv.Left, uv.Bottom, 1f));
             }
         }
     }

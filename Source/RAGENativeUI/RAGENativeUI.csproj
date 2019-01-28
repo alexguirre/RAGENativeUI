@@ -147,7 +147,6 @@
     <Compile Include="ScreenCoords.cs" />
     <Compile Include="FrontendSound.cs" />
     <Compile Include="Metadata.cs" />
-    <Compile Include="UVCoords.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

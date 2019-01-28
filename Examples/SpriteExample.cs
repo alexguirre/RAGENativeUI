@@ -85,7 +85,7 @@ namespace Examples
 
                 Sprite3D s = new Sprite3D(tex.Dictionary, tex.Name);
                 s.BackFace = true;
-                s.UV = new UVCoords(0.25f, 0.25f, 0.75f, 0.75f);
+                s.UV = new RectangleF(0.25f, 0.25f, 0.5f, 0.5f);
 
                 Rect3D r = new Rect3D();
                 r.BackFace = true;
@@ -142,7 +142,7 @@ namespace Examples
                     else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Divide))
                         scaleY -= 5.0f * Game.FrameTime;
 
-                    s.UV = new UVCoords(zoom, zoom, 1.0f - zoom, 1.0f - zoom);
+                    s.UV = new RectangleF(zoom, zoom, 1.0f - zoom * 2.0f, 1.0f - zoom * 2.0f);
 
                     Vector3 p = Game.LocalPlayer.Character.GetOffsetPositionFront(2.0f);
                     s.SetTransform(p, new Vector2(scaleX, scaleY), new Rotator(pitch, roll, yaw).ToQuaternion());
