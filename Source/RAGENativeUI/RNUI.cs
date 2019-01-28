@@ -27,6 +27,12 @@ namespace RAGENativeUI
                 [MarshalAs(UnmanagedType.I1)] public bool Updatable;
             };
 
+            [StructLayout(LayoutKind.Sequential)]
+            public struct RECT
+            {
+                public int Left, Top, Right, Bottom;
+            }
+
             public const string DllName = "RAGENativeUI.Helper.dll";
 
             [DllImport(DllName)] public static extern void Init();
@@ -53,6 +59,9 @@ namespace RAGENativeUI
 
             [DllImport(DllName)]
             public static extern void DeleteCustomTexture(uint nameHash);
+
+            [DllImport(DllName)]
+            public static extern void UpdateCustomTexture(uint nameHash, IntPtr srcData, in RECT dstRect);
 
             [DllImport(DllName)]
             public static extern uint GetNumberOfCustomTextures();

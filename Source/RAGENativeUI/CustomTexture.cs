@@ -51,6 +51,23 @@ namespace RAGENativeUI
         }
         #endregion
 
+        // TODO: decide the final API for updating CustomTextures
+        public unsafe void Update(byte[] srcData, Rectangle dstRect)
+        {
+            Throw.InvalidOperationIfNot(IsUpdatable, $"Can't call Update if IsUpdatable is false.");
+            // TODO: validate parameters
+            
+            fixed (byte* data = srcData)
+            {
+                RNUI.Helper.RECT r;
+                r.Left = dstRect.Left;
+                r.Top = dstRect.Top;
+                r.Right = dstRect.Right;
+                r.Bottom = dstRect.Bottom;
+                RNUI.Helper.UpdateCustomTexture(Hash, (IntPtr)data, r);
+            }
+        }
+
         /// <summary>
         /// Gets the <see cref="TextureDictionary"/> that contains the created <see cref="CustomTexture"/>s.
         /// </summary>

@@ -52,6 +52,7 @@ public:
 	static bool DoesCustomTextureExist(rage::atHashValue name);
 	static bool CreateCustomTexture(const char* name, uint32 width, uint32 height, uint8* pixelData, bool updatable);
 	static void DeleteCustomTexture(rage::atHashValue name);
+	static void UpdateCustomTexture(rage::atHashValue name, const uint8* srcData, const RECT& dstRect);
 	static uint32 GetNumberOfCustomTextures();
 	static void GetCustomTextures(Memory::CustomTextureDesc* outTextureDescs);
 private:
@@ -65,15 +66,3 @@ private:
 
 	Memory() {}
 };
-//struct CustomTextureDesc
-//{
-//	const char* m_pName;
-//	uint32 m_nWidth;
-//	uint32 m_nHeight;
-//	uint32 m_nNameHash;
-//	bool m_bUpdatable;
-//};
-//int i = sizeof(Memory::CustomTextureDesc);
-//int i = sizeof(Memory::CustomTextureDesc);
-//int i = sizeof(Memory::CustomTextureDesc);
-//int i = sizeof(Memory::CustomTextureDesc);

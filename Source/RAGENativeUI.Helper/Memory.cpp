@@ -134,19 +134,19 @@ bool Memory::CreateCustomTexture(const char* name, uint32 width, uint32 height, 
 	BeginUsingDeviceContext();
 	if(updatable)
 	{
-		rage::grcManualTextureDesc desc;
-		memset(&desc, 0, sizeof(desc));
-		desc.field_0 = 0;
-		desc.field_4 = 0;
-		desc.field_10 = 0;
-		desc.field_1C = 0;
-		desc.field_28 = 0;
-		desc.field_8 = 3;
-		desc.field_18 = 1;
-		desc.field_20 = 2;
-		desc.field_24 = 1;
+		rage::grcTextureFactoryDX11::TextureCreateParams params;
+		memset(&params, 0, sizeof(params));
+		params.field_0 = 0;
+		params.field_4 = 0;
+		params.field_10 = 0;
+		params.field_1C = 0;
+		params.field_28 = 0;
+		params.field_8 = 3;
+		params.field_18 = 1;
+		params.field_20 = 2;
+		params.field_24 = 1;
 
-		tex = m_pTextureFactory->CreateManualTexture(width, height, rage::grcRenderTargetFormat::B8G8R8A8_UNORM, nullptr, true, &desc);
+		tex = m_pTextureFactory->CreateManualTexture(width, height, rage::grcRenderTargetFormat::B8G8R8A8_UNORM, nullptr, true, &params);
 		tex->m_pName = CloneString(name);
 
 		if(pixelData)
@@ -170,13 +170,13 @@ bool Memory::CreateCustomTexture(const char* name, uint32 width, uint32 height, 
 	}
 	else
 	{
-		rage::grcTextureData data;
+		rage::grcImage data;
 		memset(&data, 0, sizeof(data));
 		data.m_nWidth = width;
 		data.m_nHeight = height;
 		data.m_nDepth = 1;
 		data.m_nStride = width * 4;
-		data.m_nFormat = rage::grcPixelFormat::B8G8R8A8_UNORM;
+		data.m_nFormat = rage::grcImage::Format::B8G8R8A8_UNORM;
 		data.m_pPixelData = (uint8*)pixelData;
 
 		tex = m_pTextureFactory->CreateImage(&data, nullptr);
@@ -208,6 +208,31 @@ void Memory::DeleteCustomTexture(rage::atHashValue name)
 	ms_pCustomTextureDictionary->Remove(name);
 
 	delete tex.m_pTexture;
+}
+
+void Memory::UpdateCustomTexture(rage::atHashValue name, const uint8* srcData, const RECT& dstRect)
+{
+	UsingAllocator usingTlsAllocator;
+	auto entry = ms_customTextures.find(name);
+	if (entry == ms_customTextures.end())
+	{
+		return;
+	}
+
+	CustomTexture& customTex = entry->second;
+	if (!customTex.m_bUpdatable)
+	{
+		return;
+	}
+
+	rage::grcTextureDX11* tex = customTex.m_pTexture;
+
+	rage::grcRect rect{ dstRect.left, dstRect.top, dstRect.right, dstRect.bottom };
+	rage::grcPoint point{ (dstRect.right - dstRect.left) * 4, (dstRect.bottom - dstRect.top) };
+
+	BeginUsingDeviceContext();
+	tex->Copy2D(srcData, point, rect, nullptr, 0);
+	EndUsingDeviceContext();
 }
 
 uint32 Memory::GetNumberOfCustomTextures() 

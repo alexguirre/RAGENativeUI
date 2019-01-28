@@ -51,7 +51,7 @@ namespace Examples
                     pe.Dispose();
                     b.Dispose();
                     g.Dispose();
-                    tex = CustomTexture.FromBitmap("my_own_texture_" + i, bmp, false);
+                    tex = CustomTexture.FromBitmap("my_own_texture_" + i, bmp, true);
 
                     bmp.Dispose();
 
@@ -108,6 +108,34 @@ namespace Examples
                     {
                         sprite.Color = s.Color = Color.FromArgb(RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255));
                         r.Color = Color.FromArgb(RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255), RPH.MathHelper.GetRandomInteger(0, 255));
+                    }
+
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.J) && RPH.Game.GameTime % 4 == 0)
+                    {
+                        Bitmap bmp = new Bitmap(128, 128, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                        System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp);
+                        Font f = new Font(FontFamily.GenericSansSerif, 11.0f);
+                        Pen pe = new Pen(Color.DarkSeaGreen, 16.0f);
+                        Brush b = new SolidBrush(Color.Black);
+                        g.Clear(Color.DarkOrange);
+                        g.DrawEllipse(pe, RPH.MathHelper.GetRandomSingle(0.0f, 128.0f), RPH.MathHelper.GetRandomSingle(0.0f, 128.0f), 64.0f, 64.0f);
+                        g.DrawString("Texture Updated", f, b, new PointF(5.0f, 5.0f));
+
+                        f.Dispose();
+                        pe.Dispose();
+                        b.Dispose();
+                        g.Dispose();
+
+                        byte[] data = new byte[bmp.Width * 4 * bmp.Height];
+                        System.Drawing.Imaging.BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
+
+                        System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
+
+                        bmp.UnlockBits(bitmapData);
+                        bmp.Dispose();
+
+                        tex.Update(data, new Rectangle(64, 64, 128, 128));
                     }
 
                     sprite.Draw();
