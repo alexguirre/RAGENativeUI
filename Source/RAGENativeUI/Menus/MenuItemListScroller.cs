@@ -38,6 +38,19 @@ namespace RAGENativeUI.Menus
             set => SelectedIndex = Items.IndexOf(value);
         }
 
+        public override int OptionCount => Items.Count; // TODO: OnPropertyChanged(OptionCount) when Items.Count changes
+
+        public override string SelectedOptionText
+        {
+            get
+            {
+                int index = SelectedIndex;
+                if (index >= 0 && index < Items.Count)
+                    return Items[index].ToString();
+                return DefaultText;
+            }
+        }
+
         public MenuItemListScroller(string text, string description) : base(text, description)
         {
             Items = new ItemCollection();
@@ -54,19 +67,6 @@ namespace RAGENativeUI.Menus
 
         public MenuItemListScroller(string text, IEnumerable<object> items) : this(text, String.Empty, items)
         {
-        }
-
-        public override int GetOptionsCount()
-        {
-            return Items.Count;
-        }
-
-        public override string GetSelectedOptionText()
-        {
-            int index = SelectedIndex;
-            if (index >= 0 && index < Items.Count)
-                return Items[index].ToString();
-            return DefaultText;
         }
 
         protected override void OnPropertyChanged(string propertyName)

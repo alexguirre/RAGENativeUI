@@ -98,24 +98,24 @@ namespace RAGENativeUI.Menus
 
             public ScrollableMenuPagesCollection Pages { get { return pages; } set { Throw.IfNull(value, nameof(value)); pages = value; } }
 
+            public override int OptionCount => pages.Count;
+
+            public override string SelectedOptionText
+            {
+                get
+                {
+                    int index = SelectedIndex;
+                    if (index >= 0 && index < Pages.Count)
+                        return Pages[index].Text;
+                    return "-";
+                }
+            }
+
             public MenuItemPagesScroller(string text, ScrollableMenuPagesCollection pages) : base(text, String.Empty)
             {
                 Throw.IfNull(pages, nameof(pages));
 
                 Pages = pages;
-            }
-
-            public override int GetOptionsCount()
-            {
-                return pages.Count;
-            }
-
-            public override string GetSelectedOptionText()
-            {
-                int index = SelectedIndex;
-                if (index >= 0 && index < Pages.Count)
-                    return Pages[index].Text;
-                return "-";
             }
         }
     }

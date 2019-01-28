@@ -14,6 +14,9 @@ namespace RAGENativeUI.Menus
 
         protected Array Values { get; }
 
+        public override int OptionCount => Values.Length;
+        public override string SelectedOptionText => Values.GetValue(SelectedIndex).ToString();
+
         public MenuItemEnumScroller(string text, string description, Type enumType) : base(text, description)
         {
             Throw.InvalidOperationIfNot(enumType.IsEnum, $"The type '{enumType.Name}' isn't an enum.");
@@ -24,16 +27,6 @@ namespace RAGENativeUI.Menus
 
         public MenuItemEnumScroller(string text, Type enumType) : this(text, String.Empty, enumType)
         {
-        }
-
-        public override int GetOptionsCount()
-        {
-            return Values.Length;
-        }
-
-        public override string GetSelectedOptionText()
-        {
-            return Values.GetValue(SelectedIndex).ToString();
         }
 
         protected override void OnPropertyChanged(string propertyName)

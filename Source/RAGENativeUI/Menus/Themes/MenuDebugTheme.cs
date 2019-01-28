@@ -102,7 +102,7 @@ namespace RAGENativeUI.Menus.Themes
             {
                 case MenuItemScroller scroller:
                     {
-                        DrawTextRightAligned(g, "<" + scroller.GetSelectedOptionText() + ">", itemFont.Name, itemFont.Size, c, new RectangleF(position.X, y, width, itemFont.Height));
+                        DrawTextRightAligned(g, "<" + scroller.SelectedOptionText + ">", itemFont.Name, itemFont.Size, c, new RectangleF(position.X, y, width, itemFont.Height));
                         break;
                     }
                 case MenuItemCheckbox checkbox:

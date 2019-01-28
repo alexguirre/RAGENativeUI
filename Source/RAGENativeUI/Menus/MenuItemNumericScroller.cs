@@ -45,7 +45,7 @@ namespace RAGENativeUI.Menus
                         OnPropertyChanged(nameof(Maximum));
                     }
                     OnPropertyChanged(nameof(Minimum));
-
+                    OnPropertyChanged(nameof(OptionCount));
                     Value = EnsureValue(Value);
 
                     UpdateSelectedIndex();
@@ -67,7 +67,7 @@ namespace RAGENativeUI.Menus
                         OnPropertyChanged(nameof(Minimum));
                     }
                     OnPropertyChanged(nameof(Maximum));
-
+                    OnPropertyChanged(nameof(OptionCount));
                     Value = EnsureValue(Value);
 
                     UpdateSelectedIndex();
@@ -86,6 +86,7 @@ namespace RAGENativeUI.Menus
                 {
                     increment = value;
                     OnPropertyChanged(nameof(Increment));
+                    OnPropertyChanged(nameof(OptionCount));
                     UpdateSelectedIndex();
                 }
             }
@@ -96,7 +97,7 @@ namespace RAGENativeUI.Menus
             get => base.SelectedIndex;
             set
             {
-                int newIndex = RPH.MathHelper.Clamp(value, 0, RPH.MathHelper.Max(0, GetOptionsCount() - 1));
+                int newIndex = RPH.MathHelper.Clamp(value, 0, RPH.MathHelper.Max(0, OptionCount - 1));
                 if (newIndex != SelectedIndex)
                 {
                     currentValue = Minimum + newIndex * Increment;
@@ -144,9 +145,30 @@ namespace RAGENativeUI.Menus
             }
         }
 
+        public override int OptionCount => (int)((Maximum - Minimum) / Increment) + 1;
+
+        public override string SelectedOptionText
+        {
+            get
+            {
+                string text;
+
+                if (Hexadecimal)
+                {
+                    text = ((Int64)currentValue).ToString("X", CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    text = currentValue.ToString((ThousandsSeparator ? "N" : "F") + DecimalPlaces.ToString(CultureInfo.CurrentCulture), CultureInfo.CurrentCulture);
+                }
+
+                return text;
+            }
+        }
+
         public MenuItemNumericScroller(string text, string description) : base(text, description)
         {
-            SelectedIndex = GetOptionsCount() / 2;
+            SelectedIndex = OptionCount / 2;
         }
 
         public MenuItemNumericScroller(string text) : this(text, String.Empty)
@@ -162,33 +184,11 @@ namespace RAGENativeUI.Menus
                 value = maximum;
 
             return value;
-
         }
 
         private void UpdateSelectedIndex()
         {
             SelectedIndex = (int)((currentValue - Minimum) / Increment);
-        }
-
-        public override int GetOptionsCount()
-        {
-            return (int)((Maximum - Minimum) / Increment) + 1;
-        }
-
-        public override string GetSelectedOptionText()
-        {
-            string text;
-
-            if (Hexadecimal)
-            {
-                text = ((Int64)currentValue).ToString("X", CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                text = currentValue.ToString((ThousandsSeparator ? "N" : "F") + DecimalPlaces.ToString(CultureInfo.CurrentCulture), CultureInfo.CurrentCulture);
-            }
-
-            return text;
         }
 
         protected internal override bool OnMoveLeft()

@@ -277,7 +277,7 @@ namespace RAGENativeUI.Menus.Themes
 
                                 if (scroller.IsSelected)
                                 {
-                                    string selectedOption = scroller.GetSelectedOptionText();
+                                    string selectedOption = scroller.SelectedOptionText;
 
                                     SetTextOptions();
                                     N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
@@ -296,7 +296,7 @@ namespace RAGENativeUI.Menus.Themes
                                 }
                                 else
                                 {
-                                    string selectedOption = scroller.GetSelectedOptionText();
+                                    string selectedOption = scroller.SelectedOptionText;
 
                                     SetTextOptions();
                                     N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);

@@ -15,7 +15,7 @@ namespace RAGENativeUI.Menus
             get { return selectedIndex; }
             set
             {
-                int newIndex = RPH.MathHelper.Clamp(value, 0, RPH.MathHelper.Max(0, GetOptionsCount() - 1));
+                int newIndex = RPH.MathHelper.Clamp(value, 0, RPH.MathHelper.Max(0, OptionCount - 1));
 
                 if (newIndex != selectedIndex)
                 {
@@ -23,23 +23,24 @@ namespace RAGENativeUI.Menus
                     selectedIndex = newIndex;
                     OnPropertyChanged(nameof(SelectedIndex));
                     OnSelectedIndexChanged(new SelectedIndexChangedEventArgs(oldIndex, newIndex));
+                    OnPropertyChanged(nameof(SelectedOptionText));
                 }
             }
         }
 
+        public abstract string SelectedOptionText { get; }
+        public abstract int OptionCount { get; }
+
         public MenuItemScroller(string text, string description) : base(text, description)
         {
         }
-
-        public abstract string GetSelectedOptionText();
-        public abstract int GetOptionsCount();
 
         protected internal override bool OnMoveLeft()
         {
             int newIndex = SelectedIndex - 1;
 
             if (newIndex < 0)
-                newIndex = GetOptionsCount() - 1;
+                newIndex = OptionCount - 1;
 
             SelectedIndex = newIndex;
 
@@ -50,7 +51,7 @@ namespace RAGENativeUI.Menus
         {
             int newIndex = SelectedIndex + 1;
 
-            if (newIndex > (GetOptionsCount() - 1))
+            if (newIndex > (OptionCount - 1))
                 newIndex = 0;
 
             SelectedIndex = newIndex;
