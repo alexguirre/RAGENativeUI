@@ -142,7 +142,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Control.cs" />
     <Compile Include="DisplayItem.cs" />
-    <Compile Include="GraphicsFont.cs" />
     <Compile Include="ScreenCoords.cs" />
     <Compile Include="FrontendSound.cs" />
     <Compile Include="Metadata.cs" />

@@ -32,7 +32,6 @@ namespace RAGENativeUI
             return Graphics.MeasureText("A", fontName, fontSize).Height;
         }
         
-        public static string WrapText(string text, GraphicsFont font, float widthLimit) => WrapText(text, font.Name, font.Size, widthLimit);
         public static string WrapText(string text, string fontName, float fontSize, float widthLimit)
         {
             float GetTextWidth(string str) => Graphics.MeasureText(str, fontName, fontSize).Width;
