@@ -56,16 +56,24 @@ namespace RAGENativeUI
         {
             Throw.InvalidOperationIfNot(IsUpdatable, $"Can't call Update if IsUpdatable is false.");
             // TODO: validate parameters
-            
+
             fixed (byte* data = srcData)
             {
-                RNUI.Helper.RECT r;
-                r.Left = dstRect.Left;
-                r.Top = dstRect.Top;
-                r.Right = dstRect.Right;
-                r.Bottom = dstRect.Bottom;
-                RNUI.Helper.UpdateCustomTexture(Hash, (IntPtr)data, r);
+                Update((IntPtr)data, dstRect);
             }
+        }
+
+        public unsafe void Update(IntPtr srcData, Rectangle dstRect)
+        {
+            Throw.InvalidOperationIfNot(IsUpdatable, $"Can't call Update if IsUpdatable is false.");
+            // TODO: validate parameters
+
+            RNUI.Helper.RECT r;
+            r.Left = dstRect.Left;
+            r.Top = dstRect.Top;
+            r.Right = dstRect.Right;
+            r.Bottom = dstRect.Bottom;
+            RNUI.Helper.UpdateCustomTexture(Hash, srcData, r);
         }
 
         /// <summary>
