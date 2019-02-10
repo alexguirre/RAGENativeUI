@@ -21,7 +21,7 @@ namespace RAGENativeUI.Menus
         private static GameFiber processFiber;
 
         public static bool IsProcessRunning => processFiber != null && processFiber.IsAlive;
-        public static bool IsAnyMenuVisible => visibleMenus.Count > 0;
+        public static bool IsAnyMenuVisible => RNUI.Globals.MenusVisible != 0;
 
         public static void AddMenu(Menu menu)
         {
@@ -45,6 +45,11 @@ namespace RAGENativeUI.Menus
             }
         }
 
+        public static void OnShutdown()
+        {
+            RNUI.Globals.MenusVisible -= visibleMenus.Count;
+        }
+
         private static void StartProcess()
         {
             processFiber = GameFiber.StartNew(ProcessLoop, $"RAGENativeUI - {nameof(MenuManager)}");
@@ -63,10 +68,12 @@ namespace RAGENativeUI.Menus
             if (e.IsVisible)
             {
                 visibleMenus.Add(menu);
+                RNUI.Globals.MenusVisible++;
             }
             else
             {
                 visibleMenus.Remove(menu);
+                RNUI.Globals.MenusVisible--;
             }
         }
 

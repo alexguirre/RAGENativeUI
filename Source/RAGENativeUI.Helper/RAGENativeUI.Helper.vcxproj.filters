@@ -47,6 +47,7 @@
       <Filter>rage</Filter>
     </ClInclude>
     <ClInclude Include="UsingAllocator.h" />
+    <ClInclude Include="Globals.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="rage">

@@ -166,6 +166,7 @@
     <ClInclude Include="atArray.h" />
     <ClInclude Include="atHashValue.h" />
     <ClInclude Include="CStreaming.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="grcTextureDX11.h" />
     <ClInclude Include="grcTextureFactoryDX11.h" />
     <ClInclude Include="Hashing.h" />

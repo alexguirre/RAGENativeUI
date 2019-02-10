@@ -7,6 +7,18 @@ namespace RAGENativeUI
 
     internal static class RNUI
     {
+        /// <summary>
+        /// Globals shared across all plugins using RAGENativeUI.
+        /// </summary>
+        public static class Globals
+        {
+            public static int MenusVisible
+            {
+                get => Helper.Globals_GetMenusOpened();
+                set => Helper.Globals_SetMenusOpened(value);
+            }
+        }
+
         public static class Helper
         {
             [StructLayout(LayoutKind.Sequential, Size = 16)]
@@ -68,6 +80,10 @@ namespace RAGENativeUI
 
             [DllImport(DllName)]
             public static extern void GetCustomTextures([In, Out] CustomTextureDesc[] outTextureDescs);
+
+
+            [DllImport(DllName)] public static extern int Globals_GetMenusOpened();
+            [DllImport(DllName)] public static extern void Globals_SetMenusOpened(int value);
         }
 
         public static bool IsInitialized { get; private set; }
@@ -121,6 +137,7 @@ namespace RAGENativeUI
         {
             Common.LogDebug("Shutting down...");
 
+            Menus.MenuManager.OnShutdown();
 
             Common.LogDebug("Finished shutdown...");
         }
