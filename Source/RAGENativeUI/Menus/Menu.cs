@@ -246,7 +246,7 @@ namespace RAGENativeUI.Menus
         /// <summary>
         /// Gets the index of the first item on-screen.
         /// </summary>
-        public int ItemsOnScreenStartIndex
+        public int ItemsOnScreenStartIndex // TODO: move ItemsOnScreenStartIndex to MenuTheme
         {
             get => itemsOnScreenStartIndex;
             private set
@@ -262,7 +262,7 @@ namespace RAGENativeUI.Menus
         /// <summary>
         /// Gets the index of the last item on-screen.
         /// </summary>
-        public int ItemsOnScreenEndIndex
+        public int ItemsOnScreenEndIndex // TODO: move ItemsOnScreenEndIndex to MenuTheme
         {
             get => itemsOnScreenEndIndex;
             private set
@@ -278,7 +278,7 @@ namespace RAGENativeUI.Menus
         /// <summary>
         /// Gets or sets the maximum number of items on-screen.
         /// </summary>
-        public int MaxItemsOnScreen
+        public int MaxItemsOnScreen // TODO: move MaxItemsOnScreen to MenuTheme
         {
             get => maxItemsOnScreen;
             set
@@ -294,7 +294,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public int NumberOfItemsOnScreen // TODO: invoke PropertyChanged for NumberOfItemsOnScreen
+        public int NumberOfItemsOnScreen // TODO: move NumberOfItemsOnScreen to MenuTheme
         {
             get
             {
@@ -304,7 +304,7 @@ namespace RAGENativeUI.Menus
             }
         }
 
-        public bool IsAnyItemOnScreen => IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible); // TODO: invoke PropertyChanged for IsAnyItemOnScreen
+        public bool IsAnyItemOnScreen => IsVisible && Items.Count > 0 && MaxItemsOnScreen != 0 && Items.Any(i => i.IsVisible); // TODO: move IsAnyItemOnScreen to MenuTheme
 
         public bool IsVisible
         {
@@ -550,7 +550,7 @@ namespace RAGENativeUI.Menus
             SoundsSet?.Back?.Play();
         }
 
-        internal void UpdateVisibleItemsIndices()
+        internal void UpdateVisibleItemsIndices() // TODO: move UpdateVisibleItemsIndices to MenuTheme
         {
             if (MaxItemsOnScreen == 0 || Items.All(i => !i.IsVisible))
             {
@@ -651,7 +651,7 @@ namespace RAGENativeUI.Menus
         /// An item is considered on-screen if the current menu is visible, its <see cref="MenuItem.IsVisible"/> property is <c>true</c> and is currently being drawn.
         /// </summary>
         /// <param name="action">The action to execute on each item.</param>
-        public void ForEachItemOnScreen(ForEachItemOnScreenDelegate action)
+        public void ForEachItemOnScreen(ForEachItemOnScreenDelegate action) // TODO: move ForEachItemOnScreen to MenuTheme
         {
             if (ItemsOnScreenStartIndex == -1 || ItemsOnScreenEndIndex == -1)
                 return;
