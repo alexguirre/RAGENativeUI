@@ -145,20 +145,19 @@ namespace RAGENativeUI.Menus
         public MenuItem(string text) : this(text, String.Empty)
         {
         }
+        
+        protected internal virtual void OnMovingToPreviousItem() { }
+        protected internal virtual void OnMovingToNextItem() { }
+        protected internal virtual void OnScrollingToNextValue() { }
+        protected internal virtual void OnScrollingToPreviousValue() { }
 
-        // return true for the menu to process the control input
-        // for example, if OnMoveDown returns false the menu won't move down to the next item
-        protected internal virtual bool OnMoveDown() => true;
-        protected internal virtual bool OnMoveUp() => true;
-        protected internal virtual bool OnMoveRight() => true;
-        protected internal virtual bool OnMoveLeft() => true;
-        protected internal virtual bool OnAccept()
+        protected internal virtual void OnAccept()
         {
             OnActivated(new ActivatedEventArgs());
             BindedMenu?.Show(Parent);
-            return true;
         }
-        protected internal virtual bool OnBack() => true;
+
+        protected internal virtual void OnBack() { }
 
         protected internal virtual void OnProcess()
         {

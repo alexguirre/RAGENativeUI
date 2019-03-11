@@ -191,7 +191,7 @@ namespace RAGENativeUI.Menus
             SelectedIndex = (int)((currentValue - Minimum) / Increment);
         }
 
-        protected internal override bool OnMoveLeft()
+        protected internal override void OnScrollingToPreviousValue()
         {
             decimal newValue = currentValue;
 
@@ -218,10 +218,10 @@ namespace RAGENativeUI.Menus
 #endif
             Value = newValue;
 
-            return base.OnMoveLeft();
+            base.OnScrollingToPreviousValue();
         }
 
-        protected internal override bool OnMoveRight()
+        protected internal override void OnScrollingToNextValue()
         {
             decimal newValue = currentValue;
 
@@ -248,7 +248,7 @@ namespace RAGENativeUI.Menus
 #endif
             Value = newValue;
 
-            return base.OnMoveRight();
+            base.OnScrollingToNextValue();
         }
 
         protected override void OnPropertyChanged(string propertyName)

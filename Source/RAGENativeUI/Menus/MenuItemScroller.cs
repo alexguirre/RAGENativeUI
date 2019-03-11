@@ -35,7 +35,7 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal override bool OnMoveLeft()
+        protected internal override void OnScrollingToPreviousValue()
         {
             int newIndex = SelectedIndex - 1;
 
@@ -44,10 +44,10 @@ namespace RAGENativeUI.Menus
 
             SelectedIndex = newIndex;
 
-            return base.OnMoveLeft();
+            base.OnScrollingToPreviousValue();
         }
 
-        protected internal override bool OnMoveRight()
+        protected internal override void OnScrollingToNextValue()
         {
             int newIndex = SelectedIndex + 1;
 
@@ -56,7 +56,7 @@ namespace RAGENativeUI.Menus
 
             SelectedIndex = newIndex;
 
-            return base.OnMoveRight();
+            base.OnScrollingToNextValue();
         }
 
         protected virtual void OnSelectedIndexChanged(SelectedIndexChangedEventArgs e)

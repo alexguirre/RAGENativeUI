@@ -437,64 +437,42 @@ namespace RAGENativeUI.Menus
         {
             if (Controls != null && IsAnyItemOnScreen)
             {
-                if (Controls.PreviousItem != null && Controls.PreviousItem.WasJustPressed(true))
+                if (Controls.PreviousItem?.WasJustPressed(true) ?? false)
                 {
-                    MenuItem item = SelectedItem;
-                    if (item == null || item.OnMoveUp())
-                    {
-                        MoveUp();
-                    }
+                    MoveToPreviousItem();
                 }
 
-                if (Controls.NextItem != null && Controls.NextItem.WasJustPressed(true))
+                if (Controls.NextItem?.WasJustPressed(true) ?? false)
                 {
-                    MenuItem item = SelectedItem;
-                    if (item == null || item.OnMoveDown())
-                    {
-                        MoveDown();
-                    }
+                    MoveToNextItem();
                 }
 
-                if (Controls.ScrollerNextItem != null && Controls.ScrollerNextItem.WasJustPressed(true))
+                if (Controls.ScrollerNextValue?.WasJustPressed(true) ?? false)
                 {
-                    MenuItem item = SelectedItem;
-                    if (item == null || (!item.IsDisabled && item.OnMoveRight()))
-                    {
-                        MoveRight();
-                    }
+                    ScrollToNextValue();
                 }
 
-                if (Controls.ScrollerPreviousItem != null && Controls.ScrollerPreviousItem.WasJustPressed(true))
+                if (Controls.ScrollerPreviousValue?.WasJustPressed(true) ?? false)
                 {
-                    MenuItem item = SelectedItem;
-                    if (item == null || (!item.IsDisabled && item.OnMoveLeft()))
-                    {
-                        MoveLeft();
-                    }
+                    ScrollToPreviousValue();
                 }
 
-                if (Controls.Accept != null && Controls.Accept.WasJustPressed())
+                if (Controls.Accept?.WasJustPressed(true) ?? false)
                 {
-                    MenuItem item = SelectedItem;
-                    if (item == null || (!item.IsDisabled && item.OnAccept()))
-                    {
-                        Accept();
-                    }
+                    Accept();
                 }
 
-                if (Controls.Back != null && Controls.Back.WasJustPressed())
+                if (Controls.Back?.WasJustPressed(true) ?? false)
                 {
-                    MenuItem item = SelectedItem;
-                    if (item == null || item.OnBack())
-                    {
-                        Back();
-                    }
+                    Back();
                 }
             }
         }
 
-        protected virtual void MoveUp()
+        protected virtual void MoveToPreviousItem()
         {
+            SelectedItem?.OnMovingToPreviousItem();
+
             int newIndex = SelectedIndex - 1;
 
             int min = GetMinItemWithInputIndex();
@@ -511,8 +489,10 @@ namespace RAGENativeUI.Menus
             SoundsSet?.Up?.Play();
         }
 
-        protected virtual void MoveDown()
+        protected virtual void MoveToNextItem()
         {
+            SelectedItem?.OnMovingToNextItem();
+
             int newIndex = SelectedIndex + 1;
 
             int max = GetMaxItemWithInputIndex();
@@ -529,23 +509,31 @@ namespace RAGENativeUI.Menus
             SoundsSet?.Down?.Play();
         }
 
-        protected virtual void MoveRight()
+        protected virtual void ScrollToNextValue()
         {
+            SelectedItem?.OnScrollingToNextValue();
+
             SoundsSet?.Right?.Play();
         }
 
-        protected virtual void MoveLeft()
+        protected virtual void ScrollToPreviousValue()
         {
+            SelectedItem?.OnScrollingToPreviousValue();
+
             SoundsSet?.Left?.Play();
         }
 
         protected virtual void Accept()
         {
+            SelectedItem?.OnAccept();
+
             SoundsSet?.Accept?.Play();
         }
 
         protected virtual void Back()
         {
+            SelectedItem?.OnBack();
+
             Hide(true);
             SoundsSet?.Back?.Play();
         }
@@ -780,8 +768,8 @@ namespace RAGENativeUI.Menus
     {
         public Control PreviousItem { get; set; } = new Control(GameControl.FrontendUp);
         public Control NextItem { get; set; } = new Control(GameControl.FrontendDown);
-        public Control ScrollerNextItem { get; set; } = new Control(GameControl.FrontendRight);
-        public Control ScrollerPreviousItem { get; set; } = new Control(GameControl.FrontendLeft);
+        public Control ScrollerNextValue { get; set; } = new Control(GameControl.FrontendRight);
+        public Control ScrollerPreviousValue { get; set; } = new Control(GameControl.FrontendLeft);
         public Control Accept { get; set; } = new Control(GameControl.FrontendAccept);
         public Control Back { get; set; } = new Control(GameControl.FrontendCancel);
     }

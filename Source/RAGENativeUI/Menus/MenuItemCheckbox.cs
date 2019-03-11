@@ -32,11 +32,10 @@ namespace RAGENativeUI.Menus
         {
         }
 
-        protected internal override bool OnAccept()
+        protected internal override void OnAccept()
         {
             IsChecked = !IsChecked;
-
-            return base.OnAccept();
+            base.OnAccept();
         }
 
         protected virtual void OnCheckedChanged(CheckedChangedEventArgs e)
