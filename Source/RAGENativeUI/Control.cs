@@ -112,7 +112,11 @@ namespace RAGENativeUI
 
         private void UpdateRepeat()
         {
-            repeatStartTime = RPH.Game.GameTime;
+            if (repeatStartTime == 0)
+            {
+                repeatStartTime = RPH.Game.GameTime;
+            }
+
             if (RepeatSteps != null && RepeatSteps.Length > 0)
             {
                 if (currentRepeatStepIndex != RepeatSteps.Length - 1)
