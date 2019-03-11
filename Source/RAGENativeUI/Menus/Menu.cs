@@ -437,7 +437,7 @@ namespace RAGENativeUI.Menus
         {
             if (Controls != null && IsAnyItemOnScreen)
             {
-                if (Controls.Up != null && Controls.Up.WasJustPressed(true))
+                if (Controls.PreviousItem != null && Controls.PreviousItem.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || item.OnMoveUp())
@@ -446,7 +446,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Down != null && Controls.Down.WasJustPressed(true))
+                if (Controls.NextItem != null && Controls.NextItem.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || item.OnMoveDown())
@@ -455,7 +455,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Right != null && Controls.Right.WasJustPressed(true))
+                if (Controls.ScrollerNextItem != null && Controls.ScrollerNextItem.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || (!item.IsDisabled && item.OnMoveRight()))
@@ -464,7 +464,7 @@ namespace RAGENativeUI.Menus
                     }
                 }
 
-                if (Controls.Left != null && Controls.Left.WasJustPressed(true))
+                if (Controls.ScrollerPreviousItem != null && Controls.ScrollerPreviousItem.WasJustPressed(true))
                 {
                     MenuItem item = SelectedItem;
                     if (item == null || (!item.IsDisabled && item.OnMoveLeft()))
@@ -778,10 +778,10 @@ namespace RAGENativeUI.Menus
 
     public class MenuControls
     {
-        public Control Up { get; set; } = new Control(GameControl.FrontendUp);
-        public Control Down { get; set; } = new Control(GameControl.FrontendDown);
-        public Control Right { get; set; } = new Control(GameControl.FrontendRight);
-        public Control Left { get; set; } = new Control(GameControl.FrontendLeft);
+        public Control PreviousItem { get; set; } = new Control(GameControl.FrontendUp);
+        public Control NextItem { get; set; } = new Control(GameControl.FrontendDown);
+        public Control ScrollerNextItem { get; set; } = new Control(GameControl.FrontendRight);
+        public Control ScrollerPreviousItem { get; set; } = new Control(GameControl.FrontendLeft);
         public Control Accept { get; set; } = new Control(GameControl.FrontendAccept);
         public Control Back { get; set; } = new Control(GameControl.FrontendCancel);
     }
