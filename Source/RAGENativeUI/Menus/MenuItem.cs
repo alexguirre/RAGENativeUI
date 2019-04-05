@@ -153,6 +153,11 @@ namespace RAGENativeUI.Menus
 
         protected internal virtual void OnAccept()
         {
+            if (IsDisabled)
+            {
+                return;
+            }
+
             OnActivated(new ActivatedEventArgs());
             BindedMenu?.Show(Parent);
         }

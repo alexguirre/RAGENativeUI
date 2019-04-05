@@ -37,6 +37,11 @@ namespace RAGENativeUI.Menus
 
         protected internal override void OnScrollingToPreviousValue()
         {
+            if (IsDisabled)
+            {
+                return;
+            }
+
             int newIndex = SelectedIndex - 1;
 
             if (newIndex < 0)
@@ -49,6 +54,11 @@ namespace RAGENativeUI.Menus
 
         protected internal override void OnScrollingToNextValue()
         {
+            if (IsDisabled)
+            {
+                return;
+            }
+
             int newIndex = SelectedIndex + 1;
 
             if (newIndex > (OptionCount - 1))
