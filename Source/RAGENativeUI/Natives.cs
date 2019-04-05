@@ -19,7 +19,7 @@ namespace RAGENativeUI
         public static bool IsDisabledControlJustPressed(int group, int control) => Natives.x91AEF906BCA88877<bool>(group, control);
         public static bool IsControlPressed(int group, int control) => Natives.xF3A21BCD95725A4A<bool>(group, control);
         public static bool IsDisabledControlPressed(int group, int control) => Natives.xE2587F8CBBD87B1D<bool>(group, control);
-        public static void DisableAllControlActions(int group) => Natives.x5F4B6931816E599B(0);
+        public static void DisableAllControlActions(int group) => Natives.x5F4B6931816E599B(group);
         public static void EnableControlAction(int group, int control, bool enable) => Natives.x351220255D64C155(group, control, enable);
         public static string GetControlInstructionalButton(int group, int control, int p2) => Natives.x0499D7B09FC9B407<string>(group, control, p2);
 
@@ -67,6 +67,10 @@ namespace RAGENativeUI
         public static float EndTextCommandGetWidth(bool p0) => Natives.x85F061DA64ED2F67<float>(p0);
         public static void BeginTextCommandGetLineCount(string format) => Natives.x521FB041D93DD0E4(format);
         public static int EndTextCommandGetLineCount(float x, float y) => Natives.x9040DFB09BE75706<int>(x, y);
+        public static void BeginTextCommandPrint(string format) => Natives.xB87A37EEB7FAA67D(format);
+        public static void EndTextCommandPrint(int duration, bool drawImmediately) => Natives.x9D77056A530643F6(duration, drawImmediately);
+        public static void BeginTextCommandScaleformString(string format) => Natives.x80338406F3475E55(format);
+        public static void EndTextCommandScaleformString() => Natives.x362E2D3FE93A9959();
         public static void AddTextComponentFloat(float value, int decimalPlaces) => Natives.xE7DCB5B874BCD96E(value, decimalPlaces);
         public static void AddTextComponentInteger(int value) => Natives.x03B504CF259931BC(value);
         public static void AddTextComponentFormattedInteger(int value, bool commaSeparated) => Natives.x0E4C749FF9DE9CC4(value, commaSeparated);

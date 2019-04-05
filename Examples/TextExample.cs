@@ -9,7 +9,7 @@ namespace Examples
 
     using System;
     using System.Drawing;
-    
+
     using RAGENativeUI;
     using RAGENativeUI.Drawing;
 
@@ -18,22 +18,18 @@ namespace Examples
         [ConsoleCommand(Name = "TextExample", Description = "Example showing the Text class.")]
         private static void Command()
         {
-            Text text1 = new Text((0.5f, 0.25f).Rel(), 1.0f) { IsVisible = true, Alignment = TextAlignment.Left };
-            text1.SetText("Left");
-            Text text2 = new Text((0.5f, 0.5f).Rel(), 1.0f) { IsVisible = true, Alignment = TextAlignment.Center };
-            text2.SetText("Center");
-            Text text3 = new Text((0.5f, 0.75f).Rel(), 1.0f) { IsVisible = true, Alignment = TextAlignment.Right };
-            text3.SetText("Right");
-            Text text4 = new Text((0.5f, 0.025f).Rel(), 0.6f) { IsVisible = true, Alignment = TextAlignment.Left, Color = Color.Red, DropShadow = true, Outline = true };
-            text4.SetText("[LEFT] Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.");
-            Text text5 = new Text((0.3f, 0.25f).Rel(), 0.6f) { IsVisible = true, Alignment = TextAlignment.Right, Color = Color.Orange, Outline = true };
-            text5.SetText("[RIGHT] Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.");
-            Text text6 = new Text((0.75f, 0.25f).Rel(), 0.6f) { IsVisible = true, Alignment = TextAlignment.Center, Color = Color.Green, Outline = true, WrapWidth = 0.25f };
-            text6.SetText("[CENTER] Lorem ipsum dolor sit amet, consectetuer adipiscing elit.Aenean commodo ligula eget dolor.Aenean massa.Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.Nulla consequat massa quis enim.");
-            Text text7 = new Text("HUD_CASH", (0.1f, 0.1f).Rel(), 0.6f) { IsVisible = true, Alignment = TextAlignment.Left, Color = Color.Green, Outline = true };
-            text7.AddComponentFloat(11500.4233f, 2);
-            Text text8 = new Text("STRING", (0.1f, 0.15f).Rel(), 0.6f) { IsVisible = true, Alignment = TextAlignment.Left, Color = Color.Green, Outline = true };
-            text8.AddComponentTime(TimeSpan.Zero, TextComponentTimeOptions.Hours | TextComponentTimeOptions.Milliseconds | TextComponentTimeOptions.UseDotAsMillisecondsSeparator);
+            Text text1 = new Text() { Style = new TextStyle { Alignment = TextAlignment.Left, Color = Color.White, Scale = 0.5f } };
+            text1.SetUnformattedString("Left");
+            Text text2 = new Text() { Style = new TextStyle { Alignment = TextAlignment.Center, Color = Color.White, Scale = 0.5f } };
+            text2.SetUnformattedString("Center");
+            Text text3 = new Text() { Style = new TextStyle { Alignment = TextAlignment.Right, Color = Color.White, Scale = 0.5f } };
+            text3.SetUnformattedString("Right");
+            Text text4 = new Text("HUD_CASH") { Style = new TextStyle { Alignment = TextAlignment.Left, Color = Color.Green, Scale = 0.6f, Outline = true } };
+            text4.AddComponentFloat(11500.4233f, 2);
+            Text text5 = new Text("STRING") { Style = new TextStyle { Alignment = TextAlignment.Center, Color = Color.Green, Outline = true, Scale = 0.6f } };
+            text5.AddComponentTime(TimeSpan.Zero, TextComponentTimeOptions.Hours | TextComponentTimeOptions.Milliseconds | TextComponentTimeOptions.UseDotAsMillisecondsSeparator);
+            Text text6 = new Text { Style = new TextStyle { Alignment = TextAlignment.Center, Color = Color.Green, Outline = true, Scale = 0.6f } };
+            text6.SetUnformattedString("Multiline~n~Text~n~Multiline~n~Text");
 
             RPH.GameFiber.StartNew(() =>
             {
@@ -42,16 +38,45 @@ namespace Examples
                 {
                     RPH.GameFiber.Yield();
 
-                    (text8.Components[0] as TextComponentTime).Time = DateTime.Now.TimeOfDay;
+                    (text5.Components[0] as TextComponentTime).Time = DateTime.Now.TimeOfDay;
 
-                    text1.Draw();
-                    text2.Draw();
-                    text3.Draw();
-                    text4.Draw();
-                    text5.Draw();
-                    text6.Draw();
-                    text7.Draw();
-                    text8.Draw();
+                    text1.Display((0.5f, 0.25f).Rel());
+                    text2.Display((0.5f, 0.5f).Rel());
+                    text3.Display((0.5f, 0.75f).Rel());
+                    text4.Display((0.1f, 0.1f).Rel());
+
+                    float width = text5.CalculateWidth();
+                    float height = text5.Style.Height;
+                    Rect.Draw((0.1f, 0.15f + height * 0.6f).Rel(), (width, height).Rel(), Color.FromArgb(150, Color.Red));
+                    text5.Display((0.1f, 0.15f).Rel());
+
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    {
+                        text5.Style.Scale += RPH.Game.FrameTime;
+                    }
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    {
+                        text5.Style.Scale -= RPH.Game.FrameTime;
+                    }
+
+                    text5.DisplaySubtitle(0, true);
+
+
+                    var pos = (0.7f, 0.15f).Rel();
+                    int lines = text6.CalculateLineCount(pos);
+                    width = text6.CalculateWidth();
+                    height = text6.Style.Height;
+                    Rect.Draw(pos + (height * lines * 0.6f).YRel(), (width, height * lines).Rel(), Color.FromArgb(150, Color.Red));
+                    text6.Display((0.7f, 0.15f).Rel());
+
+                    if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Add))
+                    {
+                        text6.Style.Scale += RPH.Game.FrameTime;
+                    }
+                    else if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Subtract))
+                    {
+                        text6.Style.Scale -= RPH.Game.FrameTime;
+                    }
                 }
             });
         }

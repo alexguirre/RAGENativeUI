@@ -17,14 +17,15 @@ namespace RAGENativeUI.Scaleforms
     public class MissionPassedScreen : IDisposable
     {
         private const int MaxItemsOnScreenCount = 14;
+        private const int DefaultCompletionPercentage = 100;
 
 
         private readonly int instructionalButtonContinueIndex, instructionalButtonExpandIndex;
-        private State state;
+        private State currentState;
+        private uint currentStateStartTime = RPH.Game.GameTime;
         private string title;
         private string subtitle;
         private MissionPassedScreenItemsCollection items;
-        private uint timer;
 
         public event TypedEventHandler<MissionPassedScreen, EventArgs> Continued;
 
@@ -33,34 +34,74 @@ namespace RAGENativeUI.Scaleforms
 
         public GameControl ContinueControl
         {
-            get { return (InstructionalButtons.Slots[instructionalButtonContinueIndex] as InstructionalButtonControlSlot).Control; }
-            set { (InstructionalButtons.Slots[instructionalButtonContinueIndex] as InstructionalButtonControlSlot).Control = value; }
+            get => (InstructionalButtons.Slots[instructionalButtonContinueIndex] as InstructionalButtonControlSlot).Control;
+            set => (InstructionalButtons.Slots[instructionalButtonContinueIndex] as InstructionalButtonControlSlot).Control = value;
         }
 
         public GameControl ExpandControl
         {
-            get { return (InstructionalButtons.Slots[instructionalButtonExpandIndex] as InstructionalButtonControlSlot).Control; }
-            set { (InstructionalButtons.Slots[instructionalButtonExpandIndex] as InstructionalButtonControlSlot).Control = value; }
+            get => (InstructionalButtons.Slots[instructionalButtonExpandIndex] as InstructionalButtonControlSlot).Control;
+            set => (InstructionalButtons.Slots[instructionalButtonExpandIndex] as InstructionalButtonControlSlot).Control = value;
         }
         
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string Title { get { return title; } set { Throw.IfNull(value, nameof(value)); title = value; } }
+        public string Title { get => title; set { Throw.IfNull(value, nameof(value)); title = value; } }
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public string Subtitle { get { return subtitle; } set { Throw.IfNull(value, nameof(value)); subtitle = value; } }
+        public string Subtitle { get => subtitle; set { Throw.IfNull(value, nameof(value)); subtitle = value; } }
         /// <exception cref="ArgumentNullException">When setting the property to a null value.</exception>
-        public MissionPassedScreenItemsCollection Items { get { return items; } set { Throw.IfNull(value, nameof(value)); items = value; } }
+        public MissionPassedScreenItemsCollection Items { get => items; set { Throw.IfNull(value, nameof(value)); items = value; } }
 
-        public bool IsVisible { get { return state != State.None; } }
+        public bool IsVisible => CurrentState != State.None;
 
         public GameFiber Fiber { get; private set; }
 
         public bool IsCompletionVisible { get; set; }
-        public string CompletionText { get; set; } = RPH.Game.GetLocalizedString("MTPHPER"); // Completion
-        public int CompletionPercentage { get; set; } = 100;
+        public Text CompletionText { get; } = new Text("MTPHPER"/*Completion*/) { Style = CreateCompletionTextStyle() };
+        public Text CompletionPercentageText { get; } = new Text("PERCENTAGE"/*~1~%*/) { Style = CreateCompletionPercentageTextStyle() };
+        public int CompletionPercentage
+        {
+            get
+            {
+                Text text = CompletionPercentageText;
+                if (text.Components.Count > 0 && text.Components[0] is TextComponentInteger comp)
+                {
+                    return comp.Value;
+                }
+                else
+                {
+                    return Int32.MinValue; // TODO: throw exception?
+                }
+            }
+            set
+            {
+                Text text = CompletionPercentageText;
+                if (text.Components.Count > 0 && text.Components[0] is TextComponentInteger comp)
+                {
+                    comp.Value = value;
+                }
+                else
+                {
+                    // TODO: throw exception?
+                }
+            }
+        }
         public Color CompletionMedalColor { get; set; } = HudColor.Gold.GetColor();
 
         public PostFxAnimation ShownEffect { get; set; } = PostFxAnimation.GetByName("SuccessNeutral");
         public FrontendSound ButtonPressedSound { get; set; } = new FrontendSound("HUD_FRONTEND_DEFAULT_SOUNDSET", "CONTINUE");
+
+        private State CurrentState
+        {
+            get => currentState;
+            set
+            {
+                if (value != currentState)
+                {
+                    currentState = value;
+                    currentStateStartTime = RPH.Game.GameTime;
+                }
+            }
+        }
 
         public MissionPassedScreen(string title, string subtitle)
         {
@@ -78,33 +119,33 @@ namespace RAGENativeUI.Scaleforms
             Subtitle = subtitle;
             Items = new MissionPassedScreenItemsCollection();
 
+            CompletionPercentageText.AddComponentInteger(DefaultCompletionPercentage);
+
             Fiber = GameFiber.StartNew(UpdateLoop, $"RAGENativeUI - {nameof(MissionPassedScreen)} Update Fiber");
+
         }
 
         public void Show()
         {
             InstructionalButtons.Slots[instructionalButtonExpandIndex].IsVisible = true;
-                                        // 277 hours, I guess nobody will stay with this screen open for that long :P
-            BigMessage.CallMethodAndShow(999999999, "SHOW_MISSION_PASSED_MESSAGE", Title, Subtitle, 100, true, GetBigMessageNumStats(), true);
+            BigMessage.CallMethodAndShow(Int32.MaxValue, "SHOW_MISSION_PASSED_MESSAGE", Title, Subtitle, 100, true, GetBigMessageNumStats(), true);
             // TODO: play some mission complete sound
             ShownEffect?.Start(1000, false);
-            timer = 0;
-            state = State.WaitForInputClosed;
+            CurrentState = State.WaitForInputClosed;
         }
 
         public void Hide()
         {
-            if (state == State.None || state >= State.CloseRollUp)
+            if (CurrentState == State.None || CurrentState >= State.CloseRollUp)
                 return;
 
-            if(state >= State.WaitForInputExpanded)
+            if(CurrentState >= State.WaitForInputExpanded)
             {
-                state = State.CloseRollUp;
+                CurrentState = State.CloseRollUp;
             }
-            else if(state >= State.WaitForInputClosed)
+            else if(CurrentState >= State.WaitForInputClosed)
             {
-                timer = 0;
-                state = State.CloseHide;
+                CurrentState = State.CloseHide;
             }
         }
 
@@ -119,12 +160,12 @@ namespace RAGENativeUI.Scaleforms
 
         private void Update()
         {
-            if (state == State.None)
+            if (CurrentState == State.None)
                 return;
             
             Draw();
 
-            switch (state)
+            switch (CurrentState)
             {
                 case State.WaitForInputClosed:
                     {
@@ -132,7 +173,7 @@ namespace RAGENativeUI.Scaleforms
                         {
                             ButtonPressedSound?.Play();
                             InstructionalButtons.Slots[instructionalButtonExpandIndex].IsVisible = false;
-                            state = State.StartExpand;
+                            CurrentState = State.StartExpand;
                         }
                         else if (RPH.Game.WasControlActionJustPressed(0, ContinueControl))
                         {
@@ -145,17 +186,16 @@ namespace RAGENativeUI.Scaleforms
                 case State.StartExpand:
                     {
                         BigMessage.CallMethod("TRANSITION_UP", 0.15f, true);
-                        timer = RPH.Game.GameTime;
-                        state = State.ExpandRollDown;
+                        CurrentState = State.ExpandRollDown;
                         break;
                     }
 
                 case State.ExpandRollDown:
                     {
-                        if (RPH.Game.GameTime > timer + 150)
+                        if (HaveElapsedSinceStateStart(150))
                         {
                             BigMessage.CallMethod("ROLL_DOWN_BACKGROUND");
-                            state = State.WaitForInputExpanded;
+                            CurrentState = State.WaitForInputExpanded;
                         }
 
                         break;
@@ -174,27 +214,25 @@ namespace RAGENativeUI.Scaleforms
                 case State.CloseRollUp:
                     {
                         BigMessage.CallMethod("ROLL_UP_BACKGROUND");
-                        timer = RPH.Game.GameTime;
-                        state = State.CloseHide;
+                        CurrentState = State.CloseHide;
                         break;
                     }
 
                 case State.CloseHide:
                     {
-                        if (RPH.Game.GameTime > timer + 200)
+                        if (HaveElapsedSinceStateStart(200))
                         {
                             BigMessage.Hide();
-                            timer = RPH.Game.GameTime;
-                            state = State.WaitHide;
+                            CurrentState = State.WaitHide;
                         }
                         break;
                     }
 
                 case State.WaitHide:
                     {
-                        if (RPH.Game.GameTime > timer + 400)
+                        if (HaveElapsedSinceStateStart(400))
                         {
-                            state = State.Continue;
+                            CurrentState = State.Continue;
                         }
                         break;
                     }
@@ -204,7 +242,7 @@ namespace RAGENativeUI.Scaleforms
                         OnContinued(EventArgs.Empty);
                         BigMessage.Dismiss();
                         InstructionalButtons.Dismiss();
-                        state = State.None;
+                        CurrentState = State.None;
                         break;
                     }
             }
@@ -215,25 +253,23 @@ namespace RAGENativeUI.Scaleforms
             BigMessage.Draw();
             InstructionalButtons.Draw();
 
-            if(state == State.WaitForInputExpanded)
+            if(CurrentState == State.WaitForInputExpanded && HaveElapsedSinceStateStart(300))
             {
                 Color white = HudColor.White.GetColor();
                 Rect.Draw((0.5f, 0.3275f).Rel(), (0.27f, 0.0009259259f).Rel(), white);
 
-                // TODO: show items as the background rolls down, instead of showing them all at once
                 float y = 0.3387495f;
                 for (int i = 0; i < Math.Min(Items.Count, MaxItemsOnScreenCount - (IsCompletionVisible ? 1 : 0)); i++)
                 {
                     MissionPassedScreenItem item = Items[i];
-                    // TODO: fix MissionPassedScreen to accommodate the new changes in Text
-                    Text.Draw(item.Label, (0.37f, y).Rel(), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
+                    item.Label.Display((0.37f, y).Rel());
                     if (item.Tickbox == MissionPassedScreenItem.TickboxState.None)
                     {
-                        Text.Draw(item.Status, (0.63f, y).Rel(), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        item.Status.Display((0.63f, y).Rel());
                     }
                     else
                     {
-                        Text.Draw(item.Status, (0.614f, y).Rel(), 0.35f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                        item.Status.Display((0.614f, y).Rel());
 
                         const float w = 0.00078125f * 24f * 2f * 0.65f;
                         const float h = 0.001388889f * 24f * 2f * 0.65f;
@@ -251,11 +287,8 @@ namespace RAGENativeUI.Scaleforms
                 {
                     y += 42f * 0.2f * 0.001388889f;
 
-                    if (CompletionText != null)
-                    {
-                        Text.Draw(CompletionText, (0.4175f, y).Rel(), 0.4f, white, TextFont.ChaletLondon, TextAlignment.Left, 0f, false, false);
-                    }
-                    Text.Draw($"{CompletionPercentage}%", (0.56895f, y).Rel(), 0.395f, white, TextFont.ChaletLondon, TextAlignment.Right, 0f, false, false);
+                    CompletionText.Display((0.4175f, y).Rel());
+                    CompletionPercentageText.Display((0.56895f, y).Rel());
 
                     y += 0.015715f;
 
@@ -290,6 +323,11 @@ namespace RAGENativeUI.Scaleforms
             return null;
         }
 
+        private bool HaveElapsedSinceStateStart(uint milliseconds)
+        {
+            return RPH.Game.GameTime > (currentStateStartTime + milliseconds);
+        }
+
         public void Dispose()
         {
             Fiber?.Abort();
@@ -298,6 +336,28 @@ namespace RAGENativeUI.Scaleforms
             BigMessage = null;
             InstructionalButtons?.Dismiss();
             InstructionalButtons = null;
+        }
+        
+        private static TextStyle CreateCompletionTextStyle()
+        {
+            return new TextStyle
+            {
+                Scale = 0.4f,
+                Color = HudColor.White.GetColor(),
+                Font = TextFont.ChaletLondon,
+                Alignment = TextAlignment.Left,
+            };
+        }
+
+        private static TextStyle CreateCompletionPercentageTextStyle()
+        {
+            return new TextStyle
+            {
+                Scale = 0.395f,
+                Color = HudColor.White.GetColor(),
+                Font = TextFont.ChaletLondon,
+                Alignment = TextAlignment.Right,
+            };
         }
 
         private enum State
@@ -329,15 +389,18 @@ namespace RAGENativeUI.Scaleforms
             Cross,
         }
 
-        public string Label { get; set; }
-        public string Status { get; set; }
+        public Text Label { get; }
+        public Text Status { get; }
         public TickboxState Tickbox { get; set; }
 
         public MissionPassedScreenItem(string label, string status, TickboxState tickbox)
         {
-            Label = label;
-            Status = status;
+            Label = new Text() { Style = CreateLabelTextStyle() };
+            Status = new Text() { Style = CreateStatusTextStyle() };
             Tickbox = tickbox;
+
+            Label.SetUnformattedString(label);
+            Status.SetUnformattedString(status);
         }
 
         public MissionPassedScreenItem(string label, string status) : this(label, status, TickboxState.None)
@@ -346,6 +409,28 @@ namespace RAGENativeUI.Scaleforms
 
         public MissionPassedScreenItem(string label) : this(label, "", TickboxState.None)
         {
+        }
+
+        private static TextStyle CreateLabelTextStyle()
+        {
+            return new TextStyle
+            {
+                Scale = 0.35f,
+                Color = HudColor.White.GetColor(),
+                Font = TextFont.ChaletLondon,
+                Alignment = TextAlignment.Left,
+            };
+        }
+
+        private static TextStyle CreateStatusTextStyle()
+        {
+            return new TextStyle
+            {
+                Scale = 0.35f,
+                Color = HudColor.White.GetColor(),
+                Font = TextFont.ChaletLondon,
+                Alignment = TextAlignment.Right,
+            };
         }
     }
 

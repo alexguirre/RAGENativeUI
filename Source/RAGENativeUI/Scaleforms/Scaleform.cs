@@ -11,6 +11,7 @@ namespace RAGENativeUI.Scaleforms
 
     using System;
     using System.Drawing;
+    using RAGENativeUI.Drawing;
 
     public unsafe class Scaleform
     {
@@ -107,6 +108,11 @@ namespace RAGENativeUI.Scaleforms
                             break;
                         case char charValue:
                             N.PushScaleformMovieMethodParameterString(charValue.ToString()); // _PUSH_SCALEFORM_MOVIE_FUNCTION_PARAMETER_STRING
+                            break;
+                        case Text textValue:
+                            N.BeginTextCommandScaleformString(textValue.Label);
+                            textValue.PushComponents();
+                            N.EndTextCommandScaleformString();
                             break;
                         case null: throw new ArgumentNullException($"Null argument passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.");
                         default: throw new ArgumentException($"Unsupported argument type {arg.GetType()} passed to scaleform with handle {handle} and name '{Name}' when calling {methodName}.");

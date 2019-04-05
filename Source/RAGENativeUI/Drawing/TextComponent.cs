@@ -20,6 +20,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~1~' from a label. 
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/e7dcb5b874bcd96e#fntrg-e7dcb5b874bcd96e">
+    /// ADD_TEXT_COMPONENT_FLOAT
+    /// </seealso>
     public sealed class TextComponentFloat : TextComponent
     {
         public float Value { get; set; }
@@ -34,6 +37,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~a~' from a label. 
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/0e4c749ff9de9cc4#fntrg-0e4c749ff9de9cc4">
+    /// ADD_TEXT_COMPONENT_FORMATTED_INTEGER
+    /// </seealso>
     public sealed class TextComponentFormattedInteger : TextComponent
     {
         public int Value { get; set; }
@@ -48,6 +54,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~1~' from a label. 
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/03b504cf259931bc#fntrg-03b504cf259931bc">
+    /// ADD_TEXT_COMPONENT_INTEGER
+    /// </seealso>
     public sealed class TextComponentInteger : TextComponent
     {
         public int Value { get; set; }
@@ -61,6 +70,10 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~a~' from a label.
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/1115f16b8ab9e8bf#fntrg-1115f16b8ab9e8bf">
+    /// ADD_TEXT_COMPONENT_SUBSTRING_TIME
+    /// </seealso>
+    /// <seealso cref="TextComponentTimeOptions"/>
     public sealed class TextComponentTime : TextComponent
     {
         /// <summary>
@@ -79,8 +92,9 @@ namespace RAGENativeUI.Drawing
     }
 
     /// <summary>
-    /// Specifies flags for <seealso cref="TextComponentTime"/> options.
+    /// Specifies flags for <see cref="TextComponentTime"/> options.
     /// </summary>
+    /// <seealso cref="TextComponentTime"/>
     [Flags]
     public enum TextComponentTimeOptions : int
     {
@@ -105,7 +119,7 @@ namespace RAGENativeUI.Drawing
         /// </summary>
         Days = 1 << 4,
         /// <summary>
-        /// Removes the leading components that equal 0.
+        /// Removes the leading components that are equal to 0.
         /// </summary>
         NoLeadingEmptyComponents = 1 << 5,
         /// <summary>
@@ -138,6 +152,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~a~' from a label.
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/c63cd5d2920acbe7#fntrg-c63cd5d2920acbe7">
+    /// ADD_TEXT_COMPONENT_SUBSTRING_TEXT_LABEL
+    /// </seealso>
     public sealed class TextComponentLabel : TextComponent
     {
         public string LabelName { get; set; }
@@ -151,6 +168,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~a~' from a label.
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/17299b63c7683a2b#fntrg-17299b63c7683a2b">
+    /// ADD_TEXT_COMPONENT_SUBSTRING_TEXT_LABEL_HASH_KEY
+    /// </seealso>
     public sealed class TextComponentLabelHash : TextComponent
     {
         public uint LabelHash { get; set; }
@@ -164,6 +184,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~a~' from a label.
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/80ead8e2e1d5d52e#fntrg-80ead8e2e1d5d52e">
+    /// ADD_TEXT_COMPONENT_SUBSTRING_BLIP_NAME
+    /// </seealso>
     public sealed class TextComponentBlipName : TextComponent
     {
         public Blip Blip { get; set; }
@@ -177,6 +200,9 @@ namespace RAGENativeUI.Drawing
     /// <summary>
     /// Component that replaces '~a~' from a label.
     /// </summary>
+    /// <seealso href="http://dev-c.com/nativedb/func/info/6c188be134e074aa#fntrg-6c188be134e074aa">
+    /// ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME
+    /// </seealso>
     public sealed class TextComponentString : TextComponent
     {
         public string Value { get; set; }

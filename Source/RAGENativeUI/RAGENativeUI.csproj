@@ -82,6 +82,7 @@
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Drawing\TextComponent.cs" />
+    <Compile Include="Drawing\TextStyle.cs" />
     <Compile Include="RPH.cs" />
     <Compile Include="CustomTexture.cs" />
     <Compile Include="Drawing\Rect3D.cs" />
