@@ -12,6 +12,7 @@ namespace RAGENativeUI.Scaleforms
     using System.Drawing;
     using System.Collections.ObjectModel;
 
+    using RAGENativeUI.Text;
     using RAGENativeUI.Drawing;
 
     public class MissionPassedScreen : IDisposable

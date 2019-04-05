@@ -9,7 +9,7 @@ namespace RAGENativeUI.TimerBars
 
     using System.Drawing;
 
-    using RAGENativeUI.Drawing;
+    using RAGENativeUI.Text;
 
     public class TextTimerBar : LabeledTimerBar
     {

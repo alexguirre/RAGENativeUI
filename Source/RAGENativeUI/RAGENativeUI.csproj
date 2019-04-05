@@ -81,8 +81,8 @@
   <ItemGroup>
     <Compile Include="Cache.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="Drawing\TextComponent.cs" />
-    <Compile Include="Drawing\TextStyle.cs" />
+    <Compile Include="Text\TextComponent.cs" />
+    <Compile Include="Text\TextStyle.cs" />
     <Compile Include="RPH.cs" />
     <Compile Include="CustomTexture.cs" />
     <Compile Include="Drawing\Rect3D.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Drawing\Rect.cs" />
     <Compile Include="Scaleforms\Scaleform.cs" />
     <Compile Include="Drawing\Sprite.cs" />
-    <Compile Include="Drawing\Text.cs" />
+    <Compile Include="Text\Text.cs" />
     <Compile Include="PostFxAnimation.cs" />
     <Compile Include="TextureDictionary.cs" />
     <Compile Include="Menus\Menu.cs" />

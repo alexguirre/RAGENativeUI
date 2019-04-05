@@ -11,7 +11,7 @@ namespace RAGENativeUI.Scaleforms
 
     using System;
     using System.Drawing;
-    using RAGENativeUI.Drawing;
+    using RAGENativeUI.Text;
 
     public unsafe class Scaleform
     {

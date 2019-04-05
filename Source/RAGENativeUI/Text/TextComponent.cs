@@ -1,4 +1,4 @@
-namespace RAGENativeUI.Drawing
+namespace RAGENativeUI.Text
 {
 #if RPH1
     extern alias rph1;
