@@ -34,7 +34,7 @@ namespace RAGENativeUI.Menus
 
         protected internal override void OnAccept()
         {
-            IsChecked = !IsChecked;
+            IsChecked = !IsChecked; // TODO: IsChecked still changes when the item is disabled
             base.OnAccept();
         }
 

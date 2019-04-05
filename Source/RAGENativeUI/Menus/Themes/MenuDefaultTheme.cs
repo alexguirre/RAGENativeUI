@@ -34,6 +34,10 @@ namespace RAGENativeUI.Menus.Themes
         public Color ItemEnabledAndSelectedColor { get; set; } = Color.FromArgb(204, 0, 0, 0);
         public Color ItemDisabledColor { get; set; } = Color.FromArgb(155, 155, 155, 155);
         public Color ItemDisabledAndSelectedColor { get; set; } = Color.FromArgb(155, 155, 155, 155);
+        public TextureReference CheckboxUncheckedTexture { get; set; }
+        public TextureReference CheckboxCheckedTexture { get; set; }
+        public TextureReference CheckboxUncheckedAndSelectedTexture { get; set; }
+        public TextureReference CheckboxCheckedAndSelectedTexture { get; set; }
 
         private float
             aspectRatio,
@@ -52,6 +56,10 @@ namespace RAGENativeUI.Menus.Themes
                     case "gradient_nav": NavigationBar = t; break;
                     case "shop_arrows_upanddown": UpDownArrows = t; break;
                     case "gradient_bgd": Background = t; DescriptionBackground = t; break;
+                    case "shop_box_blank": CheckboxUncheckedTexture = t; break;
+                    case "shop_box_tick": CheckboxCheckedTexture = t; break;
+                    case "shop_box_blankb": CheckboxUncheckedAndSelectedTexture = t; break;
+                    case "shop_box_tickb": CheckboxCheckedAndSelectedTexture = t; break;
                 }
             }
         }
@@ -438,6 +446,16 @@ namespace RAGENativeUI.Menus.Themes
 
         private void DrawItemCheckbox(MenuItemCheckbox checkbox, float x, float y)
         {
+            TextureReference tex = checkbox.IsChecked ?
+                (checkbox.IsSelected ? CheckboxCheckedAndSelectedTexture : CheckboxCheckedTexture) :
+                (checkbox.IsSelected ? CheckboxUncheckedAndSelectedTexture : CheckboxUncheckedTexture);
+
+            GetTextureDrawSize(tex, true, out float w, out float h, false);
+
+            float spriteX = x + menuWidth - (0.00390625f * 0.5f) - (w * 0.5f);
+            float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
+
+            DrawSprite(tex, spriteX, spriteY, w, h, Color.White);
         }
 
         // Converted from game scripts
