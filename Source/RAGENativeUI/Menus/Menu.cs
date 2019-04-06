@@ -663,14 +663,19 @@ namespace RAGENativeUI.Menus
             }
         }
         
+        public MenuTheme SetTheme(Type themeType)
+        {
+            Throw.ArgumentExceptionIfNot(typeof(MenuTheme).IsAssignableFrom(themeType), nameof(themeType), $"{themeType} doesn't inherit {nameof(MenuTheme)}");
+
+            ConstructorInfo ctor = themeType.GetConstructor(new[] { typeof(Menu) });
+            Throw.InvalidOperationIf(ctor == null, $"{themeType} doesn't have a public constructor that takes a {nameof(Menu)}");
+
+            return Theme = (MenuTheme)ctor.Invoke(new object[] { this });
+        }
+
         public T SetTheme<T>() where T : MenuTheme
         {
-            ConstructorInfo ctor = typeof(T).GetConstructor(new[] { typeof(Menu) });
-            Throw.InvalidOperationIf(ctor == null, $"{nameof(T)} doesn't have a public constructor that takes a {nameof(Menu)}");
-
-            T t = (T)ctor.Invoke(new object[] { this });
-            Theme = t;
-            return t;
+            return (T)SetTheme(typeof(T));
         }
 
         public T CopyThemeFrom<T>(T themeTemplate) where T : MenuTheme
