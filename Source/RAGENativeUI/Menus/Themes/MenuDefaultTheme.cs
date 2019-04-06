@@ -410,7 +410,7 @@ namespace RAGENativeUI.Menus.Themes
         {
             const string ScrollerOptionTextFormat = "STRING";
 
-            if (scroller.IsSelected)
+            if (scroller.IsSelected && !scroller.IsDisabled)
             {
                 string selectedOption = scroller.SelectedOptionText;
 
