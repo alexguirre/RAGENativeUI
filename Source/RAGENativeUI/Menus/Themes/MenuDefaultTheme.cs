@@ -38,6 +38,8 @@ namespace RAGENativeUI.Menus.Themes
         public TextureReference CheckboxCheckedTexture { get; set; }
         public TextureReference CheckboxUncheckedAndSelectedTexture { get; set; }
         public TextureReference CheckboxCheckedAndSelectedTexture { get; set; }
+        public TextureReference ArrowLeftTexture { get; set; }
+        public TextureReference ArrowRightTexture { get; set; }
 
         private float
             aspectRatio,
@@ -60,6 +62,8 @@ namespace RAGENativeUI.Menus.Themes
                     case "shop_box_tick": CheckboxCheckedTexture = t; break;
                     case "shop_box_blankb": CheckboxUncheckedAndSelectedTexture = t; break;
                     case "shop_box_tickb": CheckboxCheckedAndSelectedTexture = t; break;
+                    case "arrowleft": ArrowLeftTexture = t; break;
+                    case "arrowright": ArrowRightTexture = t; break;
                 }
             }
         }
@@ -415,7 +419,7 @@ namespace RAGENativeUI.Menus.Themes
                 N.AddTextComponentSubstringPlayerName(selectedOption);
                 float optTextWidth = N.EndTextCommandGetWidth(true);
 
-                float optTextX = x + menuWidth - 0.00390625f - optTextWidth;
+                float optTextX = x + menuWidth - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
                 float optTextY = y + 0.00277776f;
 
                 SetItemTextOptions(scroller);
@@ -423,7 +427,30 @@ namespace RAGENativeUI.Menus.Themes
                 N.AddTextComponentSubstringPlayerName(selectedOption);
                 N.EndTextCommandDisplayText(optTextX, optTextY);
 
-                //TODO: scroller arrows
+                {
+                    TextureReference tex = ArrowRightTexture;
+
+                    GetTextureDrawSize(tex, true, out float w, out float h, false);
+                    w *= 0.65f;
+                    h *= 0.65f;
+
+                    float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f);
+                    float spriteY = y + (0.034722f * 0.5f);
+
+                    DrawSprite(tex, spriteX, spriteY, w, h, HudColor.Black.GetColor());
+                }
+                {
+                    TextureReference tex = ArrowLeftTexture;
+
+                    GetTextureDrawSize(tex, true, out float w, out float h, false);
+                    w *= 0.65f;
+                    h *= 0.65f;
+
+                    float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f);
+                    float spriteY = y + (0.034722f * 0.5f);
+
+                    DrawSprite(tex, spriteX, spriteY, w, h, HudColor.Black.GetColor());
+                }
             }
             else
             {
@@ -452,10 +479,10 @@ namespace RAGENativeUI.Menus.Themes
 
             GetTextureDrawSize(tex, true, out float w, out float h, false);
 
-            float spriteX = x + menuWidth - (0.00390625f * 0.5f) - (w * 0.5f);
+            float spriteX = x + menuWidth - (w * 0.5f);
             float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
 
-            DrawSprite(tex, spriteX, spriteY, w, h, Color.White);
+            DrawSprite(tex, spriteX, spriteY, w, h, HudColor.White.GetColor());
         }
 
         // Converted from game scripts

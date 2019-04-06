@@ -30,6 +30,7 @@ namespace Examples
                 //menu.SetTheme<MenuDebugTheme>();
 
                 menu.Items.Add(new MenuItem("item #0") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa." });
+                menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "Piso franco", "Cajero", "other text #2", "and text #3" }));
                 menu.Items.Add(new MenuItemCheckbox("cb #0") { IsChecked = true, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
                 menu.Items.Add(new MenuItemCheckbox("cb #1") { Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim." });
                 menu.Items.Add(new MenuItemCheckbox("cb #2"));
@@ -41,7 +42,6 @@ namespace Examples
                 menu.Items.Add(new MenuItemNumericScroller("num scroller #2") { Increment = 1.0m, Hexadecimal = true });
                 menu.Items.Add(new MenuItemNumericScroller("num scroller #3") { Minimum = -1.0m, Maximum = 1.0m, Value = 0.0m, Increment = 0.00005m, DecimalPlaces = 5 });
                 menu.Items.Add(new MenuItemListScroller("list scroller #0"));
-                menu.Items.Add(new MenuItemListScroller("list scroller #1", new[] { "text #1", "other text #2", "and text #3" }));
                 menu.Items.Add(new MenuItem("disabled item #1") { Description = "I'm disabled.", IsDisabled = true });
                 menu.Items.Add(new MenuItemCheckbox("disabled item #1") { Description = "I'm disabled.", IsDisabled = true });
                 menu.Items.Add(new MenuItemEnumScroller<GameControl>("disabled item #2") { Description = "I'm disabled.", IsDisabled = true });
