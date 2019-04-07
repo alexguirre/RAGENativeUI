@@ -83,6 +83,7 @@
     <Compile Include="Gui\Gui.cs" />
     <Compile Include="Gui\Gui.State.cs" />
     <Compile Include="InstructionalButtonsExample.cs" />
+    <Compile Include="MenuTemplatingExample.cs" />
     <Compile Include="MenuExample.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="MissionPassedScreenExample.cs" />
