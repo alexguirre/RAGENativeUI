@@ -665,6 +665,7 @@ namespace RAGENativeUI.Menus
         
         public MenuTheme SetTheme(Type themeType)
         {
+            Throw.IfNull(themeType, nameof(themeType));
             Throw.ArgumentExceptionIfNot(typeof(MenuTheme).IsAssignableFrom(themeType), nameof(themeType), $"{themeType} doesn't inherit {nameof(MenuTheme)}");
 
             ConstructorInfo ctor = themeType.GetConstructor(new[] { typeof(Menu) });
