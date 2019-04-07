@@ -16,16 +16,21 @@ namespace RAGENativeUI
     {
         // used if RepeatSteps is null or empty
         private const uint DefaultRepeatInterval = 180;
+        private const uint DefaultHeldDownTime = 1000;
 
         public Keys? Key { get; set; }
         //public ControllerButtons? Button { get; set; }
         public GameControl? NativeControl { get; set; }
         public RepeatStep[] RepeatSteps { get; set; } // TODO: ensure that RepeatSteps is ordered by RepeatStep.Time
+        public uint HeldDownTime { get; set; } = DefaultHeldDownTime;
 
         private uint repeatStartTime;
         private int currentRepeatStepIndex;
         private uint repeatInterval;
         private uint nextRepeatTime;
+
+        private uint heldStartTime;
+        private bool heldDownTimeReached;
 
         public Control(Keys? key = null, /*ControllerButtons? button = null,*/ GameControl? nativeControl = null)
         {
@@ -85,6 +90,37 @@ namespace RAGENativeUI
                 return true;
 
             ResetRepeat();
+            return false;
+        }
+
+        public bool IsHeldDown() => IsHeldDown(out _);
+        public bool IsHeldDown(out float percentage)
+        {
+            if (IsDown())
+            {
+                if (heldStartTime == 0)
+                {
+                    heldStartTime = RPH.Game.GameTime;
+                }
+
+                if (!heldDownTimeReached)
+                {
+                    uint currentTime = RPH.Game.GameTime;
+                    percentage = RPH.MathHelper.Clamp((float)(currentTime - heldStartTime) / HeldDownTime, 0.0f, 1.0f);
+                    heldDownTimeReached = currentTime >= (heldStartTime + HeldDownTime);
+                    return heldDownTimeReached;
+                }
+                else
+                {
+                    percentage = 1.0f;
+                    return false;
+                }
+
+            }
+
+            heldStartTime = 0;
+            heldDownTimeReached = false;
+            percentage = 0.0f;
             return false;
         }
 
