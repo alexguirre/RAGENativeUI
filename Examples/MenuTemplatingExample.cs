@@ -35,6 +35,8 @@ namespace Examples
                 {
                     RPH.GameFiber.Yield();
 
+                    test.Display();
+
                     if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.T))
                     {
                         if (menu.IsAnyChildMenuVisible)
@@ -45,6 +47,12 @@ namespace Examples
                         {
                             menu.Show();
                         }
+                    }
+
+                    if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.Y))
+                    {
+                        test.DoSomething = RPH.MathHelper.GetRandomInteger(0, 100) < 50;
+                        test.DoSomeOtherThing = RPH.MathHelper.GetRandomInteger(0, 100) < 50;
                     }
                 }
             });

@@ -1,22 +1,61 @@
 namespace RAGENativeUI.Menus.Templating
 {
+    extern alias rph1;
+
     using System;
     using System.Reflection;
     using System.Linq;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
 
     [Menu(Title = "My Menu", Subtitle = "Subtitle for my menu")]
-    public class TestMenu
+    public class TestMenu : INotifyPropertyChanged
     {
+        private bool doSomething;
+        private bool doSomeOtherThing;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         [MenuItemCheckbox(Text = "Do Something?", Description = "Whether to do something or not.")]
-        public bool DoSomething { get; set; }
+        public bool DoSomething
+        {
+            get => doSomething;
+            set => SetProperty(ref doSomething, value);
+        }
+
         [MenuItemCheckbox(Text = "Do Some Other Thing?", Description = "Whether to do some other thing or not.")]
-        public bool DoSomeOtherThing { get; set; }
+        public bool DoSomeOtherThing
+        {
+            get => doSomeOtherThing;
+            set => SetProperty(ref doSomeOtherThing, value);
+        }
 
+        private void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (!EqualityComparer<T>.Default.Equals(field, value))
+            {
+                field = value;
+                OnPropertyChanged(propertyName);
+            }
+        }
 
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Display()
+        {
+            rph1::Rage.Game.DisplaySubtitle(
+                $"DoSomething:{DoSomething}~n~" +
+                $"DoSomeOtherThing:{DoSomeOtherThing}"
+                );
+        }
 
 
         // TODO: move Build somewhere else
+        private Menu menu;
         public Menu Build()
         {
             Type classType = this.GetType();
@@ -27,11 +66,33 @@ namespace RAGENativeUI.Menus.Templating
                 throw new InvalidOperationException($"Type '{classType}' does not have the '{typeof(MenuAttribute)}'");
             }
 
-            Menu menu = new Menu(menuAttr.Title, menuAttr.Subtitle);
+            menu = new Menu(menuAttr.Title, menuAttr.Subtitle);
             menu.SetTheme(menuAttr.Theme);
+            menu.Metadata.__TemplateClassInstance__ = this;
             BuildItems(menu, classType);
 
+            PropertyChanged += OnTemplatePropertyChanged;
+
             return menu;
+        }
+
+        private void OnTemplatePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Type classType = this.GetType();
+            PropertyInfo prop = classType.GetRuntimeProperty(e.PropertyName);
+            if (prop != null)
+            {
+                MenuItemCheckboxAttribute attr = prop.GetCustomAttribute<MenuItemCheckboxAttribute>();
+                if (attr != null)
+                {
+                    string name = attr.Name ?? prop.Name;
+                    MenuItemCheckbox item = RetrieveItemFromMenuMetadata(menu, name) as MenuItemCheckbox;
+                    if (item != null)
+                    {
+                        OnCheckboxCheckedChangedFromTemplate(item, (bool)prop.GetValue(this));
+                    }
+                }
+            }
         }
 
         private void StoreItemInMenuMetadata(Menu menu, MenuItem item, string name)
@@ -76,12 +137,31 @@ namespace RAGENativeUI.Menus.Templating
         private void BuildCheckbox(Menu menu, Type classType, PropertyInfo prop, MenuItemCheckboxAttribute attr)
         {
             MenuItemCheckbox cb = new MenuItemCheckbox(attr.Text, attr.Description);
-            cb.Metadata.TemplateClassType = classType;
-            cb.Metadata.TemplatePropertyInfo = prop;
+            cb.Metadata.__TemplateClassInstance__ = this;
+            cb.Metadata.__TemplatePropertyInfo__ = prop;
+            cb.CheckedChanged += OnCheckboxCheckedChangedFromMenu;
 
             menu.Items.Add(cb);
             string name = attr.Name ?? prop.Name;
             StoreItemInMenuMetadata(menu, cb, name);
+        }
+
+        
+        // Src:Menu -> Dst:Template binding
+        private void OnCheckboxCheckedChangedFromMenu(MenuItemCheckbox sender, CheckedChangedEventArgs e)
+        {
+            object o = sender.Metadata.__TemplateClassInstance__;
+            PropertyInfo prop = sender.Metadata.__TemplatePropertyInfo__ as PropertyInfo;
+
+            if (o != null && prop != null)
+            {
+                prop.SetValue(o, e.IsChecked);
+            }
+        }
+        // Src:Template -> Dst:Menu binding
+        private void OnCheckboxCheckedChangedFromTemplate(MenuItemCheckbox receiver, bool isChecked)
+        {
+            receiver.IsChecked = isChecked;
         }
     }
 }
