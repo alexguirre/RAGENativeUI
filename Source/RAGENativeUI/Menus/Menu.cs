@@ -457,12 +457,12 @@ namespace RAGENativeUI.Menus
                     ScrollToPreviousValue();
                 }
 
-                if (Controls.Accept?.WasJustPressed(true) ?? false)
+                if (Controls.Accept?.WasJustPressed() ?? false)
                 {
                     Accept();
                 }
 
-                if (Controls.Back?.WasJustPressed(true) ?? false)
+                if (Controls.Back?.WasJustPressed() ?? false)
                 {
                     Back();
                 }

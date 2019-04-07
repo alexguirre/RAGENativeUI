@@ -11,17 +11,7 @@ namespace RAGENativeUI.Menus
 
         public event TypedEventHandler<ScrollableMenu, SelectedPageChangedEventArgs> SelectedPageChanged;
 
-        public ScrollableMenuPagesCollection Pages
-        {
-            get
-            {
-                if (pages == null)
-                {
-                    pages = new ScrollableMenuPagesCollection(this);
-                }
-                return pages;
-            }
-        }
+        public ScrollableMenuPagesCollection Pages => pages ?? (pages = new ScrollableMenuPagesCollection(this));
 
         public ScrollableMenuPage SelectedPage
         {
