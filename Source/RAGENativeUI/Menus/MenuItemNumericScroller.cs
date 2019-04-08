@@ -193,6 +193,11 @@ namespace RAGENativeUI.Menus
 
         protected internal override void OnScrollingToPreviousValue()
         {
+            if (IsDisabled)
+            {
+                return;
+            }
+
             decimal newValue = currentValue;
 
             try
@@ -217,12 +222,15 @@ namespace RAGENativeUI.Menus
             }
 #endif
             Value = newValue;
-
-            base.OnScrollingToPreviousValue();
         }
 
         protected internal override void OnScrollingToNextValue()
         {
+            if (IsDisabled)
+            {
+                return;
+            }
+
             decimal newValue = currentValue;
 
             try
@@ -247,8 +255,6 @@ namespace RAGENativeUI.Menus
             }
 #endif
             Value = newValue;
-
-            base.OnScrollingToNextValue();
         }
 
         protected override void OnPropertyChanged(string propertyName)
