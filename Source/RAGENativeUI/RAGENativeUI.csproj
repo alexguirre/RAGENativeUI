@@ -84,6 +84,7 @@
     <Compile Include="Menus\Templating\MenuAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemCheckboxAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemNumericScrollerAttribute.cs" />
+    <Compile Include="Menus\Templating\MenuTemplate.cs" />
     <Compile Include="Menus\Templating\TestMenu.cs" />
     <Compile Include="Text\TextComponent.cs" />
     <Compile Include="Text\TextStyle.cs" />

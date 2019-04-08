@@ -32,7 +32,7 @@ namespace Examples
                 test.DoSomeOtherThing = true;
                 test.FloatValue = 42.5f;
                 test.IntValue = 99;
-                Menu menu = test.Build();
+                test.BuildMenu();
 
 
                 while (true)
@@ -43,13 +43,13 @@ namespace Examples
 
                     if (RPH.Game.WasKeyJustPressed(System.Windows.Forms.Keys.T))
                     {
-                        if (menu.IsAnyChildMenuVisible)
+                        if (test.Menu.IsAnyChildMenuVisible)
                         {
-                            menu.Hide();
+                            test.Menu.Hide();
                         }
                         else
                         {
-                            menu.Show();
+                            test.Menu.Show();
                         }
                     }
 
