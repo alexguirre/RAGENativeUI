@@ -28,6 +28,10 @@ namespace Examples
             RPH.GameFiber.StartNew(() =>
             {
                 TestMenu test = new TestMenu();
+                test.DoSomething = false;
+                test.DoSomeOtherThing = true;
+                test.FloatValue = 42.5f;
+                test.IntValue = 99;
                 Menu menu = test.Build();
 
 
@@ -53,6 +57,8 @@ namespace Examples
                     {
                         test.DoSomething = RPH.MathHelper.GetRandomInteger(0, 100) < 50;
                         test.DoSomeOtherThing = RPH.MathHelper.GetRandomInteger(0, 100) < 50;
+                        test.FloatValue = RPH.MathHelper.GetRandomSingle(0.0f, 100.0f);
+                        test.IntValue = RPH.MathHelper.GetRandomInteger(0, 100);
                     }
                 }
             });

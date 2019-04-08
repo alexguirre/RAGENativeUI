@@ -14,6 +14,8 @@ namespace RAGENativeUI.Menus.Templating
     {
         private bool doSomething;
         private bool doSomeOtherThing;
+        private float floatValue;
+        private int intValue;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -29,6 +31,20 @@ namespace RAGENativeUI.Menus.Templating
         {
             get => doSomeOtherThing;
             set => SetProperty(ref doSomeOtherThing, value);
+        }
+
+        [MenuItemNumericScroller(Text = "Float Value")]
+        public float FloatValue
+        {
+            get => floatValue;
+            set => SetProperty(ref floatValue, value);
+        }
+
+        [MenuItemNumericScroller(Text = "Int Value", Increment = 1.0, DecimalPlaces = 0)]
+        public int IntValue
+        {
+            get => intValue;
+            set => SetProperty(ref intValue, value);
         }
 
         private void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -49,7 +65,9 @@ namespace RAGENativeUI.Menus.Templating
         {
             rph1::Rage.Game.DisplaySubtitle(
                 $"DoSomething:{DoSomething}~n~" +
-                $"DoSomeOtherThing:{DoSomeOtherThing}"
+                $"DoSomeOtherThing:{DoSomeOtherThing}~n~" +
+                $"FloatValue:{FloatValue}~n~" +
+                $"IntValue:{IntValue}"
                 );
         }
 
@@ -82,14 +100,26 @@ namespace RAGENativeUI.Menus.Templating
             PropertyInfo prop = classType.GetRuntimeProperty(e.PropertyName);
             if (prop != null)
             {
-                MenuItemCheckboxAttribute attr = prop.GetCustomAttribute<MenuItemCheckboxAttribute>();
-                if (attr != null)
                 {
-                    string name = attr.Name ?? prop.Name;
-                    MenuItemCheckbox item = RetrieveItemFromMenuMetadata(menu, name) as MenuItemCheckbox;
-                    if (item != null)
+                    MenuItemCheckboxAttribute attr = prop.GetCustomAttribute<MenuItemCheckboxAttribute>();
+                    if (attr != null)
                     {
-                        OnCheckboxCheckedChangedFromTemplate(item, (bool)prop.GetValue(this));
+                        string name = attr.Name ?? prop.Name;
+                        if (RetrieveItemFromMenuMetadata(menu, name) is MenuItemCheckbox item)
+                        {
+                            OnCheckboxCheckedChangedFromTemplate(item, (bool)prop.GetValue(this));
+                        }
+                    }
+                }
+                {
+                    MenuItemNumericScrollerAttribute attr = prop.GetCustomAttribute<MenuItemNumericScrollerAttribute>();
+                    if (attr != null)
+                    {
+                        string name = attr.Name ?? prop.Name;
+                        if (RetrieveItemFromMenuMetadata(menu, name) is MenuItemNumericScroller item)
+                        {
+                            OnNumericScrollerValueChangedFromTemplate(item, (decimal)Convert.ChangeType(prop.GetValue(this), typeof(decimal)));
+                        }
                     }
                 }
             }
@@ -128,22 +158,66 @@ namespace RAGENativeUI.Menus.Templating
                 {
                     switch (attr)
                     {
-                        case MenuItemCheckboxAttribute cb: BuildCheckbox(menu, classType, prop, cb); break;
+                        case MenuItemCheckboxAttribute cb: BuildCheckbox(menu, prop, cb); break;
+                        case MenuItemNumericScrollerAttribute num: BuildNumericScroller(menu, prop, num); break;
                     }
                 }
             }
         }
+        // TODO: validate that property is of a valid type
+        private void BuildNumericScroller(Menu menu, PropertyInfo prop, MenuItemNumericScrollerAttribute attr)
+        {
+            MenuItemNumericScroller num = new MenuItemNumericScroller(attr.Text, attr.Description);
+            num.Metadata.__TemplateClassInstance__ = this;
+            num.Metadata.__TemplatePropertyInfo__ = prop;
 
-        private void BuildCheckbox(Menu menu, Type classType, PropertyInfo prop, MenuItemCheckboxAttribute attr)
+            num.Minimum = (decimal)attr.Minimum;
+            num.Maximum = (decimal)attr.Maximum;
+            num.Increment = (decimal)attr.Increment;
+            num.ThousandsSeparator = attr.ThousandsSeparator;
+            num.Hexadecimal = attr.Hexadecimal;
+            num.DecimalPlaces = attr.DecimalPlaces;
+
+            menu.Items.Add(num);
+            string name = attr.Name ?? prop.Name;
+            StoreItemInMenuMetadata(menu, num, name);
+
+            num.Value = (decimal)Convert.ChangeType(prop.GetValue(this), typeof(decimal));
+
+            num.SelectedIndexChanged += OnNumericScrollerValueChangedFromMenu;
+        }
+
+        // Src:Menu -> Dst:Template binding
+        private void OnNumericScrollerValueChangedFromMenu(MenuItemScroller sender, SelectedIndexChangedEventArgs e)
+        {
+            MenuItemNumericScroller num = (MenuItemNumericScroller)sender;
+            object o = num.Metadata.__TemplateClassInstance__;
+            PropertyInfo prop = num.Metadata.__TemplatePropertyInfo__ as PropertyInfo;
+
+            if (o != null && prop != null)
+            {
+                prop.SetValue(o, Convert.ChangeType(num.Value, prop.PropertyType));
+            }
+        }
+        // Src:Template -> Dst:Menu binding
+        private void OnNumericScrollerValueChangedFromTemplate(MenuItemNumericScroller receiver, decimal value)
+        {
+            receiver.Value = value;
+        }
+
+        private void BuildCheckbox(Menu menu, PropertyInfo prop, MenuItemCheckboxAttribute attr)
         {
             MenuItemCheckbox cb = new MenuItemCheckbox(attr.Text, attr.Description);
             cb.Metadata.__TemplateClassInstance__ = this;
             cb.Metadata.__TemplatePropertyInfo__ = prop;
-            cb.CheckedChanged += OnCheckboxCheckedChangedFromMenu;
 
             menu.Items.Add(cb);
             string name = attr.Name ?? prop.Name;
             StoreItemInMenuMetadata(menu, cb, name);
+
+            cb.IsChecked = (bool)prop.GetValue(this);
+
+            cb.CheckedChanged += OnCheckboxCheckedChangedFromMenu;
         }
 
         
