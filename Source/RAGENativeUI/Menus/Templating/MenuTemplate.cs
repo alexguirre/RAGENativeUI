@@ -104,6 +104,7 @@ namespace RAGENativeUI.Menus.Templating
                     {
                         case MenuItemCheckboxAttribute cb: BuildCheckbox(menu, prop, cb); break;
                         case MenuItemNumericScrollerAttribute num: BuildNumericScroller(menu, prop, num); break;
+                        case MenuItemEnumScrollerAttribute enumScr: BuildEnumScroller(menu, prop, enumScr); break;
                     }
                 }
             }
@@ -114,14 +115,19 @@ namespace RAGENativeUI.Menus.Templating
             menu.Items.Add(item);
             string name = attrName ?? prop.Name;
             StoreItemInMetadata(menu, item, name);
+            SetItemMetadata(item, prop);
+        }
+
+        private void SetItemMetadata(MenuItem item, PropertyInfo prop)
+        {
+            item.Metadata.__TemplateClassInstance__ = this;
+            item.Metadata.__TemplatePropertyInfo__ = prop;
         }
 
         // TODO: validate that property is of a valid type
         private void BuildNumericScroller(Menu menu, PropertyInfo prop, MenuItemNumericScrollerAttribute attr)
         {
             MenuItemNumericScroller num = new MenuItemNumericScroller(attr.Text, attr.Description);
-            num.Metadata.__TemplateClassInstance__ = this;
-            num.Metadata.__TemplatePropertyInfo__ = prop;
 
             num.Minimum = (decimal)attr.Minimum;
             num.Maximum = (decimal)attr.Maximum;
@@ -139,13 +145,21 @@ namespace RAGENativeUI.Menus.Templating
         private void BuildCheckbox(Menu menu, PropertyInfo prop, MenuItemCheckboxAttribute attr)
         {
             MenuItemCheckbox cb = new MenuItemCheckbox(attr.Text, attr.Description);
-            cb.Metadata.__TemplateClassInstance__ = this;
-            cb.Metadata.__TemplatePropertyInfo__ = prop;
 
             AddItem(menu, cb, attr.Name, prop);
 
             cb.IsChecked = (bool)prop.GetValue(this);
             cb.CheckedChanged += OnMenuCheckboxItemChanged;
+        }
+
+        private void BuildEnumScroller(Menu menu, PropertyInfo prop, MenuItemEnumScrollerAttribute attr)
+        {
+            MenuItemEnumScroller enumScr = new MenuItemEnumScroller(attr.Text, attr.Description, prop.PropertyType);
+
+            AddItem(menu, enumScr, attr.Name, prop);
+
+            enumScr.SelectedValue = prop.GetValue(this);
+            enumScr.SelectedIndexChanged += OnMenuEnumScrollerItemChanged;
         }
 
         private void OnTemplatePropertyChanged(string propertyName)
@@ -160,6 +174,7 @@ namespace RAGENativeUI.Menus.Templating
                     {
                         case MenuItemCheckboxAttribute cb: OnTemplateCheckboxPropertyChanged(prop, cb); break;
                         case MenuItemNumericScrollerAttribute num: OnTemplateNumericScrollerPropertyChanged(prop, num); break;
+                        case MenuItemEnumScrollerAttribute enumScr: OnTemplateEnumScrollerPropertyChanged(prop, enumScr); break;
                     }
                 }
             }
@@ -183,6 +198,15 @@ namespace RAGENativeUI.Menus.Templating
             }
         }
 
+        private void OnTemplateEnumScrollerPropertyChanged(PropertyInfo prop, MenuItemEnumScrollerAttribute attr)
+        {
+            string name = attr.Name ?? prop.Name;
+            if (GetItemByName(name) is MenuItemEnumScroller item)
+            {
+                item.SelectedValue = Convert.ChangeType(prop.GetValue(this), prop.PropertyType);
+            }
+        }
+
         private void OnMenuCheckboxItemChanged(MenuItemCheckbox sender, CheckedChangedEventArgs e)
         {
             PropertyInfo prop = sender.Metadata.__TemplatePropertyInfo__ as PropertyInfo;
@@ -202,6 +226,18 @@ namespace RAGENativeUI.Menus.Templating
                 MenuItemNumericScroller num = (MenuItemNumericScroller)sender;
 
                 prop.SetValue(this, Convert.ChangeType(num.Value, prop.PropertyType));
+            }
+        }
+
+        private void OnMenuEnumScrollerItemChanged(MenuItemScroller sender, SelectedIndexChangedEventArgs e)
+        {
+            PropertyInfo prop = sender.Metadata.__TemplatePropertyInfo__ as PropertyInfo;
+
+            if (prop != null)
+            {
+                MenuItemEnumScroller enumScr = (MenuItemEnumScroller)sender;
+
+                prop.SetValue(this, Convert.ChangeType(enumScr.SelectedValue, prop.PropertyType));
             }
         }
     }

@@ -59,6 +59,7 @@ namespace Examples
                         test.DoSomeOtherThing = RPH.MathHelper.GetRandomInteger(0, 100) < 50;
                         test.FloatValue = RPH.MathHelper.GetRandomSingle(0.0f, 100.0f);
                         test.IntValue = RPH.MathHelper.GetRandomInteger(0, 100);
+                        test.EnumValue = RPH.MathHelper.Choose((GameControl[])Enum.GetValues(typeof(GameControl)));
                     }
                 }
             });

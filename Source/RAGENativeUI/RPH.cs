@@ -198,6 +198,15 @@ namespace RAGENativeUI
                 /** REDACTED **/
 #endif
             }
+
+            public static T Choose<T>(params T[] objects)
+            {
+#if RPH1
+                return rph1::Rage.MathHelper.Choose(objects);
+#else
+                /** REDACTED **/
+#endif
+            }
         }
 
         public static class GameFiber

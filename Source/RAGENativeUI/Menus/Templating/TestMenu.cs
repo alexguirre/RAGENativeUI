@@ -1,6 +1,7 @@
 namespace RAGENativeUI.Menus.Templating
 {
     extern alias rph1;
+    using GameControl = rph1::Rage.GameControl;
 
     [Menu(Title = "My Menu", Subtitle = "Subtitle for my menu")]
     public class TestMenu : MenuTemplate
@@ -9,6 +10,7 @@ namespace RAGENativeUI.Menus.Templating
         private bool doSomeOtherThing;
         private float floatValue;
         private int intValue;
+        private GameControl enumValue;
 
         [MenuItemCheckbox(Text = "Do Something?", Description = "Whether to do something or not.")]
         public bool DoSomething
@@ -45,13 +47,21 @@ namespace RAGENativeUI.Menus.Templating
             set => IntValue = value;
         }
 
+        [MenuItemEnumScroller(Text = "Enum Value")]
+        public GameControl EnumValue
+        {
+            get => enumValue;
+            set => SetProperty(ref enumValue, value);
+        }
+
         public void Display()
         {
             rph1::Rage.Game.DisplaySubtitle(
                 $"DoSomething:{DoSomething}~n~" +
                 $"DoSomeOtherThing:{DoSomeOtherThing}~n~" +
                 $"FloatValue:{FloatValue}~n~" +
-                $"IntValue:{IntValue}"
+                $"IntValue:{IntValue}~n~" +
+                $"EnumValue:{EnumValue}"
                 );
         }
     }
