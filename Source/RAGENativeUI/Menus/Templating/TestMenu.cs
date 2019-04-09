@@ -64,6 +64,12 @@ namespace RAGENativeUI.Menus.Templating
                 $"EnumValue:{EnumValue}"
                 );
         }
+
+        [MenuItemActivatedHandler(nameof(IntValue), nameof(FloatValue))]
+        private void OnIntOrFloatValueActivated(MenuItem sender, ActivatedEventArgs e)
+        {
+            rph1::Rage.Game.DisplayNotification(sender.Text + " -> Activated");
+        }
     }
 }
 

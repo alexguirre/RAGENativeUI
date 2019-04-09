@@ -33,7 +33,12 @@ namespace RAGENativeUI.Menus.Templating
                 return null;
             }
 
-            if (Menu.Metadata.TryGetValue<IDictionary<string, MenuItem>>(MenuTemplateItemsKey, out IDictionary<string, MenuItem> dict))
+            return RetrieveItemFromMetadata(Menu, name);
+        }
+
+        private MenuItem RetrieveItemFromMetadata(Menu menu, string name)
+        {
+            if (menu.Metadata.TryGetValue<IDictionary<string, MenuItem>>(MenuTemplateItemsKey, out IDictionary<string, MenuItem> dict))
             {
                 if (dict.TryGetValue(name, out MenuItem item))
                 {
@@ -88,6 +93,7 @@ namespace RAGENativeUI.Menus.Templating
             newMenu.SetTheme(menuAttr.Theme);
             newMenu.Metadata.__TemplateClassInstance__ = this;
             BuildItems(newMenu);
+            AttachHandlers(newMenu);
 
             Menu = newMenu;
         }
@@ -160,6 +166,39 @@ namespace RAGENativeUI.Menus.Templating
 
             enumScr.SelectedValue = prop.GetValue(this);
             enumScr.SelectedIndexChanged += OnMenuEnumScrollerItemChanged;
+        }
+
+        private void AttachHandlers(Menu menu)
+        {
+            Type classType = this.GetType();
+
+            foreach (MethodInfo method in classType.GetMethods(PropertiesFlags))
+            {
+                foreach (Attribute attr in method.GetCustomAttributes())
+                {
+                    switch (attr)
+                    {
+                        case MenuItemActivatedHandlerAttribute act: AttachItemActivatedHandler(menu, method, act); break;
+                    }
+                }
+            }
+        }
+
+        private void AttachItemActivatedHandler(Menu menu, MethodInfo method, MenuItemActivatedHandlerAttribute attr)
+        {
+            TypedEventHandler<MenuItem, ActivatedEventArgs> d = (TypedEventHandler<MenuItem, ActivatedEventArgs>)method.CreateDelegate(typeof(TypedEventHandler<MenuItem, ActivatedEventArgs>), this);
+            foreach (string itemName in attr.Items)
+            {
+                MenuItem item = RetrieveItemFromMetadata(menu, itemName);
+                if (item != null)
+                {
+                    item.Activated += d;
+                }
+                else
+                {
+                    // TODO: log warning
+                }
+            }
         }
 
         private void OnTemplatePropertyChanged(string propertyName)
