@@ -41,7 +41,7 @@ namespace RAGENativeUI.Menus.Templating
             MenuAttribute menuAttr = classType.GetCustomAttribute<MenuAttribute>();
             if (menuAttr == null)
             {
-                throw new InvalidOperationException($"Type '{classType}' does not have the '{typeof(MenuAttribute)}'");
+                throw new InvalidOperationException($"Type '{classType}' does not have the {typeof(MenuAttribute)}");
             }
 
             Menu newMenu = new Menu(menuAttr.Title, menuAttr.Subtitle);
@@ -88,9 +88,13 @@ namespace RAGENativeUI.Menus.Templating
             item.Metadata.__TemplatePropertyInfo__ = prop;
         }
 
-        // TODO: validate that property is of a valid type
         private static void BuildNumericScroller(Menu menu, PropertyInfo prop, MenuItemNumericScrollerAttribute attr)
         {
+            if (!IsValidPropertyForNumericScroller(prop))
+            {
+                throw new InvalidOperationException($"Property '{prop.DeclaringType.FullName}.{prop.Name}' cannnot be binded to a {nameof(MenuItemNumericScroller)}");
+            }
+
             MenuTemplate template = menu.Metadata.__TemplateClassInstance__ as MenuTemplate;
             MenuItemNumericScroller num = new MenuItemNumericScroller(attr.Text, attr.Description);
 
@@ -107,8 +111,37 @@ namespace RAGENativeUI.Menus.Templating
             num.SelectedIndexChanged += OnMenuNumericScrollerItemChanged;
         }
 
+        private static bool IsValidPropertyForNumericScroller(PropertyInfo prop)
+        {
+            if (prop.CanWrite && prop.CanRead && !prop.PropertyType.IsEnum)
+            {
+                switch (Type.GetTypeCode(prop.PropertyType))
+                {
+                    case TypeCode.Byte:
+                    case TypeCode.SByte:
+                    case TypeCode.UInt16:
+                    case TypeCode.UInt32:
+                    case TypeCode.UInt64:
+                    case TypeCode.Int16:
+                    case TypeCode.Int32:
+                    case TypeCode.Int64:
+                    case TypeCode.Single:
+                    case TypeCode.Double:
+                    case TypeCode.Decimal:
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         private static void BuildCheckbox(Menu menu, PropertyInfo prop, MenuItemCheckboxAttribute attr)
         {
+            if (!IsValidPropertyForCheckbox(prop))
+            {
+                throw new InvalidOperationException($"Property '{prop.DeclaringType.FullName}.{prop.Name}' cannnot be binded to a {nameof(MenuItemCheckbox)}");
+            }
+
             MenuTemplate template = menu.Metadata.__TemplateClassInstance__ as MenuTemplate;
             MenuItemCheckbox cb = new MenuItemCheckbox(attr.Text, attr.Description);
 
@@ -118,8 +151,23 @@ namespace RAGENativeUI.Menus.Templating
             cb.CheckedChanged += OnMenuCheckboxItemChanged;
         }
 
+        private static bool IsValidPropertyForCheckbox(PropertyInfo prop)
+        {
+            if (prop.CanWrite && prop.CanRead)
+            {
+                return Type.GetTypeCode(prop.PropertyType) == TypeCode.Boolean;
+            }
+
+            return false;
+        }
+
         private static void BuildEnumScroller(Menu menu, PropertyInfo prop, MenuItemEnumScrollerAttribute attr)
         {
+            if (!IsValidPropertyForEnumScroller(prop))
+            {
+                throw new InvalidOperationException($"Property '{prop.DeclaringType.FullName}.{prop.Name}' cannnot be binded to a {nameof(MenuItemEnumScroller)}");
+            }
+
             MenuTemplate template = menu.Metadata.__TemplateClassInstance__ as MenuTemplate;
             MenuItemEnumScroller enumScr = new MenuItemEnumScroller(attr.Text, attr.Description, prop.PropertyType);
 
@@ -127,6 +175,11 @@ namespace RAGENativeUI.Menus.Templating
 
             enumScr.SelectedValue = prop.GetValue(template);
             enumScr.SelectedIndexChanged += OnMenuEnumScrollerItemChanged;
+        }
+
+        private static bool IsValidPropertyForEnumScroller(PropertyInfo prop)
+        {
+            return prop.CanWrite && prop.CanRead && prop.PropertyType.IsEnum;
         }
 
         private static void AttachHandlers(Menu menu)
