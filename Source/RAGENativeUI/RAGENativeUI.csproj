@@ -87,6 +87,7 @@
     <Compile Include="Menus\Templating\MenuItemEnumScrollerAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemNumericScrollerAttribute.cs" />
     <Compile Include="Menus\Templating\MenuTemplate.cs" />
+    <Compile Include="Menus\Templating\MenuTemplateBuilder.cs" />
     <Compile Include="Menus\Templating\TestMenu.cs" />
     <Compile Include="Text\TextComponent.cs" />
     <Compile Include="Text\TextStyle.cs" />
