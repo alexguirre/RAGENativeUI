@@ -3,15 +3,12 @@ namespace RAGENativeUI.Menus.Templating
     using System;
 
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    public sealed class MenuItemNumericScrollerAttribute : Attribute
+    public sealed class MenuItemNumericScrollerAttribute : MenuItemAttribute
     {
         public MenuItemNumericScrollerAttribute()
         {
         }
 
-        public string Name { get; set; }
-        public string Text { get; set; } = "";
-        public string Description { get; set; } = "";
         // These properties should be decimals since that's what MenuItemNumericScroller uses
         // but decimal is not a valid attribute type so we use double instead.
         public double Minimum { get; set; } = 0.0;

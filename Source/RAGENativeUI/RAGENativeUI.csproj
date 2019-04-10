@@ -83,6 +83,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Menus\Templating\MenuAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemActivatedHandlerAttribute.cs" />
+    <Compile Include="Menus\Templating\MenuItemAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemCheckboxAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemEnumScrollerAttribute.cs" />
     <Compile Include="Menus\Templating\MenuItemNumericScrollerAttribute.cs" />

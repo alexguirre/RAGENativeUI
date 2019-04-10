@@ -69,6 +69,7 @@ namespace RAGENativeUI.Menus.Templating
                         case MenuItemCheckboxAttribute cb: BuildCheckbox(menu, prop, cb); break;
                         case MenuItemNumericScrollerAttribute num: BuildNumericScroller(menu, prop, num); break;
                         case MenuItemEnumScrollerAttribute enumScr: BuildEnumScroller(menu, prop, enumScr); break;
+                        case MenuItemAttribute item: BuildBasicItem(menu, prop, item); break;
                     }
                 }
             }
@@ -86,6 +87,33 @@ namespace RAGENativeUI.Menus.Templating
         {
             item.Metadata.__TemplateClassInstance__ = template;
             item.Metadata.__TemplatePropertyInfo__ = prop;
+        }
+
+        private static void BuildBasicItem(Menu menu, PropertyInfo prop, MenuItemAttribute attr)
+        {
+            if (!IsValidPropertyForBasicItem(prop))
+            {
+                throw new InvalidOperationException($"Property '{prop.DeclaringType.FullName}.{prop.Name}' cannnot be binded to a {nameof(MenuItem)}");
+            }
+
+            MenuTemplate template = menu.Metadata.__TemplateClassInstance__ as MenuTemplate;
+            MenuItem item = new MenuItem(attr.Text, attr.Description);
+
+            item.Metadata.__TemplatePropertyInvokeMethod__ = prop.PropertyType.GetMethod("Invoke");
+            AddItem(menu, item, attr.Name, prop);
+
+            item.Activated += OnMenuBasicItemActivated;
+        }
+
+        private static bool IsValidPropertyForBasicItem(PropertyInfo prop)
+        {
+            if (prop.CanRead)
+            {
+                MethodInfo invokeMethod = prop.PropertyType.GetMethod("Invoke"); // TODO: should check for private methods too?
+                return invokeMethod?.GetParameters()?.Length == 0; // TODO: allow Invoke method that takes the sender MenuItem?
+            }
+
+            return false;
         }
 
         private static void BuildNumericScroller(Menu menu, PropertyInfo prop, MenuItemNumericScrollerAttribute attr)
@@ -234,6 +262,18 @@ namespace RAGENativeUI.Menus.Templating
                         case MenuItemEnumScrollerAttribute enumScr: OnTemplateEnumScrollerPropertyChanged(template, prop, enumScr); break;
                     }
                 }
+            }
+        }
+
+        private static void OnMenuBasicItemActivated(MenuItem sender, ActivatedEventArgs e)
+        {
+            MenuTemplate template = sender.Metadata.__TemplateClassInstance__ as MenuTemplate;
+            PropertyInfo prop = sender.Metadata.__TemplatePropertyInfo__ as PropertyInfo;
+
+            if (prop != null)
+            {
+                MethodInfo invokeMethod = sender.Metadata.__TemplatePropertyInvokeMethod__ as MethodInfo;
+                invokeMethod.Invoke(prop.GetValue(template), null);
             }
         }
 

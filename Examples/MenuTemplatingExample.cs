@@ -74,6 +74,15 @@ namespace Examples
             private int intValue;
             private GameControl enumValue;
 
+            [MenuItem(Text = "Basic Item")]
+            private Action BasicItem => () =>
+            {
+                Game.DisplayNotification("Basic Item Activated");
+            };
+
+            [MenuItem(Text = "Item With Custom Class")]
+            private InvokableClass ItemWithCustomClass { get; } = new InvokableClass();
+
             [MenuItemCheckbox(Text = "Do Something?", Description = "Whether to do something or not.")]
             public bool DoSomething
             {
@@ -131,6 +140,16 @@ namespace Examples
             private void OnIntOrFloatValueActivated(MenuItem sender, ActivatedEventArgs e)
             {
                 Game.DisplayNotification(sender.Text + " -> Activated");
+            }
+
+            private class InvokableClass
+            {
+                int times;
+
+                public void Invoke()
+                {
+                    Game.DisplayNotification("InvokableClass: Number of times activated -> " + ++times);
+                }
             }
         }
     }
