@@ -80,6 +80,15 @@ namespace Examples
                 Game.DisplayNotification("Basic Item Activated");
             };
 
+            [MenuItem(Text = "Basic Item 2")]
+            private Action<MenuItem> BasicItem2 => (i) =>
+            {
+                Game.DisplayNotification("Basic Item 2 Activated");
+                i.Metadata.TimesActivated = i.Metadata.ContainsKey("TimesActivated") ? (i.Metadata.TimesActivated + 1) : 1;
+                i.Text = "Times Activated = " + i.Metadata.TimesActivated;
+            };
+
+
             [MenuItem(Text = "Item With Custom Class")]
             private InvokableClass ItemWithCustomClass { get; } = new InvokableClass();
 

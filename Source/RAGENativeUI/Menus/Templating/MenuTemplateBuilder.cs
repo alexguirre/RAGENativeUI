@@ -99,7 +99,9 @@ namespace RAGENativeUI.Menus.Templating
             MenuTemplate template = menu.Metadata.__TemplateClassInstance__ as MenuTemplate;
             MenuItem item = new MenuItem(attr.Text, attr.Description);
 
-            item.Metadata.__TemplatePropertyInvokeMethod__ = prop.PropertyType.GetMethod("Invoke");
+            MethodInfo invokeMethod = prop.PropertyType.GetMethod("Invoke");
+            item.Metadata.__TemplatePropertyInvokeMethod__ = invokeMethod;
+            item.Metadata.__TemplatePropertyInvokeWithItem__ = invokeMethod.GetParameters().Length == 1;
             AddItem(menu, item, attr.Name, prop);
 
             item.Activated += OnMenuBasicItemActivated;
@@ -110,7 +112,12 @@ namespace RAGENativeUI.Menus.Templating
             if (prop.CanRead)
             {
                 MethodInfo invokeMethod = prop.PropertyType.GetMethod("Invoke"); // TODO: should check for private methods too?
-                return invokeMethod?.GetParameters()?.Length == 0; // TODO: allow Invoke method that takes the sender MenuItem?
+                if (invokeMethod != null)
+                {
+                    ParameterInfo[] parameters = invokeMethod.GetParameters();
+                    return parameters.Length == 0 ||
+                           (parameters.Length == 1 && !parameters[0].IsOut && parameters[0].ParameterType == typeof(MenuItem));
+                }
             }
 
             return false;
@@ -273,7 +280,9 @@ namespace RAGENativeUI.Menus.Templating
             if (prop != null)
             {
                 MethodInfo invokeMethod = sender.Metadata.__TemplatePropertyInvokeMethod__ as MethodInfo;
-                invokeMethod.Invoke(prop.GetValue(template), null);
+                bool withItem = sender.Metadata.__TemplatePropertyInvokeWithItem__;
+                object[] parameters = withItem ? new[] { sender } : null;
+                invokeMethod.Invoke(prop.GetValue(template), parameters);
             }
         }
 
