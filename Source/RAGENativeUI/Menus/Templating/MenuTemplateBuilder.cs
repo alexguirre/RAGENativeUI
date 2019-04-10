@@ -80,13 +80,14 @@ namespace RAGENativeUI.Menus.Templating
             menu.Items.Add(item);
             string name = attrName ?? prop.Name;
             StoreItemInMetadata(menu, item, name);
-            SetItemMetadata(item, menu.Metadata.__TemplateClassInstance__, prop);
+            SetItemMetadata(item, menu.Metadata.__TemplateClassInstance__, prop, name);
         }
 
-        private static void SetItemMetadata(MenuItem item, MenuTemplate template, PropertyInfo prop)
+        private static void SetItemMetadata(MenuItem item, MenuTemplate template, PropertyInfo prop, string name)
         {
             item.Metadata.__TemplateClassInstance__ = template;
             item.Metadata.__TemplatePropertyInfo__ = prop;
+            item.Metadata.__TemplateItemName__ = name;
         }
 
         private static void BuildBasicItem(Menu menu, PropertyInfo prop, MenuItemAttribute attr)
