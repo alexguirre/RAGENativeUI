@@ -11,6 +11,7 @@ namespace RAGENativeUI
     using System.Linq;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
 
     using Rage;
 
@@ -27,12 +28,13 @@ namespace RAGENativeUI
         /** REDACTED **/
 #endif
     {
-        internal readonly CTimeCycleModifier* Native;
+        internal readonly void* NativePtr;
+        internal ref CTimeCycleModifier Native => ref Unsafe.AsRef<CTimeCycleModifier>(NativePtr);
 
         /// <summary>
         /// Gets the hash of the <see cref="TimeCycleModifier"/>.
         /// </summary>
-        public uint Hash { get { return Native->Name; } }
+        public uint Hash { get { return Native.Name; } }
 
         ///<summary>
         ///Gets the name of the <see cref= "TimeCycleModifier"/>.
@@ -44,12 +46,12 @@ namespace RAGENativeUI
         {
             get
             {
-                if (KnownNames.TimeCycleModifiers.Dictionary.TryGetValue(Native->Name, out string n))
+                if (KnownNames.TimeCycleModifiers.Dictionary.TryGetValue(Native.Name, out string n))
                 {
                     return n;
                 }
 
-                return $"0x{Native->Name:X8}";
+                return $"0x{Native.Name:X8}";
             }
         }
 
@@ -60,8 +62,8 @@ namespace RAGENativeUI
         {
             get
             {
-                return GameMemory.TimeCycle->CurrentModifierIndex == Index ||
-                       GameMemory.TimeCycle->TransitionModifierIndex == Index;
+                return GameMemory.TimeCycle.CurrentModifierIndex == Index ||
+                       GameMemory.TimeCycle.TransitionModifierIndex == Index;
             }
             set
             {
@@ -81,13 +83,13 @@ namespace RAGENativeUI
         /// </summary>
         public bool IsInTransition
         {
-            get { return GameMemory.TimeCycle->TransitionModifierIndex == Index; }
+            get { return GameMemory.TimeCycle.TransitionModifierIndex == Index; }
         }
 
         /// <summary>
         /// Gets the memory address of the <see cref="TimeCycleModifier"/>.
         /// </summary>
-        public IntPtr MemoryAddress { get { return (IntPtr)Native; } }
+        public IntPtr MemoryAddress { get { return (IntPtr)NativePtr; } }
 
         /// <summary>
         /// Gets the index of the <see cref="TimeCycleModifier"/>.
@@ -97,7 +99,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets the flags of the <see cref="TimeCycleModifier"/>.
         /// </summary>
-        public uint Flags { get { return Native->Flags; } }
+        public uint Flags { get { return Native.Flags; } }
 
         /// <summary>
         /// Gets a dictionary representing the mods of the <see cref="TimeCycleModifier"/>.
@@ -108,14 +110,14 @@ namespace RAGENativeUI
         /// Checks whether the <see cref="TimeCycleModifier"/> is valid.
         /// </summary>
         /// <returns><c>true</c> if this instance is valid; otherwise, <c>false</c>.</returns>
-        public bool IsValid => Native != null;
+        public bool IsValid => NativePtr != null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeCycleModifier"/> class from existing timecycle modifier in memory.
         /// </summary>
-        private TimeCycleModifier(CTimeCycleModifier* native, int idx)
+        private TimeCycleModifier(ref CTimeCycleModifier native, int idx)
         {
-            Native = native;
+            NativePtr = Unsafe.AsPointer(ref native);
             Index = idx;
             Mods = new TimeCycleModifierMods(this);
 
@@ -132,12 +134,12 @@ namespace RAGENativeUI
 
             uint hash = RPH.Game.GetHashKey(name);
 
-            Throw.InvalidOperationIf(GameMemory.TimeCycle->IsNameUsed(hash), $"The name '{name}' is already in use.");
+            Throw.InvalidOperationIf(GameMemory.TimeCycle.IsNameUsed(hash), $"The name '{name}' is already in use.");
 
             KnownNames.TimeCycleModifiers.Dictionary[hash] = name;
 
-            Native = GameMemory.TimeCycle->NewTimeCycleModifier(hash, mods, flags);
-            Index = GameMemory.TimeCycle->Modifiers.Count - 1;
+            NativePtr = Unsafe.AsPointer(ref GameMemory.TimeCycle.NewTimeCycleModifier(hash, mods, flags));
+            Index = GameMemory.TimeCycle.Modifiers.Count - 1;
             Mods = new TimeCycleModifierMods(this);
 
             Cache.Add(this);
@@ -169,12 +171,12 @@ namespace RAGENativeUI
         public void SetActiveWithTransition(float time) => SetActiveWithTransition(time, Strength);
         public void SetActiveWithTransition(float time, float targetStrength)
         {
-            CTimeCycle* timecycle = GameMemory.TimeCycle;
-            timecycle->CurrentModifierIndex = -1;
-            timecycle->CurrentModifierStrength = targetStrength;
-            timecycle->TransitionCurrentStrength = 0.0f;
-            timecycle->TransitionModifierIndex = Index;
-            timecycle->TransitionSpeed = targetStrength / time;
+            ref CTimeCycle timecycle = ref GameMemory.TimeCycle;
+            timecycle.CurrentModifierIndex = -1;
+            timecycle.CurrentModifierStrength = targetStrength;
+            timecycle.TransitionCurrentStrength = 0.0f;
+            timecycle.TransitionModifierIndex = Index;
+            timecycle.TransitionSpeed = targetStrength / time;
         }
 
 
@@ -205,7 +207,7 @@ namespace RAGENativeUI
             }
             else
             {
-                int index = GameFunctions.GetTimeCycleModifierIndex(GameMemory.TimeCycle, &hash);
+                int index = GameFunctions.GetTimeCycleModifierIndex(ref GameMemory.TimeCycle, hash);
 
                 if (index != -1)
                 {
@@ -230,16 +232,15 @@ namespace RAGENativeUI
         {
             Throw.IfOutOfRange(index, 0, NumberOfTimeCycleModifiers - 1, nameof(index));
 
-            ushort i = (ushort)index;
-            CTimeCycleModifier* native = GameMemory.TimeCycle->Modifiers.Items[i];
+            ref CTimeCycleModifier native = ref GameMemory.TimeCycle.Modifiers[index].AsRef<CTimeCycleModifier>();
 
-            if (Cache.Get(native->Name, out TimeCycleModifier p))
+            if (Cache.Get(native.Name, out TimeCycleModifier p))
             {
                 return p;
             }
             else
             {
-                return new TimeCycleModifier(native, index);
+                return new TimeCycleModifier(ref native, index);
             }
         }
 
@@ -249,8 +250,8 @@ namespace RAGENativeUI
         /// <returns>An array that contains all <see cref="TimeCycleModifier"/> instances currently in memory.</returns>
         public static TimeCycleModifier[] GetAll()
         {
-            TimeCycleModifier[] mods = new TimeCycleModifier[GameMemory.TimeCycle->Modifiers.Count];
-            for (short i = 0; i < GameMemory.TimeCycle->Modifiers.Count; i++)
+            TimeCycleModifier[] mods = new TimeCycleModifier[GameMemory.TimeCycle.Modifiers.Count];
+            for (short i = 0; i < GameMemory.TimeCycle.Modifiers.Count; i++)
             {
                 mods[i] = GetByIndex(i);
             }
@@ -266,7 +267,7 @@ namespace RAGENativeUI
         {
             get
             {
-                return GameMemory.TimeCycle->Modifiers.Count;
+                return GameMemory.TimeCycle.Modifiers.Count;
             }
         }
 
@@ -278,30 +279,30 @@ namespace RAGENativeUI
         {
             get
             {
-                CTimeCycle* timecycle = GameMemory.TimeCycle;
+                ref CTimeCycle timecycle = ref GameMemory.TimeCycle;
 
-                int index = timecycle->CurrentModifierIndex;
+                int index = timecycle.CurrentModifierIndex;
                 if (index == -1)
                 {
-                    index = timecycle->TransitionModifierIndex;
+                    index = timecycle.TransitionModifierIndex;
                 }
                 return index == -1 ? null : GetByIndex(index);
             }
             set
             {
-                CTimeCycle* timecycle = GameMemory.TimeCycle;
+                ref CTimeCycle timecycle = ref GameMemory.TimeCycle;
 
                 if (value == null || !value.IsValid)
                 {
-                    timecycle->CurrentModifierIndex = -1;
+                    timecycle.CurrentModifierIndex = -1;
 
-                    timecycle->TransitionModifierIndex = -1;
-                    timecycle->TransitionCurrentStrength = 0.0f;
-                    timecycle->TransitionSpeed = 0.0f;
+                    timecycle.TransitionModifierIndex = -1;
+                    timecycle.TransitionCurrentStrength = 0.0f;
+                    timecycle.TransitionSpeed = 0.0f;
                 }
                 else
                 {
-                    timecycle->CurrentModifierIndex = value.Index;
+                    timecycle.CurrentModifierIndex = value.Index;
                 }
             }
         }
@@ -310,11 +311,11 @@ namespace RAGENativeUI
         {
             get
             {
-                return GameMemory.TimeCycle->CurrentModifierStrength;
+                return GameMemory.TimeCycle.CurrentModifierStrength;
             }
             set
             {
-                GameMemory.TimeCycle->CurrentModifierStrength = value;
+                GameMemory.TimeCycle.CurrentModifierStrength = value;
             }
         }
 
@@ -323,13 +324,13 @@ namespace RAGENativeUI
     /// <summary>
     /// Represents the mods dictionary of a <see cref="TimeCycleModifier"/>.
     /// </summary>
-    public sealed unsafe class TimeCycleModifierMods : IDictionary<TimeCycleModifierModType, (float Value1, float Value2)>
+    public sealed class TimeCycleModifierMods : IDictionary<TimeCycleModifierModType, (float Value1, float Value2)>
     {
         private readonly TimeCycleModifier modifier;
         private KeyCollection keys;
         private ValueCollection values;
         
-        public int Count => modifier.Native->Mods.Count;
+        public int Count => modifier.Native.Mods.Count;
         public ICollection<TimeCycleModifierModType> Keys => keys ?? (keys = new KeyCollection(this));
         public ICollection<(float Value1, float Value2)> Values => values ?? (values = new ValueCollection(this));
         public bool IsReadOnly => false;
@@ -338,22 +339,22 @@ namespace RAGENativeUI
         {
             get
             {
-                CTimeCycleModifier* native = modifier.Native;
+                ref CTimeCycleModifier native = ref modifier.Native;
 
-                Throw.IfOutOfRange(index, 0, native->Mods.Count - 1, nameof(index));
+                Throw.IfOutOfRange(index, 0, native.Mods.Count - 1, nameof(index));
 
-                CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
-                return (nativeMod->Value1, nativeMod->Value2);
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                return (nativeMod.Value1, nativeMod.Value2);
             }
             set
             {
-                CTimeCycleModifier* native = modifier.Native;
+                ref CTimeCycleModifier native = ref modifier.Native;
 
-                Throw.IfOutOfRange(index, 0, native->Mods.Count - 1, nameof(index));
+                Throw.IfOutOfRange(index, 0, native.Mods.Count - 1, nameof(index));
 
-                CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
-                nativeMod->Value1 = value.Value1;
-                nativeMod->Value2 = value.Value2;
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                nativeMod.Value1 = value.Value1;
+                nativeMod.Value2 = value.Value2;
             }
         }
         
@@ -361,17 +362,17 @@ namespace RAGENativeUI
         {
             get
             {
-                CTimeCycleModifier* native = modifier.Native;
+                ref CTimeCycleModifier native = ref modifier.Native;
                 ushort index = FindIndex(type);
 
                 Throw.InvalidOperationIf(index == 0xFFFF, $"This {nameof(TimeCycleModifierMods)} doesn't contain a mod of type '{type}'.");
 
-                CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
-                return (nativeMod->Value1, nativeMod->Value2);
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                return (nativeMod.Value1, nativeMod.Value2);
             }
             set
             {
-                CTimeCycleModifier* native = modifier.Native;
+                ref CTimeCycleModifier native = ref modifier.Native;
                 ushort index = FindIndex(type);
 
                 if(index == 0xFFFF)
@@ -380,9 +381,9 @@ namespace RAGENativeUI
                 }
                 else
                 {
-                    CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
-                    nativeMod->Value1 = value.Value1;
-                    nativeMod->Value2 = value.Value2;
+                    ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                    nativeMod.Value1 = value.Value1;
+                    nativeMod.Value2 = value.Value2;
                 }
             }
         }
@@ -394,18 +395,18 @@ namespace RAGENativeUI
 
         private ushort FindIndex(TimeCycleModifierModType type)
         {
-            CTimeCycleModifier* native = modifier.Native;
+            ref CTimeCycleModifier native = ref modifier.Native;
 
             int keyType = (int)type;
 
             int leftIndex = 0;
-            int rightIndex = native->Mods.Count - 1;
+            int rightIndex = native.Mods.Count - 1;
 
             while (leftIndex <= rightIndex)
             {
                 int mid = (rightIndex + leftIndex) >> 1;
 
-                int modType = native->Mods.Items[(ushort)mid].ModType;
+                int modType = native.Mods[(ushort)mid].ModType;
 
                 if (keyType == modType)
                 {
@@ -435,14 +436,14 @@ namespace RAGENativeUI
         {
             Throw.ArgumentExceptionIf(ContainsKey(type), nameof(type), $"This {nameof(TimeCycleModifierMods)} already contains a mod of type '{type}'.");
 
-            CTimeCycleModifier* native = modifier.Native;
+            ref CTimeCycleModifier native = ref modifier.Native;
 
-            CTimeCycleModifier.Mod* newMod = native->GetUnusedModEntry();
-            newMod->ModType = (int)type;
-            newMod->Value1 = value1;
-            newMod->Value2 = value2;
+            ref CTimeCycleModifier.Mod newMod = ref native.Mods.Add();
+            newMod.ModType = (int)type;
+            newMod.Value1 = value1;
+            newMod.Value2 = value2;
 
-            native->SortMods();
+            native.SortMods();
         }
         
         public bool Remove(TimeCycleModifierModType type)
@@ -453,20 +454,19 @@ namespace RAGENativeUI
                 return false;
             }
 
-            CTimeCycleModifier* native = modifier.Native;
-            native->RemoveModEntry(index);
+            modifier.Native.Mods.Remove(index);
             return true;
         }
 
         public bool TryGetValue(TimeCycleModifierModType type, out (float Value1, float Value2) values)
         {
-            CTimeCycleModifier* native = modifier.Native;
+            ref CTimeCycleModifier native = ref modifier.Native;
             ushort index = FindIndex(type);
 
             if (index != 0xFFFF)
             {
-                CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
-                values = (nativeMod->Value1, nativeMod->Value2);
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
+                values = (nativeMod.Value1, nativeMod.Value2);
                 return true;
             }
 
@@ -484,10 +484,10 @@ namespace RAGENativeUI
             ushort index = FindIndex(keyValuePair.Key);
             if (index != 0xFFFF)
             {
-                CTimeCycleModifier* native = modifier.Native;
-                CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
+                ref CTimeCycleModifier native = ref modifier.Native;
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
 
-                return nativeMod->Value1 == keyValuePair.Value.Value1 && nativeMod->Value2 == keyValuePair.Value.Value2;
+                return nativeMod.Value1 == keyValuePair.Value.Value1 && nativeMod.Value2 == keyValuePair.Value.Value2;
             }
 
             return false;
@@ -498,12 +498,12 @@ namespace RAGENativeUI
             ushort index = FindIndex(keyValuePair.Key);
             if (index != 0xFFFF)
             {
-                CTimeCycleModifier* native = modifier.Native;
-                CTimeCycleModifier.Mod* nativeMod = &native->Mods.Items[index];
+                ref CTimeCycleModifier native = ref modifier.Native;
+                ref CTimeCycleModifier.Mod nativeMod = ref native.Mods[index];
 
-                if (nativeMod->Value1 == keyValuePair.Value.Value1 && nativeMod->Value2 == keyValuePair.Value.Value2)
+                if (nativeMod.Value1 == keyValuePair.Value.Value1 && nativeMod.Value2 == keyValuePair.Value.Value2)
                 {
-                    native->RemoveModEntry(index);
+                    native.Mods.Remove(index);
                     return true;
                 }
             }
@@ -513,27 +513,23 @@ namespace RAGENativeUI
 
         public void Clear()
         {
-            CTimeCycleModifier* native = modifier.Native;
-            if (native->Mods.Count > 0)
-            {
-                native->RemoveAllMods();
-            }
+            modifier.Native.Mods.Clear();
         }
 
         public void CopyTo(KeyValuePair<TimeCycleModifierModType, (float Value1, float Value2)>[] array, int arrayIndex)
         {
             Throw.IfNull(array, nameof(array));
 
-            CTimeCycleModifier* native = modifier.Native;
-            ushort sourceCount = native->Mods.Count;
+            ref CTimeCycleModifier native = ref modifier.Native;
+            ushort sourceCount = native.Mods.Count;
 
             Throw.IfOutOfRange(arrayIndex, 0, sourceCount - 1, nameof(arrayIndex));
             Throw.ArgumentExceptionIf(sourceCount > (array.Length - arrayIndex));
 
             for (short i = 0; i < sourceCount; i++)
             {
-                CTimeCycleModifier.Mod* m = &native->Mods.Items[i];
-                array[arrayIndex++] = new KeyValuePair<TimeCycleModifierModType, (float, float)>((TimeCycleModifierModType)m->ModType, (m->Value1, m->Value2));
+                ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                array[arrayIndex++] = new KeyValuePair<TimeCycleModifierModType, (float, float)>((TimeCycleModifierModType)m.ModType, (m.Value1, m.Value2));
             }
         }
 
@@ -565,15 +561,15 @@ namespace RAGENativeUI
 
             public bool MoveNext()
             {
-                CTimeCycleModifier* native = mods.modifier.Native;
+                ref CTimeCycleModifier native = ref mods.modifier.Native;
 
-                if(index < native->Mods.Count)
+                if(index < native.Mods.Count)
                 {
                     index++;
-                    if(index < native->Mods.Count)
+                    if(index < native.Mods.Count)
                     {
-                        CTimeCycleModifier.Mod* m = &native->Mods.Items[index];
-                        current = new KeyValuePair<TimeCycleModifierModType, (float, float)>((TimeCycleModifierModType)m->ModType, (m->Value1, m->Value2));
+                        ref CTimeCycleModifier.Mod m = ref native.Mods[index];
+                        current = new KeyValuePair<TimeCycleModifierModType, (float, float)>((TimeCycleModifierModType)m.ModType, (m.Value1, m.Value2));
                         return true;
                     }
                 }
@@ -590,7 +586,7 @@ namespace RAGENativeUI
 
         private sealed class KeyCollection : ICollection<TimeCycleModifierModType>, IReadOnlyCollection<TimeCycleModifierModType>
         {
-            private TimeCycleModifierMods mods;
+            private readonly TimeCycleModifierMods mods;
             
             public int Count
             {
@@ -610,16 +606,16 @@ namespace RAGENativeUI
             {
                 Throw.IfNull(array, nameof(array));
 
-                CTimeCycleModifier* native = mods.modifier.Native;
-                ushort sourceCount = native->Mods.Count;
+                ref CTimeCycleModifier native = ref mods.modifier.Native;
+                ushort sourceCount = native.Mods.Count;
 
                 Throw.IfOutOfRange(arrayIndex, 0, sourceCount - 1, nameof(arrayIndex));
                 Throw.ArgumentExceptionIf(sourceCount > (array.Length - arrayIndex));
 
                 for (short i = 0; i < sourceCount; i++)
                 {
-                    CTimeCycleModifier.Mod* m = &native->Mods.Items[i];
-                    array[arrayIndex++] = (TimeCycleModifierModType)m->ModType;
+                    ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                    array[arrayIndex++] = (TimeCycleModifierModType)m.ModType;
                 }
             }
 
@@ -646,7 +642,7 @@ namespace RAGENativeUI
 
         private sealed class ValueCollection : ICollection<(float Value1, float Value2)>, IReadOnlyCollection<(float Value1, float Value2)>
         {
-            private TimeCycleModifierMods mods;
+            private readonly TimeCycleModifierMods mods;
 
             public int Count
             {
@@ -666,16 +662,16 @@ namespace RAGENativeUI
             {
                 Throw.IfNull(array, nameof(array));
 
-                CTimeCycleModifier* native = mods.modifier.Native;
-                ushort sourceCount = native->Mods.Count;
+                ref CTimeCycleModifier native = ref mods.modifier.Native;
+                ushort sourceCount = native.Mods.Count;
 
                 Throw.IfOutOfRange(arrayIndex, 0, sourceCount - 1, nameof(arrayIndex));
                 Throw.ArgumentExceptionIf(sourceCount > (array.Length - arrayIndex));
 
                 for (short i = 0; i < sourceCount; i++)
                 {
-                    CTimeCycleModifier.Mod* m = &native->Mods.Items[i];
-                    array[arrayIndex++] = (m->Value1, m->Value2);
+                    ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                    array[arrayIndex++] = (m.Value1, m.Value2);
                 }
             }
 
@@ -684,12 +680,12 @@ namespace RAGENativeUI
 
             public bool Contains((float Value1, float Value2) item)
             {
-                CTimeCycleModifier* native = mods.modifier.Native;
+                ref CTimeCycleModifier native = ref mods.modifier.Native;
 
-                for (short i = 0; i < native->Mods.Count; i++)
+                for (short i = 0; i < native.Mods.Count; i++)
                 {
-                    CTimeCycleModifier.Mod* m = &native->Mods.Items[i];
-                    if (m->Value1 == item.Value1 && m->Value2 == item.Value1)
+                    ref CTimeCycleModifier.Mod m = ref native.Mods[i];
+                    if (m.Value1 == item.Value1 && m.Value2 == item.Value1)
                     {
                         return true;
                     }

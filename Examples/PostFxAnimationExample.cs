@@ -33,7 +33,7 @@ namespace Examples
 
             Gui.Do += () =>
             {
-                if (RPH.Game.IsKeyDown(System.Windows.Forms.Keys.Control))
+                if (RPH.Game.IsControlDown)
                 {
                     Gui.Mouse();
                 }
