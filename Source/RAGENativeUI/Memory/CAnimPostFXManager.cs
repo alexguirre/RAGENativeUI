@@ -11,36 +11,36 @@ namespace RAGENativeUI.Memory
         [FieldOffset(0x0020)] private CAnimPostFX** currentActiveEffectPtr;
         [FieldOffset(0x0050)] private CAnimPostFX** lastActiveEffectPtr;
 
-        public CAnimPostFX* GetCurrentActiveEffect()
+        public ref CAnimPostFX GetCurrentActiveEffect()
         {
             int index = unchecked((int)((long)(*currentActiveEffectPtr) - (long)Effects.Items) / sizeof(CAnimPostFX));
 
             if(index >= 0 && index < Effects.Count)
             {
-                return *currentActiveEffectPtr;
+                return ref Unsafe.AsRef<CAnimPostFX>(*currentActiveEffectPtr);
             }
             
-            return null;
+            return ref Ref.Null<CAnimPostFX>();
         }
 
-        public CAnimPostFX* GetLastActiveEffect()
+        public ref CAnimPostFX GetLastActiveEffect()
         {
-            CAnimPostFX* activeEffect = GetCurrentActiveEffect();
-            if (activeEffect == null)
+            ref CAnimPostFX activeEffect = ref GetCurrentActiveEffect();
+            if (Ref.IsNull(ref activeEffect))
             {
                 int index = unchecked((int)((long)(*lastActiveEffectPtr) - (long)Effects.Items) / sizeof(CAnimPostFX));
 
                 if (index >= 0 && index < Effects.Count)
                 {
-                    return *lastActiveEffectPtr;
+                    return ref Unsafe.AsRef<CAnimPostFX>(*lastActiveEffectPtr);
                 }
                 else
                 {
-                    return null;
+                    return ref Ref.Null<CAnimPostFX>();
                 }
             }
 
-            return activeEffect;
+            return ref activeEffect;
         }
     }
 }
