@@ -152,10 +152,10 @@ namespace RAGENativeUI
         {
             get
             {
-                CAnimPostFX* native = (*GameMemory.AnimPostFXManager)->GetLastActiveEffect();
-                if (native != null)
+                ref CAnimPostFX native = ref (*GameMemory.AnimPostFXManager)->GetLastActiveEffect();
+                if (!Ref.IsNull(ref native))
                 {
-                    return GetByHash(native->Name);
+                    return GetByHash(native.Name);
                 }
 
                 return null;
@@ -166,10 +166,10 @@ namespace RAGENativeUI
         {
             get
             {
-                CAnimPostFX* native = (*GameMemory.AnimPostFXManager)->GetCurrentActiveEffect();
-                if (native != null)
+                ref CAnimPostFX native = ref (*GameMemory.AnimPostFXManager)->GetCurrentActiveEffect();
+                if (!Ref.IsNull(ref native))
                 {
-                    return GetByHash(native->Name);
+                    return GetByHash(native.Name);
                 }
 
                 return null;
