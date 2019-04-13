@@ -257,7 +257,15 @@ namespace RAGENativeUI.Menus.Themes
             float navWidth = menuWidth;
             float navHeight = itemHeight;
 
-            int offset = Menu.SelectedIndex - Menu.ItemsOnScreenStartIndex;
+            int offset = 0;
+            for (int i = Menu.ItemsOnScreenStartIndex; i < Menu.SelectedIndex; i++)
+            {
+                if (Menu.Items[i].IsVisible)
+                {
+                    offset++;
+                }
+            }
+
             float navX = x + navWidth * 0.5f;
             float navY = headerBottom + navHeight * 0.5f + (navHeight * offset);
 
@@ -371,7 +379,6 @@ namespace RAGENativeUI.Menus.Themes
             {
                 DrawItemBase(item, x, posY);
 
-                // TODO: implement MenuItemCheckbox drawing
                 // TODO: implement MenuItem left/right badge drawing
                 switch (item)
                 {
