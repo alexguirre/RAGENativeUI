@@ -29,7 +29,7 @@ namespace RAGENativeUI.Menus.Templating
             return MenuTemplateBuilder.RetrieveItemFromMetadata(Menu, name);
         }
 
-        protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null, params string[] additionalProperties)
+        protected virtual void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null, params string[] additionalProperties)
         {
             if (!EqualityComparer<T>.Default.Equals(field, value))
             {
@@ -42,7 +42,7 @@ namespace RAGENativeUI.Menus.Templating
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -50,6 +50,11 @@ namespace RAGENativeUI.Menus.Templating
         public void BuildMenu()
         {
             Menu = MenuTemplateBuilder.BuildMenu(this);
+            OnMenuBuilt();
+        }
+
+        protected virtual void OnMenuBuilt()
+        {
         }
     }
 }

@@ -151,6 +151,11 @@ namespace Examples
                 Game.DisplayNotification(sender.Text + " -> Activated");
             }
 
+            protected override void OnMenuBuilt()
+            {
+                Menu.Subtitle = "Subtitle set from OnMenuBuilt";
+            }
+
             private class InvokableClass
             {
                 int times;
