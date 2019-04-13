@@ -88,9 +88,9 @@ namespace RAGENativeUI.Memory
             return ref this[last];
         }
 
-        public void Remove(ushort index)
+        public void Remove(int index)
         {
-            for (ushort i = index; i < (Count - 1); i++)
+            for (int i = index; i < (Count - 1); i++)
             {
                 this[i] = this[i + 1];
             }
@@ -103,7 +103,14 @@ namespace RAGENativeUI.Memory
             Count = 0;
         }
 
-        public void Swap(ushort index1, ushort index2)
+        public int IndexOf(ref T item)
+        {
+            long diff = (long)Unsafe.AsPointer(ref item) - (long)Items.Value;
+            int index = unchecked((int)(diff / Unsafe.SizeOf<T>()));
+            return (index >= 0 && index < Count) ? index : -1;
+        }
+
+        public void Swap(int index1, int index2)
         {
             ref T item1 = ref this[index1];
             ref T item2 = ref this[index2];
@@ -260,23 +267,13 @@ namespace RAGENativeUI.Memory
         }
     }
 
-
-    [StructLayout(LayoutKind.Sequential, Size = 16)]
-    internal unsafe struct atArray_CAnimPostFX
+    internal unsafe struct InlinedArray<T>
     {
-        public CAnimPostFX* Items;
-        public ushort Count;
-        public ushort Size;
-    }
+        private byte start;
 
-    internal unsafe struct InlinedArray_CAnimPostFX_Layer
-    {
-        private CAnimPostFX.Layer start;
-
-        public CAnimPostFX.Layer* this[int index]
+        public ref T this[int index]
         {
-            get { fixed (CAnimPostFX.Layer* a = &start) { return (&a[index]); } }
-            set { fixed (CAnimPostFX.Layer* a = &start) { a[index] = *value; } }
+            get { fixed (void* a = &start) { return ref Unsafe.Add(ref Unsafe.AsRef<T>(a), index); } }
         }
     }
 }
