@@ -740,12 +740,30 @@ namespace RAGENativeUI.Menus
 
         protected virtual void OnSelectedItemChanged(SelectedItemChangedEventArgs e)
         {
+            if (e.OldItem != null)
+            {
+                e.OldItem.PropertyChanged -= OnSelectedItemPropertyChanged;
+            }
+
+            if (e.NewItem != null)
+            {
+                e.NewItem.PropertyChanged += OnSelectedItemPropertyChanged;
+            }
+
             SelectedItemChanged?.Invoke(this, e);
         }
 
         protected virtual void OnVisibleChanged(VisibleChangedEventArgs e)
         {
             VisibleChanged?.Invoke(this, e);
+        }
+
+        private void OnSelectedItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(MenuItem.Description): UpdateCurrentDescription(); break;
+            }
         }
 
         #region IDisposable Support
