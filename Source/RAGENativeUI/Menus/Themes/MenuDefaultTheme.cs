@@ -15,7 +15,8 @@ namespace RAGENativeUI.Menus.Themes
     public class MenuDefaultTheme : MenuTheme
     {
         public TextureReference Banner { get; set; }
-        public Color BannerColor { get; set; } = Color.White;
+        public Color BannerBackColor { get; set; } = Color.White;
+        public Color BannerForeColor { get; set; } = HudColor.White.GetColor();
         public Color SubtitleBackColor { get; set; } = Color.Black;
         public Color SubtitleForeColor { get; set; } = Color.White;
         public TextureReference NavigationBar { get; set; }
@@ -73,7 +74,8 @@ namespace RAGENativeUI.Menus.Themes
             return new MenuDefaultTheme(menu)
             {
                 Banner = Banner,
-                BannerColor = BannerColor,
+                BannerBackColor = BannerBackColor,
+                BannerForeColor = BannerForeColor,
                 SubtitleBackColor = SubtitleBackColor,
                 SubtitleForeColor = SubtitleForeColor,
                 NavigationBar = NavigationBar,
@@ -90,6 +92,12 @@ namespace RAGENativeUI.Menus.Themes
                 ItemEnabledAndSelectedColor = ItemEnabledAndSelectedColor,
                 ItemDisabledColor = ItemDisabledColor,
                 ItemDisabledAndSelectedColor = ItemDisabledAndSelectedColor,
+                CheckboxUncheckedTexture = CheckboxUncheckedTexture,
+                CheckboxCheckedTexture = CheckboxCheckedTexture,
+                CheckboxUncheckedAndSelectedTexture = CheckboxUncheckedAndSelectedTexture,
+                CheckboxCheckedAndSelectedTexture = CheckboxCheckedAndSelectedTexture,
+                ArrowLeftTexture = ArrowLeftTexture,
+                ArrowRightTexture = ArrowRightTexture,
             };
         }
 
@@ -140,9 +148,28 @@ namespace RAGENativeUI.Menus.Themes
 
                 GetTextureDrawSize(Banner, true, out float bannerWidth, out float bannerHeight, false);
 
-                DrawSprite(Banner, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, BannerColor);
+                DrawSprite(Banner, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, BannerBackColor);
+
+                DrawTitle(x, ref y, bannerHeight);
+
                 y += bannerHeight;
             }
+        }
+
+        private void DrawTitle(float x, ref float y, float bannerHeight)
+        {
+            float titleX = x + menuWidth * 0.5f;
+            float titleY = y + bannerHeight * 0.225f;
+
+            N.SetTextFont((int)Text.TextFont.HouseScript);
+            N.SetTextScale(0.0f, 1.025f);
+            N.SetTextColour(BannerForeColor.R, BannerForeColor.G, BannerForeColor.B, BannerForeColor.A);
+            N.SetTextWrap(x, x + menuWidth);
+            N.SetTextCentre(true);
+
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Menu.Title);
+            N.EndTextCommandDisplayText(titleX, titleY);
         }
 
         private void DrawSubtitle(float x, ref float y)
