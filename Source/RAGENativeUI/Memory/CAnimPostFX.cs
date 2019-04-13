@@ -13,7 +13,7 @@ namespace RAGENativeUI.Memory
         internal unsafe struct Stack
         {
             [FieldOffset(0x0000)] public LayerBlend LayerBlend;
-            [FieldOffset(0x0030)] public InlinedArray_CAnimPostFX_Layer Layers;
+            [FieldOffset(0x0030)] public InlinedArray<Layer> Layers;
 
             [FieldOffset(0x0168)] public int LayersCount;
         }
