@@ -35,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_RPH1|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\..\Rockstar Games\Grand Theft Auto V\Plugins\</OutputPath>
+    <OutputPath>$(RNUI_BUILD_PATH)\Plugins\</OutputPath>
     <DefineConstants>TRACE;DEBUG;RPH1</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -44,7 +44,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_RPH1|x64'">
-    <OutputPath>..\..\..\..\..\Rockstar Games\Grand Theft Auto V\Plugins\</OutputPath>
+    <OutputPath>$(RNUI_BUILD_PATH)\Plugins\</OutputPath>
     <DefineConstants>TRACE;RPH1</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

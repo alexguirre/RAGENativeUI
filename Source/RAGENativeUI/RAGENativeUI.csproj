@@ -34,13 +34,13 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\RAGENativeUI.xml</DocumentationFile>
+    <DocumentationFile>$(RNUI_BUILD_PATH)\RAGENativeUI.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_RPH1|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\</OutputPath>
+    <OutputPath>$(RNUI_BUILD_PATH)\</OutputPath>
     <DefineConstants>TRACE;DEBUG;RPH1</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
@@ -50,10 +50,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_RPH1|x64'">
-    <OutputPath>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\</OutputPath>
+    <OutputPath>$(RNUI_BUILD_PATH)\</OutputPath>
     <DefineConstants>TRACE;RPH1</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\..\..\..\..\Rockstar Games\Grand Theft Auto V\RAGENativeUI.xml</DocumentationFile>
+    <DocumentationFile>$(RNUI_BUILD_PATH)\RAGENativeUI.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
