@@ -232,7 +232,7 @@ namespace RAGENativeUI
         {
             Throw.IfOutOfRange(index, 0, NumberOfTimeCycleModifiers - 1, nameof(index));
 
-            ref CTimeCycleModifier native = ref GameMemory.TimeCycle.Modifiers[index].AsRef<CTimeCycleModifier>();
+            ref CTimeCycleModifier native = ref GameMemory.TimeCycle.Modifiers[index].Deref();
 
             if (Cache.Get(native.Name, out TimeCycleModifier p))
             {

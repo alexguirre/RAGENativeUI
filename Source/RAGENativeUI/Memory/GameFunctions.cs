@@ -10,7 +10,7 @@ namespace RAGENativeUI.Memory
         public delegate void StopAnimPostFXDelegate(ref CAnimPostFXManager animPostFXMgr, in uint effectNameHashPtr);
         [return: MarshalAs(UnmanagedType.I1)]
         public delegate bool IsAnimPostFXActiveDelegate(ref CAnimPostFXManager animPostFXMgr, in uint effectNameHashPtr);
-        public delegate Ptr GetAnimPostFXByHashDelegate(ref CAnimPostFXManager animPostFXMgr, in uint effectNameHashPtr);
+        public delegate void* GetAnimPostFXByHashDelegate(ref CAnimPostFXManager animPostFXMgr, in uint effectNameHashPtr);
         public delegate int GetTimeCycleModifierIndexDelegate(ref CTimeCycle timeCycle, in uint nameHash);
 
 
