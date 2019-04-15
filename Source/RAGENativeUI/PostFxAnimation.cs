@@ -49,7 +49,7 @@ namespace RAGENativeUI
             {
                 return IsValid && GameFunctions.IsAnimPostFXActive(ref GameMemory.AnimPostFXManager, Native.Name);
             }
-        }#error version
+        }
 
         public IntPtr MemoryAddress { get { return (IntPtr)NativePtr; } }
         public int Index { get { return index; } }
