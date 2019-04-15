@@ -3,7 +3,7 @@ namespace RAGENativeUI.Memory
     using System;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-    
+
     [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct CTimeCycle
     {
@@ -11,9 +11,9 @@ namespace RAGENativeUI.Memory
 
         [FieldOffset(0x0008)] public atArray<float> UnkArray;
 
-        [FieldOffset(0x0040)] public atArray<Ptr/* CTimeCycleModifier* */> Modifiers;
+        [FieldOffset(0x0040)] public atArray<Ptr<CTimeCycleModifier>> Modifiers;
 
-        [FieldOffset(0x0050)] public atBinaryMap<Ptr/* CTimeCycleModifier* */, uint> ModifiersMap;
+        [FieldOffset(0x0050)] public atBinaryMap<Ptr<CTimeCycleModifier>, uint> ModifiersMap;
 
 
         [FieldOffset(0x27F0)] public int CurrentModifierIndex;
@@ -26,7 +26,8 @@ namespace RAGENativeUI.Memory
 
         public ref CTimeCycleModifier NewTimeCycleModifier(uint name, CTimeCycleModifier.Mod[] mods, uint flags = 0)
         {
-            ref CTimeCycleModifier modifier = ref Unsafe.AsRef<CTimeCycleModifier>(RNUI.Helper.Allocate(Unsafe.SizeOf<CTimeCycleModifier>()).ToPointer());
+            Ptr<CTimeCycleModifier> modifierPtr = (CTimeCycleModifier*)RNUI.Helper.Allocate(Unsafe.SizeOf<CTimeCycleModifier>());
+            ref CTimeCycleModifier modifier = ref modifierPtr.Deref();
             modifier.Mods.Init((ushort)mods.Length);
             for (ushort i = 0; i < mods.Length; i++)
             {
@@ -38,13 +39,11 @@ namespace RAGENativeUI.Memory
             modifier.Flags = flags;
             modifier.unk24 = -1;
 
-            Ptr modifierPtr = Unsafe.AsPointer(ref modifier);
             Modifiers.Add() = modifierPtr;
             ModifiersMap.Add(name, modifierPtr);
             UnkArray.Add();
-                        
+
             return ref modifier;
         }
     }
 }
-

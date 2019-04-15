@@ -28,7 +28,7 @@ namespace RAGENativeUI.Memory
                 address = address + *(int*)(address + 3) + 7;
                 timeCycle = (void*)address;
             }
-            
+
             return !anyAssertFailed;
         }
 
@@ -46,4 +46,3 @@ namespace RAGENativeUI.Memory
         }
     }
 }
-

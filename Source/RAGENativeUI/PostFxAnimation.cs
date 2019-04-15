@@ -110,7 +110,7 @@ namespace RAGENativeUI
             }
             else
             {
-                ref CAnimPostFX native = ref GameFunctions.GetAnimPostFXByHash(ref GameMemory.AnimPostFXManager, hash).AsRef<CAnimPostFX>();
+                ref CAnimPostFX native = ref Unsafe.AsRef<CAnimPostFX>(GameFunctions.GetAnimPostFXByHash(ref GameMemory.AnimPostFXManager, hash));
 
                 if (!Ref.IsNull(ref native))
                 {
@@ -290,7 +290,7 @@ namespace RAGENativeUI
         {
             get
             {
-                if (Native.LayerA == null)
+                if (Native.LayerA.IsNull)
                 {
                     return null;
                 }
@@ -304,7 +304,7 @@ namespace RAGENativeUI
                     {
                         for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            if (animation.Layers[i].MemoryAddress == (IntPtr)Native.LayerA)
+                            if (animation.Layers[i].MemoryAddress == Native.LayerA)
                             {
                                 layerA = animation.Layers[i];
                                 break;
@@ -322,7 +322,7 @@ namespace RAGENativeUI
         {
             get
             {
-                if (Native.LayerB == null)
+                if (Native.LayerB.IsNull)
                 {
                     return null;
                 }
@@ -336,7 +336,7 @@ namespace RAGENativeUI
                     {
                         for (int i = 0; i < animation.Layers.Count; i++)
                         {
-                            if (animation.Layers[i].MemoryAddress == (IntPtr)Native.LayerB)
+                            if (animation.Layers[i].MemoryAddress == Native.LayerB)
                             {
                                 layerB = animation.Layers[i];
                                 break;

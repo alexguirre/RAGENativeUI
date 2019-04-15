@@ -6,21 +6,21 @@ namespace RAGENativeUI.Memory
     [StructLayout(LayoutKind.Explicit, Size = 760)]
     internal unsafe struct CAnimPostFXManager
     {
-        [FieldOffset(0x0000)] public  atArray<CAnimPostFX> Effects;
+        [FieldOffset(0x0000)] public atArray<CAnimPostFX> Effects;
 
-        [FieldOffset(0x0020)] private Ptr /* CAnimPostFX** */ currentActiveEffectPtr;
-        [FieldOffset(0x0050)] private Ptr /* CAnimPostFX** */ lastActiveEffectPtr;
+        [FieldOffset(0x0020)] private Ptr<Ptr<CAnimPostFX>> currentActiveEffectPtr;
+        [FieldOffset(0x0050)] private Ptr<Ptr<CAnimPostFX>> lastActiveEffectPtr;
 
         public ref CAnimPostFX GetCurrentActiveEffect()
         {
-            ref CAnimPostFX current = ref currentActiveEffectPtr.Deref<CAnimPostFX>();
+            ref CAnimPostFX current = ref currentActiveEffectPtr.Deref().Deref();
             int index = Effects.IndexOf(ref current);
 
-            if(index >= 0 && index < Effects.Count)
+            if (index >= 0 && index < Effects.Count)
             {
                 return ref current;
             }
-            
+
             return ref Ref.Null<CAnimPostFX>();
         }
 
@@ -29,7 +29,7 @@ namespace RAGENativeUI.Memory
             ref CAnimPostFX activeEffect = ref GetCurrentActiveEffect();
             if (Ref.IsNull(ref activeEffect))
             {
-                ref CAnimPostFX last = ref lastActiveEffectPtr.Deref<CAnimPostFX>();
+                ref CAnimPostFX last = ref lastActiveEffectPtr.Deref().Deref();
                 int index = Effects.IndexOf(ref last);
 
                 if (index >= 0 && index < Effects.Count)
@@ -46,4 +46,3 @@ namespace RAGENativeUI.Memory
         }
     }
 }
-

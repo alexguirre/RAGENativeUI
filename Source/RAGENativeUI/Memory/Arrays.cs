@@ -6,52 +6,42 @@ namespace RAGENativeUI.Memory
 
     internal unsafe static class Ref
     {
-        public static ref T Null<T>() => ref Unsafe.AsRef<T>(null);
-        public static bool IsNull<T>(ref T tRef) => Unsafe.AreSame(ref Null<T>(), ref tRef);
+        public static ref T Null<T>() where T : unmanaged => ref Unsafe.AsRef<T>(null);
+        public static bool IsNull<T>(ref T tRef) where T : unmanaged => Unsafe.AreSame(ref Null<T>(), ref tRef);
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 8)]
-    internal unsafe struct Ptr
+    internal unsafe struct Ptr<T> where T : unmanaged
     {
-        private void* value;
+        private readonly T* value;
 
-        public void* Value
-        {
-            get => value;
-            set => this.value = value;
-        }
+        public T* Value => value;
+        public bool IsNull => value == null;
+        public ref T this[int elementOffset] => ref value[elementOffset];
 
-        public Ptr(void* ptr)
-        {
-            value = ptr;
-        }
+        public Ptr(T* value) => this.value = value;
+        public Ptr(void* value) : this((T*)value) { }
+        public Ptr(IntPtr value) : this((T*)value) { }
+        public Ptr(ref T element) : this(Unsafe.AsPointer(ref element)) { }
 
-        public Ptr(IntPtr ptr) : this((void*)ptr)
-        {
-        }
+        public ref T Deref() => ref Unsafe.AsRef<T>(value);
 
-        public ref T AsRef<T>()
-        {
-            return ref Unsafe.AsRef<T>(Value);
-        }
-
-        public Ptr Deref() => new Ptr(*(void**)Value);
-        public ref T Deref<T>() => ref Deref().AsRef<T>();
-
-        public static implicit operator Ptr(void* ptr) => new Ptr(ptr);
-        public static implicit operator Ptr(IntPtr ptr) => new Ptr(ptr);
-        public static implicit operator void*(Ptr ptr) => ptr.Value;
-        public static implicit operator IntPtr(Ptr ptr) => (IntPtr)ptr.Value;
+        public static implicit operator Ptr<T>(T* value) => new Ptr<T>(value);
+        public static implicit operator Ptr<T>(void* value) => new Ptr<T>(value);
+        public static implicit operator Ptr<T>(IntPtr value) => new Ptr<T>(value);
+        public static implicit operator T* (Ptr<T> ptr) => ptr.Value;
+        public static implicit operator void* (Ptr<T> ptr) => ptr.Value;
+        public static implicit operator IntPtr(Ptr<T> ptr) => (IntPtr)ptr.Value;
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 16)]
-    internal unsafe struct atArray<T>
+    internal unsafe struct atArray<T> where T : unmanaged
     {
-        private Ptr items;
+        private Ptr<T> items;
         private ushort count;
         private ushort size;
 
-        public ref T this[int index] => ref Unsafe.Add(ref items.AsRef<T>(), index);
+        public ref T this[int index] => ref items[index];
 
         public ushort Count
         {
@@ -65,7 +55,7 @@ namespace RAGENativeUI.Memory
             private set => size = value;
         }
 
-        private Ptr Items
+        private T* Items
         {
             get => items;
             set => items = value;
@@ -105,7 +95,7 @@ namespace RAGENativeUI.Memory
 
         public int IndexOf(ref T item)
         {
-            long diff = (long)Unsafe.AsPointer(ref item) - (long)Items.Value;
+            long diff = (long)Unsafe.AsPointer(ref item) - (long)Items;
             int index = unchecked((int)(diff / Unsafe.SizeOf<T>()));
             return (index >= 0 && index < Count) ? index : -1;
         }
@@ -132,14 +122,14 @@ namespace RAGENativeUI.Memory
                     newSize = minSize;
                 }
 
-                Ptr newBuffer = RNUI.Helper.Allocate(Unsafe.SizeOf<T>() * newSize);
+                T* newBuffer = (T*)RNUI.Helper.Allocate(Unsafe.SizeOf<T>() * newSize);
 
                 if (Count > 0)
                 {
                     Unsafe.CopyBlock(newBuffer, Items, (uint)(Unsafe.SizeOf<T>() * Count));
                 }
 
-                RNUI.Helper.Free(Items);
+                RNUI.Helper.Free((IntPtr)Items);
                 Size = newSize;
                 Items = newBuffer;
             }
@@ -147,7 +137,8 @@ namespace RAGENativeUI.Memory
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 24)]
-    internal unsafe struct atBinaryMap<TValue, TKey> where TKey : IComparable<TKey>
+    internal unsafe struct atBinaryMap<TValue, TKey> where TValue : unmanaged
+                                                     where TKey : unmanaged, IComparable<TKey>
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct DataPair
@@ -173,7 +164,7 @@ namespace RAGENativeUI.Memory
 
         public ref TValue Find(in TKey key)
         {
-            int index = Search(key); 
+            int index = Search(key);
 
             if (index != -1)
             {
@@ -267,13 +258,13 @@ namespace RAGENativeUI.Memory
         }
     }
 
-    internal unsafe struct InlinedArray<T>
+    internal unsafe struct InlinedArray<T> where T : unmanaged
     {
-        private byte start;
+        private T start;
 
         public ref T this[int index]
         {
-            get { fixed (void* a = &start) { return ref Unsafe.Add(ref Unsafe.AsRef<T>(a), index); } }
+            get { fixed (T* a = &start) { return ref a[index]; } }
         }
     }
 }
