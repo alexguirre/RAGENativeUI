@@ -281,6 +281,12 @@ namespace RAGENativeUI.Menus.Themes
 
         private void DrawNavigationBar(float x, float headerBottom)
         {
+            if (!Menu.IsAnyItemOnScreen)
+            {
+                return;
+            }
+
+
             float navWidth = menuWidth;
             float navHeight = itemHeight;
 
