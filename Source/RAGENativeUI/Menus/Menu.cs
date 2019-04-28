@@ -435,26 +435,29 @@ namespace RAGENativeUI.Menus
 
         protected virtual void ProcessInput()
         {
-            if (Controls != null && IsAnyItemOnScreen)
+            if (Controls != null && IsVisible)
             {
-                if (Controls.PreviousItem?.WasJustPressed(true) ?? false)
+                if (IsAnyItemOnScreen)
                 {
-                    MoveToPreviousItem();
-                }
+                    if (Controls.PreviousItem?.WasJustPressed(true) ?? false)
+                    {
+                        MoveToPreviousItem();
+                    }
 
-                if (Controls.NextItem?.WasJustPressed(true) ?? false)
-                {
-                    MoveToNextItem();
-                }
+                    if (Controls.NextItem?.WasJustPressed(true) ?? false)
+                    {
+                        MoveToNextItem();
+                    }
 
-                if (Controls.ScrollerNextValue?.WasJustPressed(true) ?? false)
-                {
-                    ScrollToNextValue();
-                }
+                    if (Controls.ScrollerNextValue?.WasJustPressed(true) ?? false)
+                    {
+                        ScrollToNextValue();
+                    }
 
-                if (Controls.ScrollerPreviousValue?.WasJustPressed(true) ?? false)
-                {
-                    ScrollToPreviousValue();
+                    if (Controls.ScrollerPreviousValue?.WasJustPressed(true) ?? false)
+                    {
+                        ScrollToPreviousValue();
+                    }
                 }
 
                 if (Controls.Accept?.WasJustPressed() ?? false)
