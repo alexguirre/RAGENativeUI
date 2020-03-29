@@ -11,10 +11,10 @@ namespace RAGENativeUI.Elements
     /// <seealso cref="RAGENativeUI.Elements.UIMenuItem" />
     public class UIMenuListItem : UIMenuItem
     {
-        protected ResText _itemText;
+        [Obsolete] protected ResText _itemText;
 
-        protected Sprite _arrowLeft;
-        protected Sprite _arrowRight;
+        [Obsolete] protected Sprite _arrowLeft;
+        [Obsolete] protected Sprite _arrowRight;
 
         [Obsolete("UIMenuListItem._items will be removed soon, use UIMenuListItem.Collection instead.")]
         protected List<dynamic> _items;
@@ -247,33 +247,82 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Draw item.
         /// </summary>
-        public override void Draw()
+        public override void Draw(float x, float y, float menuWidth, float itemHeight)
         {
-            base.Draw();
-            string caption = Collection == null ? 
-                                (_items.Count > 0 ? _items[Index].ToString() : " ") : 
+            base.Draw(x, y, menuWidth, itemHeight);
+
+            const string ScrollerOptionTextFormat = "STRING";
+            string selectedOption = Collection == null ?
+                                (_items.Count > 0 ? _items[Index].ToString() : " ") :
                                 (Collection.Count > 0 ? Collection[Index].DisplayText : " ");
-            int offset = StringMeasurer.MeasureString(caption);
 
-            _itemText.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-            
-            _itemText.Caption = caption;
+            Color textColor = GetItemTextColor();
 
-            _arrowLeft.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-            _arrowRight.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-
-            _arrowLeft.Position = new Point(375 - offset + Offset.X + Parent.WidthOffset, _arrowLeft.Position.Y);
-            if (Selected)
+            void setItemTextOptions()
             {
-                _arrowLeft.Draw();
-                _arrowRight.Draw();
-                _itemText.Position = new Point(405 + Offset.X + Parent.WidthOffset, _itemText.Position.Y);
+                N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
+                N.SetTextScale(0f, 0.35f);
+                N.SetTextJustification(1);
+                N.SetTextFont(0);
+                N.SetTextWrap(0f, 1f);
+                N.SetTextCentre(false);
+                N.SetTextDropshadow(0, 0, 0, 0, 0);
+                N.SetTextEdge(0, 0, 0, 0, 0);
+            }
+
+            if (Selected && Enabled)
+            {
+                setItemTextOptions();
+                N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
+                N.AddTextComponentSubstringPlayerName(selectedOption);
+                float optTextWidth = N.EndTextCommandGetWidth(true);
+
+                float optTextX = x + menuWidth - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
+                float optTextY = y + 0.00277776f;
+
+                setItemTextOptions();
+                N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
+                N.AddTextComponentSubstringPlayerName(selectedOption);
+                N.EndTextCommandDisplayText(optTextX, optTextY);
+
+                {
+                    Parent.GetTextureDrawSize(_arrowRight.TextureDictionary, _arrowRight.TextureName, true, out float w, out float h, false);
+                    w *= 0.65f;
+                    h *= 0.65f;
+
+                    float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f);
+                    float spriteY = y + (0.034722f * 0.5f);
+
+                    Parent.DrawSprite(_arrowRight.TextureDictionary, _arrowRight.TextureName, spriteX, spriteY, w, h, textColor);
+                }
+                {
+                    Parent.GetTextureDrawSize(_arrowLeft.TextureDictionary, _arrowLeft.TextureName, true, out float w, out float h, false);
+                    w *= 0.65f;
+                    h *= 0.65f;
+
+                    float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f);
+                    float spriteY = y + (0.034722f * 0.5f);
+
+                    const int HUD_COLOUR_BLACK = 2;
+                    N.GetHudColour(HUD_COLOUR_BLACK, out int r, out int g, out int b, out int a);
+                    Parent.DrawSprite(_arrowLeft.TextureDictionary, _arrowLeft.TextureName, spriteX, spriteY, w, h, textColor);
+                }
             }
             else
             {
-                _itemText.Position = new Point(420 + Offset.X + Parent.WidthOffset, _itemText.Position.Y);
+                setItemTextOptions();
+                N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
+                N.AddTextComponentSubstringPlayerName(selectedOption);
+                float optTextWidth = N.EndTextCommandGetWidth(true);
+
+                float optTextX = x + menuWidth - 0.00390625f - optTextWidth;
+                float optTextY = y + 0.00277776f;// + 0.00416664f;
+
+                setItemTextOptions();
+                N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
+                N.AddTextComponentSubstringPlayerName(selectedOption);
+                N.EndTextCommandDisplayText(optTextX, optTextY);
             }
-            _itemText.Draw();
         }
 
         internal virtual void ListChangedTrigger(int newindex)

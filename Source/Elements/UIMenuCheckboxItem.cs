@@ -5,7 +5,7 @@ namespace RAGENativeUI.Elements
 {
     public class UIMenuCheckboxItem : UIMenuItem
     {
-        private readonly Sprite _checkedSprite;
+        [Obsolete] private readonly Sprite _checkedSprite;
         
         /// <summary>
         /// Triggered when the checkbox state is changed.
@@ -66,21 +66,28 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Draw item.
         /// </summary>
-        public override void Draw()
+        public override void Draw(float x, float y, float menuWidth, float itemHeight)
         {
-            base.Draw();
-            _checkedSprite.Position = _checkedSprite.Position = new Point(380 + Offset.X + Parent.WidthOffset, _checkedSprite.Position.Y);
+            base.Draw(x, y, menuWidth, itemHeight);
+
+            string cbTxd = "commonmenu", cbName;
             bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
             if (Selected && isDefaultHightlitedForeColor)
             {
-                _checkedSprite.TextureName = Checked ? "shop_box_tickb" : "shop_box_blankb";
+                cbName = Checked ? "shop_box_tickb" : "shop_box_blankb";
             }
             else
             {
-                _checkedSprite.TextureName = Checked ? "shop_box_tick" : "shop_box_blank";
+                cbName = Checked ? "shop_box_tick" : "shop_box_blank";
             }
-            _checkedSprite.Color = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-            _checkedSprite.Draw();
+
+            Parent.GetTextureDrawSize(cbTxd, cbName, true, out float w, out float h, false);
+
+            float spriteX = x + menuWidth - (w * 0.5f);
+            float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
+
+            Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
+            Parent.DrawSprite(cbTxd, cbName, spriteX, spriteY, w, h, c);
         }
 
         public void CheckboxEventTrigger()

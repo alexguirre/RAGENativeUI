@@ -43,14 +43,14 @@ namespace RAGENativeUI
     /// </summary>
     public class UIMenu
     {
-        private readonly Container _mainMenu;
-        private Sprite _logo;
-        private readonly Sprite _background;
+        [Obsolete] private readonly Container _mainMenu;
+        private Sprite _bannerSprite;
+        [Obsolete] private readonly Sprite _background;
 
-        private readonly ResRectangle _descriptionBar;
-        private readonly Sprite _descriptionRectangle;
-        private readonly ResText _descriptionText;
-        private readonly ResText _counterText;
+        [Obsolete] private readonly ResRectangle _descriptionBar;
+        [Obsolete] private readonly Sprite _descriptionRectangle;
+        [Obsolete] private readonly ResText _descriptionText;
+        [Obsolete] private readonly ResText _counterText;
 
         private Texture _customBanner;
 
@@ -66,12 +66,12 @@ namespace RAGENativeUI
         private int _maxItem = MaxItemsOnScreen;
 
         
-        private readonly Sprite _upAndDownSprite;
-        private readonly ResRectangle _extraRectangleUp;
-        private readonly ResRectangle _extraRectangleDown;
+        [Obsolete] private readonly Sprite _upAndDownSprite;
+        [Obsolete] private readonly ResRectangle _extraRectangleUp;
+        [Obsolete] private readonly ResRectangle _extraRectangleDown;
 
-        private Point _offset;
-        private readonly int _extraYOffset;
+        [Obsolete] private Point _offset;
+        [Obsolete] private readonly int _extraYOffset;
 
         private readonly InstructionalButtons instructionalButtons;
 
@@ -88,10 +88,10 @@ namespace RAGENativeUI
         public bool MouseEdgeEnabled = true;
         public bool ControlDisablingEnabled = true;
         public bool ResetCursorOnOpen = true;
-        public bool FormatDescriptions = true;
+        [Obsolete] public bool FormatDescriptions = true;
         public bool MouseControlsEnabled = true;
         public bool AllowCameraMovement = false;
-        public bool ScaleWithSafezone = true;
+        [Obsolete] public bool ScaleWithSafezone = true;
 
         //Events
 
@@ -181,7 +181,7 @@ namespace RAGENativeUI
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
             _mainMenu = new Container(new Point(0, 0), new Size(700, 500), Color.FromArgb(0, 0, 0, 0));
-            _logo = new Sprite(spriteLibrary, spriteName, new Point(0 + _offset.X, 0 + _offset.Y), new Size(431, 107));
+            _bannerSprite = new Sprite(spriteLibrary, spriteName, new Point(0 + _offset.X, 0 + _offset.Y), new Size(431, 107));
             _mainMenu.Items.Add(Title = new ResText(title, new Point(215 + _offset.X, 20 + _offset.Y), 1.15f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered));
             if (!String.IsNullOrWhiteSpace(subtitle))
             {
@@ -220,6 +220,7 @@ namespace RAGENativeUI
             SetKey(Common.MenuControls.Back, GameControl.FrontendPause);
         }
 
+        [Obsolete]
         private void RecalculateDescriptionPosition()
         {
             //_descriptionText.WordWrap = new Size(425 + WidthOffset, 0);
@@ -252,9 +253,9 @@ namespace RAGENativeUI
         public void SetMenuWidthOffset(int widthOffset)
         {
             WidthOffset = widthOffset;
-            if (_logo != null)
+            if (_bannerSprite != null)
             {
-                _logo.Size = new Size(431 + WidthOffset, 107);
+                _bannerSprite.Size = new Size(431 + WidthOffset, 107);
             }
             _mainMenu.Items[0].Position = new Point((WidthOffset + _offset.X + 431) / 2, 20 + _offset.Y); // Title
             if (_counterText != null)
@@ -266,9 +267,9 @@ namespace RAGENativeUI
                 var tmp = (ResRectangle)_mainMenu.Items[1];
                 tmp.Size = new Size(431 + WidthOffset, 37);
             }
-            if (_tmpRectangle != null)
+            if (_bannerRectangle != null)
             {
-                _tmpRectangle.Size = new Size(431 + WidthOffset, 107);
+                _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
             }
         }
         
@@ -363,22 +364,22 @@ namespace RAGENativeUI
         /// <param name="spriteBanner">Sprite object. The position and size does not matter.</param>
         public void SetBannerType(Sprite spriteBanner)
         {
-            _logo = spriteBanner;
-            _logo.Size = new Size(431 + WidthOffset, 107);
-            _logo.Position = new Point(_offset.X, _offset.Y);
+            _bannerSprite = spriteBanner;
+            _bannerSprite.Size = new Size(431 + WidthOffset, 107);
+            _bannerSprite.Position = new Point(_offset.X, _offset.Y);
         }
                    
-        private ResRectangle _tmpRectangle;
+        private ResRectangle _bannerRectangle;
         /// <summary>
         ///  Set the banner to your own Rectangle.
         /// </summary>
         /// <param name="rectangle">UIResRectangle object. Position and size does not matter.</param>
         public void SetBannerType(ResRectangle rectangle)
         {
-            _logo = null;
-            _tmpRectangle = rectangle;
-            _tmpRectangle.Position = new Point(_offset.X, _offset.Y);
-            _tmpRectangle.Size = new Size(431 + WidthOffset, 107);
+            _bannerSprite = null;
+            _bannerRectangle = rectangle;
+            _bannerRectangle.Position = new Point(_offset.X, _offset.Y);
+            _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
         }
 
         /// <summary>
@@ -475,18 +476,6 @@ namespace RAGENativeUI
         [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead.")]
         public void DrawBanner(GraphicsEventArgs e)
         {
-            if (!Visible || _customBanner == null) return;
-            var origRes = Game.Resolution;
-            float aspectRaidou = origRes.Width / (float)origRes.Height;
-
-            Point bannerPos = new Point(_offset.X + safezoneOffset.X, _offset.Y + safezoneOffset.Y);
-            Size bannerSize = new Size(431 + WidthOffset, 107);
-
-            PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
-            SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
-
-            //Bug: funky positionment on windowed games + max resolution.
-            e.Graphics.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
 
         /// <summary>
@@ -498,19 +487,34 @@ namespace RAGENativeUI
         /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
         public void DrawBanner(Rage.Graphics g)
         {
-            if (!Visible || _customBanner == null) return;
-            var origRes = Game.Resolution;
-            float aspectRaidou = origRes.Width / (float)origRes.Height;
+            // TODO: DrawBanner
+            //if (!Visible || _customBanner == null) return;
+            //var origRes = Game.Resolution;
+            //float aspectRaidou = origRes.Width / (float)origRes.Height;
 
-            Point bannerPos = new Point(_offset.X + safezoneOffset.X, _offset.Y + safezoneOffset.Y);
-            Size bannerSize = new Size(431 + WidthOffset, 107);
+            //Point bannerPos = new Point(_offset.X + safezoneOffset.X, _offset.Y + safezoneOffset.Y);
+            //Size bannerSize = new Size(431 + WidthOffset, 107);
 
-            PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
-            SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
+            //PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
+            //SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
 
-            //Bug: funky positionment on windowed games + max resolution.
-            g.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
+            ////Bug: funky positionment on windowed games + max resolution.
+            //g.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
+
+        private Point safezoneOffset;
+        private float aspectRatio;
+        private float menuWidth;
+        private float itemHeight = 0.034722f;
+
+        private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
+        private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
+
+        internal void DrawSprite(string txd, string texName, float x, float y, float w, float h, Color c)
+            => N.DrawSprite(txd, texName, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
+
+        internal void DrawRect(float x, float y, float w, float h, Color c)
+            => N.DrawRect(x, y, w, h, c.R, c.G, c.B, c.A);
 
         /// <summary>
         /// Draw the menu and all of it's components.
@@ -522,8 +526,8 @@ namespace RAGENativeUI
 
             if (_justOpened)
             {
-                if (_logo != null && !_logo.IsTextureDictionaryLoaded)
-                    _logo.LoadTextureDictionary();
+                if (_bannerSprite != null && !_bannerSprite.IsTextureDictionaryLoaded)
+                    _bannerSprite.LoadTextureDictionary();
                 if (!_background.IsTextureDictionaryLoaded)
                     _background.LoadTextureDictionary();
                 if (!_descriptionRectangle.IsTextureDictionaryLoaded)
@@ -541,104 +545,373 @@ namespace RAGENativeUI
             if(_buttonsEnabled)
                 instructionalButtons.Draw();
 
-            safezoneOffset = GetSafezoneBounds();
-            if (ScaleWithSafezone)
+            aspectRatio = N.GetAspectRatio(false);
+            menuWidth = 0.225f;
+            if (aspectRatio < 1.77777f) // less than 16:9
             {
-                NativeFunction.CallByHash<uint>(0xb8a850f20a067eb6, 76, 84);           // Safezone
-                NativeFunction.CallByHash<uint>(0xf5a2c681787e579d, 0f, 0f, 0f, 0f);   // stuff
+                menuWidth = 0.225f * (16f / 9f / aspectRatio);
+            }
+
+            safezoneOffset = GetSafezoneBounds();
+            N.SetScriptGfxAlign('L', 'T');
+            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+
+            float x = 0.05f;
+            float y = 0.05f;
+
+            DrawBanner(x, ref y);
+
+            DrawSubtitle(x, ref y);
+
+            float headerBottom = y;
+
+            DrawBackground(x, headerBottom);
+
+            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
+
+            //DrawNavigationBar(x, headerBottom); // TODO: done by menu items
+
+            DrawItems(x, ref y);
+
+            DrawUpDownArrows(x, ref y);
+
+            DrawDescription(x, ref y);
+
+            N.ResetScriptGfxAlign();
+        }
+
+        private void DrawBanner(float x, ref float y)
+        {
+            float bannerHeight;
+            if (_bannerSprite != null)
+            {
+                GetTextureDrawSize(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, true, out float bannerWidth, out bannerHeight, false);
+                DrawSprite(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, Color.White);
             }
             else
             {
-                safezoneOffset = new Point(0, 0);
+                GetTextureDrawSize("commonmenu", "interaction_bgd", true, out float bannerWidth, out bannerHeight, false);
+                DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle?.Color ?? Color.Pink);
             }
 
-            if (_customBanner == null)
+            DrawTitle(x, ref y, bannerHeight);
+
+            y += bannerHeight;
+        }
+
+        private void DrawTitle(float x, ref float y, float bannerHeight)
+        {
+            float titleX = x + menuWidth * 0.5f;
+            float titleY = y + bannerHeight * 0.225f;
+
+            N.SetTextFont((int)Common.EFont.HouseScript);
+            N.SetTextScale(0.0f, 1.025f);
+            const int HUD_COLOUR_WHITE = 1;
+            N.GetHudColour(HUD_COLOUR_WHITE, out int r, out int g, out int b, out int a);
+            N.SetTextColour(r, g, b, a);
+            N.SetTextWrap(x, x + menuWidth);
+            N.SetTextCentre(true);
+
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Title.Caption);
+            N.EndTextCommandDisplayText(titleX, titleY);
+        }
+
+        private void DrawSubtitle(float x, ref float y)
+        {
+            float subtitleWidth = menuWidth;
+            float subtitleHeight = itemHeight;
+
+            DrawRect(x + menuWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
+
+            DrawSubtitleText(x, y);
+
+            DrawSubtitleCounter(x, y);
+
+            y += subtitleHeight;
+        }
+
+        private void DrawSubtitleText(float x, float y)
+        {
+            float subTextX = x + 0.00390625f;
+            float subTextY = y + 0.00416664f;
+
+            N.SetTextFont(0);
+            N.SetTextScale(0f, 0.35f);
+            Color c = Color.White;
+            N.SetTextColour(c.R, c.G, c.B, c.A);
+            N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
+            N.SetTextCentre(false);
+            N.SetTextDropshadow(0, 0, 0, 0, 0);
+            N.SetTextEdge(0, 0, 0, 0, 0);
+
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Subtitle.Caption);
+            N.EndTextCommandDisplayText(subTextX, subTextY);
+        }
+
+        private void DrawSubtitleCounter(float x, float y)
+        {
+            string counterText = null;
+            if (CounterOverride != null)
             {
-                if (_logo != null)
-                    _logo.Draw();
-                else
-                {
-                    _tmpRectangle.Draw();
-                }
+                counterText = CounterPretext + CounterOverride;
+            }
+            else if (MenuItems.Count > MaxItemsOnScreen + 1)
+            {
+                counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
             }
 
-            _mainMenu.Draw();
-            if (MenuItems.Count == 0)
+            if (counterText == null)
             {
-                if (ScaleWithSafezone)
-                    NativeFunction.CallByHash<uint>(0xe3a3db414a373dab); // Safezone end
                 return;
             }
 
-            _background.Size = MenuItems.Count > MaxItemsOnScreen + 1 ? new Size(431 + WidthOffset, 38 * (MaxItemsOnScreen + 1)) : new Size(431 + WidthOffset, 38 * MenuItems.Count);
-            _background.Draw();
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-            if (!String.IsNullOrWhiteSpace(MenuItems[_activeItem%(MenuItems.Count)].Description))
+            void SetCounterTextOptions()
             {
-                RecalculateDescriptionPosition();
-                string descCaption = MenuItems[_activeItem % (MenuItems.Count)].Description;
-                if (FormatDescriptions)
-                    _descriptionText.Caption = FormatDescription(descCaption);
-                else
-                    _descriptionText.Caption = descCaption;
-                int numLines = _descriptionText.Caption.Split('\n').Length;
-                _descriptionRectangle.Size = new Size(431 + WidthOffset, (numLines * 25) + 15);
-
-                _descriptionBar.Draw();
-                _descriptionRectangle.Draw();
-                _descriptionText.Draw();
+                N.SetTextFont(0);
+                N.SetTextScale(0f, 0.35f);
+                Color c = Color.White;
+                N.SetTextColour(c.R, c.G, c.B, c.A);
+                N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
+                N.SetTextCentre(false);
+                N.SetTextDropshadow(0, 0, 0, 0, 0);
+                N.SetTextEdge(0, 0, 0, 0, 0);
             }
 
+            void PushCounterComponents()
+            {
+                N.AddTextComponentSubstringPlayerName(counterText);
+            }
+
+            const string CounterFormat = "STRING";
+            SetCounterTextOptions();
+            N.BeginTextCommandGetWidth(CounterFormat);
+            PushCounterComponents();
+            float counterWidth = N.EndTextCommandGetWidth(true);
+
+            float counterX = x + menuWidth - 0.00390625f - counterWidth;
+            float counterY = y + 0.00416664f;
+
+            SetCounterTextOptions();
+            N.BeginTextCommandDisplayText(CounterFormat);
+            PushCounterComponents();
+            N.EndTextCommandDisplayText(counterX, counterY);
+        }
+
+        private void DrawBackground(float x, float headerBottom)
+        {
+            float bgWidth = menuWidth;
+            float bgHeight = itemHeight * (MenuItems.Count > MaxItemsOnScreen + 1 ? MaxItemsOnScreen + 1 : MenuItems.Count);
+
+            DrawSprite(_background.TextureDictionary, _background.TextureName,
+                        x + bgWidth * 0.5f,
+                        headerBottom + bgHeight * 0.5f - 0.00138888f,
+                        bgWidth,
+                        bgHeight,
+                        Color.White);
+        }
+
+        private void DrawItems(float x, ref float y)
+        {
             if (MenuItems.Count <= MaxItemsOnScreen + 1)
             {
-                int count = 0;
                 foreach (var item in MenuItems)
                 {
-                    item.SetVerticalPosition(count * 38 - 37 + _extraYOffset);
-                    item.Draw();
-                    count++;
-                }
-                if (_counterText != null && CounterOverride != null)
-                {
-                    _counterText.Caption = CounterPretext + CounterOverride;
-                    _counterText.Draw();
+                    item.Draw(x, y, menuWidth, itemHeight);
+                    y += itemHeight;
                 }
             }
             else
             {
-                int count = 0;
                 for (int index = _minItem; index <= _maxItem; index++)
                 {
                     var item = MenuItems[index];
-                    item.SetVerticalPosition(count * 38 - 37 + _extraYOffset);
-                    item.Draw();
-                    count++;
+                    item.Draw(x, y, menuWidth, itemHeight);
+                    y += itemHeight;
                 }
-                _extraRectangleUp.Size = new Size(431 + WidthOffset, 18);
-                _extraRectangleDown.Size = new Size(431 + WidthOffset, 18);
-                _upAndDownSprite.Position = new Point(190 + _offset.X + (WidthOffset/2),
-                    147 + 37*(MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset);
+            }
+        }
 
-                _extraRectangleUp.Draw();
-                _extraRectangleDown.Draw();
-                _upAndDownSprite.Draw();
-                if (_counterText != null)
+        private void DrawUpDownArrows(float x, ref float y)
+        {
+            if (MenuItems.Count > MaxItemsOnScreen)
+            {
+                float upDownRectWidth = menuWidth;
+                float upDownRectHeight = itemHeight;
+
+                y += 0.0001f;
+                Color backColor = Color.FromArgb(204, 0, 0, 0);
+                DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, backColor);
+
+                float fVar61 = 1.0f; // TODO: this may need to be calculated based on current resolution
+                Vector3 upDownSize = N.GetTextureResolution(_upAndDownSprite.TextureDictionary, _upAndDownSprite.TextureName);
+                float upDownWidth = upDownSize.X * (0.5f / fVar61);
+                float upDownHeight = upDownSize.Y * (0.5f / fVar61);
+                upDownWidth = upDownWidth / 1280.0f * fVar61;
+                upDownHeight = upDownHeight / 720f * fVar61;
+                Color foreColor = Color.White;
+                DrawSprite(_upAndDownSprite.TextureDictionary, _upAndDownSprite.TextureName, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, foreColor);
+
+                y += itemHeight;
+            }
+        }
+
+        private void DrawDescription(float x, ref float y)
+        {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
+            string description = MenuItems[_activeItem % (MenuItems.Count)].Description;
+            if (!String.IsNullOrWhiteSpace(description))
+            {
+                y += 0.00277776f * 2f;
+
+                float textX = x + 0.0046875f;  // x - menuWidth * 0.5f + 0.0046875f
+                float textXEnd = x + menuWidth - 0.0046875f; // x - menuWidth * 0.5f + menuWidth - 0.0046875f
+
+                Color backColor = Color.FromArgb(186, 0, 0, 0);
+                Color foreColor = Color.FromArgb(240, 240, 240);
+
+                void SetDescriptionTextOptions()
                 {
-                    if (CounterOverride == null)
+                    N.SetTextFont(0);
+                    N.SetTextScale(0f, 0.35f);
+                    N.SetTextLeading(2);
+                    N.SetTextColour(foreColor.R, foreColor.G, foreColor.B, foreColor.A);
+                    N.SetTextWrap(textX, textXEnd);
+                    N.SetTextCentre(false);
+                    N.SetTextDropshadow(0, 0, 0, 0, 0);
+                    N.SetTextEdge(0, 0, 0, 0, 0);
+                }
+
+                void PushDescriptionText()
+                {
+                    const int MaxSubstringLength = 99;
+                    const int MaxSubstrings = 4;
+
+                    for (int i = 0, c = 0; i < description.Length && c < MaxSubstrings; i += MaxSubstringLength, c++)
                     {
-                        string cap = (CurrentSelection + 1) + " / " + MenuItems.Count;
-                        _counterText.Caption = CounterPretext + cap;
+                        string str = description.Substring(i, Math.Min(MaxSubstringLength, description.Length - i));
+                        N.AddTextComponentSubstringPlayerName(str);
                     }
-                    else
-                    {
-                        _counterText.Caption = CounterPretext + CounterOverride;
-                    }
-                    _counterText.Draw();
+                }
+
+                const string DescFormat = "CELL_EMAIL_BCON";
+
+                SetDescriptionTextOptions();
+                N.BeginTextCommandGetLineCount(DescFormat);
+                PushDescriptionText();
+                int lineCount = N.EndTextCommandGetLineCount(textX, y + 0.00277776f);
+
+                Color separatorBarColor = Color.Black;
+                DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
+
+                float descHeight = (N.GetTextScaleHeight(0.35f, 0) * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
+                DrawSprite(_background.TextureDictionary, _background.TextureName,
+                           x + menuWidth * 0.5f,
+                           y + (descHeight * 0.5f) - 0.00138888f,
+                           menuWidth,
+                           descHeight,
+                           backColor);
+
+                SetDescriptionTextOptions();
+                N.BeginTextCommandDisplayText(DescFormat);
+                PushDescriptionText();
+                N.EndTextCommandDisplayText(textX, y + 0.00277776f);
+
+                y += descHeight;
+            }
+        }
+
+        // Converted from game scripts
+        internal void GetTextureDrawSize(string txd, string texName, bool bParam2, out float width, out float height, bool bParam5)
+        {
+            bool isBanner()
+            {
+                return (txd == _bannerSprite?.TextureDictionary && texName == _bannerSprite?.TextureName) ||
+                    (txd == "commonmenu" && texName == "interaction_bgd");
+            }
+
+            float func_341()
+            {
+                if (isBanner())
+                {
+                    return 1.0f;
+                }
+                else
+                {
+                    return 0.5f;
                 }
             }
 
-            if (ScaleWithSafezone)
-                NativeFunction.CallByHash<uint>(0xe3a3db414a373dab); // Safezone end
+            int screenWidth;
+            int screenHeight;
+            float fVar4;
+            Vector3 texSize;
+
+            fVar4 = 1f;
+            if (bParam5)
+            {
+                N.GetActiveScreenResolution(out screenWidth, out screenHeight);
+                if (IsUltraWideScreen)
+                {
+                    screenWidth = (int)Math.Round(screenHeight * aspectRatio);
+                }
+                float screenRatio = (float)screenWidth / screenHeight;
+                fVar4 = screenRatio / aspectRatio;
+                if (IsUltraWideScreen)
+                {
+                    fVar4 = 1f;
+                }
+                //if (SCRIPT::_GET_NUMBER_OF_INSTANCES_OF_SCRIPT_WITH_NAME_HASH(joaat("director_mode")) > 0)
+                //{
+                //    N.GetScreenResolution(out iVar2, out iVar3);
+                //}
+                screenWidth = (int)Math.Round(screenWidth / fVar4);
+                screenHeight = (int)Math.Round(screenHeight / fVar4);
+            }
+            else
+            {
+                N.GetScreenResolution(out screenWidth, out screenHeight);
+            }
+            texSize = N.GetTextureResolution(txd, texName);
+            texSize.X = (texSize.X * (func_341() / fVar4));
+            texSize.Y = (texSize.Y * (func_341() / fVar4));
+            if (!bParam2)
+            {
+                texSize.X = (texSize.X - 2f);
+                texSize.Y = (texSize.Y - 2f);
+            }
+            //if (iParam0 == 30) // texture with id 30 is unused for menu drawing
+            //{
+            //    vVar7.x = 288f;
+            //    vVar7.y = 106f;
+            //}
+            //if (iParam0 == Banner && MISC::GET_HASH_KEY(&(Global_17345.f_6719[29 /*16*/])) == -1487683087/*crew_logo*/) // no crew logos here
+            //{
+            //    vVar7.x = 106f;
+            //    vVar7.y = 106f;
+            //}
+            width = texSize.X / screenWidth * (screenWidth / screenHeight);
+            height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
+            if (!bParam5)
+            {
+                if (!IsWideScreen && true/*iParam0 != 30*/) // texture with id 30 is unused for menu drawing, so it's always not equal to 30
+                {
+                    width = width * 1.33f;
+                }
+            }
+            if (isBanner())
+            {
+                if (width > menuWidth)
+                {
+                    height = (height * (menuWidth / width));
+                    width = menuWidth;
+                }
+            }
         }
 
         /// <summary>
@@ -920,7 +1193,6 @@ namespace RAGENativeUI
             return true;
         }
 
-        private Point safezoneOffset;
         /// <summary>
         /// Process the mouse's position and check if it's hovering over any Element. Call this in Game.FrameRender or in a loop.
         /// </summary>
@@ -1286,35 +1558,6 @@ namespace RAGENativeUI
                 ProcessControl(key);
             }
         }
-
-        /// <summary>
-        /// Formats the input string so it doesn't go out of bounds of the description box.
-        /// </summary>
-        /// <param name="input">String to format.</param>
-        /// <returns></returns>
-        private string FormatDescription(string input)
-        {
-            int maxPixelsPerLine = 425 + WidthOffset;
-            int aggregatePixels = 0;
-            string output = "";
-            string[] words = input.Split(' ');
-            foreach (string word in words)
-            {
-                int offset = StringMeasurer.MeasureString(word);
-                aggregatePixels += offset;
-                if (aggregatePixels > maxPixelsPerLine)
-                {
-                    output += "\n" + word + " ";
-                    aggregatePixels = offset + StringMeasurer.MeasureString(" ");
-                }
-                else
-                {
-                    output += word + " ";
-                    aggregatePixels += StringMeasurer.MeasureString(" ");
-                }
-            }
-            return output;
-        }
         
         public void AddInstructionalButton(InstructionalButton button)
         {
@@ -1415,12 +1658,12 @@ namespace RAGENativeUI
         /// <summary>
         /// Returns the title object.
         /// </summary>
-        public ResText Title { get; private set; }
+        [Obsolete] public ResText Title { get; private set; }
 
         /// <summary>
         /// Returns the subtitle object.
         /// </summary>
-        public ResText Subtitle { get; private set; }
+        [Obsolete] public ResText Subtitle { get; private set; }
 
         /// <summary>
         /// String to pre-attach to the counter string. Useful for color codes.

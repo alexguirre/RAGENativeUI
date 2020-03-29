@@ -89,6 +89,7 @@
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="MenuPool.cs" />
+    <Compile Include="Natives.cs" />
     <Compile Include="PauseMenu\TabInteractiveListItem.cs" />
     <Compile Include="PauseMenu\TabItem.cs" />
     <Compile Include="PauseMenu\TabItemSimpleList.cs" />

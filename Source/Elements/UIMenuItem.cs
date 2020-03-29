@@ -13,14 +13,14 @@ namespace RAGENativeUI.Elements
                                      DefaultForeColor = Color.WhiteSmoke,
                                      DefaultHighlightedForeColor = Color.Black;
 
-        protected ResRectangle _rectangle;
-        protected ResText _text;
-        protected Sprite _selectedSprite;
+        [Obsolete] protected ResRectangle _rectangle;
+        [Obsolete] protected ResText _text;
+        [Obsolete] protected Sprite _selectedSprite;
 
         protected Sprite _badgeLeft;
         protected Sprite _badgeRight;
 
-        protected ResText _labelText;
+        [Obsolete] protected ResText _labelText;
 
         /// <summary>
         /// Called when user selects the current item.
@@ -105,6 +105,7 @@ namespace RAGENativeUI.Elements
         /// Set item's vertical position.
         /// </summary>
         /// <param name="y"></param>
+        [Obsolete]
         public virtual void SetVerticalPosition(int y)
         {
             _rectangle.Position = new Point(Offset.X, y + 144 + Offset.Y);
@@ -120,6 +121,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Draw this item.
         /// </summary>
+        [Obsolete]
         public virtual void Draw()
         {
             _rectangle.Size = new Size(431 + Parent.WidthOffset, 38);
@@ -166,6 +168,68 @@ namespace RAGENativeUI.Elements
                 _labelText.Draw();
             }
             _text.Draw();
+        }
+
+        public virtual void Draw(float x, float y, float menuWidth, float itemHeight)
+        {
+            float rectWidth = menuWidth;
+            float rectHeight = itemHeight;
+            float rectX = x + rectWidth * 0.5f;
+            float rectY = y + rectHeight * 0.5f;
+
+            Color barColor = Selected ? HighlightedBackColor : BackColor;
+            if (barColor != Color.Empty)
+            {
+                Parent.DrawSprite(_selectedSprite.TextureDictionary, _selectedSprite.TextureName,
+                                  rectX, rectY,
+                                  rectWidth, rectHeight,
+                                  barColor);
+            }
+
+            if (Hovered && !Selected)
+            {
+                Color hoveredColor = Color.FromArgb(20, 255, 255, 255);
+                Parent.DrawRect(rectX, rectY,
+                                rectWidth, rectHeight,
+                                hoveredColor);
+            }
+
+            Color textColor = GetItemTextColor();
+            N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
+            N.SetTextScale(0f, 0.35f);
+            N.SetTextJustification(1);
+            N.SetTextFont(0);
+            N.SetTextWrap(0f, 1f);
+            N.SetTextCentre(false);
+            N.SetTextDropshadow(0, 0, 0, 0, 0);
+            N.SetTextEdge(0, 0, 0, 0, 0);
+
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Text);
+            N.EndTextCommandDisplayText(x + 0.0046875f, y + 0.00277776f);
+
+            // TODO: LeftBadge
+            // TODO: RightBadge
+            // TODO: RightLabel
+        }
+
+        protected Color GetItemTextColor()
+        {
+            if (Enabled)
+            {
+                if (Selected)
+                {
+                    return HighlightedForeColor;
+                }
+                else
+                {
+                    return ForeColor;
+                }
+            }
+            else
+            {
+                return Color.FromArgb(163, 159, 148);
+            }
         }
 
 
