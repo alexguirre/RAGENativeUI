@@ -43,14 +43,19 @@ namespace RAGENativeUI
     /// </summary>
     public class UIMenu
     {
-        [Obsolete] private readonly Container _mainMenu;
-        private Sprite _bannerSprite;
-        [Obsolete] private readonly Sprite _background;
+        internal const string CommonTxd = "commonmenu";
+        internal const string BackgroundTextureName = "gradient_bgd";
+        internal const string UpAndDownTextureName = "shop_arrows_upanddown";
+        internal const string NavBarTextureName = "gradient_nav";
+        internal const string ArrowLeftTextureName = "arrowleft";
+        internal const string ArrowRightTextureName = "arrowright";
+        internal const string CheckboxTickTextureName = "shop_box_tick";
+        internal const string CheckboxBlankTextureName = "shop_box_blank";
+        internal const string CheckboxTickSelectedTextureName = "shop_box_tickb";
+        internal const string CheckboxBlankSelectedTextureName = "shop_box_blankb";
 
-        [Obsolete] private readonly ResRectangle _descriptionBar;
-        [Obsolete] private readonly Sprite _descriptionRectangle;
-        [Obsolete] private readonly ResText _descriptionText;
-        [Obsolete] private readonly ResText _counterText;
+        private Sprite _bannerSprite;
+        private ResRectangle _bannerRectangle;
 
         private Texture _customBanner;
 
@@ -65,15 +70,10 @@ namespace RAGENativeUI
         private int _minItem;
         private int _maxItem = MaxItemsOnScreen;
 
-        
-        [Obsolete] private readonly Sprite _upAndDownSprite;
-        [Obsolete] private readonly ResRectangle _extraRectangleUp;
-        [Obsolete] private readonly ResRectangle _extraRectangleDown;
-
-        [Obsolete] private Point _offset;
-        [Obsolete] private readonly int _extraYOffset;
+        private Point _offset; // TODO: implement position offset for menu
 
         private readonly InstructionalButtons instructionalButtons;
+        private bool instructionalButtonsEnabled = true;
 
         public string AUDIO_LIBRARY = "HUD_FRONTEND_DEFAULT_SOUNDSET";
 
@@ -180,31 +180,9 @@ namespace RAGENativeUI
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
-            _mainMenu = new Container(new Point(0, 0), new Size(700, 500), Color.FromArgb(0, 0, 0, 0));
             _bannerSprite = new Sprite(spriteLibrary, spriteName, new Point(0 + _offset.X, 0 + _offset.Y), new Size(431, 107));
-            _mainMenu.Items.Add(Title = new ResText(title, new Point(215 + _offset.X, 20 + _offset.Y), 1.15f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered));
-            if (!String.IsNullOrWhiteSpace(subtitle))
-            {
-                _mainMenu.Items.Add(new ResRectangle(new Point(0 + offset.X, 107 + _offset.Y), new Size(431, 37), Color.Black));
-                _mainMenu.Items.Add(Subtitle = new ResText(subtitle, new Point(8 + _offset.X, 110 + _offset.Y), 0.35f, Color.WhiteSmoke, 0, ResText.Alignment.Left));
-
-                if (subtitle.StartsWith("~"))
-                {
-                    CounterPretext = subtitle.Substring(0, 3);
-                }
-                _counterText = new ResText("", new Point(425 + _offset.X, 110 + _offset.Y), 0.35f, Color.WhiteSmoke, 0, ResText.Alignment.Right);
-                _extraYOffset = 37;
-            }
-
-            _upAndDownSprite = new Sprite("commonmenu", "shop_arrows_upanddown", new Point(190 + _offset.X, 147 + 37 * (MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset), new Size(50, 50));
-            _extraRectangleUp = new ResRectangle(new Point(0 + _offset.X, 144 + 38 * (MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset), new Size(431, 18), Color.FromArgb(200, 0, 0, 0));
-            _extraRectangleDown = new ResRectangle(new Point(0 + _offset.X, 144 + 18 + 38 * (MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset), new Size(431, 18), Color.FromArgb(200, 0, 0, 0));
-
-            _descriptionBar = new ResRectangle(new Point(_offset.X, 123), new Size(431, 4), Color.Black);
-            _descriptionRectangle = new Sprite("commonmenu", "gradient_bgd", new Point(_offset.X, 127), new Size(431, 30));
-            _descriptionText = new ResText("Description", new Point(_offset.X + 5, 125), 0.35f, Color.FromArgb(255, 255, 255, 255), Common.EFont.ChaletLondon, ResText.Alignment.Left);
-
-            _background = new Sprite("commonmenu", "gradient_bgd", new Point(_offset.X, 144 + _offset.Y - 37 + _extraYOffset), new Size(290, 25));
+            Title = new ResText(title, new Point(0, 0), 0.0f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered);
+            Subtitle = new ResText(subtitle, new Point(0, 0), 0.0f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Left);
 
             SetKey(Common.MenuControls.Up, GameControl.CellphoneUp);
             SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp);
@@ -220,27 +198,6 @@ namespace RAGENativeUI
             SetKey(Common.MenuControls.Back, GameControl.FrontendPause);
         }
 
-        [Obsolete]
-        private void RecalculateDescriptionPosition()
-        {
-            //_descriptionText.WordWrap = new Size(425 + WidthOffset, 0);
-
-            _descriptionBar.Position = new Point(_offset.X, 149 - 37 + _extraYOffset + _offset.Y);
-            _descriptionRectangle.Position = new Point(_offset.X, 149 - 37 + _extraYOffset + _offset.Y);
-            _descriptionText.Position = new Point(_offset.X + 8, 155 - 37 + _extraYOffset + _offset.Y);
-
-            _descriptionBar.Size = new Size(431 + WidthOffset, 4);
-            _descriptionRectangle.Size = new Size(431 + WidthOffset, 30);
-
-            int count = MenuItems.Count;
-            if (count > MaxItemsOnScreen + 1)
-                count = MaxItemsOnScreen + 2;
-
-            _descriptionBar.Position = new Point(_offset.X, 38*count + _descriptionBar.Position.Y);
-            _descriptionRectangle.Position = new Point(_offset.X, 38*count + _descriptionRectangle.Position.Y);
-            _descriptionText.Position = new Point(_offset.X + 8, 38*count + _descriptionText.Position.Y);
-        }
-
         /// <summary>
         /// Returns the current width offset.
         /// </summary>
@@ -252,21 +209,13 @@ namespace RAGENativeUI
         /// <param name="widthOffset">New width offset.</param>
         public void SetMenuWidthOffset(int widthOffset)
         {
+            // TODO: SetMenuWidthOffset
             WidthOffset = widthOffset;
             if (_bannerSprite != null)
             {
                 _bannerSprite.Size = new Size(431 + WidthOffset, 107);
             }
-            _mainMenu.Items[0].Position = new Point((WidthOffset + _offset.X + 431) / 2, 20 + _offset.Y); // Title
-            if (_counterText != null)
-            {
-                _counterText.Position = new Point(425 + _offset.X + widthOffset, 110 + _offset.Y);
-            }
-            if (_mainMenu.Items.Count >= 2)
-            {
-                var tmp = (ResRectangle)_mainMenu.Items[1];
-                tmp.Size = new Size(431 + WidthOffset, 37);
-            }
+
             if (_bannerRectangle != null)
             {
                 _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
@@ -348,14 +297,13 @@ namespace RAGENativeUI
             GameControl.Attack,
         };
 
-        private bool _buttonsEnabled = true;
         /// <summary>
         /// Enable or disable the instructional buttons.
         /// </summary>
         /// <param name="disable"></param>
         public void DisableInstructionalButtons(bool disable)
         {
-            _buttonsEnabled = !disable;
+            instructionalButtonsEnabled = !disable;
         }
             
         /// <summary>
@@ -369,7 +317,6 @@ namespace RAGENativeUI
             _bannerSprite.Position = new Point(_offset.X, _offset.Y);
         }
                    
-        private ResRectangle _bannerRectangle;
         /// <summary>
         ///  Set the banner to your own Rectangle.
         /// </summary>
@@ -397,12 +344,9 @@ namespace RAGENativeUI
         /// <param name="item">Item object to be added. Can be normal item, checkbox or list item.</param>
         public void AddItem(UIMenuItem item)
         {
-            item.Offset = _offset;
             item.Parent = this;
-            item.SetVerticalPosition((MenuItems.Count * 25) - 37 + _extraYOffset);
             MenuItems.Add(item);
 
-            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -412,16 +356,8 @@ namespace RAGENativeUI
         /// <param name="index"></param>
         public void AddItem(UIMenuItem item, int index)
         {
-            item.Offset = _offset;
             item.Parent = this;
             MenuItems.Insert(index, item);
-
-            for (int i = index; i < MenuItems.Count; i++) // recalculate items positions
-            {
-                item.SetVerticalPosition((i * 25) - 37 + _extraYOffset);
-            }
-
-            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -436,7 +372,6 @@ namespace RAGENativeUI
                 _minItem--;
             }
             MenuItems.RemoveAt(index);
-            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -466,7 +401,6 @@ namespace RAGENativeUI
         public void Clear()
         {
             MenuItems.Clear();
-            RecalculateDescriptionPosition();
         }
         
         /// <summary>
@@ -528,12 +462,8 @@ namespace RAGENativeUI
             {
                 if (_bannerSprite != null && !_bannerSprite.IsTextureDictionaryLoaded)
                     _bannerSprite.LoadTextureDictionary();
-                if (!_background.IsTextureDictionaryLoaded)
-                    _background.LoadTextureDictionary();
-                if (!_descriptionRectangle.IsTextureDictionaryLoaded)
-                    _descriptionRectangle.LoadTextureDictionary();
-                if (!_upAndDownSprite.IsTextureDictionaryLoaded)
-                    _upAndDownSprite.LoadTextureDictionary();
+                if (!N.HasStreamedTextureDictLoaded(CommonTxd))
+                    N.RequestStreamedTextureDict(CommonTxd);
             }
 
             if (ControlDisablingEnabled)
@@ -542,7 +472,7 @@ namespace RAGENativeUI
             if (AllowCameraMovement && ControlDisablingEnabled)     
                 EnableCameraMovement();
 
-            if(_buttonsEnabled)
+            if(instructionalButtonsEnabled)
                 instructionalButtons.Draw();
 
             aspectRatio = N.GetAspectRatio(false);
@@ -604,11 +534,10 @@ namespace RAGENativeUI
             float titleX = x + menuWidth * 0.5f;
             float titleY = y + bannerHeight * 0.225f;
 
-            N.SetTextFont((int)Common.EFont.HouseScript);
+            N.SetTextFont((int)Title.FontEnum);
             N.SetTextScale(0.0f, 1.025f);
-            const int HUD_COLOUR_WHITE = 1;
-            N.GetHudColour(HUD_COLOUR_WHITE, out int r, out int g, out int b, out int a);
-            N.SetTextColour(r, g, b, a);
+            Color c = Title.Color;
+            N.SetTextColour(c.R, c.G, c.B, c.A);
             N.SetTextWrap(x, x + menuWidth);
             N.SetTextCentre(true);
 
@@ -636,9 +565,9 @@ namespace RAGENativeUI
             float subTextX = x + 0.00390625f;
             float subTextY = y + 0.00416664f;
 
-            N.SetTextFont(0);
+            N.SetTextFont((int)Subtitle.FontEnum);
             N.SetTextScale(0f, 0.35f);
-            Color c = Color.White;
+            Color c = Subtitle.Color;
             N.SetTextColour(c.R, c.G, c.B, c.A);
             N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
             N.SetTextCentre(false);
@@ -669,9 +598,9 @@ namespace RAGENativeUI
 
             void SetCounterTextOptions()
             {
-                N.SetTextFont(0);
+                N.SetTextFont((int)Subtitle.FontEnum);
                 N.SetTextScale(0f, 0.35f);
-                Color c = Color.White;
+                Color c = Subtitle.Color;
                 N.SetTextColour(c.R, c.G, c.B, c.A);
                 N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
                 N.SetTextCentre(false);
@@ -704,12 +633,12 @@ namespace RAGENativeUI
             float bgWidth = menuWidth;
             float bgHeight = itemHeight * (MenuItems.Count > MaxItemsOnScreen + 1 ? MaxItemsOnScreen + 1 : MenuItems.Count);
 
-            DrawSprite(_background.TextureDictionary, _background.TextureName,
-                        x + bgWidth * 0.5f,
-                        headerBottom + bgHeight * 0.5f - 0.00138888f,
-                        bgWidth,
-                        bgHeight,
-                        Color.White);
+            DrawSprite(CommonTxd, BackgroundTextureName,
+                       x + bgWidth * 0.5f,
+                       headerBottom + bgHeight * 0.5f - 0.00138888f,
+                       bgWidth,
+                       bgHeight,
+                       Color.White);
         }
 
         private void DrawItems(float x, ref float y)
@@ -745,13 +674,13 @@ namespace RAGENativeUI
                 DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, backColor);
 
                 float fVar61 = 1.0f; // TODO: this may need to be calculated based on current resolution
-                Vector3 upDownSize = N.GetTextureResolution(_upAndDownSprite.TextureDictionary, _upAndDownSprite.TextureName);
+                Vector3 upDownSize = N.GetTextureResolution(CommonTxd, UpAndDownTextureName);
                 float upDownWidth = upDownSize.X * (0.5f / fVar61);
                 float upDownHeight = upDownSize.Y * (0.5f / fVar61);
                 upDownWidth = upDownWidth / 1280.0f * fVar61;
                 upDownHeight = upDownHeight / 720f * fVar61;
                 Color foreColor = Color.White;
-                DrawSprite(_upAndDownSprite.TextureDictionary, _upAndDownSprite.TextureName, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, foreColor);
+                DrawSprite(CommonTxd, UpAndDownTextureName, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, foreColor);
 
                 y += itemHeight;
             }
@@ -810,7 +739,7 @@ namespace RAGENativeUI
                 DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
 
                 float descHeight = (N.GetTextScaleHeight(0.35f, 0) * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
-                DrawSprite(_background.TextureDictionary, _background.TextureName,
+                DrawSprite(CommonTxd, BackgroundTextureName,
                            x + menuWidth * 0.5f,
                            y + (descHeight * 0.5f) - 0.00138888f,
                            menuWidth,
@@ -935,6 +864,7 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of your rectangle.</param>
         /// <param name="boxSize">size of your rectangle.</param>
         /// <returns></returns>
+        [Obsolete]
         public static bool IsMouseInBounds(Point topLeft, Size boxSize)
         {
             var res = GetScreenResolutionMantainRatio();
@@ -953,6 +883,7 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of the item.</param>
         /// <param name="safezone">safezone size.</param>
         /// <returns>0 - Not in item at all, 1 - In label, 2 - In arrow space.</returns>
+        [Obsolete]
         public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone) // TODO: Ability to scroll left and right
         {
             NativeFunction.CallByHash<uint>(0x54ce8ac98e120cab, "jamyfafi");
@@ -1208,114 +1139,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            NativeFunction.CallByHash<uint>(0xaae7ce1d63167423);  // _SHOW_CURSOR_THIS_FRAME
-            int limit = MenuItems.Count - 1;
-            int counter = 0;
-            if (MenuItems.Count > MaxItemsOnScreen + 1)
-                limit = _maxItem;
-
-            if (IsMouseInBounds(new Point(0, 0), new Size(30, 1080)) && MouseEdgeEnabled)
-            {
-                NativeFunction.CallByName<uint>("SET_GAMEPLAY_CAM_RELATIVE_HEADING", NativeFunction.CallByName<float>("GET_GAMEPLAY_CAM_RELATIVE_HEADING") + 5.0f);
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 6);
-            }
-            else if (IsMouseInBounds(new Point(Convert.ToInt32(GetScreenResolutionMantainRatio().Width - 30f), 0), new Size(30, 1080)) &&  MouseEdgeEnabled)
-            {
-                NativeFunction.CallByName<uint>("SET_GAMEPLAY_CAM_RELATIVE_HEADING", NativeFunction.CallByName<float>("GET_GAMEPLAY_CAM_RELATIVE_HEADING") - 5.0f);
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 7);
-            }
-            else if(MouseEdgeEnabled)
-            {
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 1);
-            }
-
-            for (int i = _minItem; i <= limit; i++)
-            {
-                int xpos = _offset.X + safezoneOffset.X;
-                int ypos = _offset.Y + 144 - 37 + _extraYOffset + (counter*38) + safezoneOffset.Y;
-                int xsize = 431 + WidthOffset;
-                const int ysize = 38;
-                UIMenuItem uiMenuItem = MenuItems[i];
-                if (IsMouseInBounds(new Point(xpos, ypos), new Size(xsize, ysize)))
-                {
-                    uiMenuItem.Hovered = true;
-                    if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack))
-                        if (uiMenuItem.Selected && uiMenuItem.Enabled)
-                        {
-                            if (MenuItems[i] is UIMenuListItem &&
-                                IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
-                                    safezoneOffset) > 0)
-                            {
-                                int res = IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
-                                    safezoneOffset);
-                                switch (res)
-                                {
-                                    case 1:
-                                        Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
-                                        MenuItems[i].ItemActivate(this);
-                                        ItemSelect(MenuItems[i], i);
-                                        break;
-                                    case 2:
-                                        var it = (UIMenuListItem) MenuItems[i];
-                                        if ((it.Collection == null ? it.Items.Count : it.Collection.Count) > 0)
-                                        {
-                                            it.Index++;
-                                            Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-                                            ListChange(it, it.Index);
-                                            it.ListChangedTrigger(it.Index);
-                                        }
-                                        break;
-                                }
-                            }
-                            else
-                                SelectItem();
-                        }
-                        else if(!uiMenuItem.Selected)
-                        {
-                            CurrentSelection = i;
-                            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-                            IndexChange(CurrentSelection);
-                            instructionalButtons.Update();
-                        }
-                        else if (!uiMenuItem.Enabled && uiMenuItem.Selected)
-                        {
-                            Common.PlaySound(AUDIO_ERROR, AUDIO_LIBRARY);
-                        }
-                }
-                else
-                    uiMenuItem.Hovered = false;
-                counter++;
-            }
-            int extraY = 144 + 38*(MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset + safezoneOffset.Y;
-            int extraX = safezoneOffset.X + _offset.X;
-            if (MenuItems.Count <= MaxItemsOnScreen + 1) return;
-            if (IsMouseInBounds(new Point(extraX, extraY), new Size(431 + WidthOffset, 18)))
-            {
-                _extraRectangleUp.Color = Color.FromArgb(255, 30, 30, 30);
-                if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack))
-                {
-                    if (MenuItems.Count > MaxItemsOnScreen + 1)
-                        GoUpOverflow();
-                    else
-                        GoUp();
-                }
-            }
-            else
-                _extraRectangleUp.Color = Color.FromArgb(200, 0, 0, 0);
-            
-            if (IsMouseInBounds(new Point(extraX, extraY+18), new Size(431 + WidthOffset, 18)))
-            {
-                _extraRectangleDown.Color = Color.FromArgb(255, 30, 30, 30);
-                if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack)) // Fixed move down arrow not working v1.1
-                {
-                    if (MenuItems.Count > MaxItemsOnScreen + 1)
-                        GoDownOverflow();
-                    else
-                        GoDown();
-                }
-            }
-            else
-                _extraRectangleDown.Color = Color.FromArgb(200, 0, 0, 0);
+            // TODO: ProcessMouse, use relative coordinates as in drawing code (check how game scripts do it)
         }
 
         /// <summary>
@@ -1658,12 +1482,12 @@ namespace RAGENativeUI
         /// <summary>
         /// Returns the title object.
         /// </summary>
-        [Obsolete] public ResText Title { get; private set; }
+        public ResText Title { get; private set; }
 
         /// <summary>
         /// Returns the subtitle object.
         /// </summary>
-        [Obsolete] public ResText Subtitle { get; private set; }
+        public ResText Subtitle { get; private set; }
 
         /// <summary>
         /// String to pre-attach to the counter string. Useful for color codes.

@@ -4,9 +4,7 @@ using System.Drawing;
 namespace RAGENativeUI.Elements
 {
     public class UIMenuCheckboxItem : UIMenuItem
-    {
-        [Obsolete] private readonly Sprite _checkedSprite;
-        
+    {        
         /// <summary>
         /// Triggered when the checkbox state is changed.
         /// </summary>
@@ -31,8 +29,6 @@ namespace RAGENativeUI.Elements
         public UIMenuCheckboxItem(string text, bool check, string description)
             : base(text, description)
         {
-            const int y = 0;
-            _checkedSprite = new Sprite("commonmenu", "shop_box_blank", new Point(410, y + 95), new Size(50, 50));
             Checked = check;
         }
 
@@ -41,27 +37,6 @@ namespace RAGENativeUI.Elements
         /// Change or get whether the checkbox is checked.
         /// </summary>
         public bool Checked { get; set; }
-        
-        /// <summary>
-        /// Set item's position.
-        /// </summary>
-        /// <param name="y"></param>
-        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
-        public override void Position(int y)
-        {
-            SetVerticalPosition(y);
-        }
-
-        /// <summary>
-        /// Set item's vertical position.
-        /// </summary>
-        /// <param name="y"></param>
-        public override void SetVerticalPosition(int y)
-        {
-            base.SetVerticalPosition(y);
-            _checkedSprite.Position = new Point(380 + Offset.X + Parent.WidthOffset, y + 138 + Offset.Y);
-        }
-
 
         /// <summary>
         /// Draw item.
@@ -70,24 +45,24 @@ namespace RAGENativeUI.Elements
         {
             base.Draw(x, y, menuWidth, itemHeight);
 
-            string cbTxd = "commonmenu", cbName;
+            string cbName;
             bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
             if (Selected && isDefaultHightlitedForeColor)
             {
-                cbName = Checked ? "shop_box_tickb" : "shop_box_blankb";
+                cbName = Checked ? UIMenu.CheckboxTickSelectedTextureName : UIMenu.CheckboxBlankSelectedTextureName;
             }
             else
             {
-                cbName = Checked ? "shop_box_tick" : "shop_box_blank";
+                cbName = Checked ? UIMenu.CheckboxTickTextureName : UIMenu.CheckboxBlankTextureName;
             }
 
-            Parent.GetTextureDrawSize(cbTxd, cbName, true, out float w, out float h, false);
+            Parent.GetTextureDrawSize(UIMenu.CommonTxd, cbName, true, out float w, out float h, false);
 
             float spriteX = x + menuWidth - (w * 0.5f);
             float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
 
             Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-            Parent.DrawSprite(cbTxd, cbName, spriteX, spriteY, w, h, c);
+            Parent.DrawSprite(UIMenu.CommonTxd, cbName, spriteX, spriteY, w, h, c);
         }
 
         public void CheckboxEventTrigger()

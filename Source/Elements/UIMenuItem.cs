@@ -13,15 +13,6 @@ namespace RAGENativeUI.Elements
                                      DefaultForeColor = Color.WhiteSmoke,
                                      DefaultHighlightedForeColor = Color.Black;
 
-        [Obsolete] protected ResRectangle _rectangle;
-        [Obsolete] protected ResText _text;
-        [Obsolete] protected Sprite _selectedSprite;
-
-        protected Sprite _badgeLeft;
-        protected Sprite _badgeRight;
-
-        [Obsolete] protected ResText _labelText;
-
         /// <summary>
         /// Called when user selects the current item.
         /// </summary>
@@ -51,15 +42,8 @@ namespace RAGENativeUI.Elements
         {
             Enabled = true;
 
-            _rectangle = new ResRectangle(new Point(0, 0), new Size(431, 38), Color.FromArgb(150, 0, 0, 0));
-            _text = new ResText(text, new Point(8, 0), 0.33f, Color.WhiteSmoke, Common.EFont.ChaletLondon, ResText.Alignment.Left);
+            Text = text;
             Description = description;
-            _selectedSprite = new Sprite("commonmenu", "gradient_nav", new Point(0, 0), new Size(431, 38));
-
-            _badgeLeft = new Sprite("commonmenu", "", new Point(0, 0), new Size(40, 40));
-            _badgeRight = new Sprite("commonmenu", "", new Point(0, 0), new Size(40, 40));
-
-            _labelText = new ResText("", new Point(0, 0), 0.35f) {TextAlignment = ResText.Alignment.Right};
         }
 
 
@@ -105,17 +89,9 @@ namespace RAGENativeUI.Elements
         /// Set item's vertical position.
         /// </summary>
         /// <param name="y"></param>
-        [Obsolete]
+        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item.")]
         public virtual void SetVerticalPosition(int y)
         {
-            _rectangle.Position = new Point(Offset.X, y + 144 + Offset.Y);
-            _selectedSprite.Position = new Point(0 + Offset.X, y + 144 + Offset.Y);
-            _text.Position = new Point(8 + Offset.X, y + 147 + Offset.Y);
-
-            _badgeLeft.Position = new Point(0 + Offset.X, y + 142 + Offset.Y);
-            _badgeRight.Position = new Point(385 + Offset.X, y + 142 + Offset.Y);
-
-            _labelText.Position = new Point(420 + Offset.X, y + 148 + Offset.Y);
         }
 
         /// <summary>
@@ -124,63 +100,19 @@ namespace RAGENativeUI.Elements
         [Obsolete]
         public virtual void Draw()
         {
-            _rectangle.Size = new Size(431 + Parent.WidthOffset, 38);
-            _selectedSprite.Size = new Size(431 + Parent.WidthOffset, 38);
-
-            if (Hovered && !Selected)
-            {
-                _rectangle.Color = Color.FromArgb(20, 255, 255, 255);
-                _rectangle.Draw();
-            }
-
-            _selectedSprite.Color = Selected ? HighlightedBackColor : BackColor;
-            _selectedSprite.Draw();
-
-            _text.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-
-            if (LeftBadge != BadgeStyle.None)
-            {
-                _text.Position = new Point(35 + Offset.X, _text.Position.Y);
-                _badgeLeft.TextureDictionary = BadgeToSpriteLib(LeftBadge);
-                _badgeLeft.TextureName = BadgeToSpriteName(LeftBadge, Selected);
-                _badgeLeft.Color = IsBagdeWhiteSprite(LeftBadge) ? Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148) : Color.White;
-                _badgeLeft.Draw();
-            }
-            else
-            {
-                _text.Position = new Point(8 + Offset.X, _text.Position.Y);
-            }
-
-            if (RightBadge != BadgeStyle.None)
-            {
-                _badgeRight.Position = new Point(385 + Offset.X + Parent.WidthOffset, _badgeRight.Position.Y);
-                _badgeRight.TextureDictionary = BadgeToSpriteLib(RightBadge);
-                _badgeRight.TextureName = BadgeToSpriteName(RightBadge, Selected);
-                _badgeRight.Color = IsBagdeWhiteSprite(RightBadge) ? Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148) : Color.White;
-                _badgeRight.Draw();
-            }
-
-            if (!String.IsNullOrWhiteSpace(RightLabel))
-            {
-                _labelText.Position = new Point(420 + Offset.X + Parent.WidthOffset, _labelText.Position.Y);
-                _labelText.Caption = RightLabel;
-                _labelText.Color = _text.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-                _labelText.Draw();
-            }
-            _text.Draw();
         }
 
-        public virtual void Draw(float x, float y, float menuWidth, float itemHeight)
+        public virtual void Draw(float x, float y, float width, float height)
         {
-            float rectWidth = menuWidth;
-            float rectHeight = itemHeight;
+            float rectWidth = width;
+            float rectHeight = height;
             float rectX = x + rectWidth * 0.5f;
             float rectY = y + rectHeight * 0.5f;
 
             Color barColor = Selected ? HighlightedBackColor : BackColor;
             if (barColor != Color.Empty)
             {
-                Parent.DrawSprite(_selectedSprite.TextureDictionary, _selectedSprite.TextureName,
+                Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.NavBarTextureName,
                                   rectX, rectY,
                                   rectWidth, rectHeight,
                                   barColor);
@@ -236,17 +168,14 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// This item's offset.
         /// </summary>
+        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item.")]
         public Point Offset { get; set; }
 
 
         /// <summary>
         /// Returns this item's label.
         /// </summary>
-        public string Text
-        {
-            get { return _text.Caption; }
-            set { _text.Caption = value; }
-        }
+        public string Text { get; set; }
 
 
         /// <summary>

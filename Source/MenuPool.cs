@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,7 +15,7 @@ namespace RAGENativeUI
         public bool MouseEdgeEnabled { set { InternalList.ForEach(m => m.MouseEdgeEnabled = value); } }
         public bool ControlDisablingEnabled { set { InternalList.ForEach(m => m.ControlDisablingEnabled = value); } }
         public bool ResetCursorOnOpen { set { InternalList.ForEach(m => m.ResetCursorOnOpen = value); } }
-        public bool FormatDescriptions { set { InternalList.ForEach(m => m.FormatDescriptions = value); } }
+        [Obsolete] public bool FormatDescriptions { set { InternalList.ForEach(m => m.FormatDescriptions = value); } }
         public string AUDIO_LIBRARY { set { InternalList.ForEach(m => m.AUDIO_LIBRARY = value); } }
         public string AUDIO_UPDOWN { set { InternalList.ForEach(m => m.AUDIO_UPDOWN = value); } }
         public string AUDIO_SELECT { set { InternalList.ForEach(m => m.AUDIO_SELECT = value); } }
@@ -167,7 +168,7 @@ namespace RAGENativeUI
         /// Draw all of your menus' custom banners.
         /// </summary>
         /// <param name="canvas">Canvas to draw on.</param>
-        [System.Obsolete("MenuPool.DrawBanners(GraphicsEventArgs) will be removed soon, use MenuPool.DrawBanners(Graphics) instead")]
+        [Obsolete("MenuPool.DrawBanners(GraphicsEventArgs) will be removed soon, use MenuPool.DrawBanners(Graphics) instead")]
         public void DrawBanners(GraphicsEventArgs canvas)
         {
             InternalList.ForEach(menu => menu.DrawBanner(canvas));

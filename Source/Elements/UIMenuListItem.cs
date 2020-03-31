@@ -198,29 +198,6 @@ namespace RAGENativeUI.Elements
         }
 
         /// <summary>
-        /// Set item's position.
-        /// </summary>
-        /// <param name="y"></param>
-        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
-        public override void Position(int y)
-        {
-            SetVerticalPosition(y);
-        }
-
-        /// <summary>
-        /// Set item's vertical position.
-        /// </summary>
-        /// <param name="y"></param>
-        public override void SetVerticalPosition(int y)
-        {
-            _arrowLeft.Position = new Point(300 + Offset.X + Parent.WidthOffset, 147 + y + Offset.Y);
-            _arrowRight.Position = new Point(400 + Offset.X + Parent.WidthOffset, 147 + y + Offset.Y);
-            _itemText.Position = new Point(300 + Offset.X + Parent.WidthOffset, y + 147 + Offset.Y);
-            base.SetVerticalPosition(y);
-        }
-
-
-        /// <summary>
         /// Find an item in the list and return it's index.
         /// </summary>
         /// <param name="item">Item to search for.</param>
@@ -230,7 +207,6 @@ namespace RAGENativeUI.Elements
         {
             return Collection == null ? _items.FindIndex(item) : Collection.IndexOf(item);
         }
-
 
         /// <summary>
         /// Find an item by it's index and return the item.
@@ -242,7 +218,6 @@ namespace RAGENativeUI.Elements
         {
             return Collection == null ? _items[index] : Collection[index];
         }
-
 
         /// <summary>
         /// Draw item.
@@ -286,17 +261,17 @@ namespace RAGENativeUI.Elements
                 N.EndTextCommandDisplayText(optTextX, optTextY);
 
                 {
-                    Parent.GetTextureDrawSize(_arrowRight.TextureDictionary, _arrowRight.TextureName, true, out float w, out float h, false);
+                    Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, true, out float w, out float h, false);
                     w *= 0.65f;
                     h *= 0.65f;
 
                     float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f);
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    Parent.DrawSprite(_arrowRight.TextureDictionary, _arrowRight.TextureName, spriteX, spriteY, w, h, textColor);
+                    Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
                 }
                 {
-                    Parent.GetTextureDrawSize(_arrowLeft.TextureDictionary, _arrowLeft.TextureName, true, out float w, out float h, false);
+                    Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, true, out float w, out float h, false);
                     w *= 0.65f;
                     h *= 0.65f;
 
@@ -305,7 +280,7 @@ namespace RAGENativeUI.Elements
 
                     const int HUD_COLOUR_BLACK = 2;
                     N.GetHudColour(HUD_COLOUR_BLACK, out int r, out int g, out int b, out int a);
-                    Parent.DrawSprite(_arrowLeft.TextureDictionary, _arrowLeft.TextureName, spriteX, spriteY, w, h, textColor);
+                    Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
                 }
             }
             else

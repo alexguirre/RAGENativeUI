@@ -46,17 +46,6 @@ namespace RAGENativeUI
             return NativeFunction.Natives.GetControlNormal<float>(index, (int)control);
         }
 
-
-        internal static bool IsTextureDictionaryLoaded(string name)
-        {
-            return NativeFunction.Natives.HasStreamedTextureDictLoaded<bool>(name);
-        }
-
-        internal static void LoadTextureDictionary(string name)
-        {
-            NativeFunction.Natives.RequestStreamedTextureDict(name, true);
-        }
-
         public static void PlaySound(string soundFile, string soundSet)
         {
             NativeFunction.Natives.PlaySoundFrontend(-1, soundFile, soundSet, false);

@@ -113,6 +113,9 @@
         public static void SetScriptGfxDrawOrder(int order) => Natives.x61BB1D9B3A95D802(order);
 
         public static Vector3 GetTextureResolution(string textureDict, string textureName) => Natives.x35736EE65BD00C11<Vector3>(textureDict, textureName);
+
+        public static bool HasStreamedTextureDictLoaded(string name) => Natives.HasStreamedTextureDictLoaded<bool>(name);
+        public static void RequestStreamedTextureDict(string name) => Natives.RequestStreamedTextureDict(name, true);
     }
 }
 
