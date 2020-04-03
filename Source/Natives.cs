@@ -66,6 +66,7 @@
             y = r.Height;
         }
         public static float GetAspectRatio(bool b) => Natives.xF1307EF624A80D87<float>(b);
+        public static bool GetIsWidescreen() => Natives.x30CF4BDA4FCB1905<bool>();
 
         /// <summary>
         /// This function anchors script draws to a side of the safe zone. This needs to be called to make the interface independent of the player's safe zone configuration.
@@ -116,6 +117,10 @@
 
         public static bool HasStreamedTextureDictLoaded(string name) => Natives.HasStreamedTextureDictLoaded<bool>(name);
         public static void RequestStreamedTextureDict(string name) => Natives.RequestStreamedTextureDict(name, true);
+
+        public static void HideHudComponentThisFrame(int id) => Natives.x6806C51AD12B83B8(id);
+
+        public static bool IsLoadingPromptBeingDisplayed() => Natives.xD422FCC5F239A915<bool>();
     }
 }
 
