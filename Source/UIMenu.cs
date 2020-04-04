@@ -1240,7 +1240,33 @@ namespace RAGENativeUI
                 }
             }
 
-            // TODO: MouseEdgeEnabled
+            if (MouseEdgeEnabled && hoveredItem == -1)
+            {
+                const int CursorLeftArrow = 6, CursorRightArrow = 7;
+
+                if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                {
+                    N.SetMouseCursorSprite(CursorRightArrow);
+                    float mult = 0.05f - (1f - mouseX);
+                    if (mult > 0.05f)
+                    {
+                        mult = 0.05f;
+                    }
+
+                    N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                }
+                else if (mouseX < (0.05f * 0.75f)) // left edge
+                {
+                    N.SetMouseCursorSprite(CursorLeftArrow);
+                    float mult = 0.05f - mouseX;
+                    if (mult > 0.05f)
+                    {
+                        mult = 0.05f;
+                    }
+
+                    N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
+                }
+            }
         }
 
         private void UpdateHoveredItem(float mouseX, float mouseY)

@@ -131,6 +131,9 @@
 
         public static void SetMouseCursorActiveThisFrame() => Natives.xAAE7CE1D63167423();
         public static void SetMouseCursorSprite(int spriteId) => Natives.x8DB8CFFD58B62552(spriteId);
+
+        public static float GetGameplayCamRelativeHeading() => Natives.GetGameplayCamRelativeHeading<float>();
+        public static void SetGameplayCamRelativeHeading(float heading) => Natives.SetGameplayCamRelativeHeading(heading);
     }
 }
 
