@@ -65,8 +65,10 @@ namespace RAGENativeUI
 
         private bool _justOpened = true;
 
+        private int hoveredUpDown = 0; // 0 = none, 1 = up, 2 = down
+
         //Pagination
-        private const int MaxItemsOnScreen = 9;
+        private const int MaxItemsOnScreen = 9; // TODO: one more item than specified in MaxItemsOnScreen is drawn
         private int _minItem;
         private int _maxItem = MaxItemsOnScreen;
 
@@ -438,11 +440,12 @@ namespace RAGENativeUI
             //g.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
 
-        private Point safezoneOffset;
+        // drawing variables
         private float aspectRatio;
         private float menuWidth;
         private float itemHeight = 0.034722f;
-        private float itemsStartX, itemsStartY;
+        private float itemsX, itemsY;
+        private float upDownX, upDownY;
 
         private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
         private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
@@ -452,6 +455,14 @@ namespace RAGENativeUI
 
         internal void DrawRect(float x, float y, float w, float h, Color c)
             => N.DrawRect(x, y, w, h, c.R, c.G, c.B, c.A);
+        
+        internal void BeginScriptGfx()
+        {
+            N.SetScriptGfxAlign('L', 'T');
+            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+        }
+
+        internal void EndScriptGfx() => N.ResetScriptGfxAlign();
 
         /// <summary>
         /// Draw the menu and all of it's components.
@@ -485,9 +496,7 @@ namespace RAGENativeUI
                 menuWidth = 0.225f * (16f / 9f / aspectRatio);
             }
 
-            safezoneOffset = GetSafezoneBounds();
-            N.SetScriptGfxAlign('L', 'T');
-            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+            BeginScriptGfx();
 
             float x = 0.05f;
             float y = 0.05f;
@@ -502,18 +511,13 @@ namespace RAGENativeUI
 
             MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
 
-            itemsStartX = x;
-            itemsStartY = y;
-            //N.GetScriptGfxPosition(x, y, out itemsStartX, out itemsStartY);
-            //Game.LogTrivial($"x:{x},y:{y},nx:{itemsStartX},ny:{itemsStartY}");
-
             DrawItems(x, ref y);
 
             DrawUpDownArrows(x, ref y);
 
             DrawDescription(x, ref y);
 
-            N.ResetScriptGfxAlign();
+            EndScriptGfx();
         }
 
         private void DrawBanner(float x, ref float y)
@@ -649,6 +653,9 @@ namespace RAGENativeUI
 
         private void DrawItems(float x, ref float y)
         {
+            itemsX = x;
+            itemsY = y;
+
             if (MenuItems.Count <= MaxItemsOnScreen + 1)
             {
                 foreach (var item in MenuItems)
@@ -675,9 +682,18 @@ namespace RAGENativeUI
                 float upDownRectWidth = menuWidth;
                 float upDownRectHeight = itemHeight;
 
-                y += 0.0001f;
+                upDownX = x;
+                upDownY = y;
+
                 Color backColor = Color.FromArgb(204, 0, 0, 0);
                 DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, backColor);
+
+                if (hoveredUpDown != 0)
+                {
+                    Color hoveredColor = Color.FromArgb(25, 255, 255, 255);
+                    float hoverRectH = upDownRectHeight * 0.5f;
+                    DrawRect(x + upDownRectWidth * 0.5f, y + (hoverRectH * (hoveredUpDown - 0.5f)), upDownRectWidth, hoverRectH, hoveredColor);
+                }
 
                 float fVar61 = 1.0f; // TODO: this may need to be calculated based on current resolution
                 Vector3 upDownSize = N.GetTextureResolution(CommonTxd, UpAndDownTextureName);
@@ -1171,22 +1187,61 @@ namespace RAGENativeUI
                 }
             }
 
-            // TODO: mouse controls for up&down arrow
+            hoveredUpDown = 0;
+            if (MenuItems.Count > MaxItemsOnScreen)
+            {
+                BeginScriptGfx();
+
+                int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen + 1);
+                float x1 = upDownX, y1 = upDownY; // up&down rect top-left
+                float x2 = x1 + menuWidth, y2 = y1 + itemHeight; // up&down rect bottom-right
+                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+                EndScriptGfx();
+
+                if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
+                {
+                    float h = y2 - y1;
+                    bool up = mouseY <= (y1 + h * 0.5f);
+                    hoveredUpDown = up ? 1 : 2;
+
+                    // TODO: keep scrolling while button is pressed
+                    if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
+                    {
+                        if (up)
+                        {
+                            if (MenuItems.Count > MaxItemsOnScreen + 1)
+                                GoUpOverflow();
+                            else
+                                GoUp();
+                        }
+                        else
+                        {
+                            if (MenuItems.Count > MaxItemsOnScreen + 1)
+                                GoDownOverflow();
+                            else
+                                GoDown();
+                        }
+                        instructionalButtons.Update();
+                    }
+                }
+            }
+
             // TODO: mouse controls for list arrows
         }
 
         private void UpdateHoveredItem(float mouseX, float mouseY)
         {
-            N.SetScriptGfxAlign('L', 'T');
-            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+            BeginScriptGfx();
 
             int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen + 1);
-            float x1 = itemsStartX, y1 = itemsStartY - 0.00138888f; // background top-left
-            float x2 = itemsStartX + menuWidth, y2 = y1 + visibleItemCount * itemHeight; // background bottom-right
+            float x1 = itemsX, y1 = itemsY - 0.00138888f; // background top-left
+            float x2 = itemsX + menuWidth, y2 = y1 + visibleItemCount * itemHeight; // background bottom-right
             N.GetScriptGfxPosition(x1, y1, out x1, out y1);
             N.GetScriptGfxPosition(x2, y2, out x2, out y2);
 
-            N.ResetScriptGfxAlign();
+            EndScriptGfx();
 
             if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
             {
