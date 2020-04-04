@@ -253,7 +253,7 @@ namespace RAGENativeUI.Elements
                 N.SetScriptGfxAlign('R', 'B');
                 N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
 
-                float x = TB.InitialX, y = TB.InitialY - (N.IsLoadingPromptBeingDisplayed() ? TB.LoadingPromptYOffset : 0.0f);
+                float x = TB.InitialX, y = TB.InitialY - (N.BusySpinnerIsOn() ? TB.LoadingPromptYOffset : 0.0f);
                 for (int i = 0; i < InternalList.Count; i++)
                 {
                     TimerBarBase b = InternalList[i];

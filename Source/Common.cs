@@ -31,21 +31,6 @@ namespace RAGENativeUI
             Back
         }
 
-        internal static void DisableControl(int index, GameControl control)
-        {
-            Game.DisableControlAction(index, control, true);
-        }
-
-        internal static void EnableControl(int index, GameControl control)
-        {
-            NativeFunction.Natives.EnableControlAction(index, (int)control, true);
-        }
-
-        internal static float GetControlNormal(int index, GameControl control)
-        {
-            return NativeFunction.Natives.GetControlNormal<float>(index, (int)control);
-        }
-
         public static void PlaySound(string soundFile, string soundSet)
         {
             NativeFunction.Natives.PlaySoundFrontend(-1, soundFile, soundSet, false);

@@ -60,7 +60,7 @@ namespace RAGENativeUI
         private Texture _customBanner;
 
         private int _activeItem = 1000;
-
+        private int hoveredItem = -1;
         private bool _visible;
 
         private bool _justOpened = true;
@@ -82,7 +82,7 @@ namespace RAGENativeUI
         public string AUDIO_SELECT = "SELECT";
         public string AUDIO_BACK = "BACK";
         public string AUDIO_ERROR = "ERROR";
-        
+
         public List<UIMenuItem> MenuItems = new List<UIMenuItem>();
 
         public bool MouseEdgeEnabled = true;
@@ -127,10 +127,10 @@ namespace RAGENativeUI
 
         //Keys
         private readonly Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>> _keyDictionary = new Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>>();
-                         
+
         //Tree structure
         public Dictionary<UIMenuItem, UIMenu> Children { get; private set; }
-        
+
         /// <summary>
         /// Basic Menu constructor.
         /// </summary>
@@ -175,7 +175,7 @@ namespace RAGENativeUI
             _offset = offset;
             Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
-            
+
             instructionalButtons = new InstructionalButtons();
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
@@ -221,7 +221,7 @@ namespace RAGENativeUI
                 _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
             }
         }
-        
+
         /// <summary>
         /// Enable or disable all controls but the necessary to operate a menu.
         /// </summary>
@@ -230,12 +230,12 @@ namespace RAGENativeUI
         {
             if (enable)
             {
-                NativeFunction.Natives.EnableAllControlActions(0);
+                N.EnableAllControlActions(0);
                 return;
             }
             else
             {
-                NativeFunction.Natives.DisableAllControlActions(0);
+                N.DisableAllControlActions(0);
             }
 
             //Controls we want
@@ -246,14 +246,14 @@ namespace RAGENativeUI
 
             for (int i = 0; i < menuNavigationNeededControls.Length; i++)
             {
-                Common.EnableControl(0, menuNavigationNeededControls[i]);
+                N.EnableControlAction(0, menuNavigationNeededControls[i]);
             }
-            
+
             if (IsUsingController)
             {
                 for (int i = 0; i < menuNavigationControllerNeededControls.Length; i++)
                 {
-                    Common.EnableControl(0, menuNavigationControllerNeededControls[i]);
+                    N.EnableControlAction(0, menuNavigationControllerNeededControls[i]);
                 }
             }
         }
@@ -273,6 +273,8 @@ namespace RAGENativeUI
             GameControl.CursorScrollUp,
             GameControl.CursorX,
             GameControl.CursorY,
+            GameControl.CursorAccept,
+            GameControl.CursorCancel,
             GameControl.MoveUpDown,
             GameControl.MoveLeftRight,
             GameControl.Sprint,
@@ -305,7 +307,7 @@ namespace RAGENativeUI
         {
             instructionalButtonsEnabled = !disable;
         }
-            
+
         /// <summary>
         /// Set the banner to your own Sprite object.
         /// </summary>
@@ -316,7 +318,7 @@ namespace RAGENativeUI
             _bannerSprite.Size = new Size(431 + WidthOffset, 107);
             _bannerSprite.Position = new Point(_offset.X, _offset.Y);
         }
-                   
+
         /// <summary>
         ///  Set the banner to your own Rectangle.
         /// </summary>
@@ -389,7 +391,7 @@ namespace RAGENativeUI
 
             for (int i = 0; i < MenuItems.Count; i++)
                 MenuItems[i].Selected = false;
-            
+
             _activeItem = 1000 - (1000 % MenuItems.Count);
             _maxItem = MaxItemsOnScreen;
             _minItem = 0;
@@ -402,7 +404,7 @@ namespace RAGENativeUI
         {
             MenuItems.Clear();
         }
-        
+
         /// <summary>
         /// Draw your custom banner.
         /// </summary>
@@ -440,6 +442,7 @@ namespace RAGENativeUI
         private float aspectRatio;
         private float menuWidth;
         private float itemHeight = 0.034722f;
+        private float itemsStartX, itemsStartY;
 
         private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
         private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
@@ -469,10 +472,10 @@ namespace RAGENativeUI
             if (ControlDisablingEnabled)
                 DisEnableControls(false);
 
-            if (AllowCameraMovement && ControlDisablingEnabled)     
+            if (AllowCameraMovement && ControlDisablingEnabled)
                 EnableCameraMovement();
 
-            if(instructionalButtonsEnabled)
+            if (instructionalButtonsEnabled)
                 instructionalButtons.Draw();
 
             aspectRatio = N.GetAspectRatio(false);
@@ -499,7 +502,10 @@ namespace RAGENativeUI
 
             MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
 
-            //DrawNavigationBar(x, headerBottom); // TODO: done by menu items
+            itemsStartX = x;
+            itemsStartY = y;
+            //N.GetScriptGfxPosition(x, y, out itemsStartX, out itemsStartY);
+            //Game.LogTrivial($"x:{x},y:{y},nx:{itemsStartX},ny:{itemsStartY}");
 
             DrawItems(x, ref y);
 
@@ -869,8 +875,8 @@ namespace RAGENativeUI
         {
             var res = GetScreenResolutionMantainRatio();
 
-            int mouseX = Convert.ToInt32(Math.Round(Common.GetControlNormal(0, GameControl.CursorX) * res.Width));
-            int mouseY = Convert.ToInt32(Math.Round(Common.GetControlNormal(0, GameControl.CursorY) * res.Height));
+            int mouseX = Convert.ToInt32(Math.Round(N.GetControlNormal(0, GameControl.CursorX) * res.Width));
+            int mouseY = Convert.ToInt32(Math.Round(N.GetControlNormal(0, GameControl.CursorY) * res.Height));
 
             return (mouseX >= topLeft.X && mouseX <= topLeft.X + boxSize.Width)
                    && (mouseY > topLeft.Y && mouseY < topLeft.Y + boxSize.Height);
@@ -919,9 +925,9 @@ namespace RAGENativeUI
             int screenw = Game.Resolution.Width;
             int screenh = Game.Resolution.Height;
             float ratio = (float)screenw / screenh;
-            float wmp = ratio*hmp;
-            
-            return new Point(Convert.ToInt32(Math.Round(g*wmp)), Convert.ToInt32(Math.Round(g*hmp)));
+            float wmp = ratio * hmp;
+
+            return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
         /// <summary>
@@ -1091,7 +1097,7 @@ namespace RAGENativeUI
                 var tmp = Cursor.Position;
                 ParentMenu.Visible = true;
                 MenuChangeEv(ParentMenu, false);
-                if(ResetCursorOnOpen)
+                if (ResetCursorOnOpen)
                     Cursor.Position = tmp;
             }
             MenuCloseEv();
@@ -1131,15 +1137,79 @@ namespace RAGENativeUI
         {
             if (!Visible || _justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
-                Common.EnableControl(0, GameControl.LookUpDown);
-                Common.EnableControl(0, GameControl.LookLeftRight);
-                Common.EnableControl(0, GameControl.Aim);
-                Common.EnableControl(0, GameControl.Attack);
+                N.EnableControlAction(0, GameControl.LookUpDown);
+                N.EnableControlAction(0, GameControl.LookLeftRight);
+                N.EnableControlAction(0, GameControl.Aim);
+                N.EnableControlAction(0, GameControl.Attack);
                 MenuItems.Where(i => i.Hovered).ToList().ForEach(i => i.Hovered = false);
                 return;
             }
 
-            // TODO: ProcessMouse, use relative coordinates as in drawing code (check how game scripts do it)
+            N.SetMouseCursorActiveThisFrame();
+            N.SetMouseCursorSprite(1);
+
+
+            float mouseX = N.GetControlNormal(2, GameControl.CursorX);
+            float mouseY = N.GetControlNormal(2, GameControl.CursorY);
+
+            UpdateHoveredItem(mouseX, mouseY);
+
+            if (hoveredItem != -1 && Game.IsControlJustPressed(2, GameControl.CursorAccept))
+            {
+                UIMenuItem i = MenuItems[hoveredItem];
+
+                if (i.Selected)
+                {
+                    SelectItem();
+                }
+                else
+                {
+                    CurrentSelection = hoveredItem;
+                    Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                    IndexChange(CurrentSelection);
+                    instructionalButtons.Update();
+                }
+            }
+
+            // TODO: mouse controls for up&down arrow
+            // TODO: mouse controls for list arrows
+        }
+
+        private void UpdateHoveredItem(float mouseX, float mouseY)
+        {
+            N.SetScriptGfxAlign('L', 'T');
+            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+
+            int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen + 1);
+            float x1 = itemsStartX, y1 = itemsStartY - 0.00138888f; // background top-left
+            float x2 = itemsStartX + menuWidth, y2 = y1 + visibleItemCount * itemHeight; // background bottom-right
+            N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+            N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+            N.ResetScriptGfxAlign();
+
+            if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
+            {
+                int firstVisibleItem = Math.Max(0, _minItem);
+                int hoveredIdx = firstVisibleItem + (int)((mouseY - y1) / itemHeight);
+
+                if (hoveredItem != hoveredIdx)
+                {
+                    if (hoveredItem != -1) // unhover previous item
+                    {
+                        MenuItems[hoveredItem].Hovered = false;
+                    }
+
+                    // hover new item
+                    MenuItems[hoveredIdx].Hovered = true;
+                    hoveredItem = hoveredIdx;
+                }
+            }
+            else if (hoveredItem != -1)
+            {
+                MenuItems[hoveredItem].Hovered = false;
+                hoveredItem = -1;
+            }
         }
 
         /// <summary>
@@ -1245,7 +1315,7 @@ namespace RAGENativeUI
             {
                 return true;
             }
-            
+
             return false;
         }
 
@@ -1259,11 +1329,11 @@ namespace RAGENativeUI
         /// <param name="key"></param>
         /// <returns></returns>
         public bool IsControlBeingPressed(Common.MenuControls control, Keys key = Keys.None)
-        {  
+        {
             if (control != Common.MenuControls.Left && control != Common.MenuControls.Right)
             {
                 if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
-                if(Game.GameTime <= _holdTime)
+                if (Game.GameTime <= _holdTime)
                 {
                     return false;
                 }
@@ -1286,12 +1356,12 @@ namespace RAGENativeUI
             }
             else if ((MenuItems[CurrentSelection] is UIMenuListItem) && MenuItems[CurrentSelection].Enabled)
             {
-                
+
                 UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
-                if(it.ScrollingEnabled)
-                {                   
+                if (it.ScrollingEnabled)
+                {
                     if (HasControlJustBeenReleaseed(control, key)) { it._holdTime = 0; }
-                    if(Game.GameTime <= it._holdTime)
+                    if (Game.GameTime <= it._holdTime)
                     {
                         return false;
                     }
@@ -1311,11 +1381,11 @@ namespace RAGENativeUI
                         return true;
                     }
                 }
-                else if(HasControlJustBeenPressed(control, key))
+                else if (HasControlJustBeenPressed(control, key))
                 {
                     return true;
                 }
-                
+
             }
             return false;
         }
@@ -1325,7 +1395,7 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl(Keys key = Keys.None)
         {
-            if(!Visible) return;
+            if (!Visible) return;
             if (_justOpened)
             {
                 _justOpened = false;
@@ -1375,14 +1445,14 @@ namespace RAGENativeUI
         /// <summary>
         /// Process keystroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
-        public void ProcessKey(Keys key)      
+        public void ProcessKey(Keys key)
         {
             if ((from object menuControl in Enum.GetValues(typeof(Common.MenuControls)) select new List<Keys>(_keyDictionary[(Common.MenuControls)menuControl].Item1)).Any(tmpKeys => tmpKeys.Any(k => k == key)))
             {
                 ProcessControl(key);
             }
         }
-        
+
         public void AddInstructionalButton(InstructionalButton button)
         {
             instructionalButtons.Buttons.Add(button);
@@ -1392,7 +1462,7 @@ namespace RAGENativeUI
         {
             instructionalButtons.Buttons.Remove(button);
         }
-        
+
         /// <summary>
         /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
         /// </summary>
@@ -1405,7 +1475,7 @@ namespace RAGENativeUI
                 if (resetLists)
                 {
                     UIMenuListItem itemAsList = item as UIMenuListItem;
-                    if(itemAsList != null)
+                    if (itemAsList != null)
                     {
                         itemAsList.Index = 0;
                         continue;
@@ -1415,7 +1485,7 @@ namespace RAGENativeUI
                 if (resetCheckboxes)
                 {
                     UIMenuCheckboxItem itemAsCheckbox = item as UIMenuCheckboxItem;
-                    if(itemAsCheckbox != null)
+                    if (itemAsCheckbox != null)
                     {
                         itemAsCheckbox.Checked = false;
                         continue;
@@ -1424,12 +1494,12 @@ namespace RAGENativeUI
             }
             CurrentSelection = 0;
         }
-        
 
-        private void EnableCameraMovement()     
+
+        private void EnableCameraMovement()
         {
-            Common.EnableControl(0, GameControl.LookLeftRight);
-            Common.EnableControl(0, GameControl.LookUpDown);
+            N.EnableControlAction(0, GameControl.LookLeftRight);
+            N.EnableControlAction(0, GameControl.LookUpDown);
         }
 
         /// <summary>
@@ -1439,14 +1509,14 @@ namespace RAGENativeUI
         {
             get { return _visible; }
             set
-            {   
+            {
                 _visible = value;
                 _justOpened = value;
                 instructionalButtons.Update();
                 if (ParentMenu != null || !value) return;
                 if (!ResetCursorOnOpen) return;
-                Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width/2, Screen.PrimaryScreen.Bounds.Height/2);
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 1);
+                Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
+                N.SetMouseCursorSprite(1);
             }
         }
 
@@ -1459,7 +1529,7 @@ namespace RAGENativeUI
             get { return _activeItem % MenuItems.Count; }
             set
             {
-                MenuItems[_activeItem%(MenuItems.Count)].Selected = false;
+                MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
                 _activeItem = 1000 - (1000 % MenuItems.Count) + value;
                 if (CurrentSelection > _maxItem)
                 {
@@ -1509,7 +1579,7 @@ namespace RAGENativeUI
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
         /// </summary>
         public UIMenu ParentMenu { get; set; }
-        
+
         /// <summary>
         /// If this is a nested menu, returns the item it was binded to.
         /// </summary>
@@ -1534,7 +1604,7 @@ namespace RAGENativeUI
         {
             OnCheckboxChange?.Invoke(this, sender, Checked);
         }
-        
+
         protected virtual void MenuCloseEv()
         {
             OnMenuClose?.Invoke(this);
@@ -1546,4 +1616,3 @@ namespace RAGENativeUI
         }
     }
 }
-

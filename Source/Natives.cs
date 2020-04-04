@@ -1,7 +1,7 @@
 ﻿namespace RAGENativeUI
 {
     using static Rage.Native.NativeFunction;
-    using Vector3 = Rage.Vector3;
+    using Rage;
 
     internal static class N
     {
@@ -61,7 +61,7 @@
         // Same as _GET_ACTIVE_SCREEN_RESOLUTION (0x873C9F3104101DD3)
         public static void GetActiveScreenResolution(out int x, out int y)
         {
-            System.Drawing.Size r = Rage.Game.Resolution;
+            System.Drawing.Size r = Game.Resolution;
             x = r.Width;
             y = r.Height;
         }
@@ -112,6 +112,7 @@
         public static void ResetScriptGfxAlign() => Natives.xE3A3DB414A373DAB();
         public static void SetScriptGfxDrawBehindPausemenu(bool flag) => Natives.xC6372ECD45D73BCD(flag);
         public static void SetScriptGfxDrawOrder(int order) => Natives.x61BB1D9B3A95D802(order);
+        public static void GetScriptGfxPosition(float x, float y, out float newX, out float newY) => Natives.x6DD8F5AA635EB4B2(x, y, out newX, out newY);
 
         public static Vector3 GetTextureResolution(string textureDict, string textureName) => Natives.x35736EE65BD00C11<Vector3>(textureDict, textureName);
 
@@ -120,7 +121,16 @@
 
         public static void HideHudComponentThisFrame(int id) => Natives.x6806C51AD12B83B8(id);
 
-        public static bool IsLoadingPromptBeingDisplayed() => Natives.xD422FCC5F239A915<bool>();
+        public static bool BusySpinnerIsOn() => Natives.xD422FCC5F239A915<bool>();
+
+        public static void EnableControlAction(int index, GameControl control) => Natives.EnableControlAction(index, (int)control, true);
+        public static void DisableControlAction(int index, GameControl control) => Natives.DisableControlAction(index, (int)control, true);
+        public static void EnableAllControlActions(int index) => Natives.EnableAllControlActions(index);
+        public static void DisableAllControlActions(int index) => Natives.DisableAllControlActions(index);
+        public static float GetControlNormal(int index, GameControl control) => Natives.GetControlNormal<float>(index, (int)control);
+
+        public static void SetMouseCursorActiveThisFrame() => Natives.xAAE7CE1D63167423();
+        public static void SetMouseCursorSprite(int spriteId) => Natives.x8DB8CFFD58B62552(spriteId);
     }
 }
 

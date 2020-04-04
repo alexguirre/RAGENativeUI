@@ -120,9 +120,9 @@ namespace RAGENativeUI.Elements
 
             if (Hovered && !Selected)
             {
-                Color hoveredColor = Color.FromArgb(20, 255, 255, 255);
-                Parent.DrawRect(rectX, rectY,
-                                rectWidth, rectHeight,
+                Color hoveredColor = Color.FromArgb(25, 255, 255, 255);
+                Parent.DrawRect(rectX, rectY - 0.00138888f * 0.5f,
+                                rectWidth, rectHeight - 0.00138888f,
                                 hoveredColor);
             }
 
