@@ -222,9 +222,9 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Draw item.
         /// </summary>
-        public override void Draw(float x, float y, float menuWidth, float itemHeight)
+        public override void Draw(float x, float y, float width, float height)
         {
-            base.Draw(x, y, menuWidth, itemHeight);
+            base.Draw(x, y, width, height);
 
             const string ScrollerOptionTextFormat = "STRING";
             string selectedOption = Collection == null ?
@@ -245,14 +245,14 @@ namespace RAGENativeUI.Elements
                 N.SetTextEdge(0, 0, 0, 0, 0);
             }
 
+            setItemTextOptions();
+            N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
+            N.AddTextComponentSubstringPlayerName(selectedOption);
+            float optTextWidth = N.EndTextCommandGetWidth(true);
+
             if (Selected && Enabled)
             {
-                setItemTextOptions();
-                N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
-                N.AddTextComponentSubstringPlayerName(selectedOption);
-                float optTextWidth = N.EndTextCommandGetWidth(true);
-
-                float optTextX = x + menuWidth - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
+                float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
                 float optTextY = y + 0.00277776f;
 
                 setItemTextOptions();
@@ -265,7 +265,7 @@ namespace RAGENativeUI.Elements
                     w *= 0.65f;
                     h *= 0.65f;
 
-                    float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f);
+                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f);
                     float spriteY = y + (0.034722f * 0.5f);
 
                     Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
@@ -275,7 +275,7 @@ namespace RAGENativeUI.Elements
                     w *= 0.65f;
                     h *= 0.65f;
 
-                    float spriteX = x + menuWidth - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f);
+                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f);
                     float spriteY = y + (0.034722f * 0.5f);
 
                     const int HUD_COLOUR_BLACK = 2;
@@ -285,12 +285,7 @@ namespace RAGENativeUI.Elements
             }
             else
             {
-                setItemTextOptions();
-                N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
-                N.AddTextComponentSubstringPlayerName(selectedOption);
-                float optTextWidth = N.EndTextCommandGetWidth(true);
-
-                float optTextX = x + menuWidth - 0.00390625f - optTextWidth;
+                float optTextX = x + width - 0.00390625f - optTextWidth;
                 float optTextY = y + 0.00277776f;// + 0.00416664f;
 
                 setItemTextOptions();

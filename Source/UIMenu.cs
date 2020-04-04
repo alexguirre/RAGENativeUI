@@ -455,7 +455,7 @@ namespace RAGENativeUI
 
         internal void DrawRect(float x, float y, float w, float h, Color c)
             => N.DrawRect(x, y, w, h, c.R, c.G, c.B, c.A);
-        
+
         internal void BeginScriptGfx()
         {
             N.SetScriptGfxAlign('L', 'T');
@@ -1213,7 +1213,33 @@ namespace RAGENativeUI
                 instructionalButtons.Update();
             }
 
-            // TODO: mouse controls for list arrows
+            // mouse controls for lists
+            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem && MenuItems[hoveredItem].Selected
+                && Game.IsControlJustPressed(2, GameControl.CursorAccept))
+            {
+                GetTextureDrawSize(CommonTxd, ArrowRightTextureName, true, out float rightW, out _, false);
+                float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
+
+                BeginScriptGfx();
+
+                N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
+
+                EndScriptGfx();
+
+                // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
+                //  - If to the right of the right arrow's left border, go right
+                //  - Anywhere else in the item, go left.
+                // This is how the vanilla menus behave
+                if (mouseX >= rightX)
+                {
+                    GoRight();
+                }
+                else
+                {
+                    GoLeft();
+                }
+            }
+
             // TODO: MouseEdgeEnabled
         }
 
