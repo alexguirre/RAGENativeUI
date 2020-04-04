@@ -1157,13 +1157,17 @@ namespace RAGENativeUI
                 N.EnableControlAction(0, GameControl.LookLeftRight);
                 N.EnableControlAction(0, GameControl.Aim);
                 N.EnableControlAction(0, GameControl.Attack);
-                MenuItems.Where(i => i.Hovered).ToList().ForEach(i => i.Hovered = false);
+                if (hoveredItem != -1)
+                {
+                    MenuItems[hoveredItem].Hovered = false;
+                    hoveredItem = -1;
+                }
+                hoveredUpDown = 0;
                 return;
             }
 
             N.SetMouseCursorActiveThisFrame();
             N.SetMouseCursorSprite(1);
-
 
             float mouseX = N.GetControlNormal(2, GameControl.CursorX);
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
@@ -1187,48 +1191,30 @@ namespace RAGENativeUI
                 }
             }
 
-            hoveredUpDown = 0;
-            if (MenuItems.Count > MaxItemsOnScreen)
+            UpdateHoveredUpDown(mouseX, mouseY);
+
+            // TODO: keep scrolling while button is pressed
+            if (hoveredUpDown != 0 && Game.IsControlJustPressed(2, GameControl.CursorAccept))
             {
-                BeginScriptGfx();
-
-                int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen + 1);
-                float x1 = upDownX, y1 = upDownY; // up&down rect top-left
-                float x2 = x1 + menuWidth, y2 = y1 + itemHeight; // up&down rect bottom-right
-                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
-                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
-
-                EndScriptGfx();
-
-                if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
+                if (hoveredUpDown == 1)
                 {
-                    float h = y2 - y1;
-                    bool up = mouseY <= (y1 + h * 0.5f);
-                    hoveredUpDown = up ? 1 : 2;
-
-                    // TODO: keep scrolling while button is pressed
-                    if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
-                    {
-                        if (up)
-                        {
-                            if (MenuItems.Count > MaxItemsOnScreen + 1)
-                                GoUpOverflow();
-                            else
-                                GoUp();
-                        }
-                        else
-                        {
-                            if (MenuItems.Count > MaxItemsOnScreen + 1)
-                                GoDownOverflow();
-                            else
-                                GoDown();
-                        }
-                        instructionalButtons.Update();
-                    }
+                    if (MenuItems.Count > MaxItemsOnScreen + 1)
+                        GoUpOverflow();
+                    else
+                        GoUp();
                 }
+                else
+                {
+                    if (MenuItems.Count > MaxItemsOnScreen + 1)
+                        GoDownOverflow();
+                    else
+                        GoDown();
+                }
+                instructionalButtons.Update();
             }
 
             // TODO: mouse controls for list arrows
+            // TODO: MouseEdgeEnabled
         }
 
         private void UpdateHoveredItem(float mouseX, float mouseY)
@@ -1265,6 +1251,31 @@ namespace RAGENativeUI
                 MenuItems[hoveredItem].Hovered = false;
                 hoveredItem = -1;
             }
+        }
+
+        private void UpdateHoveredUpDown(float mouseX, float mouseY)
+        {
+            if (MenuItems.Count > MaxItemsOnScreen)
+            {
+                BeginScriptGfx();
+
+                float x1 = upDownX, y1 = upDownY; // up&down rect top-left
+                float x2 = x1 + menuWidth, y2 = y1 + itemHeight; // up&down rect bottom-right
+                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+                EndScriptGfx();
+
+                if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering up&down rect
+                {
+                    float h = y2 - y1;
+                    bool up = mouseY <= (y1 + h * 0.5f);
+                    hoveredUpDown = up ? 1 : 2;
+                    return;
+                }
+            }
+
+            hoveredUpDown = 0;
         }
 
         /// <summary>
