@@ -1189,7 +1189,10 @@ namespace RAGENativeUI
 
                 if (i.Selected)
                 {
-                    SelectItem();
+                    if (!(i is UIMenuListItem)) // list item select is handled below, along with arrow controls
+                    {
+                        SelectItem();
+                    }
                 }
                 else
                 {
@@ -1222,34 +1225,46 @@ namespace RAGENativeUI
             }
 
             // mouse controls for lists
-            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem l && l.Selected && l.Enabled && l.ScrollingEnabled
-                && IsCursorAcceptBeingPressed(l))
+            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem l && l.Selected && l.Enabled)
             {
-                GetTextureDrawSize(CommonTxd, ArrowRightTextureName, true, out float rightW, out _, false);
-                float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
-
                 BeginScriptGfx();
-
-                N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
-
+                float selectBoundsX = itemsX + (menuWidth * 0.33333f);
+                N.GetScriptGfxPosition(selectBoundsX, 0.0f, out selectBoundsX, out _);
                 EndScriptGfx();
 
-                // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
-                //  - If to the right of the right arrow's left border, go right
-                //  - Anywhere else in the item, go left.
-                // This is how the vanilla menus behave
-                // TODO: SelectItem() executes when clicking for GoLeft()/GoRight()
-                //       The game solves this with two types of list items:
-                //        1. Has no SelectItem() behaviour, only handles GoLeft()/GoRight() (see Interaction Menu > Inventory > Hats)
-                //        2. SelectItem() is done when clicking the left part of the item (see Interaction Menu > Quick GPS)
-                // We could decide the behaviour based on whether the list item Activated event has any handler or it has any child menu
-                if (mouseX >= rightX)
+                if (mouseX <= selectBoundsX)
                 {
-                    GoRight();
+                    // approximately hovering the label, first 1/3 of the item width
+                    // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
+                    //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
+                    if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+                    {
+                        SelectItem();
+                    }
                 }
-                else
+                else if (l.ScrollingEnabled && IsCursorAcceptBeingPressed(l))
                 {
-                    GoLeft();
+                    GetTextureDrawSize(CommonTxd, ArrowRightTextureName, true, out float rightW, out _, false);
+                    float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
+
+                    BeginScriptGfx();
+
+                    N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
+
+                    EndScriptGfx();
+
+                    // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
+                    //  - If to the right of the right arrow's left border, go right
+                    //  - Anywhere else in the item, go left.
+                    // This is how the vanilla menus behave
+                    if (mouseX >= rightX)
+                    {
+                        GoRight();
+                    }
+                    else
+                    {
+                        GoLeft();
+                    }
                 }
             }
 
