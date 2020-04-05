@@ -245,9 +245,10 @@ namespace RAGENativeUI.Elements
         {
             if (InternalList.Count > 0)
             {
+                N.RequestStreamedTextureDict(TB.BgTextureDictionary);
                 if (!N.HasStreamedTextureDictLoaded(TB.BgTextureDictionary))
                 {
-                    N.RequestStreamedTextureDict(TB.BgTextureDictionary);
+                    return;
                 }
 
                 N.SetScriptGfxAlign('R', 'B');

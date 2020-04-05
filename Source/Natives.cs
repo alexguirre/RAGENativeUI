@@ -117,7 +117,7 @@
         public static Vector3 GetTextureResolution(string textureDict, string textureName) => Natives.x35736EE65BD00C11<Vector3>(textureDict, textureName);
 
         public static bool HasStreamedTextureDictLoaded(string name) => Natives.HasStreamedTextureDictLoaded<bool>(name);
-        public static void RequestStreamedTextureDict(string name) => Natives.RequestStreamedTextureDict(name, true);
+        public static void RequestStreamedTextureDict(string name) => Natives.RequestStreamedTextureDict(name, 0);
 
         public static void HideHudComponentThisFrame(int id) => Natives.x6806C51AD12B83B8(id);
 
@@ -134,6 +134,8 @@
 
         public static float GetGameplayCamRelativeHeading() => Natives.GetGameplayCamRelativeHeading<float>();
         public static void SetGameplayCamRelativeHeading(float heading) => Natives.SetGameplayCamRelativeHeading(heading);
+
+        public static bool IsInputDisabled(int index) => Natives.xA571D46727E2B718<bool>(index);
     }
 }
 

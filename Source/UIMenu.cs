@@ -469,15 +469,24 @@ namespace RAGENativeUI
         /// </summary>
         public void Draw()
         {
-            if (!Visible) return;
-
-
-            if (_justOpened)
+            if (!Visible)
             {
-                if (_bannerSprite != null && !_bannerSprite.IsTextureDictionaryLoaded)
-                    _bannerSprite.LoadTextureDictionary();
-                if (!N.HasStreamedTextureDictLoaded(CommonTxd))
-                    N.RequestStreamedTextureDict(CommonTxd);
+                return;
+            }
+
+            if (_bannerSprite != null)
+            {
+                _bannerSprite.LoadTextureDictionary();
+                if (!_bannerSprite.IsTextureDictionaryLoaded)
+                {
+                    return;
+                }
+            }
+
+            N.RequestStreamedTextureDict(CommonTxd);
+            if (!N.HasStreamedTextureDictLoaded(CommonTxd))
+            {
+                return;
             }
 
             if (ControlDisablingEnabled)
@@ -1174,7 +1183,7 @@ namespace RAGENativeUI
 
             UpdateHoveredItem(mouseX, mouseY);
 
-            if (hoveredItem != -1 && Game.IsControlJustPressed(2, GameControl.CursorAccept))
+            if (hoveredItem != -1 && Game.IsControlJustReleased(2, GameControl.CursorAccept))
             {
                 UIMenuItem i = MenuItems[hoveredItem];
 
@@ -1193,8 +1202,7 @@ namespace RAGENativeUI
 
             UpdateHoveredUpDown(mouseX, mouseY);
 
-            // TODO: keep scrolling while button is pressed
-            if (hoveredUpDown != 0 && Game.IsControlJustPressed(2, GameControl.CursorAccept))
+            if (hoveredUpDown != 0 && IsCursorAcceptBeingPressed())
             {
                 if (hoveredUpDown == 1)
                 {
@@ -1214,8 +1222,8 @@ namespace RAGENativeUI
             }
 
             // mouse controls for lists
-            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem && MenuItems[hoveredItem].Selected
-                && Game.IsControlJustPressed(2, GameControl.CursorAccept))
+            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem l && l.Selected && l.Enabled && l.ScrollingEnabled
+                && IsCursorAcceptBeingPressed(l))
             {
                 GetTextureDrawSize(CommonTxd, ArrowRightTextureName, true, out float rightW, out _, false);
                 float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
@@ -1230,6 +1238,11 @@ namespace RAGENativeUI
                 //  - If to the right of the right arrow's left border, go right
                 //  - Anywhere else in the item, go left.
                 // This is how the vanilla menus behave
+                // TODO: SelectItem() executes when clicking for GoLeft()/GoRight()
+                //       The game solves this with two types of list items:
+                //        1. Has no SelectItem() behaviour, only handles GoLeft()/GoRight() (see Interaction Menu > Inventory > Hats)
+                //        2. SelectItem() is done when clicking the left part of the item (see Interaction Menu > Quick GPS)
+                // We could decide the behaviour based on whether the list item Activated event has any handler or it has any child menu
                 if (mouseX >= rightX)
                 {
                     GoRight();
@@ -1474,7 +1487,6 @@ namespace RAGENativeUI
             }
             else if ((MenuItems[CurrentSelection] is UIMenuListItem) && MenuItems[CurrentSelection].Enabled)
             {
-
                 UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
                 if (it.ScrollingEnabled)
                 {
@@ -1505,6 +1517,29 @@ namespace RAGENativeUI
                 }
 
             }
+            return false;
+        }
+
+        private bool IsCursorAcceptBeingPressed(UIMenuListItem list = null)
+        {
+            ref uint holdTime = ref (list != null ? ref list._holdTime : ref _holdTime);
+
+            if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+            {
+                holdTime = 0;
+            }
+
+            if (Game.GameTime <= holdTime)
+            {
+                return false;
+            }
+
+            if (Game.IsControlPressed(2, GameControl.CursorAccept))
+            {
+                holdTime = Game.GameTime + (list != null ? list.HoldTimeBeforeScroll : HoldTimeBeforeScroll);
+                return true;
+            }
+
             return false;
         }
 
@@ -1665,7 +1700,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Returns false if last input was made with mouse and keyboard, true if it was made with a controller.
         /// </summary>
-        public static bool IsUsingController => !NativeFunction.CallByHash<bool>(0xa571d46727e2b718, 2);
+        public static bool IsUsingController => !N.IsInputDisabled(2);
 
         /// <summary>
         /// Returns the title object.

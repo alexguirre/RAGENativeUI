@@ -82,9 +82,6 @@ namespace RAGENativeUI.Elements
             Heading = heading;
             Color = color;
             Visible = true;
-
-            if (!IsTextureDictionaryLoaded)
-                LoadTextureDictionary();
         }
 
         /// <summary>
@@ -113,8 +110,11 @@ namespace RAGENativeUI.Elements
         {
             if (loadTexture)
             {
+                N.RequestStreamedTextureDict(textureDictionary);
                 if (!N.HasStreamedTextureDictLoaded(textureDictionary))
-                    N.RequestStreamedTextureDict(textureDictionary);
+                {
+                    return;
+                }
             }
 
             int screenw = Game.Resolution.Width;
