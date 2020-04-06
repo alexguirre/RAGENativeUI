@@ -250,6 +250,7 @@ namespace RAGENativeUI.Elements
             N.AddTextComponentSubstringPlayerName(selectedOption);
             float optTextWidth = N.EndTextCommandGetWidth(true);
 
+            // TODO: offset option text when RightBadge is set
             if (Selected && Enabled)
             {
                 float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
@@ -298,11 +299,6 @@ namespace RAGENativeUI.Elements
         internal virtual void ListChangedTrigger(int newindex)
         {
             OnListChanged?.Invoke(this, newindex);
-        }
-
-        public override void SetRightBadge(BadgeStyle badge)
-        {
-            throw new Exception("UIMenuListItem cannot have a right badge.");
         }
 
         public override void SetRightLabel(string text)

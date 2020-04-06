@@ -56,6 +56,7 @@ namespace RAGENativeUI.Elements
                 cbName = Checked ? UIMenu.CheckboxTickTextureName : UIMenu.CheckboxBlankTextureName;
             }
 
+            // TODO: offset checkbox when RightBadge is set
             Parent.GetTextureDrawSize(UIMenu.CommonTxd, cbName, true, out float w, out float h, false);
 
             float spriteX = x + menuWidth - (w * 0.5f);
@@ -68,11 +69,6 @@ namespace RAGENativeUI.Elements
         public void CheckboxEventTrigger()
         {
             CheckboxEvent?.Invoke(this, Checked);
-        }
-
-        public override void SetRightBadge(BadgeStyle badge)
-        {
-            throw new Exception("UIMenuCheckboxItem cannot have a right badge.");
         }
 
         public override void SetRightLabel(string text)

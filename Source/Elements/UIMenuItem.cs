@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 
 namespace RAGENativeUI.Elements
-{                
+{
     /// <summary>
     /// Simple item with a label.
     /// </summary>
@@ -74,7 +74,7 @@ namespace RAGENativeUI.Elements
         {
             Activated?.Invoke(sender, this);
         }
-        
+
         /// <summary>
         /// Set item's position.
         /// </summary>
@@ -126,6 +126,20 @@ namespace RAGENativeUI.Elements
                                 hoveredColor);
             }
 
+            float textX = x;
+            float textY = y;
+
+            if (LeftBadge != BadgeStyle.None)
+            {
+                DrawBadge(LeftBadge, true, x, y, width, height, out float offset);
+                textX += offset;
+            }
+
+            if (RightBadge != BadgeStyle.None)
+            {
+                DrawBadge(RightBadge, false, x, y, width, height, out _);
+            }
+
             Color textColor = GetItemTextColor();
             N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
             N.SetTextScale(0f, 0.35f);
@@ -138,14 +152,37 @@ namespace RAGENativeUI.Elements
 
             N.BeginTextCommandDisplayText("STRING");
             N.AddTextComponentSubstringPlayerName(Text);
-            N.EndTextCommandDisplayText(x + 0.0046875f, y + 0.00277776f);
+            N.EndTextCommandDisplayText(textX + 0.0046875f, textY + 0.00277776f);
 
-            // TODO: LeftBadge
-            // TODO: RightBadge
             // TODO: RightLabel
         }
 
-        protected Color GetItemTextColor()
+        private void DrawBadge(BadgeStyle badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)
+        {
+            // Badges don't look exactly like how game menus do it, but close enough
+            
+            Color c = IsBagdeWhiteSprite(badge) ? GetItemTextColor() : Color.White;
+
+            // use checkbox texture to have a constant size, since different badges have different texture resolution
+            Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.CheckboxTickTextureName, true, out float badgeW, out float badgeH, false);
+
+            float sizeMult = BadgeToSizeMultiplier(badge);
+
+            float badgeOffset = (badgeW * 0.5f) + BadgeToOffset(badge);
+            float badgeX = left ?
+                            itemX + badgeOffset :
+                            itemX + itemW - badgeOffset;
+            Parent.DrawSprite(BadgeToSpriteLib(badge), BadgeToSpriteName(badge, Selected),
+                badgeX,
+                itemY + (itemH * 0.5f),
+                badgeW * sizeMult,
+                badgeH * sizeMult,
+                c);
+
+            offsetX = badgeOffset + (0.00078125f * 8f);
+        }
+
+        internal Color GetItemTextColor()
         {
             if (Enabled)
             {
@@ -249,6 +286,10 @@ namespace RAGENativeUI.Elements
             Trevor,
             Lock,
             Tick,
+            CardSuitClubs,
+            CardSuitDiamonds,
+            CardSuitHearts,
+            CardSuitSpades,
         }
 
         internal static string BadgeToSpriteLib(BadgeStyle badge)
@@ -257,7 +298,7 @@ namespace RAGENativeUI.Elements
             {
                 default:
                     return "commonmenu";
-            }   
+            }
         }
 
         internal static string BadgeToSpriteName(BadgeStyle badge, bool selected)
@@ -305,39 +346,103 @@ namespace RAGENativeUI.Elements
                 case BadgeStyle.Star:
                     return "shop_new_star";
                 case BadgeStyle.Tatoo:
-                    return selected ? "shop_tattoos_icon_b" : "shop_tattoos_icon_";
+                    return selected ? "shop_tattoos_icon_b" : "shop_tattoos_icon_a";
                 case BadgeStyle.Tick:
                     return "shop_tick_icon";
                 case BadgeStyle.Trevor:
                     return selected ? "shop_trevor_icon_b" : "shop_trevor_icon_a";
+                case BadgeStyle.CardSuitClubs:
+                    return "card_suit_clubs";
+                case BadgeStyle.CardSuitDiamonds:
+                    return "card_suit_diamonds";
+                case BadgeStyle.CardSuitHearts:
+                    return "card_suit_hearts";
+                case BadgeStyle.CardSuitSpades:
+                    return "card_suit_spades";
                 default:
                     return "";
             }
         }
 
-        internal static bool IsBagdeWhiteSprite(BadgeStyle badge/*, bool selected*/)
+        internal static bool IsBagdeWhiteSprite(BadgeStyle badge)
         {
             switch (badge)
             {
                 case BadgeStyle.Lock:
                 case BadgeStyle.Tick:
                 case BadgeStyle.Crown:
+                case BadgeStyle.CardSuitClubs:
+                case BadgeStyle.CardSuitDiamonds:
+                case BadgeStyle.CardSuitHearts:
+                case BadgeStyle.CardSuitSpades:
                     return true;
                 default:
                     return false;
             }
         }
 
-        internal static Color BadgeToColor(BadgeStyle badge, bool selected)
+        internal static float BadgeToSizeMultiplier(BadgeStyle badge)
         {
             switch (badge)
             {
-                case BadgeStyle.Lock:
-                case BadgeStyle.Tick:
                 case BadgeStyle.Crown:
-                    return selected ? Color.FromArgb(255, 0, 0, 0) : Color.FromArgb(255, 255, 255, 255);
+                case BadgeStyle.SilverMedal:
+                    return 0.5f;
+                //case BadgeStyle.Alert:
+                //case BadgeStyle.Ammo:
+                //case BadgeStyle.Armour:
+                //case BadgeStyle.Barber:
+                //case BadgeStyle.Clothes:
+                //case BadgeStyle.Franklin:
+                //case BadgeStyle.Bike:
+                //case BadgeStyle.Car:
+                //case BadgeStyle.Gun:
+                //case BadgeStyle.Heart:
+                //case BadgeStyle.Makeup:
+                //case BadgeStyle.Mask:
+                //case BadgeStyle.Michael:
+                //case BadgeStyle.Tatoo:
+                //case BadgeStyle.Trevor:
+                //    return 1.0f;
                 default:
-                    return Color.FromArgb(255, 255, 255, 255);
+                    return 1.0f;
+            }
+        }
+
+        internal static float BadgeToOffset(BadgeStyle badge)
+        {
+            switch (badge)
+            {
+                //case BadgeStyle.Alert:
+                case BadgeStyle.Ammo:
+                case BadgeStyle.Armour:
+                case BadgeStyle.Barber:
+                case BadgeStyle.Clothes:
+                case BadgeStyle.Franklin:
+                case BadgeStyle.Bike:
+                case BadgeStyle.Car:
+                case BadgeStyle.Gun:
+                case BadgeStyle.Heart:
+                case BadgeStyle.Makeup:
+                case BadgeStyle.Mask:
+                case BadgeStyle.Michael:
+                case BadgeStyle.Tatoo:
+                case BadgeStyle.Trevor:
+                    return (0.00078125f * 2.5f);
+                default:
+                    return -(0.00078125f * 1f);
+            }
+        }
+
+        internal static Color BadgeToColor(BadgeStyle badge, bool selected)
+        {
+            if (IsBagdeWhiteSprite(badge))
+            {
+                return selected ? Color.FromArgb(255, 0, 0, 0) : Color.FromArgb(255, 255, 255, 255);
+            }
+            else
+            {
+                return Color.FromArgb(255, 255, 255, 255);
             }
         }
 
