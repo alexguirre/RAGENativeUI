@@ -126,20 +126,43 @@ namespace RAGENativeUI.Elements
                                 hoveredColor);
             }
 
-            float textX = x;
-            float textY = y;
+            float leftBadgeOffset = 0.0f;
+            float rightBadgeOffset = 0.0f;
 
             if (LeftBadge != BadgeStyle.None)
             {
-                DrawBadge(LeftBadge, true, x, y, width, height, out float offset);
-                textX += offset;
+                DrawBadge(LeftBadge, true, x, y, width, height, out leftBadgeOffset);
             }
 
             if (RightBadge != BadgeStyle.None)
             {
-                DrawBadge(RightBadge, false, x, y, width, height, out _);
+                DrawBadge(RightBadge, false, x, y, width, height, out rightBadgeOffset);
             }
 
+            SetTextCommandOptions();
+            N.BeginTextCommandDisplayText("STRING");
+            N.AddTextComponentSubstringPlayerName(Text);
+            N.EndTextCommandDisplayText(x + 0.0046875f + leftBadgeOffset, y + 0.00277776f);
+
+            if (!String.IsNullOrEmpty(RightLabel))
+            {
+                SetTextCommandOptions();
+                N.BeginTextCommandGetWidth("STRING");
+                N.AddTextComponentSubstringPlayerName(RightLabel);
+                float labelWidth = N.EndTextCommandGetWidth(true);
+
+                float labelX = x + width - 0.00390625f - labelWidth - rightBadgeOffset;
+                float labelY = y + 0.00277776f;;
+
+                SetTextCommandOptions();
+                N.BeginTextCommandDisplayText("STRING");
+                N.AddTextComponentSubstringPlayerName(RightLabel);
+                N.EndTextCommandDisplayText(labelX, labelY);
+            }
+        }
+
+        internal void SetTextCommandOptions()
+        {
             Color textColor = GetItemTextColor();
             N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
             N.SetTextScale(0f, 0.35f);
@@ -149,12 +172,6 @@ namespace RAGENativeUI.Elements
             N.SetTextCentre(false);
             N.SetTextDropshadow(0, 0, 0, 0, 0);
             N.SetTextEdge(0, 0, 0, 0, 0);
-
-            N.BeginTextCommandDisplayText("STRING");
-            N.AddTextComponentSubstringPlayerName(Text);
-            N.EndTextCommandDisplayText(textX + 0.0046875f, textY + 0.00277776f);
-
-            // TODO: RightLabel
         }
 
         private void DrawBadge(BadgeStyle badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)
@@ -388,22 +405,6 @@ namespace RAGENativeUI.Elements
                 case BadgeStyle.Crown:
                 case BadgeStyle.SilverMedal:
                     return 0.5f;
-                //case BadgeStyle.Alert:
-                //case BadgeStyle.Ammo:
-                //case BadgeStyle.Armour:
-                //case BadgeStyle.Barber:
-                //case BadgeStyle.Clothes:
-                //case BadgeStyle.Franklin:
-                //case BadgeStyle.Bike:
-                //case BadgeStyle.Car:
-                //case BadgeStyle.Gun:
-                //case BadgeStyle.Heart:
-                //case BadgeStyle.Makeup:
-                //case BadgeStyle.Mask:
-                //case BadgeStyle.Michael:
-                //case BadgeStyle.Tatoo:
-                //case BadgeStyle.Trevor:
-                //    return 1.0f;
                 default:
                     return 1.0f;
             }
@@ -413,7 +414,6 @@ namespace RAGENativeUI.Elements
         {
             switch (badge)
             {
-                //case BadgeStyle.Alert:
                 case BadgeStyle.Ammo:
                 case BadgeStyle.Armour:
                 case BadgeStyle.Barber:

@@ -233,19 +233,7 @@ namespace RAGENativeUI.Elements
 
             Color textColor = GetItemTextColor();
 
-            void setItemTextOptions()
-            {
-                N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
-                N.SetTextScale(0f, 0.35f);
-                N.SetTextJustification(1);
-                N.SetTextFont(0);
-                N.SetTextWrap(0f, 1f);
-                N.SetTextCentre(false);
-                N.SetTextDropshadow(0, 0, 0, 0, 0);
-                N.SetTextEdge(0, 0, 0, 0, 0);
-            }
-
-            setItemTextOptions();
+            SetTextCommandOptions();
             N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
             N.AddTextComponentSubstringPlayerName(selectedOption);
             float optTextWidth = N.EndTextCommandGetWidth(true);
@@ -256,7 +244,7 @@ namespace RAGENativeUI.Elements
                 float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
                 float optTextY = y + 0.00277776f;
 
-                setItemTextOptions();
+                SetTextCommandOptions();
                 N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
                 N.AddTextComponentSubstringPlayerName(selectedOption);
                 N.EndTextCommandDisplayText(optTextX, optTextY);
@@ -289,7 +277,7 @@ namespace RAGENativeUI.Elements
                 float optTextX = x + width - 0.00390625f - optTextWidth;
                 float optTextY = y + 0.00277776f;// + 0.00416664f;
 
-                setItemTextOptions();
+                SetTextCommandOptions();
                 N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
                 N.AddTextComponentSubstringPlayerName(selectedOption);
                 N.EndTextCommandDisplayText(optTextX, optTextY);
