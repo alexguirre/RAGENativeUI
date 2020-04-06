@@ -686,7 +686,7 @@ namespace RAGENativeUI
 
         private void DrawUpDownArrows(float x, ref float y)
         {
-            if (MenuItems.Count > MaxItemsOnScreen)
+            if (MenuItems.Count > MaxItemsOnScreen + 1)
             {
                 float upDownRectWidth = menuWidth;
                 float upDownRectHeight = itemHeight;
@@ -1335,7 +1335,7 @@ namespace RAGENativeUI
 
         private void UpdateHoveredUpDown(float mouseX, float mouseY)
         {
-            if (MenuItems.Count > MaxItemsOnScreen)
+            if (MenuItems.Count > MaxItemsOnScreen + 1)
             {
                 BeginScriptGfx();
 
