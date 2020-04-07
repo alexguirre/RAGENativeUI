@@ -316,6 +316,8 @@ namespace RAGENativeUI
         /// <param name="spriteBanner">Sprite object. The position and size does not matter.</param>
         public void SetBannerType(Sprite spriteBanner)
         {
+            _bannerRectangle = null;
+            _customBanner = null;
             _bannerSprite = spriteBanner;
             _bannerSprite.Size = new Size(431 + WidthOffset, 107);
             _bannerSprite.Position = new Point(_offset.X, _offset.Y);
@@ -328,6 +330,7 @@ namespace RAGENativeUI
         public void SetBannerType(ResRectangle rectangle)
         {
             _bannerSprite = null;
+            _customBanner = null;
             _bannerRectangle = rectangle;
             _bannerRectangle.Position = new Point(_offset.X, _offset.Y);
             _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
@@ -339,6 +342,8 @@ namespace RAGENativeUI
         /// <param name="texture">Rage.Texture object</param>
         public void SetBannerType(Texture texture)
         {
+            _bannerSprite = null;
+            _bannerRectangle = null;
             _customBanner = texture;
         }
 
@@ -425,19 +430,15 @@ namespace RAGENativeUI
         /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
         public void DrawBanner(Rage.Graphics g)
         {
-            // TODO: DrawBanner
-            //if (!Visible || _customBanner == null) return;
-            //var origRes = Game.Resolution;
-            //float aspectRaidou = origRes.Width / (float)origRes.Height;
+            if (!Visible || _customBanner == null)
+            {
+                return;
+            }
 
-            //Point bannerPos = new Point(_offset.X + safezoneOffset.X, _offset.Y + safezoneOffset.Y);
-            //Size bannerSize = new Size(431 + WidthOffset, 107);
-
-            //PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
-            //SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
-
-            ////Bug: funky positionment on windowed games + max resolution.
-            //g.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
+            Size res = Game.Resolution;
+            g.DrawTexture(_customBanner,
+                          customBannerX * res.Width, customBannerY * res.Height,
+                          customBannerW * res.Width, customBannerH * res.Height);
         }
 
         // drawing variables
@@ -446,6 +447,8 @@ namespace RAGENativeUI
         private float itemHeight = 0.034722f;
         private float itemsX, itemsY;
         private float upDownX, upDownY;
+        private float customBannerX, customBannerY,
+                      customBannerW, customBannerH;
 
         private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
         private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
@@ -540,10 +543,23 @@ namespace RAGENativeUI
             else
             {
                 GetTextureDrawSize("commonmenu", "interaction_bgd", true, out float bannerWidth, out bannerHeight, false);
-                DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle?.Color ?? Color.Pink);
+                if (_bannerRectangle != null)
+                {
+                    DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle.Color);
+                }
             }
 
-            DrawTitle(x, ref y, bannerHeight);
+            if (_bannerSprite != null || _bannerRectangle != null)
+            {
+                DrawTitle(x, ref y, bannerHeight);
+            }
+            else if (_customBanner != null)
+            {
+                N.GetScriptGfxPosition(x, y, out customBannerX, out customBannerY);
+                N.GetScriptGfxPosition(x + menuWidth, y + bannerHeight, out customBannerW, out customBannerH);
+                customBannerW -= customBannerX;
+                customBannerH -= customBannerY;
+            }
 
             y += bannerHeight;
         }
