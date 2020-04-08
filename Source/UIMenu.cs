@@ -1194,6 +1194,8 @@ namespace RAGENativeUI
             N.SetMouseCursorActiveThisFrame();
             N.SetMouseCursorSprite(1);
 
+            N.x5B73C77D9EB66E24(true);
+
             float mouseX = N.GetControlNormal(2, GameControl.CursorX);
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
 

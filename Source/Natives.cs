@@ -136,6 +136,11 @@
         public static void SetGameplayCamRelativeHeading(float heading) => Natives.SetGameplayCamRelativeHeading(heading);
 
         public static bool IsInputDisabled(int index) => Natives.xA571D46727E2B718<bool>(index);
+
+        /// <summary>
+        /// If true, in multiple-screens setups, limits the range of GameControl.CursorX to only the main screen.
+        /// </summary>
+        public static void x5B73C77D9EB66E24(bool value) => Natives.x5B73C77D9EB66E24(value);
     }
 }
 
