@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -203,25 +204,16 @@ namespace RAGENativeUI
         /// <summary>
         /// Returns the current width offset.
         /// </summary>
-        public int WidthOffset { get; private set; }
+        public int WidthOffset { get; set; }
 
         /// <summary>
         /// Change the menu's width. The width is calculated as DefaultWidth + WidthOffset, so a width offset of 10 would enlarge the menu by 10 pixels.
         /// </summary>
         /// <param name="widthOffset">New width offset.</param>
+        [Obsolete("Use UIMenu.WidthOffset setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void SetMenuWidthOffset(int widthOffset)
         {
-            // TODO: SetMenuWidthOffset
             WidthOffset = widthOffset;
-            if (_bannerSprite != null)
-            {
-                _bannerSprite.Size = new Size(431 + WidthOffset, 107);
-            }
-
-            if (_bannerRectangle != null)
-            {
-                _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
-            }
         }
 
         /// <summary>
@@ -319,8 +311,6 @@ namespace RAGENativeUI
             _bannerRectangle = null;
             _customBanner = null;
             _bannerSprite = spriteBanner;
-            _bannerSprite.Size = new Size(431 + WidthOffset, 107);
-            _bannerSprite.Position = new Point(_offset.X, _offset.Y);
         }
 
         /// <summary>
@@ -332,8 +322,6 @@ namespace RAGENativeUI
             _bannerSprite = null;
             _customBanner = null;
             _bannerRectangle = rectangle;
-            _bannerRectangle.Position = new Point(_offset.X, _offset.Y);
-            _bannerRectangle.Size = new Size(431 + WidthOffset, 107);
         }
 
         /// <summary>
@@ -507,6 +495,8 @@ namespace RAGENativeUI
             {
                 menuWidth = 0.225f * (16f / 9f / aspectRatio);
             }
+
+            menuWidth += (float)WidthOffset / Game.Resolution.Width;
 
             BeginScriptGfx();
 
@@ -882,9 +872,11 @@ namespace RAGENativeUI
             }
             if (isBanner())
             {
-                if (width > menuWidth)
+                // TODO: maybe add option to scale banner height with WidthOffset
+                float menuWidthNoOffset = menuWidth - ((float)WidthOffset / Game.Resolution.Width);
+                if (width > menuWidthNoOffset)
                 {
-                    height = (height * (menuWidth / width));
+                    height = (height * (menuWidthNoOffset / width));
                     width = menuWidth;
                 }
             }
