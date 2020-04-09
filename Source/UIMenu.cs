@@ -566,9 +566,7 @@ namespace RAGENativeUI
             N.SetTextWrap(x, x + menuWidth);
             N.SetTextCentre(true);
 
-            N.BeginTextCommandDisplayText("STRING");
-            N.AddTextComponentSubstringPlayerName(Title.Caption);
-            N.EndTextCommandDisplayText(titleX, titleY);
+            TextCommands.Display(Title.Caption, titleX, titleY);
         }
 
         private void DrawSubtitle(float x, ref float y)
@@ -599,9 +597,7 @@ namespace RAGENativeUI
             N.SetTextDropshadow(0, 0, 0, 0, 0);
             N.SetTextEdge(0, 0, 0, 0, 0);
 
-            N.BeginTextCommandDisplayText("STRING");
-            N.AddTextComponentSubstringPlayerName(Subtitle.Caption);
-            N.EndTextCommandDisplayText(subTextX, subTextY);
+            TextCommands.Display(Subtitle.Caption, subTextX, subTextY);
         }
 
         private void DrawSubtitleCounter(float x, float y)
@@ -633,24 +629,14 @@ namespace RAGENativeUI
                 N.SetTextEdge(0, 0, 0, 0, 0);
             }
 
-            void PushCounterComponents()
-            {
-                N.AddTextComponentSubstringPlayerName(counterText);
-            }
-
-            const string CounterFormat = "STRING";
             SetCounterTextOptions();
-            N.BeginTextCommandGetWidth(CounterFormat);
-            PushCounterComponents();
-            float counterWidth = N.EndTextCommandGetWidth(true);
+            float counterWidth = TextCommands.GetWidth(counterText);
 
             float counterX = x + menuWidth - 0.00390625f - counterWidth;
             float counterY = y + 0.00416664f;
 
             SetCounterTextOptions();
-            N.BeginTextCommandDisplayText(CounterFormat);
-            PushCounterComponents();
-            N.EndTextCommandDisplayText(counterX, counterY);
+            TextCommands.Display(counterText, counterX, counterY);
         }
 
         private void DrawBackground(float x, float headerBottom)
@@ -753,24 +739,8 @@ namespace RAGENativeUI
                     N.SetTextEdge(0, 0, 0, 0, 0);
                 }
 
-                void PushDescriptionText()
-                {
-                    const int MaxSubstringLength = 99;
-                    const int MaxSubstrings = 4;
-
-                    for (int i = 0, c = 0; i < description.Length && c < MaxSubstrings; i += MaxSubstringLength, c++)
-                    {
-                        string str = description.Substring(i, Math.Min(MaxSubstringLength, description.Length - i));
-                        N.AddTextComponentSubstringPlayerName(str);
-                    }
-                }
-
-                const string DescFormat = "CELL_EMAIL_BCON";
-
                 SetDescriptionTextOptions();
-                N.BeginTextCommandGetLineCount(DescFormat);
-                PushDescriptionText();
-                int lineCount = N.EndTextCommandGetLineCount(textX, y + 0.00277776f);
+                int lineCount = TextCommands.GetLineCount(description, textX, y + 0.00277776f);
 
                 Color separatorBarColor = Color.Black;
                 DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
@@ -784,9 +754,7 @@ namespace RAGENativeUI
                            backColor);
 
                 SetDescriptionTextOptions();
-                N.BeginTextCommandDisplayText(DescFormat);
-                PushDescriptionText();
-                N.EndTextCommandDisplayText(textX, y + 0.00277776f);
+                TextCommands.Display(description, textX, y + 0.00277776f);
 
                 y += descHeight;
             }

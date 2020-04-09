@@ -12,6 +12,18 @@ namespace RAGENativeUI.Elements
                                      DefaultHighlightedBackColor = Color.White,
                                      DefaultForeColor = Color.WhiteSmoke,
                                      DefaultHighlightedForeColor = Color.Black;
+        public static readonly float DefaultTextScale = 0.35f;
+        public static readonly Common.EFont DefaultTextFont = Common.EFont.ChaletLondon;
+
+        // TODO: re-add for backwards compatibility?
+        //protected ResRectangle _rectangle;
+        protected ResText _text = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
+        //protected Sprite _selectedSprite;
+
+        //protected Sprite _badgeLeft;
+        //protected Sprite _badgeRight;
+
+        protected ResText _labelText = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
 
         /// <summary>
         /// Called when user selects the current item.
@@ -140,34 +152,28 @@ namespace RAGENativeUI.Elements
             }
 
             SetTextCommandOptions();
-            N.BeginTextCommandDisplayText("STRING");
-            N.AddTextComponentSubstringPlayerName(Text);
-            N.EndTextCommandDisplayText(x + 0.0046875f + leftBadgeOffset, y + 0.00277776f);
+            TextCommands.Display(Text, x + 0.0046875f + leftBadgeOffset, y + 0.00277776f);
 
             if (!String.IsNullOrEmpty(RightLabel))
             {
-                SetTextCommandOptions();
-                N.BeginTextCommandGetWidth("STRING");
-                N.AddTextComponentSubstringPlayerName(RightLabel);
-                float labelWidth = N.EndTextCommandGetWidth(true);
+                SetTextCommandOptions(false);
+                float labelWidth = TextCommands.GetWidth(RightLabel);
 
                 float labelX = x + width - 0.00390625f - labelWidth - rightBadgeOffset;
-                float labelY = y + 0.00277776f;;
+                float labelY = y + 0.00277776f;
 
-                SetTextCommandOptions();
-                N.BeginTextCommandDisplayText("STRING");
-                N.AddTextComponentSubstringPlayerName(RightLabel);
-                N.EndTextCommandDisplayText(labelX, labelY);
+                SetTextCommandOptions(false);
+                TextCommands.Display(RightLabel, labelX, labelY);
             }
         }
 
-        internal void SetTextCommandOptions()
+        internal void SetTextCommandOptions(bool left = true)
         {
             Color textColor = GetItemTextColor();
             N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
-            N.SetTextScale(0f, 0.35f);
+            N.SetTextScale(0f, left ? _text.Scale : _labelText.Scale);
             N.SetTextJustification(1);
-            N.SetTextFont(0);
+            N.SetTextFont((int)(left ? _text.FontEnum : _labelText.FontEnum));
             N.SetTextWrap(0f, 1f);
             N.SetTextCentre(false);
             N.SetTextDropshadow(0, 0, 0, 0, 0);
@@ -230,8 +236,7 @@ namespace RAGENativeUI.Elements
         /// Returns this item's label.
         /// </summary>
         public string Text { get; set; }
-
-
+        
         /// <summary>
         /// Set the left badge. Set it to None to remove the badge.
         /// </summary>

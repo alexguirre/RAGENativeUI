@@ -100,9 +100,7 @@ namespace RAGENativeUI.Elements
             N.SetTextColour(r, g, b, a);
             N.SetTextJustification(2); // Right
 
-            N.BeginTextCommandDisplayText("STRING");
-            N.AddTextComponentSubstringPlayerName(Label);
-            N.EndTextCommandDisplayText(x, y);
+            TextCommands.Display(Label, x, y);
         }
 
         private static float WrapEndMultiplier
@@ -169,9 +167,7 @@ namespace RAGENativeUI.Elements
             N.SetTextColour(r, g, b, a);
             N.SetTextJustification(2); // Right
 
-            N.BeginTextCommandDisplayText("STRING");
-            N.AddTextComponentSubstringPlayerName(Text);
-            N.EndTextCommandDisplayText(x, y);
+            TextCommands.Display(Text, x, y);
         }
     }
 

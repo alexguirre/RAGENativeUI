@@ -52,6 +52,7 @@
         public static void AddTextComponentFormattedInteger(int value, bool commaSeparated) => Natives.x0E4C749FF9DE9CC4(value, commaSeparated);
         public static void AddTextComponentSubstringBlipName(uint blip) => Natives.x80EAD8E2E1D5D52E(blip);
         public static void AddTextComponentSubstringPlayerName(string text) => Natives.x6C188BE134E074AA(text);
+        public static void AddTextComponentSubstringPlayerName(System.IntPtr text) => Natives.x6C188BE134E074AA(text);
         public static void AddTextComponentSubstringTextLabel(string labelName) => Natives.xC63CD5D2920ACBE7(labelName);
         public static void AddTextComponentSubstringTextLabelHashKey(uint labelHash) => Natives.x17299B63C7683A2B(labelHash);
         public static void AddTextComponentSubstringTime(int timestamp, int flags) => Natives.x1115F16B8AB9E8BF(timestamp, flags);

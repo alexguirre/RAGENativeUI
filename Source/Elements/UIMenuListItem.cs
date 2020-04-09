@@ -226,7 +226,6 @@ namespace RAGENativeUI.Elements
         {
             base.Draw(x, y, width, height);
 
-            const string ScrollerOptionTextFormat = "STRING";
             string selectedOption = Collection == null ?
                                 (_items.Count > 0 ? _items[Index].ToString() : " ") :
                                 (Collection.Count > 0 ? Collection[Index].DisplayText : " ");
@@ -234,9 +233,7 @@ namespace RAGENativeUI.Elements
             Color textColor = GetItemTextColor();
 
             SetTextCommandOptions();
-            N.BeginTextCommandGetWidth(ScrollerOptionTextFormat);
-            N.AddTextComponentSubstringPlayerName(selectedOption);
-            float optTextWidth = N.EndTextCommandGetWidth(true);
+            float optTextWidth = TextCommands.GetWidth(selectedOption);
 
             // TODO: offset option text when RightBadge is set
             if (Selected && Enabled)
@@ -245,9 +242,7 @@ namespace RAGENativeUI.Elements
                 float optTextY = y + 0.00277776f;
 
                 SetTextCommandOptions();
-                N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
-                N.AddTextComponentSubstringPlayerName(selectedOption);
-                N.EndTextCommandDisplayText(optTextX, optTextY);
+                TextCommands.Display(selectedOption, optTextX, optTextY);
 
                 {
                     Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, true, out float w, out float h, false);
@@ -278,9 +273,7 @@ namespace RAGENativeUI.Elements
                 float optTextY = y + 0.00277776f;// + 0.00416664f;
 
                 SetTextCommandOptions();
-                N.BeginTextCommandDisplayText(ScrollerOptionTextFormat);
-                N.AddTextComponentSubstringPlayerName(selectedOption);
-                N.EndTextCommandDisplayText(optTextX, optTextY);
+                TextCommands.Display(selectedOption, optTextX, optTextY);
             }
         }
 
