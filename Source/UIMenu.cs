@@ -73,8 +73,6 @@ namespace RAGENativeUI
         private int _minItem;
         private int _maxItem = MaxItemsOnScreen;
 
-        private Point _offset; // TODO: implement position offset for menu
-
         private readonly InstructionalButtons instructionalButtons;
         private bool instructionalButtonsEnabled = true;
 
@@ -175,7 +173,7 @@ namespace RAGENativeUI
         /// <param name="spriteName">Sprite name for the banner.</param>
         public UIMenu(string title, string subtitle, Point offset, string spriteLibrary, string spriteName)
         {
-            _offset = offset;
+            Offset = offset;
             Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
 
@@ -183,7 +181,7 @@ namespace RAGENativeUI
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
-            _bannerSprite = new Sprite(spriteLibrary, spriteName, new Point(0 + _offset.X, 0 + _offset.Y), new Size(431, 107));
+            _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
             Title = new ResText(title, new Point(0, 0), 0.0f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered);
             Subtitle = new ResText(subtitle, new Point(0, 0), 0.0f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Left);
 
@@ -202,7 +200,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Returns the current width offset.
+        /// Gets or sets the current width offset in pixels.
         /// </summary>
         public int WidthOffset { get; set; }
 
@@ -215,6 +213,11 @@ namespace RAGENativeUI
         {
             WidthOffset = widthOffset;
         }
+
+        /// <summary>
+        /// Gets or sets the current position offset in pixels.
+        /// </summary>
+        public Point Offset { get; set; }
 
         /// <summary>
         /// Enable or disable all controls but the necessary to operate a menu.
@@ -500,8 +503,8 @@ namespace RAGENativeUI
 
             BeginScriptGfx();
 
-            float x = 0.05f;
-            float y = 0.05f;
+            float x = 0.05f + (float)Offset.X / Game.Resolution.Width;
+            float y = 0.05f + (float)Offset.Y / Game.Resolution.Height;
 
             DrawBanner(x, ref y);
 
