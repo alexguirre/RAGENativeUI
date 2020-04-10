@@ -185,6 +185,10 @@ namespace RAGENativeUI
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
             Title = new ResText(title, new Point(0, 0), 0.0f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered);
             Subtitle = new ResText(subtitle, new Point(0, 0), 0.0f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Left);
+            if (subtitle != null && subtitle.StartsWith("~"))
+            {
+                CounterPretext = subtitle.Substring(0, subtitle.IndexOf('~', 1) + 1);
+            }
 
             SetKey(Common.MenuControls.Up, GameControl.CellphoneUp);
             SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp);
@@ -537,6 +541,11 @@ namespace RAGENativeUI
 
         private void DrawBanner(float x, ref float y)
         {
+            if (_bannerSprite == null && _bannerRectangle == null && _customBanner == null)
+            {
+                return;
+            }
+
             float bannerHeight;
             if (_bannerSprite != null)
             {
@@ -554,7 +563,7 @@ namespace RAGENativeUI
 
             if (_bannerSprite != null || _bannerRectangle != null)
             {
-                DrawTitle(x, ref y, bannerHeight);
+                DrawTitle(x, y, bannerHeight);
             }
             else if (_customBanner != null)
             {
@@ -567,7 +576,7 @@ namespace RAGENativeUI
             y += bannerHeight;
         }
 
-        private void DrawTitle(float x, ref float y, float bannerHeight)
+        private void DrawTitle(float x, float y, float bannerHeight)
         {
             float titleX = x + menuWidth * 0.5f;
             float titleY = y + bannerHeight * 0.225f;
@@ -584,16 +593,19 @@ namespace RAGENativeUI
 
         private void DrawSubtitle(float x, ref float y)
         {
-            float subtitleWidth = menuWidth;
-            float subtitleHeight = itemHeight;
+            if (Subtitle.Caption != null)
+            {
+                float subtitleWidth = menuWidth;
+                float subtitleHeight = itemHeight;
 
-            DrawRect(x + menuWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
+                DrawRect(x + menuWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
 
-            DrawSubtitleText(x, y);
+                DrawSubtitleText(x, y);
 
-            DrawSubtitleCounter(x, y);
+                DrawSubtitleCounter(x, y);
 
-            y += subtitleHeight;
+                y += subtitleHeight;
+            }
         }
 
         private void DrawSubtitleText(float x, float y)
