@@ -59,7 +59,8 @@ namespace RAGENativeUI.Elements
             // TODO: offset checkbox when RightBadge is set
             Parent.GetTextureDrawSize(UIMenu.CommonTxd, cbName, true, out float w, out float h, false);
 
-            float spriteX = x + menuWidth - (w * 0.5f);
+            GetBadgeOffsets(out _, out float badgeOffset);
+            float spriteX = x + menuWidth - (w * 0.5f) - badgeOffset;
             float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
 
             Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);

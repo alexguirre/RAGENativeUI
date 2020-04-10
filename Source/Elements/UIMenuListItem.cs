@@ -235,10 +235,12 @@ namespace RAGENativeUI.Elements
             SetTextCommandOptions();
             float optTextWidth = TextCommands.GetWidth(selectedOption);
 
+            GetBadgeOffsets(out _, out float badgeOffset);
+
             // TODO: offset option text when RightBadge is set
             if (Selected && Enabled)
             {
-                float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f);
+                float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                 float optTextY = y + 0.00277776f;
 
                 SetTextCommandOptions();
@@ -249,7 +251,7 @@ namespace RAGENativeUI.Elements
                     w *= 0.65f;
                     h *= 0.65f;
 
-                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f);
+                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
                     Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
@@ -259,7 +261,7 @@ namespace RAGENativeUI.Elements
                     w *= 0.65f;
                     h *= 0.65f;
 
-                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f);
+                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
                     const int HUD_COLOUR_BLACK = 2;
@@ -269,7 +271,7 @@ namespace RAGENativeUI.Elements
             }
             else
             {
-                float optTextX = x + width - 0.00390625f - optTextWidth;
+                float optTextX = x + width - 0.00390625f - optTextWidth - badgeOffset;
                 float optTextY = y + 0.00277776f;// + 0.00416664f;
 
                 SetTextCommandOptions();

@@ -26,6 +26,9 @@ namespace RAGENativeUI.Elements
 
         protected ResText _labelText = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
 
+        private float leftBadgeOffset = 0.0f;
+        private float rightBadgeOffset = 0.0f;
+
         /// <summary>
         /// Called when user selects the current item.
         /// </summary>
@@ -139,17 +142,22 @@ namespace RAGENativeUI.Elements
                                 hoveredColor);
             }
 
-            float leftBadgeOffset = 0.0f;
-            float rightBadgeOffset = 0.0f;
-
             if (LeftBadge != BadgeStyle.None)
             {
                 DrawBadge(LeftBadge, true, x, y, width, height, out leftBadgeOffset);
+            }
+            else
+            {
+                leftBadgeOffset = 0.0f;
             }
 
             if (RightBadge != BadgeStyle.None)
             {
                 DrawBadge(RightBadge, false, x, y, width, height, out rightBadgeOffset);
+            }
+            else
+            {
+                rightBadgeOffset = 0.0f;
             }
 
             SetTextCommandOptions();
@@ -166,6 +174,15 @@ namespace RAGENativeUI.Elements
                 SetTextCommandOptions(false);
                 TextCommands.Display(RightLabel, labelX, labelY);
             }
+        }
+
+        /// <summary>
+        /// Gets the offset by which to move the item contents when badges are set.
+        /// </summary>
+        protected void GetBadgeOffsets(out float left, out float right)
+        {
+            left = leftBadgeOffset;
+            right = rightBadgeOffset;
         }
 
         internal void SetTextCommandOptions(bool left = true)
