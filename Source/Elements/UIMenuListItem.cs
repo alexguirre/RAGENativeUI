@@ -237,7 +237,6 @@ namespace RAGENativeUI.Elements
 
             GetBadgeOffsets(out _, out float badgeOffset);
 
-            // TODO: offset option text when RightBadge is set
             if (Selected && Enabled)
             {
                 float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;

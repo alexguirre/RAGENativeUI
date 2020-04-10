@@ -916,7 +916,7 @@ namespace RAGENativeUI
         /// <param name="safezone">safezone size.</param>
         /// <returns>0 - Not in item at all, 1 - In label, 2 - In arrow space.</returns>
         [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
-        public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone) // TODO: Ability to scroll left and right
+        public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone)
         {
             NativeFunction.CallByHash<uint>(0x54ce8ac98e120cab, "jamyfafi");
             ResText.AddLongString(item.Text);
