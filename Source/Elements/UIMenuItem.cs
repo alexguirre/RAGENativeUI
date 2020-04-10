@@ -192,7 +192,8 @@ namespace RAGENativeUI.Elements
 
             float sizeMult = BadgeToSizeMultiplier(badge);
 
-            float badgeOffset = (badgeW * 0.5f) + BadgeToOffset(badge);
+            const float Offset = 0.00078125f * 2.5f;
+            float badgeOffset = (badgeW * 0.5f) + Offset;
             float badgeX = left ?
                             itemX + badgeOffset :
                             itemX + itemW - badgeOffset;
@@ -416,30 +417,6 @@ namespace RAGENativeUI.Elements
                     return 0.5f;
                 default:
                     return 1.0f;
-            }
-        }
-
-        internal static float BadgeToOffset(BadgeStyle badge)
-        {
-            switch (badge)
-            {
-                case BadgeStyle.Ammo:
-                case BadgeStyle.Armour:
-                case BadgeStyle.Barber:
-                case BadgeStyle.Clothes:
-                case BadgeStyle.Franklin:
-                case BadgeStyle.Bike:
-                case BadgeStyle.Car:
-                case BadgeStyle.Gun:
-                case BadgeStyle.Heart:
-                case BadgeStyle.Makeup:
-                case BadgeStyle.Mask:
-                case BadgeStyle.Michael:
-                case BadgeStyle.Tatoo:
-                case BadgeStyle.Trevor:
-                    return (0.00078125f * 2.5f);
-                default:
-                    return -(0.00078125f * 1f);
             }
         }
 
