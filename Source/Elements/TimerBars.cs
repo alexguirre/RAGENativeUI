@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Rage;
-using Rage.Native;
+using System.ComponentModel;
 
 namespace RAGENativeUI.Elements
 {
@@ -55,7 +54,7 @@ namespace RAGENativeUI.Elements
             Label = label;
         }
 
-        [Obsolete]
+        [Obsolete("Use TimerBarBase.Draw(float, float) instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void Draw(int interval)
         {
             SizeF res = UIMenu.GetScreenResolutionMantainRatio();
@@ -144,7 +143,7 @@ namespace RAGENativeUI.Elements
             Text = text;
         }
 
-        [Obsolete]
+        [Obsolete("Use TimerBarBase.Draw(float, float) instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public override void Draw(int interval)
         {
             SizeF res = UIMenu.GetScreenResolutionMantainRatio();
@@ -192,7 +191,7 @@ namespace RAGENativeUI.Elements
             ForegroundColor = Color.FromArgb(fA, fR, fG, fB);
         }
 
-        [Obsolete]
+        [Obsolete("Use TimerBarBase.Draw(float, float) instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public override void Draw(int interval)
         {
             SizeF res = UIMenu.GetScreenResolutionMantainRatio();

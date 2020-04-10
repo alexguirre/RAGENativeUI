@@ -2,8 +2,9 @@ namespace RAGENativeUI.Elements
 {
     using System;
     using System.Drawing;
+    using System.ComponentModel;
 
-    [Obsolete("UIMenuColoredItem is obsolete, use the UIMenuItem's color properties instead.")]
+    [Obsolete("UIMenuColoredItem is obsolete, use the UIMenuItem's color properties instead."), EditorBrowsable(EditorBrowsableState.Never)]
     public class UIMenuColoredItem : UIMenuItem
     {
         [Obsolete("UIMenuColoredItem is obsolete, use the UIMenuItem.BackColor property instead.")]

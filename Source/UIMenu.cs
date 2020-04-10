@@ -89,10 +89,11 @@ namespace RAGENativeUI
         public bool MouseEdgeEnabled = true;
         public bool ControlDisablingEnabled = true;
         public bool ResetCursorOnOpen = true;
-        [Obsolete] public bool FormatDescriptions = true;
+        [Obsolete("Now description are always wrapped to fit the description box."), EditorBrowsable(EditorBrowsableState.Never)]
+        public bool FormatDescriptions = true;
         public bool MouseControlsEnabled = true;
         public bool AllowCameraMovement = false;
-        [Obsolete] public bool ScaleWithSafezone = true;
+        public bool ScaleWithSafezone = true;
 
         //Events
 
@@ -407,7 +408,7 @@ namespace RAGENativeUI
         /// Draw your custom banner.
         /// </summary>
         /// <param name="e">Rage.GraphicsEventArgs to draw on.</param>
-        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead.")]
+        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void DrawBanner(GraphicsEventArgs e)
         {
         }
@@ -452,11 +453,20 @@ namespace RAGENativeUI
 
         internal void BeginScriptGfx()
         {
-            N.SetScriptGfxAlign('L', 'T');
-            N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+            if (ScaleWithSafezone)
+            {
+                N.SetScriptGfxAlign('L', 'T');
+                N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+            }
         }
 
-        internal void EndScriptGfx() => N.ResetScriptGfxAlign();
+        internal void EndScriptGfx()
+        {
+            if (ScaleWithSafezone)
+            {
+                N.ResetScriptGfxAlign();
+            }
+        }
 
         /// <summary>
         /// Draw the menu and all of it's components.
@@ -874,7 +884,7 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of your rectangle.</param>
         /// <param name="boxSize">size of your rectangle.</param>
         /// <returns></returns>
-        [Obsolete]
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
         public static bool IsMouseInBounds(Point topLeft, Size boxSize)
         {
             var res = GetScreenResolutionMantainRatio();
@@ -893,7 +903,7 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of the item.</param>
         /// <param name="safezone">safezone size.</param>
         /// <returns>0 - Not in item at all, 1 - In label, 2 - In arrow space.</returns>
-        [Obsolete]
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
         public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone) // TODO: Ability to scroll left and right
         {
             NativeFunction.CallByHash<uint>(0x54ce8ac98e120cab, "jamyfafi");

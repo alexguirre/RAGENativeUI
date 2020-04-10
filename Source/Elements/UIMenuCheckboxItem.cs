@@ -71,9 +71,6 @@ namespace RAGENativeUI.Elements
             CheckboxEvent?.Invoke(this, Checked);
         }
 
-        public override void SetRightLabel(string text)
-        {
-            throw new Exception("UIMenuListItem cannot have a right label.");
-        }
+        public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuCheckboxItem)} cannot have a right label."); }
     }
 }

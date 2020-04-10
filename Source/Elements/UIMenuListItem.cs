@@ -282,10 +282,7 @@ namespace RAGENativeUI.Elements
             OnListChanged?.Invoke(this, newindex);
         }
 
-        public override void SetRightLabel(string text)
-        {
-            throw new Exception("UIMenuListItem cannot have a right label.");
-        }
+        public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuListItem)} cannot have a right label."); }
     }
 }
 

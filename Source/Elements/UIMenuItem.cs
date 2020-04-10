@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.ComponentModel;
 
 namespace RAGENativeUI.Elements
 {
@@ -91,7 +92,7 @@ namespace RAGENativeUI.Elements
         /// Set item's position.
         /// </summary>
         /// <param name="y"></param>
-        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
+        [Obsolete("Use UIMenuItem.SetVerticalPosition instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void Position(int y)
         {
             SetVerticalPosition(y);
@@ -101,7 +102,7 @@ namespace RAGENativeUI.Elements
         /// Set item's vertical position.
         /// </summary>
         /// <param name="y"></param>
-        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item.")]
+        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetVerticalPosition(int y)
         {
         }
@@ -109,7 +110,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Draw this item.
         /// </summary>
-        [Obsolete]
+        [Obsolete("Use UIMenuItem.Draw(float, float, float, float)"), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void Draw()
         {
         }
@@ -228,7 +229,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// This item's offset.
         /// </summary>
-        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item.")]
+        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item."), EditorBrowsable(EditorBrowsableState.Never)]
         public Point Offset { get; set; }
 
 
@@ -236,11 +237,12 @@ namespace RAGENativeUI.Elements
         /// Returns this item's label.
         /// </summary>
         public string Text { get; set; }
-        
+
         /// <summary>
         /// Set the left badge. Set it to None to remove the badge.
         /// </summary>
         /// <param name="badge"></param>
+        [Obsolete("Use UIMenuItem.LeftBadge setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetLeftBadge(BadgeStyle badge)
         {
             LeftBadge = badge;
@@ -251,6 +253,7 @@ namespace RAGENativeUI.Elements
         /// Set the right badge. Set it to None to remove the badge.
         /// </summary>
         /// <param name="badge"></param>
+        [Obsolete("Use UIMenuItem.RightBadge setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetRightBadge(BadgeStyle badge)
         {
             RightBadge = badge;
@@ -261,27 +264,28 @@ namespace RAGENativeUI.Elements
         /// Set the right label.
         /// </summary>
         /// <param name="text">Text as label. Set it to "" to remove the label.</param>
+        [Obsolete("Use UIMenuItem.RightLabel setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetRightLabel(string text)
         {
             RightLabel = text;
         }
 
         /// <summary>
-        /// Returns the current right label.
+        /// Gets or sets the current right label.
         /// </summary>
-        public virtual string RightLabel { get; private set; }
+        public virtual string RightLabel { get; set; }
 
 
         /// <summary>
-        /// Returns the current left badge.
+        /// Gets or sets the current left badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.
         /// </summary>
-        public virtual BadgeStyle LeftBadge { get; private set; }
+        public virtual BadgeStyle LeftBadge { get; set; }
 
 
         /// <summary>
-        /// Returns the current right badge.
+        /// Gets or sets the current right badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.
         /// </summary>
-        public virtual BadgeStyle RightBadge { get; private set; }
+        public virtual BadgeStyle RightBadge { get; set; }
 
         public enum BadgeStyle
         {
