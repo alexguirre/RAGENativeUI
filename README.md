@@ -1,4 +1,4 @@
-# RAGENativeUI ![CI](https://github.com/alexguirre/RAGENativeUI/workflows/CI/badge.svg)
+# RAGENativeUI [![Build Status](https://github.com/alexguirre/RAGENativeUI/workflows/CI/badge.svg)](https://github.com/alexguirre/RAGENativeUI/actions?workflow=CI)
 
 RAGENativeUI is the NativeUI port to RAGEPluginHook. It helps you quickly and easily build Rockstar-like menus.
 
