@@ -1,0 +1,22 @@
+#!/bin/sh
+
+branch="$(git symbolic-ref --short HEAD)"
+branchIssueNumberPos=`expr match "$branch" "issue-"`
+
+# check if branch starts with 'issue-'
+if [ "$branchIssueNumberPos" != "0" ]; then
+    issueNumber="${branch:branchIssueNumberPos}"
+
+    # check if the issue number is a positive integer
+    if [[ $issueNumber =~ ^[0-9]+$ ]]; then
+
+        # check the message
+        regexPattern="^(#$issueNumber) "
+        test "" != "$(grep "$regexPattern" "$1")" || {
+            echo >&2 "Commit message requires the issue number"
+            exit 1
+        }
+    fi;
+fi;
+
+exit 0
