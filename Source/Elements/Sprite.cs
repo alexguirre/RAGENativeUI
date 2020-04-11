@@ -49,7 +49,7 @@ namespace RAGENativeUI.Elements
 
         public bool IsTextureDictionaryLoaded
         {
-            get { return Common.IsTextureDictionaryLoaded(_textureDict); }
+            get { return N.HasStreamedTextureDictLoaded(_textureDict); }
         }
 
         [Obsolete("Use Sprite.LoadTextureDictionary() instead.")]
@@ -60,7 +60,7 @@ namespace RAGENativeUI.Elements
 
         public void LoadTextureDictionary()
         {
-            Common.LoadTextureDictionary(_textureDict);
+            N.RequestStreamedTextureDict(_textureDict);
         }
 
         /// <summary>
@@ -82,9 +82,6 @@ namespace RAGENativeUI.Elements
             Heading = heading;
             Color = color;
             Visible = true;
-
-            if (!IsTextureDictionaryLoaded)
-                LoadTextureDictionary();
         }
 
         /// <summary>
@@ -113,8 +110,11 @@ namespace RAGENativeUI.Elements
         {
             if (loadTexture)
             {
-                if (!Common.IsTextureDictionaryLoaded(textureDictionary))
-                    Common.LoadTextureDictionary(textureDictionary);
+                N.RequestStreamedTextureDict(textureDictionary);
+                if (!N.HasStreamedTextureDictLoaded(textureDictionary))
+                {
+                    return;
+                }
             }
 
             int screenw = Game.Resolution.Width;

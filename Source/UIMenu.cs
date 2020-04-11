@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -43,37 +44,37 @@ namespace RAGENativeUI
     /// </summary>
     public class UIMenu
     {
-        private readonly Container _mainMenu;
-        private Sprite _logo;
-        private readonly Sprite _background;
+        internal const string CommonTxd = "commonmenu";
+        internal const string BackgroundTextureName = "gradient_bgd";
+        internal const string UpAndDownTextureName = "shop_arrows_upanddown";
+        internal const string NavBarTextureName = "gradient_nav";
+        internal const string ArrowLeftTextureName = "arrowleft";
+        internal const string ArrowRightTextureName = "arrowright";
+        internal const string CheckboxTickTextureName = "shop_box_tick";
+        internal const string CheckboxBlankTextureName = "shop_box_blank";
+        internal const string CheckboxTickSelectedTextureName = "shop_box_tickb";
+        internal const string CheckboxBlankSelectedTextureName = "shop_box_blankb";
 
-        private readonly ResRectangle _descriptionBar;
-        private readonly Sprite _descriptionRectangle;
-        private readonly ResText _descriptionText;
-        private readonly ResText _counterText;
+        private Sprite _bannerSprite;
+        private ResRectangle _bannerRectangle;
 
         private Texture _customBanner;
 
         private int _activeItem = 1000;
-
+        private int hoveredItem = -1;
         private bool _visible;
 
         private bool _justOpened = true;
 
+        private int hoveredUpDown = 0; // 0 = none, 1 = up, 2 = down
+
         //Pagination
-        private const int MaxItemsOnScreen = 9;
+        private const int MaxItemsOnScreen = 9; // TODO: one more item than specified in MaxItemsOnScreen is drawn
         private int _minItem;
         private int _maxItem = MaxItemsOnScreen;
 
-        
-        private readonly Sprite _upAndDownSprite;
-        private readonly ResRectangle _extraRectangleUp;
-        private readonly ResRectangle _extraRectangleDown;
-
-        private Point _offset;
-        private readonly int _extraYOffset;
-
         private readonly InstructionalButtons instructionalButtons;
+        private bool instructionalButtonsEnabled = true;
 
         public string AUDIO_LIBRARY = "HUD_FRONTEND_DEFAULT_SOUNDSET";
 
@@ -82,12 +83,13 @@ namespace RAGENativeUI
         public string AUDIO_SELECT = "SELECT";
         public string AUDIO_BACK = "BACK";
         public string AUDIO_ERROR = "ERROR";
-        
+
         public List<UIMenuItem> MenuItems = new List<UIMenuItem>();
 
         public bool MouseEdgeEnabled = true;
         public bool ControlDisablingEnabled = true;
         public bool ResetCursorOnOpen = true;
+        [Obsolete("Now description are always wrapped to fit the description box."), EditorBrowsable(EditorBrowsableState.Never)]
         public bool FormatDescriptions = true;
         public bool MouseControlsEnabled = true;
         public bool AllowCameraMovement = false;
@@ -127,10 +129,10 @@ namespace RAGENativeUI
 
         //Keys
         private readonly Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>> _keyDictionary = new Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>>();
-                         
+
         //Tree structure
         public Dictionary<UIMenuItem, UIMenu> Children { get; private set; }
-        
+
         /// <summary>
         /// Basic Menu constructor.
         /// </summary>
@@ -172,39 +174,21 @@ namespace RAGENativeUI
         /// <param name="spriteName">Sprite name for the banner.</param>
         public UIMenu(string title, string subtitle, Point offset, string spriteLibrary, string spriteName)
         {
-            _offset = offset;
+            Offset = offset;
             Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
-            
+
             instructionalButtons = new InstructionalButtons();
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
             instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
-            _mainMenu = new Container(new Point(0, 0), new Size(700, 500), Color.FromArgb(0, 0, 0, 0));
-            _logo = new Sprite(spriteLibrary, spriteName, new Point(0 + _offset.X, 0 + _offset.Y), new Size(431, 107));
-            _mainMenu.Items.Add(Title = new ResText(title, new Point(215 + _offset.X, 20 + _offset.Y), 1.15f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered));
-            if (!String.IsNullOrWhiteSpace(subtitle))
+            _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
+            Title = new ResText(title, new Point(0, 0), 0.0f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered);
+            Subtitle = new ResText(subtitle, new Point(0, 0), 0.0f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Left);
+            if (subtitle != null && subtitle.StartsWith("~"))
             {
-                _mainMenu.Items.Add(new ResRectangle(new Point(0 + offset.X, 107 + _offset.Y), new Size(431, 37), Color.Black));
-                _mainMenu.Items.Add(Subtitle = new ResText(subtitle, new Point(8 + _offset.X, 110 + _offset.Y), 0.35f, Color.WhiteSmoke, 0, ResText.Alignment.Left));
-
-                if (subtitle.StartsWith("~"))
-                {
-                    CounterPretext = subtitle.Substring(0, 3);
-                }
-                _counterText = new ResText("", new Point(425 + _offset.X, 110 + _offset.Y), 0.35f, Color.WhiteSmoke, 0, ResText.Alignment.Right);
-                _extraYOffset = 37;
+                CounterPretext = subtitle.Substring(0, subtitle.IndexOf('~', 1) + 1);
             }
-
-            _upAndDownSprite = new Sprite("commonmenu", "shop_arrows_upanddown", new Point(190 + _offset.X, 147 + 37 * (MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset), new Size(50, 50));
-            _extraRectangleUp = new ResRectangle(new Point(0 + _offset.X, 144 + 38 * (MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset), new Size(431, 18), Color.FromArgb(200, 0, 0, 0));
-            _extraRectangleDown = new ResRectangle(new Point(0 + _offset.X, 144 + 18 + 38 * (MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset), new Size(431, 18), Color.FromArgb(200, 0, 0, 0));
-
-            _descriptionBar = new ResRectangle(new Point(_offset.X, 123), new Size(431, 4), Color.Black);
-            _descriptionRectangle = new Sprite("commonmenu", "gradient_bgd", new Point(_offset.X, 127), new Size(431, 30));
-            _descriptionText = new ResText("Description", new Point(_offset.X + 5, 125), 0.35f, Color.FromArgb(255, 255, 255, 255), Common.EFont.ChaletLondon, ResText.Alignment.Left);
-
-            _background = new Sprite("commonmenu", "gradient_bgd", new Point(_offset.X, 144 + _offset.Y - 37 + _extraYOffset), new Size(290, 25));
 
             SetKey(Common.MenuControls.Up, GameControl.CellphoneUp);
             SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp);
@@ -220,58 +204,26 @@ namespace RAGENativeUI
             SetKey(Common.MenuControls.Back, GameControl.FrontendPause);
         }
 
-        private void RecalculateDescriptionPosition()
-        {
-            //_descriptionText.WordWrap = new Size(425 + WidthOffset, 0);
-
-            _descriptionBar.Position = new Point(_offset.X, 149 - 37 + _extraYOffset + _offset.Y);
-            _descriptionRectangle.Position = new Point(_offset.X, 149 - 37 + _extraYOffset + _offset.Y);
-            _descriptionText.Position = new Point(_offset.X + 8, 155 - 37 + _extraYOffset + _offset.Y);
-
-            _descriptionBar.Size = new Size(431 + WidthOffset, 4);
-            _descriptionRectangle.Size = new Size(431 + WidthOffset, 30);
-
-            int count = MenuItems.Count;
-            if (count > MaxItemsOnScreen + 1)
-                count = MaxItemsOnScreen + 2;
-
-            _descriptionBar.Position = new Point(_offset.X, 38*count + _descriptionBar.Position.Y);
-            _descriptionRectangle.Position = new Point(_offset.X, 38*count + _descriptionRectangle.Position.Y);
-            _descriptionText.Position = new Point(_offset.X + 8, 38*count + _descriptionText.Position.Y);
-        }
-
         /// <summary>
-        /// Returns the current width offset.
+        /// Gets or sets the current width offset in pixels.
         /// </summary>
-        public int WidthOffset { get; private set; }
+        public int WidthOffset { get; set; }
 
         /// <summary>
         /// Change the menu's width. The width is calculated as DefaultWidth + WidthOffset, so a width offset of 10 would enlarge the menu by 10 pixels.
         /// </summary>
         /// <param name="widthOffset">New width offset.</param>
+        [Obsolete("Use UIMenu.WidthOffset setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void SetMenuWidthOffset(int widthOffset)
         {
             WidthOffset = widthOffset;
-            if (_logo != null)
-            {
-                _logo.Size = new Size(431 + WidthOffset, 107);
-            }
-            _mainMenu.Items[0].Position = new Point((WidthOffset + _offset.X + 431) / 2, 20 + _offset.Y); // Title
-            if (_counterText != null)
-            {
-                _counterText.Position = new Point(425 + _offset.X + widthOffset, 110 + _offset.Y);
-            }
-            if (_mainMenu.Items.Count >= 2)
-            {
-                var tmp = (ResRectangle)_mainMenu.Items[1];
-                tmp.Size = new Size(431 + WidthOffset, 37);
-            }
-            if (_tmpRectangle != null)
-            {
-                _tmpRectangle.Size = new Size(431 + WidthOffset, 107);
-            }
         }
-        
+
+        /// <summary>
+        /// Gets or sets the current position offset in pixels.
+        /// </summary>
+        public Point Offset { get; set; }
+
         /// <summary>
         /// Enable or disable all controls but the necessary to operate a menu.
         /// </summary>
@@ -280,12 +232,12 @@ namespace RAGENativeUI
         {
             if (enable)
             {
-                NativeFunction.Natives.EnableAllControlActions(0);
+                N.EnableAllControlActions(0);
                 return;
             }
             else
             {
-                NativeFunction.Natives.DisableAllControlActions(0);
+                N.DisableAllControlActions(0);
             }
 
             //Controls we want
@@ -296,14 +248,14 @@ namespace RAGENativeUI
 
             for (int i = 0; i < menuNavigationNeededControls.Length; i++)
             {
-                Common.EnableControl(0, menuNavigationNeededControls[i]);
+                N.EnableControlAction(0, menuNavigationNeededControls[i]);
             }
-            
+
             if (IsUsingController)
             {
                 for (int i = 0; i < menuNavigationControllerNeededControls.Length; i++)
                 {
-                    Common.EnableControl(0, menuNavigationControllerNeededControls[i]);
+                    N.EnableControlAction(0, menuNavigationControllerNeededControls[i]);
                 }
             }
         }
@@ -323,6 +275,8 @@ namespace RAGENativeUI
             GameControl.CursorScrollUp,
             GameControl.CursorX,
             GameControl.CursorY,
+            GameControl.CursorAccept,
+            GameControl.CursorCancel,
             GameControl.MoveUpDown,
             GameControl.MoveLeftRight,
             GameControl.Sprint,
@@ -347,38 +301,35 @@ namespace RAGENativeUI
             GameControl.Attack,
         };
 
-        private bool _buttonsEnabled = true;
         /// <summary>
         /// Enable or disable the instructional buttons.
         /// </summary>
         /// <param name="disable"></param>
         public void DisableInstructionalButtons(bool disable)
         {
-            _buttonsEnabled = !disable;
+            instructionalButtonsEnabled = !disable;
         }
-            
+
         /// <summary>
         /// Set the banner to your own Sprite object.
         /// </summary>
         /// <param name="spriteBanner">Sprite object. The position and size does not matter.</param>
         public void SetBannerType(Sprite spriteBanner)
         {
-            _logo = spriteBanner;
-            _logo.Size = new Size(431 + WidthOffset, 107);
-            _logo.Position = new Point(_offset.X, _offset.Y);
+            _bannerRectangle = null;
+            _customBanner = null;
+            _bannerSprite = spriteBanner;
         }
-                   
-        private ResRectangle _tmpRectangle;
+
         /// <summary>
         ///  Set the banner to your own Rectangle.
         /// </summary>
         /// <param name="rectangle">UIResRectangle object. Position and size does not matter.</param>
         public void SetBannerType(ResRectangle rectangle)
         {
-            _logo = null;
-            _tmpRectangle = rectangle;
-            _tmpRectangle.Position = new Point(_offset.X, _offset.Y);
-            _tmpRectangle.Size = new Size(431 + WidthOffset, 107);
+            _bannerSprite = null;
+            _customBanner = null;
+            _bannerRectangle = rectangle;
         }
 
         /// <summary>
@@ -387,6 +338,8 @@ namespace RAGENativeUI
         /// <param name="texture">Rage.Texture object</param>
         public void SetBannerType(Texture texture)
         {
+            _bannerSprite = null;
+            _bannerRectangle = null;
             _customBanner = texture;
         }
 
@@ -396,12 +349,9 @@ namespace RAGENativeUI
         /// <param name="item">Item object to be added. Can be normal item, checkbox or list item.</param>
         public void AddItem(UIMenuItem item)
         {
-            item.Offset = _offset;
             item.Parent = this;
-            item.SetVerticalPosition((MenuItems.Count * 25) - 37 + _extraYOffset);
             MenuItems.Add(item);
 
-            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -411,16 +361,8 @@ namespace RAGENativeUI
         /// <param name="index"></param>
         public void AddItem(UIMenuItem item, int index)
         {
-            item.Offset = _offset;
             item.Parent = this;
             MenuItems.Insert(index, item);
-
-            for (int i = index; i < MenuItems.Count; i++) // recalculate items positions
-            {
-                item.SetVerticalPosition((i * 25) - 37 + _extraYOffset);
-            }
-
-            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -435,7 +377,6 @@ namespace RAGENativeUI
                 _minItem--;
             }
             MenuItems.RemoveAt(index);
-            RecalculateDescriptionPosition();
         }
 
         /// <summary>
@@ -453,7 +394,7 @@ namespace RAGENativeUI
 
             for (int i = 0; i < MenuItems.Count; i++)
                 MenuItems[i].Selected = false;
-            
+
             _activeItem = 1000 - (1000 % MenuItems.Count);
             _maxItem = MaxItemsOnScreen;
             _minItem = 0;
@@ -465,28 +406,15 @@ namespace RAGENativeUI
         public void Clear()
         {
             MenuItems.Clear();
-            RecalculateDescriptionPosition();
         }
-        
+
         /// <summary>
         /// Draw your custom banner.
         /// </summary>
         /// <param name="e">Rage.GraphicsEventArgs to draw on.</param>
-        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead.")]
+        [Obsolete("UIMenu.DrawBanner(GraphicsEventArgs) will be removed soon, use UIMenu.DrawBanner(Graphics) instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void DrawBanner(GraphicsEventArgs e)
         {
-            if (!Visible || _customBanner == null) return;
-            var origRes = Game.Resolution;
-            float aspectRaidou = origRes.Width / (float)origRes.Height;
-
-            Point bannerPos = new Point(_offset.X + safezoneOffset.X, _offset.Y + safezoneOffset.Y);
-            Size bannerSize = new Size(431 + WidthOffset, 107);
-
-            PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
-            SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
-
-            //Bug: funky positionment on windowed games + max resolution.
-            e.Graphics.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
         }
 
         /// <summary>
@@ -498,18 +426,60 @@ namespace RAGENativeUI
         /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
         public void DrawBanner(Rage.Graphics g)
         {
-            if (!Visible || _customBanner == null) return;
-            var origRes = Game.Resolution;
-            float aspectRaidou = origRes.Width / (float)origRes.Height;
+            if (!Visible || _customBanner == null)
+            {
+                return;
+            }
 
-            Point bannerPos = new Point(_offset.X + safezoneOffset.X, _offset.Y + safezoneOffset.Y);
-            Size bannerSize = new Size(431 + WidthOffset, 107);
+            Size res = Game.Resolution;
+            Size primaryRes = Screen.PrimaryScreen.Bounds.Size; // TODO: this may not work in all cases, especially if the output display is set to other than the primary screen
+            if (res.Width < primaryRes.Width && res.Height < primaryRes.Height) // in case of windowed
+            {
+                primaryRes = res;
+            }
 
-            PointF pos = new PointF(bannerPos.X / (1080 * aspectRaidou), bannerPos.Y / 1080f);
-            SizeF siz = new SizeF(bannerSize.Width / (1080 * aspectRaidou), bannerSize.Height / 1080f);
+            Point middle = new Point(res.Width / 2, res.Height / 2);
 
-            //Bug: funky positionment on windowed games + max resolution.
-            g.DrawTexture(_customBanner, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
+            g.DrawTexture(_customBanner,
+                          (customBannerX - 0.5f) * primaryRes.Width + middle.X,
+                          (customBannerY - 0.5f) * primaryRes.Height + middle.Y,
+                          customBannerW * primaryRes.Width,
+                          customBannerH * primaryRes.Height);
+        }
+
+        // drawing variables
+        private float aspectRatio;
+        private float menuWidth;
+        private float itemHeight = 0.034722f;
+        private float itemsX, itemsY;
+        private float upDownX, upDownY;
+        private float customBannerX, customBannerY,
+                      customBannerW, customBannerH;
+
+        private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
+        private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
+
+        internal void DrawSprite(string txd, string texName, float x, float y, float w, float h, Color c)
+            => N.DrawSprite(txd, texName, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
+
+        internal void DrawRect(float x, float y, float w, float h, Color c)
+            => N.DrawRect(x, y, w, h, c.R, c.G, c.B, c.A);
+
+        internal void BeginScriptGfx()
+        {
+            if (ScaleWithSafezone)
+            {
+                N.SetScriptGfxAlign('L', 'T');
+                N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+            }
+        }
+
+        internal void EndScriptGfx()
+        {
+            if (ScaleWithSafezone)
+            {
+                N.ResetScriptGfxAlign();
+            }
         }
 
         /// <summary>
@@ -517,128 +487,402 @@ namespace RAGENativeUI
         /// </summary>
         public void Draw()
         {
-            if (!Visible) return;
-
-
-            if (_justOpened)
+            if (!Visible)
             {
-                if (_logo != null && !_logo.IsTextureDictionaryLoaded)
-                    _logo.LoadTextureDictionary();
-                if (!_background.IsTextureDictionaryLoaded)
-                    _background.LoadTextureDictionary();
-                if (!_descriptionRectangle.IsTextureDictionaryLoaded)
-                    _descriptionRectangle.LoadTextureDictionary();
-                if (!_upAndDownSprite.IsTextureDictionaryLoaded)
-                    _upAndDownSprite.LoadTextureDictionary();
+                return;
+            }
+
+            if (_bannerSprite != null)
+            {
+                _bannerSprite.LoadTextureDictionary();
+                if (!_bannerSprite.IsTextureDictionaryLoaded)
+                {
+                    return;
+                }
+            }
+
+            N.RequestStreamedTextureDict(CommonTxd);
+            if (!N.HasStreamedTextureDictLoaded(CommonTxd))
+            {
+                return;
             }
 
             if (ControlDisablingEnabled)
                 DisEnableControls(false);
 
-            if (AllowCameraMovement && ControlDisablingEnabled)     
+            if (AllowCameraMovement && ControlDisablingEnabled)
                 EnableCameraMovement();
 
-            if(_buttonsEnabled)
+            if (instructionalButtonsEnabled)
                 instructionalButtons.Draw();
 
-            safezoneOffset = GetSafezoneBounds();
-            if (ScaleWithSafezone)
+            aspectRatio = N.GetAspectRatio(false);
+            menuWidth = 0.225f;
+            if (aspectRatio < 1.77777f) // less than 16:9
             {
-                NativeFunction.CallByHash<uint>(0xb8a850f20a067eb6, 76, 84);           // Safezone
-                NativeFunction.CallByHash<uint>(0xf5a2c681787e579d, 0f, 0f, 0f, 0f);   // stuff
-            }
-            else
-            {
-                safezoneOffset = new Point(0, 0);
+                menuWidth = 0.225f * (16f / 9f / aspectRatio);
             }
 
-            if (_customBanner == null)
-            {
-                if (_logo != null)
-                    _logo.Draw();
-                else
-                {
-                    _tmpRectangle.Draw();
-                }
-            }
+            menuWidth += (float)WidthOffset / Game.Resolution.Width;
 
-            _mainMenu.Draw();
-            if (MenuItems.Count == 0)
+            BeginScriptGfx();
+
+            float x = 0.05f + (float)Offset.X / Game.Resolution.Width;
+            float y = 0.05f + (float)Offset.Y / Game.Resolution.Height;
+
+            DrawBanner(x, ref y);
+
+            DrawSubtitle(x, ref y);
+
+            float headerBottom = y;
+
+            DrawBackground(x, headerBottom);
+
+            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
+
+            DrawItems(x, ref y);
+
+            DrawUpDownArrows(x, ref y);
+
+            DrawDescription(x, ref y);
+
+            EndScriptGfx();
+        }
+
+        private void DrawBanner(float x, ref float y)
+        {
+            if (_bannerSprite == null && _bannerRectangle == null && _customBanner == null)
             {
-                if (ScaleWithSafezone)
-                    NativeFunction.CallByHash<uint>(0xe3a3db414a373dab); // Safezone end
                 return;
             }
 
-            _background.Size = MenuItems.Count > MaxItemsOnScreen + 1 ? new Size(431 + WidthOffset, 38 * (MaxItemsOnScreen + 1)) : new Size(431 + WidthOffset, 38 * MenuItems.Count);
-            _background.Draw();
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-            if (!String.IsNullOrWhiteSpace(MenuItems[_activeItem%(MenuItems.Count)].Description))
+            float bannerHeight;
+            if (_bannerSprite != null)
             {
-                RecalculateDescriptionPosition();
-                string descCaption = MenuItems[_activeItem % (MenuItems.Count)].Description;
-                if (FormatDescriptions)
-                    _descriptionText.Caption = FormatDescription(descCaption);
-                else
-                    _descriptionText.Caption = descCaption;
-                int numLines = _descriptionText.Caption.Split('\n').Length;
-                _descriptionRectangle.Size = new Size(431 + WidthOffset, (numLines * 25) + 15);
-
-                _descriptionBar.Draw();
-                _descriptionRectangle.Draw();
-                _descriptionText.Draw();
+                GetTextureDrawSize(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, true, out float bannerWidth, out bannerHeight, false);
+                DrawSprite(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, Color.White);
             }
+            else
+            {
+                GetTextureDrawSize("commonmenu", "interaction_bgd", true, out float bannerWidth, out bannerHeight, false);
+                if (_bannerRectangle != null)
+                {
+                    DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle.Color);
+                }
+            }
+
+            if (_bannerSprite != null || _bannerRectangle != null)
+            {
+                DrawTitle(x, y, bannerHeight);
+            }
+            else if (_customBanner != null)
+            {
+                N.GetScriptGfxPosition(x, y, out customBannerX, out customBannerY);
+                N.GetScriptGfxPosition(x + menuWidth, y + bannerHeight, out customBannerW, out customBannerH);
+                customBannerW -= customBannerX;
+                customBannerH -= customBannerY;
+            }
+
+            y += bannerHeight;
+        }
+
+        private void DrawTitle(float x, float y, float bannerHeight)
+        {
+            float titleX = x + menuWidth * 0.5f;
+            float titleY = y + bannerHeight * 0.225f;
+
+            N.SetTextFont((int)Title.FontEnum);
+            N.SetTextScale(0.0f, 1.025f);
+            Color c = Title.Color;
+            N.SetTextColour(c.R, c.G, c.B, c.A);
+            N.SetTextWrap(x, x + menuWidth);
+            N.SetTextCentre(true);
+
+            TextCommands.Display(Title.Caption, titleX, titleY);
+        }
+
+        private void DrawSubtitle(float x, ref float y)
+        {
+            if (Subtitle.Caption != null)
+            {
+                float subtitleWidth = menuWidth;
+                float subtitleHeight = itemHeight;
+
+                DrawRect(x + menuWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
+
+                DrawSubtitleText(x, y);
+
+                DrawSubtitleCounter(x, y);
+
+                y += subtitleHeight;
+            }
+        }
+
+        private void DrawSubtitleText(float x, float y)
+        {
+            float subTextX = x + 0.00390625f;
+            float subTextY = y + 0.00416664f;
+
+            N.SetTextFont((int)Subtitle.FontEnum);
+            N.SetTextScale(0f, 0.35f);
+            Color c = Subtitle.Color;
+            N.SetTextColour(c.R, c.G, c.B, c.A);
+            N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
+            N.SetTextCentre(false);
+            N.SetTextDropshadow(0, 0, 0, 0, 0);
+            N.SetTextEdge(0, 0, 0, 0, 0);
+
+            TextCommands.Display(Subtitle.Caption, subTextX, subTextY);
+        }
+
+        private void DrawSubtitleCounter(float x, float y)
+        {
+            string counterText = null;
+            if (CounterOverride != null)
+            {
+                counterText = CounterPretext + CounterOverride;
+            }
+            else if (MenuItems.Count > MaxItemsOnScreen + 1)
+            {
+                counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
+            }
+
+            if (counterText == null)
+            {
+                return;
+            }
+
+            void SetCounterTextOptions()
+            {
+                N.SetTextFont((int)Subtitle.FontEnum);
+                N.SetTextScale(0f, 0.35f);
+                Color c = Subtitle.Color;
+                N.SetTextColour(c.R, c.G, c.B, c.A);
+                N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
+                N.SetTextCentre(false);
+                N.SetTextDropshadow(0, 0, 0, 0, 0);
+                N.SetTextEdge(0, 0, 0, 0, 0);
+            }
+
+            SetCounterTextOptions();
+            float counterWidth = TextCommands.GetWidth(counterText);
+
+            float counterX = x + menuWidth - 0.00390625f - counterWidth;
+            float counterY = y + 0.00416664f;
+
+            SetCounterTextOptions();
+            TextCommands.Display(counterText, counterX, counterY);
+        }
+
+        private void DrawBackground(float x, float headerBottom)
+        {
+            float bgWidth = menuWidth;
+            float bgHeight = itemHeight * (MenuItems.Count > MaxItemsOnScreen + 1 ? MaxItemsOnScreen + 1 : MenuItems.Count);
+
+            DrawSprite(CommonTxd, BackgroundTextureName,
+                       x + bgWidth * 0.5f,
+                       headerBottom + bgHeight * 0.5f - 0.00138888f,
+                       bgWidth,
+                       bgHeight,
+                       Color.White);
+        }
+
+        private void DrawItems(float x, ref float y)
+        {
+            itemsX = x;
+            itemsY = y;
 
             if (MenuItems.Count <= MaxItemsOnScreen + 1)
             {
-                int count = 0;
                 foreach (var item in MenuItems)
                 {
-                    item.SetVerticalPosition(count * 38 - 37 + _extraYOffset);
-                    item.Draw();
-                    count++;
-                }
-                if (_counterText != null && CounterOverride != null)
-                {
-                    _counterText.Caption = CounterPretext + CounterOverride;
-                    _counterText.Draw();
+                    item.Draw(x, y, menuWidth, itemHeight);
+                    y += itemHeight;
                 }
             }
             else
             {
-                int count = 0;
                 for (int index = _minItem; index <= _maxItem; index++)
                 {
                     var item = MenuItems[index];
-                    item.SetVerticalPosition(count * 38 - 37 + _extraYOffset);
-                    item.Draw();
-                    count++;
+                    item.Draw(x, y, menuWidth, itemHeight);
+                    y += itemHeight;
                 }
-                _extraRectangleUp.Size = new Size(431 + WidthOffset, 18);
-                _extraRectangleDown.Size = new Size(431 + WidthOffset, 18);
-                _upAndDownSprite.Position = new Point(190 + _offset.X + (WidthOffset/2),
-                    147 + 37*(MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset);
+            }
+        }
 
-                _extraRectangleUp.Draw();
-                _extraRectangleDown.Draw();
-                _upAndDownSprite.Draw();
-                if (_counterText != null)
+        private void DrawUpDownArrows(float x, ref float y)
+        {
+            if (MenuItems.Count > MaxItemsOnScreen + 1)
+            {
+                float upDownRectWidth = menuWidth;
+                float upDownRectHeight = itemHeight;
+
+                upDownX = x;
+                upDownY = y;
+
+                Color backColor = Color.FromArgb(204, 0, 0, 0);
+                DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, backColor);
+
+                if (hoveredUpDown != 0)
                 {
-                    if (CounterOverride == null)
-                    {
-                        string cap = (CurrentSelection + 1) + " / " + MenuItems.Count;
-                        _counterText.Caption = CounterPretext + cap;
-                    }
-                    else
-                    {
-                        _counterText.Caption = CounterPretext + CounterOverride;
-                    }
-                    _counterText.Draw();
+                    Color hoveredColor = Color.FromArgb(25, 255, 255, 255);
+                    float hoverRectH = upDownRectHeight * 0.5f;
+                    DrawRect(x + upDownRectWidth * 0.5f, y + (hoverRectH * (hoveredUpDown - 0.5f)), upDownRectWidth, hoverRectH, hoveredColor);
+                }
+
+                float fVar61 = 1.0f; // TODO: this may need to be calculated based on current resolution
+                Vector3 upDownSize = N.GetTextureResolution(CommonTxd, UpAndDownTextureName);
+                float upDownWidth = upDownSize.X * (0.5f / fVar61);
+                float upDownHeight = upDownSize.Y * (0.5f / fVar61);
+                upDownWidth = upDownWidth / 1280.0f * fVar61;
+                upDownHeight = upDownHeight / 720f * fVar61;
+                Color foreColor = Color.White;
+                DrawSprite(CommonTxd, UpAndDownTextureName, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, foreColor);
+
+                y += itemHeight;
+            }
+        }
+
+        private void DrawDescription(float x, ref float y)
+        {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
+            string description = MenuItems[_activeItem % (MenuItems.Count)].Description;
+            if (!String.IsNullOrWhiteSpace(description))
+            {
+                y += 0.00277776f * 2f;
+
+                float textX = x + 0.0046875f;  // x - menuWidth * 0.5f + 0.0046875f
+                float textXEnd = x + menuWidth - 0.0046875f; // x - menuWidth * 0.5f + menuWidth - 0.0046875f
+
+                Color backColor = Color.FromArgb(186, 0, 0, 0);
+                Color foreColor = Color.FromArgb(240, 240, 240);
+
+                void SetDescriptionTextOptions()
+                {
+                    N.SetTextFont(0);
+                    N.SetTextScale(0f, 0.35f);
+                    N.SetTextLeading(2);
+                    N.SetTextColour(foreColor.R, foreColor.G, foreColor.B, foreColor.A);
+                    N.SetTextWrap(textX, textXEnd);
+                    N.SetTextCentre(false);
+                    N.SetTextDropshadow(0, 0, 0, 0, 0);
+                    N.SetTextEdge(0, 0, 0, 0, 0);
+                }
+
+                SetDescriptionTextOptions();
+                int lineCount = TextCommands.GetLineCount(description, textX, y + 0.00277776f);
+
+                Color separatorBarColor = Color.Black;
+                DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
+
+                float descHeight = (N.GetTextScaleHeight(0.35f, 0) * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
+                DrawSprite(CommonTxd, BackgroundTextureName,
+                           x + menuWidth * 0.5f,
+                           y + (descHeight * 0.5f) - 0.00138888f,
+                           menuWidth,
+                           descHeight,
+                           backColor);
+
+                SetDescriptionTextOptions();
+                TextCommands.Display(description, textX, y + 0.00277776f);
+
+                y += descHeight;
+            }
+        }
+
+        // Converted from game scripts
+        internal void GetTextureDrawSize(string txd, string texName, bool bParam2, out float width, out float height, bool bParam5)
+        {
+            bool isBanner()
+            {
+                return (txd == _bannerSprite?.TextureDictionary && texName == _bannerSprite?.TextureName) ||
+                    (txd == "commonmenu" && texName == "interaction_bgd");
+            }
+
+            float func_341()
+            {
+                if (isBanner())
+                {
+                    return 1.0f;
+                }
+                else
+                {
+                    return 0.5f;
                 }
             }
 
-            if (ScaleWithSafezone)
-                NativeFunction.CallByHash<uint>(0xe3a3db414a373dab); // Safezone end
+            int screenWidth;
+            int screenHeight;
+            float fVar4;
+            Vector3 texSize;
+
+            fVar4 = 1f;
+            if (bParam5)
+            {
+                N.GetActiveScreenResolution(out screenWidth, out screenHeight);
+                if (IsUltraWideScreen)
+                {
+                    screenWidth = (int)Math.Round(screenHeight * aspectRatio);
+                }
+                float screenRatio = (float)screenWidth / screenHeight;
+                fVar4 = screenRatio / aspectRatio;
+                if (IsUltraWideScreen)
+                {
+                    fVar4 = 1f;
+                }
+                //if (SCRIPT::_GET_NUMBER_OF_INSTANCES_OF_SCRIPT_WITH_NAME_HASH(joaat("director_mode")) > 0)
+                //{
+                //    N.GetScreenResolution(out iVar2, out iVar3);
+                //}
+                screenWidth = (int)Math.Round(screenWidth / fVar4);
+                screenHeight = (int)Math.Round(screenHeight / fVar4);
+            }
+            else
+            {
+                N.GetScreenResolution(out screenWidth, out screenHeight);
+            }
+            texSize = N.GetTextureResolution(txd, texName);
+            texSize.X = (texSize.X * (func_341() / fVar4));
+            texSize.Y = (texSize.Y * (func_341() / fVar4));
+            if (!bParam2)
+            {
+                texSize.X = (texSize.X - 2f);
+                texSize.Y = (texSize.Y - 2f);
+            }
+            //if (iParam0 == 30) // texture with id 30 is unused for menu drawing
+            //{
+            //    vVar7.x = 288f;
+            //    vVar7.y = 106f;
+            //}
+            //if (iParam0 == Banner && MISC::GET_HASH_KEY(&(Global_17345.f_6719[29 /*16*/])) == -1487683087/*crew_logo*/) // no crew logos here
+            //{
+            //    vVar7.x = 106f;
+            //    vVar7.y = 106f;
+            //}
+            width = texSize.X / screenWidth * (screenWidth / screenHeight);
+            height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
+            if (!bParam5)
+            {
+                if (!IsWideScreen && true/*iParam0 != 30*/) // texture with id 30 is unused for menu drawing, so it's always not equal to 30
+                {
+                    width = width * 1.33f;
+                }
+            }
+            if (isBanner())
+            {
+                // TODO: maybe add option to scale banner height with WidthOffset
+                float menuWidthNoOffset = menuWidth - ((float)WidthOffset / Game.Resolution.Width);
+                if (width > menuWidthNoOffset)
+                {
+                    height = (height * (menuWidthNoOffset / width));
+                    width = menuWidth;
+                }
+            }
         }
 
         /// <summary>
@@ -662,12 +906,13 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of your rectangle.</param>
         /// <param name="boxSize">size of your rectangle.</param>
         /// <returns></returns>
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
         public static bool IsMouseInBounds(Point topLeft, Size boxSize)
         {
             var res = GetScreenResolutionMantainRatio();
 
-            int mouseX = Convert.ToInt32(Math.Round(Common.GetControlNormal(0, GameControl.CursorX) * res.Width));
-            int mouseY = Convert.ToInt32(Math.Round(Common.GetControlNormal(0, GameControl.CursorY) * res.Height));
+            int mouseX = Convert.ToInt32(Math.Round(N.GetControlNormal(0, GameControl.CursorX) * res.Width));
+            int mouseY = Convert.ToInt32(Math.Round(N.GetControlNormal(0, GameControl.CursorY) * res.Height));
 
             return (mouseX >= topLeft.X && mouseX <= topLeft.X + boxSize.Width)
                    && (mouseY > topLeft.Y && mouseY < topLeft.Y + boxSize.Height);
@@ -680,7 +925,8 @@ namespace RAGENativeUI
         /// <param name="topLeft">top left point of the item.</param>
         /// <param name="safezone">safezone size.</param>
         /// <returns>0 - Not in item at all, 1 - In label, 2 - In arrow space.</returns>
-        public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone) // TODO: Ability to scroll left and right
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
+        public int IsMouseInListItemArrows(UIMenuListItem item, Point topLeft, Point safezone)
         {
             NativeFunction.CallByHash<uint>(0x54ce8ac98e120cab, "jamyfafi");
             ResText.AddLongString(item.Text);
@@ -715,9 +961,9 @@ namespace RAGENativeUI
             int screenw = Game.Resolution.Width;
             int screenh = Game.Resolution.Height;
             float ratio = (float)screenw / screenh;
-            float wmp = ratio*hmp;
-            
-            return new Point(Convert.ToInt32(Math.Round(g*wmp)), Convert.ToInt32(Math.Round(g*hmp)));
+            float wmp = ratio * hmp;
+
+            return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
         /// <summary>
@@ -887,7 +1133,7 @@ namespace RAGENativeUI
                 var tmp = Cursor.Position;
                 ParentMenu.Visible = true;
                 MenuChangeEv(ParentMenu, false);
-                if(ResetCursorOnOpen)
+                if (ResetCursorOnOpen)
                     Cursor.Position = tmp;
             }
             MenuCloseEv();
@@ -920,7 +1166,6 @@ namespace RAGENativeUI
             return true;
         }
 
-        private Point safezoneOffset;
         /// <summary>
         /// Process the mouse's position and check if it's hovering over any Element. Call this in Game.FrameRender or in a loop.
         /// </summary>
@@ -928,122 +1173,202 @@ namespace RAGENativeUI
         {
             if (!Visible || _justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
-                Common.EnableControl(0, GameControl.LookUpDown);
-                Common.EnableControl(0, GameControl.LookLeftRight);
-                Common.EnableControl(0, GameControl.Aim);
-                Common.EnableControl(0, GameControl.Attack);
-                MenuItems.Where(i => i.Hovered).ToList().ForEach(i => i.Hovered = false);
+                N.EnableControlAction(0, GameControl.LookUpDown);
+                N.EnableControlAction(0, GameControl.LookLeftRight);
+                N.EnableControlAction(0, GameControl.Aim);
+                N.EnableControlAction(0, GameControl.Attack);
+                if (hoveredItem != -1)
+                {
+                    MenuItems[hoveredItem].Hovered = false;
+                    hoveredItem = -1;
+                }
+                hoveredUpDown = 0;
                 return;
             }
 
-            NativeFunction.CallByHash<uint>(0xaae7ce1d63167423);  // _SHOW_CURSOR_THIS_FRAME
-            int limit = MenuItems.Count - 1;
-            int counter = 0;
-            if (MenuItems.Count > MaxItemsOnScreen + 1)
-                limit = _maxItem;
+            N.SetMouseCursorActiveThisFrame();
+            N.SetMouseCursorSprite(1);
 
-            if (IsMouseInBounds(new Point(0, 0), new Size(30, 1080)) && MouseEdgeEnabled)
-            {
-                NativeFunction.CallByName<uint>("SET_GAMEPLAY_CAM_RELATIVE_HEADING", NativeFunction.CallByName<float>("GET_GAMEPLAY_CAM_RELATIVE_HEADING") + 5.0f);
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 6);
-            }
-            else if (IsMouseInBounds(new Point(Convert.ToInt32(GetScreenResolutionMantainRatio().Width - 30f), 0), new Size(30, 1080)) &&  MouseEdgeEnabled)
-            {
-                NativeFunction.CallByName<uint>("SET_GAMEPLAY_CAM_RELATIVE_HEADING", NativeFunction.CallByName<float>("GET_GAMEPLAY_CAM_RELATIVE_HEADING") - 5.0f);
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 7);
-            }
-            else if(MouseEdgeEnabled)
-            {
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 1);
-            }
+            N.x5B73C77D9EB66E24(true);
 
-            for (int i = _minItem; i <= limit; i++)
+            float mouseX = N.GetControlNormal(2, GameControl.CursorX);
+            float mouseY = N.GetControlNormal(2, GameControl.CursorY);
+
+            UpdateHoveredItem(mouseX, mouseY);
+
+            if (hoveredItem != -1 && Game.IsControlJustReleased(2, GameControl.CursorAccept))
             {
-                int xpos = _offset.X + safezoneOffset.X;
-                int ypos = _offset.Y + 144 - 37 + _extraYOffset + (counter*38) + safezoneOffset.Y;
-                int xsize = 431 + WidthOffset;
-                const int ysize = 38;
-                UIMenuItem uiMenuItem = MenuItems[i];
-                if (IsMouseInBounds(new Point(xpos, ypos), new Size(xsize, ysize)))
+                UIMenuItem i = MenuItems[hoveredItem];
+
+                if (i.Selected)
                 {
-                    uiMenuItem.Hovered = true;
-                    if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack))
-                        if (uiMenuItem.Selected && uiMenuItem.Enabled)
-                        {
-                            if (MenuItems[i] is UIMenuListItem &&
-                                IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
-                                    safezoneOffset) > 0)
-                            {
-                                int res = IsMouseInListItemArrows((UIMenuListItem) MenuItems[i], new Point(xpos, ypos),
-                                    safezoneOffset);
-                                switch (res)
-                                {
-                                    case 1:
-                                        Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
-                                        MenuItems[i].ItemActivate(this);
-                                        ItemSelect(MenuItems[i], i);
-                                        break;
-                                    case 2:
-                                        var it = (UIMenuListItem) MenuItems[i];
-                                        if ((it.Collection == null ? it.Items.Count : it.Collection.Count) > 0)
-                                        {
-                                            it.Index++;
-                                            Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-                                            ListChange(it, it.Index);
-                                            it.ListChangedTrigger(it.Index);
-                                        }
-                                        break;
-                                }
-                            }
-                            else
-                                SelectItem();
-                        }
-                        else if(!uiMenuItem.Selected)
-                        {
-                            CurrentSelection = i;
-                            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-                            IndexChange(CurrentSelection);
-                            instructionalButtons.Update();
-                        }
-                        else if (!uiMenuItem.Enabled && uiMenuItem.Selected)
-                        {
-                            Common.PlaySound(AUDIO_ERROR, AUDIO_LIBRARY);
-                        }
+                    if (!(i is UIMenuListItem)) // list item select is handled below, along with arrow controls
+                    {
+                        SelectItem();
+                    }
                 }
                 else
-                    uiMenuItem.Hovered = false;
-                counter++;
+                {
+                    CurrentSelection = hoveredItem;
+                    Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                    IndexChange(CurrentSelection);
+                    instructionalButtons.Update();
+                }
             }
-            int extraY = 144 + 38*(MaxItemsOnScreen + 1) + _offset.Y - 37 + _extraYOffset + safezoneOffset.Y;
-            int extraX = safezoneOffset.X + _offset.X;
-            if (MenuItems.Count <= MaxItemsOnScreen + 1) return;
-            if (IsMouseInBounds(new Point(extraX, extraY), new Size(431 + WidthOffset, 18)))
+
+            UpdateHoveredUpDown(mouseX, mouseY);
+
+            if (hoveredUpDown != 0 && IsCursorAcceptBeingPressed())
             {
-                _extraRectangleUp.Color = Color.FromArgb(255, 30, 30, 30);
-                if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack))
+                if (hoveredUpDown == 1)
                 {
                     if (MenuItems.Count > MaxItemsOnScreen + 1)
                         GoUpOverflow();
                     else
                         GoUp();
                 }
-            }
-            else
-                _extraRectangleUp.Color = Color.FromArgb(200, 0, 0, 0);
-            
-            if (IsMouseInBounds(new Point(extraX, extraY+18), new Size(431 + WidthOffset, 18)))
-            {
-                _extraRectangleDown.Color = Color.FromArgb(255, 30, 30, 30);
-                if (Game.IsControlJustPressed(0, GameControl.Attack) || Common.IsDisabledControlJustPressed(0, GameControl.Attack)) // Fixed move down arrow not working v1.1
+                else
                 {
                     if (MenuItems.Count > MaxItemsOnScreen + 1)
                         GoDownOverflow();
                     else
                         GoDown();
                 }
+                instructionalButtons.Update();
             }
-            else
-                _extraRectangleDown.Color = Color.FromArgb(200, 0, 0, 0);
+
+            // mouse controls for lists
+            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem l && l.Selected && l.Enabled)
+            {
+                BeginScriptGfx();
+                float selectBoundsX = itemsX + (menuWidth * 0.33333f);
+                N.GetScriptGfxPosition(selectBoundsX, 0.0f, out selectBoundsX, out _);
+                EndScriptGfx();
+
+                if (mouseX <= selectBoundsX)
+                {
+                    // approximately hovering the label, first 1/3 of the item width
+                    // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
+                    //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
+                    if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+                    {
+                        SelectItem();
+                    }
+                }
+                else if (l.ScrollingEnabled && IsCursorAcceptBeingPressed(l))
+                {
+                    GetTextureDrawSize(CommonTxd, ArrowRightTextureName, true, out float rightW, out _, false);
+                    float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
+
+                    BeginScriptGfx();
+
+                    N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
+
+                    EndScriptGfx();
+
+                    // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
+                    //  - If to the right of the right arrow's left border, go right
+                    //  - Anywhere else in the item, go left.
+                    // This is how the vanilla menus behave
+                    if (mouseX >= rightX)
+                    {
+                        GoRight();
+                    }
+                    else
+                    {
+                        GoLeft();
+                    }
+                }
+            }
+
+            if (MouseEdgeEnabled && hoveredItem == -1)
+            {
+                const int CursorLeftArrow = 6, CursorRightArrow = 7;
+
+                if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                {
+                    N.SetMouseCursorSprite(CursorRightArrow);
+                    float mult = 0.05f - (1f - mouseX);
+                    if (mult > 0.05f)
+                    {
+                        mult = 0.05f;
+                    }
+
+                    N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                }
+                else if (mouseX < (0.05f * 0.75f)) // left edge
+                {
+                    N.SetMouseCursorSprite(CursorLeftArrow);
+                    float mult = 0.05f - mouseX;
+                    if (mult > 0.05f)
+                    {
+                        mult = 0.05f;
+                    }
+
+                    N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
+                }
+            }
+        }
+
+        private void UpdateHoveredItem(float mouseX, float mouseY)
+        {
+            BeginScriptGfx();
+
+            int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen + 1);
+            float x1 = itemsX, y1 = itemsY - 0.00138888f; // background top-left
+            float x2 = itemsX + menuWidth, y2 = y1 + visibleItemCount * itemHeight; // background bottom-right
+            N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+            N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+            EndScriptGfx();
+
+            if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
+            {
+                int firstVisibleItem = Math.Max(0, _minItem);
+                int hoveredIdx = firstVisibleItem + (int)((mouseY - y1) / itemHeight);
+
+                if (hoveredItem != hoveredIdx)
+                {
+                    if (hoveredItem != -1) // unhover previous item
+                    {
+                        MenuItems[hoveredItem].Hovered = false;
+                    }
+
+                    // hover new item
+                    MenuItems[hoveredIdx].Hovered = true;
+                    hoveredItem = hoveredIdx;
+                }
+            }
+            else if (hoveredItem != -1)
+            {
+                MenuItems[hoveredItem].Hovered = false;
+                hoveredItem = -1;
+            }
+        }
+
+        private void UpdateHoveredUpDown(float mouseX, float mouseY)
+        {
+            if (MenuItems.Count > MaxItemsOnScreen + 1)
+            {
+                BeginScriptGfx();
+
+                float x1 = upDownX, y1 = upDownY; // up&down rect top-left
+                float x2 = x1 + menuWidth, y2 = y1 + itemHeight; // up&down rect bottom-right
+                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+                EndScriptGfx();
+
+                if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering up&down rect
+                {
+                    float h = y2 - y1;
+                    bool up = mouseY <= (y1 + h * 0.5f);
+                    hoveredUpDown = up ? 1 : 2;
+                    return;
+                }
+            }
+
+            hoveredUpDown = 0;
         }
 
         /// <summary>
@@ -1149,7 +1474,7 @@ namespace RAGENativeUI
             {
                 return true;
             }
-            
+
             return false;
         }
 
@@ -1163,11 +1488,11 @@ namespace RAGENativeUI
         /// <param name="key"></param>
         /// <returns></returns>
         public bool IsControlBeingPressed(Common.MenuControls control, Keys key = Keys.None)
-        {  
+        {
             if (control != Common.MenuControls.Left && control != Common.MenuControls.Right)
             {
                 if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
-                if(Game.GameTime <= _holdTime)
+                if (Game.GameTime <= _holdTime)
                 {
                     return false;
                 }
@@ -1190,12 +1515,11 @@ namespace RAGENativeUI
             }
             else if ((MenuItems[CurrentSelection] is UIMenuListItem) && MenuItems[CurrentSelection].Enabled)
             {
-                
                 UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
-                if(it.ScrollingEnabled)
-                {                   
+                if (it.ScrollingEnabled)
+                {
                     if (HasControlJustBeenReleaseed(control, key)) { it._holdTime = 0; }
-                    if(Game.GameTime <= it._holdTime)
+                    if (Game.GameTime <= it._holdTime)
                     {
                         return false;
                     }
@@ -1215,12 +1539,35 @@ namespace RAGENativeUI
                         return true;
                     }
                 }
-                else if(HasControlJustBeenPressed(control, key))
+                else if (HasControlJustBeenPressed(control, key))
                 {
                     return true;
                 }
-                
+
             }
+            return false;
+        }
+
+        private bool IsCursorAcceptBeingPressed(UIMenuListItem list = null)
+        {
+            ref uint holdTime = ref (list != null ? ref list._holdTime : ref _holdTime);
+
+            if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+            {
+                holdTime = 0;
+            }
+
+            if (Game.GameTime <= holdTime)
+            {
+                return false;
+            }
+
+            if (Game.IsControlPressed(2, GameControl.CursorAccept))
+            {
+                holdTime = Game.GameTime + (list != null ? list.HoldTimeBeforeScroll : HoldTimeBeforeScroll);
+                return true;
+            }
+
             return false;
         }
 
@@ -1229,7 +1576,7 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl(Keys key = Keys.None)
         {
-            if(!Visible) return;
+            if (!Visible) return;
             if (_justOpened)
             {
                 _justOpened = false;
@@ -1279,7 +1626,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Process keystroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
-        public void ProcessKey(Keys key)      
+        public void ProcessKey(Keys key)
         {
             if ((from object menuControl in Enum.GetValues(typeof(Common.MenuControls)) select new List<Keys>(_keyDictionary[(Common.MenuControls)menuControl].Item1)).Any(tmpKeys => tmpKeys.Any(k => k == key)))
             {
@@ -1287,35 +1634,6 @@ namespace RAGENativeUI
             }
         }
 
-        /// <summary>
-        /// Formats the input string so it doesn't go out of bounds of the description box.
-        /// </summary>
-        /// <param name="input">String to format.</param>
-        /// <returns></returns>
-        private string FormatDescription(string input)
-        {
-            int maxPixelsPerLine = 425 + WidthOffset;
-            int aggregatePixels = 0;
-            string output = "";
-            string[] words = input.Split(' ');
-            foreach (string word in words)
-            {
-                int offset = StringMeasurer.MeasureString(word);
-                aggregatePixels += offset;
-                if (aggregatePixels > maxPixelsPerLine)
-                {
-                    output += "\n" + word + " ";
-                    aggregatePixels = offset + StringMeasurer.MeasureString(" ");
-                }
-                else
-                {
-                    output += word + " ";
-                    aggregatePixels += StringMeasurer.MeasureString(" ");
-                }
-            }
-            return output;
-        }
-        
         public void AddInstructionalButton(InstructionalButton button)
         {
             instructionalButtons.Buttons.Add(button);
@@ -1325,7 +1643,7 @@ namespace RAGENativeUI
         {
             instructionalButtons.Buttons.Remove(button);
         }
-        
+
         /// <summary>
         /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
         /// </summary>
@@ -1338,7 +1656,7 @@ namespace RAGENativeUI
                 if (resetLists)
                 {
                     UIMenuListItem itemAsList = item as UIMenuListItem;
-                    if(itemAsList != null)
+                    if (itemAsList != null)
                     {
                         itemAsList.Index = 0;
                         continue;
@@ -1348,7 +1666,7 @@ namespace RAGENativeUI
                 if (resetCheckboxes)
                 {
                     UIMenuCheckboxItem itemAsCheckbox = item as UIMenuCheckboxItem;
-                    if(itemAsCheckbox != null)
+                    if (itemAsCheckbox != null)
                     {
                         itemAsCheckbox.Checked = false;
                         continue;
@@ -1357,12 +1675,12 @@ namespace RAGENativeUI
             }
             CurrentSelection = 0;
         }
-        
 
-        private void EnableCameraMovement()     
+
+        private void EnableCameraMovement()
         {
-            Common.EnableControl(0, GameControl.LookLeftRight);
-            Common.EnableControl(0, GameControl.LookUpDown);
+            N.EnableControlAction(0, GameControl.LookLeftRight);
+            N.EnableControlAction(0, GameControl.LookUpDown);
         }
 
         /// <summary>
@@ -1372,14 +1690,14 @@ namespace RAGENativeUI
         {
             get { return _visible; }
             set
-            {   
+            {
                 _visible = value;
                 _justOpened = value;
                 instructionalButtons.Update();
                 if (ParentMenu != null || !value) return;
                 if (!ResetCursorOnOpen) return;
-                Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width/2, Screen.PrimaryScreen.Bounds.Height/2);
-                NativeFunction.CallByHash<uint>(0x8db8cffd58b62552, 1);
+                Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
+                N.SetMouseCursorSprite(1);
             }
         }
 
@@ -1392,7 +1710,7 @@ namespace RAGENativeUI
             get { return _activeItem % MenuItems.Count; }
             set
             {
-                MenuItems[_activeItem%(MenuItems.Count)].Selected = false;
+                MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
                 _activeItem = 1000 - (1000 % MenuItems.Count) + value;
                 if (CurrentSelection > _maxItem)
                 {
@@ -1410,7 +1728,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Returns false if last input was made with mouse and keyboard, true if it was made with a controller.
         /// </summary>
-        public static bool IsUsingController => !NativeFunction.CallByHash<bool>(0xa571d46727e2b718, 2);
+        public static bool IsUsingController => !N.IsInputDisabled(2);
 
         /// <summary>
         /// Returns the title object.
@@ -1442,7 +1760,7 @@ namespace RAGENativeUI
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
         /// </summary>
         public UIMenu ParentMenu { get; set; }
-        
+
         /// <summary>
         /// If this is a nested menu, returns the item it was binded to.
         /// </summary>
@@ -1467,7 +1785,7 @@ namespace RAGENativeUI
         {
             OnCheckboxChange?.Invoke(this, sender, Checked);
         }
-        
+
         protected virtual void MenuCloseEv()
         {
             OnMenuClose?.Invoke(this);
@@ -1479,4 +1797,3 @@ namespace RAGENativeUI
         }
     }
 }
-

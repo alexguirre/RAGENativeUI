@@ -11,10 +11,10 @@ namespace RAGENativeUI.Elements
     /// <seealso cref="RAGENativeUI.Elements.UIMenuItem" />
     public class UIMenuListItem : UIMenuItem
     {
-        protected ResText _itemText;
+        [Obsolete] protected ResText _itemText;
 
-        protected Sprite _arrowLeft;
-        protected Sprite _arrowRight;
+        [Obsolete] protected Sprite _arrowLeft;
+        [Obsolete] protected Sprite _arrowRight;
 
         [Obsolete("UIMenuListItem._items will be removed soon, use UIMenuListItem.Collection instead.")]
         protected List<dynamic> _items;
@@ -198,29 +198,6 @@ namespace RAGENativeUI.Elements
         }
 
         /// <summary>
-        /// Set item's position.
-        /// </summary>
-        /// <param name="y"></param>
-        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
-        public override void Position(int y)
-        {
-            SetVerticalPosition(y);
-        }
-
-        /// <summary>
-        /// Set item's vertical position.
-        /// </summary>
-        /// <param name="y"></param>
-        public override void SetVerticalPosition(int y)
-        {
-            _arrowLeft.Position = new Point(300 + Offset.X + Parent.WidthOffset, 147 + y + Offset.Y);
-            _arrowRight.Position = new Point(400 + Offset.X + Parent.WidthOffset, 147 + y + Offset.Y);
-            _itemText.Position = new Point(300 + Offset.X + Parent.WidthOffset, y + 147 + Offset.Y);
-            base.SetVerticalPosition(y);
-        }
-
-
-        /// <summary>
         /// Find an item in the list and return it's index.
         /// </summary>
         /// <param name="item">Item to search for.</param>
@@ -230,7 +207,6 @@ namespace RAGENativeUI.Elements
         {
             return Collection == null ? _items.FindIndex(item) : Collection.IndexOf(item);
         }
-
 
         /// <summary>
         /// Find an item by it's index and return the item.
@@ -243,37 +219,63 @@ namespace RAGENativeUI.Elements
             return Collection == null ? _items[index] : Collection[index];
         }
 
-
         /// <summary>
         /// Draw item.
         /// </summary>
-        public override void Draw()
+        public override void Draw(float x, float y, float width, float height)
         {
-            base.Draw();
-            string caption = Collection == null ? 
-                                (_items.Count > 0 ? _items[Index].ToString() : " ") : 
+            base.Draw(x, y, width, height);
+
+            string selectedOption = Collection == null ?
+                                (_items.Count > 0 ? _items[Index].ToString() : " ") :
                                 (Collection.Count > 0 ? Collection[Index].DisplayText : " ");
-            int offset = StringMeasurer.MeasureString(caption);
 
-            _itemText.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-            
-            _itemText.Caption = caption;
+            Color textColor = GetItemTextColor();
 
-            _arrowLeft.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-            _arrowRight.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
+            SetTextCommandOptions();
+            float optTextWidth = TextCommands.GetWidth(selectedOption);
 
-            _arrowLeft.Position = new Point(375 - offset + Offset.X + Parent.WidthOffset, _arrowLeft.Position.Y);
-            if (Selected)
+            GetBadgeOffsets(out _, out float badgeOffset);
+
+            if (Selected && Enabled)
             {
-                _arrowLeft.Draw();
-                _arrowRight.Draw();
-                _itemText.Position = new Point(405 + Offset.X + Parent.WidthOffset, _itemText.Position.Y);
+                float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                float optTextY = y + 0.00277776f;
+
+                SetTextCommandOptions();
+                TextCommands.Display(selectedOption, optTextX, optTextY);
+
+                {
+                    Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, true, out float w, out float h, false);
+                    w *= 0.65f;
+                    h *= 0.65f;
+
+                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - badgeOffset;
+                    float spriteY = y + (0.034722f * 0.5f);
+
+                    Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
+                }
+                {
+                    Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, true, out float w, out float h, false);
+                    w *= 0.65f;
+                    h *= 0.65f;
+
+                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                    float spriteY = y + (0.034722f * 0.5f);
+
+                    const int HUD_COLOUR_BLACK = 2;
+                    N.GetHudColour(HUD_COLOUR_BLACK, out int r, out int g, out int b, out int a);
+                    Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
+                }
             }
             else
             {
-                _itemText.Position = new Point(420 + Offset.X + Parent.WidthOffset, _itemText.Position.Y);
+                float optTextX = x + width - 0.00390625f - optTextWidth - badgeOffset;
+                float optTextY = y + 0.00277776f;// + 0.00416664f;
+
+                SetTextCommandOptions();
+                TextCommands.Display(selectedOption, optTextX, optTextY);
             }
-            _itemText.Draw();
         }
 
         internal virtual void ListChangedTrigger(int newindex)
@@ -281,15 +283,7 @@ namespace RAGENativeUI.Elements
             OnListChanged?.Invoke(this, newindex);
         }
 
-        public override void SetRightBadge(BadgeStyle badge)
-        {
-            throw new Exception("UIMenuListItem cannot have a right badge.");
-        }
-
-        public override void SetRightLabel(string text)
-        {
-            throw new Exception("UIMenuListItem cannot have a right label.");
-        }
+        public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuListItem)} cannot have a right label."); }
     }
 }
 

@@ -1,8 +1,9 @@
 using System;
 using System.Drawing;
+using System.ComponentModel;
 
 namespace RAGENativeUI.Elements
-{                
+{
     /// <summary>
     /// Simple item with a label.
     /// </summary>
@@ -12,15 +13,21 @@ namespace RAGENativeUI.Elements
                                      DefaultHighlightedBackColor = Color.White,
                                      DefaultForeColor = Color.WhiteSmoke,
                                      DefaultHighlightedForeColor = Color.Black;
+        public static readonly float DefaultTextScale = 0.35f;
+        public static readonly Common.EFont DefaultTextFont = Common.EFont.ChaletLondon;
 
-        protected ResRectangle _rectangle;
-        protected ResText _text;
-        protected Sprite _selectedSprite;
+        // TODO: re-add for backwards compatibility?
+        //protected ResRectangle _rectangle;
+        protected ResText _text = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
+        //protected Sprite _selectedSprite;
 
-        protected Sprite _badgeLeft;
-        protected Sprite _badgeRight;
+        //protected Sprite _badgeLeft;
+        //protected Sprite _badgeRight;
 
-        protected ResText _labelText;
+        protected ResText _labelText = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
+
+        private float leftBadgeOffset = 0.0f;
+        private float rightBadgeOffset = 0.0f;
 
         /// <summary>
         /// Called when user selects the current item.
@@ -51,15 +58,8 @@ namespace RAGENativeUI.Elements
         {
             Enabled = true;
 
-            _rectangle = new ResRectangle(new Point(0, 0), new Size(431, 38), Color.FromArgb(150, 0, 0, 0));
-            _text = new ResText(text, new Point(8, 0), 0.33f, Color.WhiteSmoke, Common.EFont.ChaletLondon, ResText.Alignment.Left);
+            Text = text;
             Description = description;
-            _selectedSprite = new Sprite("commonmenu", "gradient_nav", new Point(0, 0), new Size(431, 38));
-
-            _badgeLeft = new Sprite("commonmenu", "", new Point(0, 0), new Size(40, 40));
-            _badgeRight = new Sprite("commonmenu", "", new Point(0, 0), new Size(40, 40));
-
-            _labelText = new ResText("", new Point(0, 0), 0.35f) {TextAlignment = ResText.Alignment.Right};
         }
 
 
@@ -90,12 +90,12 @@ namespace RAGENativeUI.Elements
         {
             Activated?.Invoke(sender, this);
         }
-        
+
         /// <summary>
         /// Set item's position.
         /// </summary>
         /// <param name="y"></param>
-        [Obsolete("Use UIMenuItem.SetVerticalPosition instead.")]
+        [Obsolete("Use UIMenuItem.SetVerticalPosition instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void Position(int y)
         {
             SetVerticalPosition(y);
@@ -105,90 +105,162 @@ namespace RAGENativeUI.Elements
         /// Set item's vertical position.
         /// </summary>
         /// <param name="y"></param>
+        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetVerticalPosition(int y)
         {
-            _rectangle.Position = new Point(Offset.X, y + 144 + Offset.Y);
-            _selectedSprite.Position = new Point(0 + Offset.X, y + 144 + Offset.Y);
-            _text.Position = new Point(8 + Offset.X, y + 147 + Offset.Y);
-
-            _badgeLeft.Position = new Point(0 + Offset.X, y + 142 + Offset.Y);
-            _badgeRight.Position = new Point(385 + Offset.X, y + 142 + Offset.Y);
-
-            _labelText.Position = new Point(420 + Offset.X, y + 148 + Offset.Y);
         }
 
         /// <summary>
         /// Draw this item.
         /// </summary>
+        [Obsolete("Use UIMenuItem.Draw(float, float, float, float)"), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void Draw()
         {
-            _rectangle.Size = new Size(431 + Parent.WidthOffset, 38);
-            _selectedSprite.Size = new Size(431 + Parent.WidthOffset, 38);
+        }
+
+        public virtual void Draw(float x, float y, float width, float height)
+        {
+            float rectWidth = width;
+            float rectHeight = height;
+            float rectX = x + rectWidth * 0.5f;
+            float rectY = y + rectHeight * 0.5f;
+
+            Color barColor = Selected ? HighlightedBackColor : BackColor;
+            if (barColor != Color.Empty)
+            {
+                Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.NavBarTextureName,
+                                  rectX, rectY,
+                                  rectWidth, rectHeight,
+                                  barColor);
+            }
 
             if (Hovered && !Selected)
             {
-                _rectangle.Color = Color.FromArgb(20, 255, 255, 255);
-                _rectangle.Draw();
+                Color hoveredColor = Color.FromArgb(25, 255, 255, 255);
+                Parent.DrawRect(rectX, rectY - 0.00138888f * 0.5f,
+                                rectWidth, rectHeight - 0.00138888f,
+                                hoveredColor);
             }
-
-            _selectedSprite.Color = Selected ? HighlightedBackColor : BackColor;
-            _selectedSprite.Draw();
-
-            _text.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
 
             if (LeftBadge != BadgeStyle.None)
             {
-                _text.Position = new Point(35 + Offset.X, _text.Position.Y);
-                _badgeLeft.TextureDictionary = BadgeToSpriteLib(LeftBadge);
-                _badgeLeft.TextureName = BadgeToSpriteName(LeftBadge, Selected);
-                _badgeLeft.Color = IsBagdeWhiteSprite(LeftBadge) ? Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148) : Color.White;
-                _badgeLeft.Draw();
+                DrawBadge(LeftBadge, true, x, y, width, height, out leftBadgeOffset);
             }
             else
             {
-                _text.Position = new Point(8 + Offset.X, _text.Position.Y);
+                leftBadgeOffset = 0.0f;
             }
 
             if (RightBadge != BadgeStyle.None)
             {
-                _badgeRight.Position = new Point(385 + Offset.X + Parent.WidthOffset, _badgeRight.Position.Y);
-                _badgeRight.TextureDictionary = BadgeToSpriteLib(RightBadge);
-                _badgeRight.TextureName = BadgeToSpriteName(RightBadge, Selected);
-                _badgeRight.Color = IsBagdeWhiteSprite(RightBadge) ? Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148) : Color.White;
-                _badgeRight.Draw();
+                DrawBadge(RightBadge, false, x, y, width, height, out rightBadgeOffset);
+            }
+            else
+            {
+                rightBadgeOffset = 0.0f;
             }
 
-            if (!String.IsNullOrWhiteSpace(RightLabel))
+            SetTextCommandOptions();
+            TextCommands.Display(Text, x + 0.0046875f + leftBadgeOffset, y + 0.00277776f);
+
+            if (!String.IsNullOrEmpty(RightLabel))
             {
-                _labelText.Position = new Point(420 + Offset.X + Parent.WidthOffset, _labelText.Position.Y);
-                _labelText.Caption = RightLabel;
-                _labelText.Color = _text.Color = Enabled ? Selected ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
-                _labelText.Draw();
+                SetTextCommandOptions(false);
+                float labelWidth = TextCommands.GetWidth(RightLabel);
+
+                float labelX = x + width - 0.00390625f - labelWidth - rightBadgeOffset;
+                float labelY = y + 0.00277776f;
+
+                SetTextCommandOptions(false);
+                TextCommands.Display(RightLabel, labelX, labelY);
             }
-            _text.Draw();
+        }
+
+        /// <summary>
+        /// Gets the offset by which to move the item contents when badges are set.
+        /// </summary>
+        protected void GetBadgeOffsets(out float left, out float right)
+        {
+            left = leftBadgeOffset;
+            right = rightBadgeOffset;
+        }
+
+        internal void SetTextCommandOptions(bool left = true)
+        {
+            Color textColor = GetItemTextColor();
+            N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
+            N.SetTextScale(0f, left ? _text.Scale : _labelText.Scale);
+            N.SetTextJustification(1);
+            N.SetTextFont((int)(left ? _text.FontEnum : _labelText.FontEnum));
+            N.SetTextWrap(0f, 1f);
+            N.SetTextCentre(false);
+            N.SetTextDropshadow(0, 0, 0, 0, 0);
+            N.SetTextEdge(0, 0, 0, 0, 0);
+        }
+
+        private void DrawBadge(BadgeStyle badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)
+        {
+            // Badges don't look exactly like how game menus do it, but close enough
+            
+            Color c = IsBagdeWhiteSprite(badge) ? GetItemTextColor() : Color.White;
+
+            // use checkbox texture to have a constant size, since different badges have different texture resolution
+            Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.CheckboxTickTextureName, true, out float badgeW, out float badgeH, false);
+
+            float sizeMult = BadgeToSizeMultiplier(badge);
+
+            const float Offset = 0.00078125f * 2.5f;
+            float badgeOffset = (badgeW * 0.5f) + Offset;
+            float badgeX = left ?
+                            itemX + badgeOffset :
+                            itemX + itemW - badgeOffset;
+            Parent.DrawSprite(BadgeToSpriteLib(badge), BadgeToSpriteName(badge, Selected),
+                badgeX,
+                itemY + (itemH * 0.5f),
+                badgeW * sizeMult,
+                badgeH * sizeMult,
+                c);
+
+            offsetX = badgeOffset + (0.00078125f * 8f);
+        }
+
+        internal Color GetItemTextColor()
+        {
+            if (Enabled)
+            {
+                if (Selected)
+                {
+                    return HighlightedForeColor;
+                }
+                else
+                {
+                    return ForeColor;
+                }
+            }
+            else
+            {
+                return Color.FromArgb(163, 159, 148);
+            }
         }
 
 
         /// <summary>
         /// This item's offset.
         /// </summary>
+        [Obsolete("It is no longer allowed to change the position of a menu item. The position will be calculated by the menu when drawing the item."), EditorBrowsable(EditorBrowsableState.Never)]
         public Point Offset { get; set; }
 
 
         /// <summary>
         /// Returns this item's label.
         /// </summary>
-        public string Text
-        {
-            get { return _text.Caption; }
-            set { _text.Caption = value; }
-        }
-
+        public string Text { get; set; }
 
         /// <summary>
         /// Set the left badge. Set it to None to remove the badge.
         /// </summary>
         /// <param name="badge"></param>
+        [Obsolete("Use UIMenuItem.LeftBadge setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetLeftBadge(BadgeStyle badge)
         {
             LeftBadge = badge;
@@ -199,6 +271,7 @@ namespace RAGENativeUI.Elements
         /// Set the right badge. Set it to None to remove the badge.
         /// </summary>
         /// <param name="badge"></param>
+        [Obsolete("Use UIMenuItem.RightBadge setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetRightBadge(BadgeStyle badge)
         {
             RightBadge = badge;
@@ -209,27 +282,28 @@ namespace RAGENativeUI.Elements
         /// Set the right label.
         /// </summary>
         /// <param name="text">Text as label. Set it to "" to remove the label.</param>
+        [Obsolete("Use UIMenuItem.RightLabel setter instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void SetRightLabel(string text)
         {
             RightLabel = text;
         }
 
         /// <summary>
-        /// Returns the current right label.
+        /// Gets or sets the current right label.
         /// </summary>
-        public virtual string RightLabel { get; private set; }
+        public virtual string RightLabel { get; set; }
 
 
         /// <summary>
-        /// Returns the current left badge.
+        /// Gets or sets the current left badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.
         /// </summary>
-        public virtual BadgeStyle LeftBadge { get; private set; }
+        public virtual BadgeStyle LeftBadge { get; set; }
 
 
         /// <summary>
-        /// Returns the current right badge.
+        /// Gets or sets the current right badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.
         /// </summary>
-        public virtual BadgeStyle RightBadge { get; private set; }
+        public virtual BadgeStyle RightBadge { get; set; }
 
         public enum BadgeStyle
         {
@@ -256,6 +330,10 @@ namespace RAGENativeUI.Elements
             Trevor,
             Lock,
             Tick,
+            CardSuitClubs,
+            CardSuitDiamonds,
+            CardSuitHearts,
+            CardSuitSpades,
         }
 
         internal static string BadgeToSpriteLib(BadgeStyle badge)
@@ -264,7 +342,7 @@ namespace RAGENativeUI.Elements
             {
                 default:
                     return "commonmenu";
-            }   
+            }
         }
 
         internal static string BadgeToSpriteName(BadgeStyle badge, bool selected)
@@ -312,39 +390,62 @@ namespace RAGENativeUI.Elements
                 case BadgeStyle.Star:
                     return "shop_new_star";
                 case BadgeStyle.Tatoo:
-                    return selected ? "shop_tattoos_icon_b" : "shop_tattoos_icon_";
+                    return selected ? "shop_tattoos_icon_b" : "shop_tattoos_icon_a";
                 case BadgeStyle.Tick:
                     return "shop_tick_icon";
                 case BadgeStyle.Trevor:
                     return selected ? "shop_trevor_icon_b" : "shop_trevor_icon_a";
+                case BadgeStyle.CardSuitClubs:
+                    return "card_suit_clubs";
+                case BadgeStyle.CardSuitDiamonds:
+                    return "card_suit_diamonds";
+                case BadgeStyle.CardSuitHearts:
+                    return "card_suit_hearts";
+                case BadgeStyle.CardSuitSpades:
+                    return "card_suit_spades";
                 default:
                     return "";
             }
         }
 
-        internal static bool IsBagdeWhiteSprite(BadgeStyle badge/*, bool selected*/)
+        internal static bool IsBagdeWhiteSprite(BadgeStyle badge)
         {
             switch (badge)
             {
                 case BadgeStyle.Lock:
                 case BadgeStyle.Tick:
                 case BadgeStyle.Crown:
+                case BadgeStyle.CardSuitClubs:
+                case BadgeStyle.CardSuitDiamonds:
+                case BadgeStyle.CardSuitHearts:
+                case BadgeStyle.CardSuitSpades:
                     return true;
                 default:
                     return false;
             }
         }
 
-        internal static Color BadgeToColor(BadgeStyle badge, bool selected)
+        internal static float BadgeToSizeMultiplier(BadgeStyle badge)
         {
             switch (badge)
             {
-                case BadgeStyle.Lock:
-                case BadgeStyle.Tick:
                 case BadgeStyle.Crown:
-                    return selected ? Color.FromArgb(255, 0, 0, 0) : Color.FromArgb(255, 255, 255, 255);
+                case BadgeStyle.SilverMedal:
+                    return 0.5f;
                 default:
-                    return Color.FromArgb(255, 255, 255, 255);
+                    return 1.0f;
+            }
+        }
+
+        internal static Color BadgeToColor(BadgeStyle badge, bool selected)
+        {
+            if (IsBagdeWhiteSprite(badge))
+            {
+                return selected ? Color.FromArgb(255, 0, 0, 0) : Color.FromArgb(255, 255, 255, 255);
+            }
+            else
+            {
+                return Color.FromArgb(255, 255, 255, 255);
             }
         }
 
