@@ -432,9 +432,19 @@ namespace RAGENativeUI
             }
 
             Size res = Game.Resolution;
+            Size primaryRes = Screen.PrimaryScreen.Bounds.Size; // TODO: this may not work in all cases, especially if the output display is set to other than the primary screen
+            if (res.Width < primaryRes.Width && res.Height < primaryRes.Height) // in case of windowed
+            {
+                primaryRes = res;
+            }
+
+            Point middle = new Point(res.Width / 2, res.Height / 2);
+
             g.DrawTexture(_customBanner,
-                          customBannerX * res.Width, customBannerY * res.Height,
-                          customBannerW * res.Width, customBannerH * res.Height);
+                          (customBannerX - 0.5f) * primaryRes.Width + middle.X,
+                          (customBannerY - 0.5f) * primaryRes.Height + middle.Y,
+                          customBannerW * primaryRes.Width,
+                          customBannerH * primaryRes.Height);
         }
 
         // drawing variables
