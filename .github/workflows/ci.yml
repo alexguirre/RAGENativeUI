@@ -1,0 +1,31 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        config: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup MSBuild.exe
+        uses: warrenbuckley/Setup-MSBuild@v1
+      
+      - name: Install Dependencies
+        uses: carlosperate/download-file-action@v1.0.2
+        with:
+          file-url: https://www.dropbox.com/s/a315cekpgeeiz9t/RagePluginHookSDK.dll?dl=1
+          location: Dependencies/
+
+      - name: Build
+        run: msbuild Source/RAGENativeUI.sln /p:Configuration=${{ matrix.config }} /p:Platform=x64
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: RAGENativeUI
+          path: Source/bin/x64/${{ matrix.config }}

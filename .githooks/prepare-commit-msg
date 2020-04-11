@@ -1,0 +1,33 @@
+#!/bin/sh
+
+branch="$(git symbolic-ref --short HEAD)"
+branchIssueNumberPos=`expr match "$branch" "issue-"`
+
+commitMsgFile=$1
+type=$2
+
+# check commit type
+if  [ "$type" = "" ] || [ "$type" = "message" ]; then
+    echo "valid commit type"
+    # check if branch starts with 'issue-'
+    if  [ "$branchIssueNumberPos" != "0" ]; then
+        issueNumber="${branch:branchIssueNumberPos}"
+
+        # check if the issue number is a positive integer
+        if [[ $issueNumber =~ ^[0-9]+$ ]]; then
+
+            echo "==== Before ===="
+            echo "$(cat $commitMsgFile)"
+            echo "================"
+
+            # check if the message does not have the prefix
+            regexPattern="^(#$issueNumber)"
+            test "" != "$(head -1 "$commitMsgFile" | grep "$regexPattern")" || {
+                # prepend issue number to message if it does not have it
+                fileContents="$(cat $commitMsgFile)"
+                echo -n "(#$issueNumber) " > "$commitMsgFile"
+                echo "$fileContents" >> "$commitMsgFile"
+            }
+        fi;
+    fi;
+fi;
