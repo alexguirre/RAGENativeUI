@@ -201,26 +201,27 @@ namespace RAGENativeUI.Elements
         {
             // Badges don't look exactly like how game menus do it, but close enough
 
-            Color c = badge.IsWhite ? GetItemTextColor() : Color.White;
-
             // use checkbox texture to have a constant size, since different badges have different texture resolution
             Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.CheckboxTickTextureName, true, out float badgeW, out float badgeH, false);
 
-            float sizeMult = badge.SizeMultiplier;
-
             const float Offset = 0.00078125f * 2.5f;
             float badgeOffset = (badgeW * 0.5f) + Offset;
-            float badgeX = left ?
-                            itemX + badgeOffset :
-                            itemX + itemW - badgeOffset;
-            badge.GetTexture(Selected, out string txd, out string tex);
-            Parent.DrawSprite(
-                txd, tex,
-                badgeX,
-                itemY + (itemH * 0.5f),
-                badgeW * sizeMult,
-                badgeH * sizeMult,
-                c);
+            if (!badge.IsBlank)
+            {
+                Color c = badge.IsWhite ? GetItemTextColor() : Color.White;
+                float sizeMult = badge.SizeMultiplier;
+                float badgeX = left ?
+                                itemX + badgeOffset :
+                                itemX + itemW - badgeOffset;
+                badge.GetTexture(Selected, out string txd, out string tex);
+                Parent.DrawSprite(
+                    txd, tex,
+                    badgeX,
+                    itemY + (itemH * 0.5f),
+                    badgeW * sizeMult,
+                    badgeH * sizeMult,
+                    c);
+            }
 
             offsetX = badgeOffset + (0.00078125f * 8f);
         }
@@ -308,6 +309,7 @@ namespace RAGENativeUI.Elements
         public enum BadgeStyle
         {
             None,
+            Blank,
             BronzeMedal,
             GoldMedal,
             SilverMedal,
@@ -345,6 +347,7 @@ namespace RAGENativeUI.Elements
             public string SelectedTextureName { get; }
             public bool IsWhite { get; }
             public float SizeMultiplier { get; }
+            public bool IsBlank => TextureDictionary == null || TextureName == null;
 
             internal BadgeInfo(BadgeStyle style,
                                string textureDictionary, string textureName,
@@ -375,7 +378,7 @@ namespace RAGENativeUI.Elements
             }
 
             // built-in badges
-            private static BadgeInfo bronzeMedal, goldMedal, silverMedal, alert, crown, ammo,
+            private static BadgeInfo blank, bronzeMedal, goldMedal, silverMedal, alert, crown, ammo,
                                         armour, barber, clothes, franklin, bike, car, gun,
                                         heart, makeup, mask, michael, star, tatoo, trevor,
                                         @lock, tick, cardSuitClubs, cardSuitDiamonds, cardSuitHearts,
@@ -383,6 +386,7 @@ namespace RAGENativeUI.Elements
 
             private const string Txd = UIMenu.CommonTxd; // just an alias to reduce typing
 
+            public static BadgeInfo Blank => blank ?? (blank = new BadgeInfo(BadgeStyle.Blank, null, null));
             public static BadgeInfo BronzeMedal => bronzeMedal ?? (bronzeMedal = new BadgeInfo(BadgeStyle.BronzeMedal, Txd, "mp_medal_bronze"));
             public static BadgeInfo GoldMedal => goldMedal ?? (goldMedal = new BadgeInfo(BadgeStyle.GoldMedal, Txd, "mp_medal_gold"));
             public static BadgeInfo SilverMedal => silverMedal ?? (silverMedal = new BadgeInfo(BadgeStyle.SilverMedal, Txd, "medal_silver", null, null, false, 0.5f));
@@ -412,6 +416,7 @@ namespace RAGENativeUI.Elements
 
             public static BadgeInfo FromStyle(BadgeStyle style) => style switch
             {
+                BadgeStyle.Blank => Blank,
                 BadgeStyle.BronzeMedal => BronzeMedal,
                 BadgeStyle.GoldMedal => GoldMedal,
                 BadgeStyle.SilverMedal => SilverMedal,
