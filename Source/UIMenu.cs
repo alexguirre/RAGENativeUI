@@ -44,6 +44,8 @@ namespace RAGENativeUI
     /// </summary>
     public class UIMenu
     {
+        public const int DefaultMaxItemsOnScreen = 10;
+
         internal const string CommonTxd = "commonmenu";
         internal const string BackgroundTextureName = "gradient_bgd";
         internal const string UpAndDownTextureName = "shop_arrows_upanddown";
@@ -64,7 +66,7 @@ namespace RAGENativeUI
         private int minItem;
         private int maxItem;
         private int hoveredItem = -1;
-        private const int MaxItemsOnScreen = 10;
+        private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
         private bool _visible;
         private bool _justOpened = true;
@@ -1598,6 +1600,49 @@ namespace RAGENativeUI
             N.EnableControlAction(0, GameControl.LookUpDown);
         }
 
+        private void UpdateVisibleItemsIndices()
+        {
+            if (MaxItemsOnScreen >= MenuItems.Count)
+            {
+                minItem = 0;
+                maxItem = MenuItems.Count - 1;
+                return;
+            }
+
+            if (minItem == -1 || maxItem == -1) // if no previous selection
+            {
+                minItem = 0;
+                maxItem = Math.Min(MenuItems.Count, MaxItemsOnScreen) - 1;
+            }
+            else if (currentItem < minItem) // moved selection up, out of current visible item
+            {
+                minItem = currentItem;
+                maxItem = currentItem + Math.Min(MaxItemsOnScreen, MenuItems.Count) - 1;
+            }
+            else if (currentItem > maxItem) // moved selection down, out of current visible item
+            {
+                minItem = currentItem - Math.Min(MaxItemsOnScreen, MenuItems.Count) + 1;
+                maxItem = currentItem;
+            }
+            else if (maxItem - minItem + 1 != MaxItemsOnScreen) // MaxItemsOnScreen changed
+            {
+                if (maxItem == currentItem)
+                {
+                    minItem = maxItem - Math.Min(maxItemsOnScreen, MenuItems.Count) + 1;
+                }
+                else
+                {
+                    maxItem = minItem + Math.Min(maxItemsOnScreen, MenuItems.Count) - 1;
+                    if (maxItem >= MenuItems.Count)
+                    {
+                        int diff = maxItem - MenuItems.Count + 1;
+                        maxItem -= diff;
+                        minItem -= diff;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Change whether this menu is visible to the user.
         /// </summary>
@@ -1617,12 +1662,12 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Returns the current selected item's index.
-        /// Change the current selected item to index. Use this after you add or remove items dynamically.
+        /// Gets or sets the current selected item's index. When setting it, the specified value will be wrap around between 0 and the number of items.
+        /// Returns -1 if no selection exists, for example, when no items have been added to the menu.
         /// </summary>
         public int CurrentSelection
         {
-            get { return currentItem; }
+            get => currentItem;
             set
             {
                 if (MenuItems.Count == 0)
@@ -1640,21 +1685,29 @@ namespace RAGENativeUI
                     currentItem = Common.Wrap(value, 0, MenuItems.Count);
                     MenuItems[currentItem].Selected = true;
 
-                    if (minItem == -1 || maxItem == -1) // if no previous selection
-                    {
-                        minItem = 0;
-                        maxItem = Math.Min(MenuItems.Count, MaxItemsOnScreen) - 1;
-                    }
-                    else if (currentItem < minItem) // moved selection up, out of current visible item
-                    {
-                        minItem = currentItem;
-                        maxItem = currentItem + Math.Min(MaxItemsOnScreen, MenuItems.Count) - 1;
-                    }
-                    else if (currentItem > maxItem) // moved selection down, out of current visible item
-                    {
-                        minItem = currentItem - Math.Min(MaxItemsOnScreen, MenuItems.Count) + 1;
-                        maxItem = currentItem;
-                    }
+                    UpdateVisibleItemsIndices();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or set the maximum number of visible items.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">If the specified value is less than 1.</exception>
+        public int MaxItemsOnScreen
+        {
+            get => maxItemsOnScreen;
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value, $"{nameof(MaxItemsOnScreen)} must be at least 1");
+                }
+
+                if (maxItemsOnScreen != value)
+                {
+                    maxItemsOnScreen = value;
+                    UpdateVisibleItemsIndices();
                 }
             }
         }
