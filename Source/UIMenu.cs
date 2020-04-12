@@ -44,6 +44,8 @@ namespace RAGENativeUI
     /// </summary>
     public class UIMenu
     {
+        public const int DefaultMaxItemsOnScreen = 10;
+
         internal const string CommonTxd = "commonmenu";
         internal const string BackgroundTextureName = "gradient_bgd";
         internal const string UpAndDownTextureName = "shop_arrows_upanddown";
@@ -60,18 +62,17 @@ namespace RAGENativeUI
 
         private Texture _customBanner;
 
-        private int _activeItem = 1000;
+        private int currentItem;
+        private int minItem;
+        private int maxItem;
         private int hoveredItem = -1;
-        private bool _visible;
+        private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
+        private bool _visible;
         private bool _justOpened = true;
 
         private int hoveredUpDown = 0; // 0 = none, 1 = up, 2 = down
 
-        //Pagination
-        private const int MaxItemsOnScreen = 9; // TODO: one more item than specified in MaxItemsOnScreen is drawn
-        private int _minItem;
-        private int _maxItem = MaxItemsOnScreen;
 
         private readonly InstructionalButtons instructionalButtons;
         private bool instructionalButtonsEnabled = true;
@@ -189,6 +190,8 @@ namespace RAGENativeUI
             {
                 CounterPretext = subtitle.Substring(0, subtitle.IndexOf('~', 1) + 1);
             }
+
+            CurrentSelection = -1;
 
             SetKey(Common.MenuControls.Up, GameControl.CellphoneUp);
             SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp);
@@ -371,12 +374,13 @@ namespace RAGENativeUI
         /// <param name="index">Index to remove the item at.</param>
         public void RemoveItemAt(int index)
         {
-            if (MenuItems.Count > MaxItemsOnScreen && _maxItem == MenuItems.Count - 1)
+            if (maxItem == MenuItems.Count - 1) // if max visible item matches last item, move the visible item range up by one item
             {
-                _maxItem--;
-                _minItem--;
+                minItem = Math.Max(minItem - 1, 0);
+                maxItem = Math.Max(maxItem - 1, 0);
             }
             MenuItems.RemoveAt(index);
+            CurrentSelection = CurrentSelection; // refresh the current selection in case we removed the selected item
         }
 
         /// <summary>
@@ -386,18 +390,14 @@ namespace RAGENativeUI
         {
             if (MenuItems.Count == 0)
             {
-                _activeItem = 1000;
-                _maxItem = MaxItemsOnScreen;
-                _minItem = 0;
+                CurrentSelection = -1;
                 return;
             }
 
             for (int i = 0; i < MenuItems.Count; i++)
                 MenuItems[i].Selected = false;
 
-            _activeItem = 1000 - (1000 % MenuItems.Count);
-            _maxItem = MaxItemsOnScreen;
-            _minItem = 0;
+            CurrentSelection = 0;
         }
 
         /// <summary>
@@ -538,8 +538,6 @@ namespace RAGENativeUI
 
             DrawBackground(x, headerBottom);
 
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-
             DrawItems(x, ref y);
 
             DrawUpDownArrows(x, ref y);
@@ -642,7 +640,7 @@ namespace RAGENativeUI
             {
                 counterText = CounterPretext + CounterOverride;
             }
-            else if (MenuItems.Count > MaxItemsOnScreen + 1)
+            else if (MenuItems.Count > MaxItemsOnScreen)
             {
                 counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
             }
@@ -677,7 +675,7 @@ namespace RAGENativeUI
         private void DrawBackground(float x, float headerBottom)
         {
             float bgWidth = menuWidth;
-            float bgHeight = itemHeight * (MenuItems.Count > MaxItemsOnScreen + 1 ? MaxItemsOnScreen + 1 : MenuItems.Count);
+            float bgHeight = itemHeight * Math.Min(MenuItems.Count, MaxItemsOnScreen);
 
             DrawSprite(CommonTxd, BackgroundTextureName,
                        x + bgWidth * 0.5f,
@@ -692,28 +690,17 @@ namespace RAGENativeUI
             itemsX = x;
             itemsY = y;
 
-            if (MenuItems.Count <= MaxItemsOnScreen + 1)
+            for (int index = minItem; index <= maxItem; index++)
             {
-                foreach (var item in MenuItems)
-                {
-                    item.Draw(x, y, menuWidth, itemHeight);
-                    y += itemHeight;
-                }
-            }
-            else
-            {
-                for (int index = _minItem; index <= _maxItem; index++)
-                {
-                    var item = MenuItems[index];
-                    item.Draw(x, y, menuWidth, itemHeight);
-                    y += itemHeight;
-                }
+                var item = MenuItems[index];
+                item.Draw(x, y, menuWidth, itemHeight);
+                y += itemHeight;
             }
         }
 
         private void DrawUpDownArrows(float x, ref float y)
         {
-            if (MenuItems.Count > MaxItemsOnScreen + 1)
+            if (MenuItems.Count > MaxItemsOnScreen)
             {
                 float upDownRectWidth = menuWidth;
                 float upDownRectHeight = itemHeight;
@@ -751,7 +738,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            string description = MenuItems[_activeItem % (MenuItems.Count)].Description;
+            string description = MenuItems[CurrentSelection].Description;
             if (!String.IsNullOrWhiteSpace(description))
             {
                 y += 0.00277776f * 2f;
@@ -969,37 +956,10 @@ namespace RAGENativeUI
         /// <summary>
         /// Go up the menu if the number of items is more than maximum items on screen.
         /// </summary>
+        [Obsolete("Use UIMenu.GoUp() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoUpOverflow()
         {
-            if (MenuItems.Count <= MaxItemsOnScreen + 1) return;
-            if (_activeItem % MenuItems.Count <= _minItem)
-            {
-                if (_activeItem % MenuItems.Count == 0)
-                {
-                    _minItem = MenuItems.Count - MaxItemsOnScreen - 1;
-                    _maxItem = MenuItems.Count - 1;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                    _activeItem = 1000 - (1000 % MenuItems.Count);
-                    _activeItem += MenuItems.Count - 1;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-                }
-                else
-                {
-                    _minItem--;
-                    _maxItem--;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                    _activeItem--;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-                }
-            }
-            else
-            {
-                MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                _activeItem--;
-                MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-            }
-            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-            IndexChange(CurrentSelection);
+            GoUp();
         }
 
         /// <summary>
@@ -1007,10 +967,8 @@ namespace RAGENativeUI
         /// </summary>
         public void GoUp()
         {
-            if (MenuItems.Count > MaxItemsOnScreen + 1) return;
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-            _activeItem--;
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
+            CurrentSelection--;
+
             Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
             IndexChange(CurrentSelection);
         }
@@ -1018,36 +976,10 @@ namespace RAGENativeUI
         /// <summary>
         /// Go down the menu if the number of items is more than maximum items on screen.
         /// </summary>
+        [Obsolete("Use UIMenu.GoDown() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoDownOverflow()
         {
-            if (MenuItems.Count <= MaxItemsOnScreen + 1) return;
-            if (_activeItem % MenuItems.Count >= _maxItem)
-            {
-                if (_activeItem % MenuItems.Count == MenuItems.Count - 1)
-                {
-                    _minItem = 0;
-                    _maxItem = MaxItemsOnScreen;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                    _activeItem = 1000 - (1000 % MenuItems.Count);
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-                }
-                else
-                {
-                    _minItem++;
-                    _maxItem++;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                    _activeItem++;
-                    MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-                }
-            }
-            else
-            {
-                MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                _activeItem++;
-                MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
-            }
-            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-            IndexChange(CurrentSelection);
+            GoDown();
         }
 
         /// <summary>
@@ -1055,10 +987,8 @@ namespace RAGENativeUI
         /// </summary>
         public void GoDown()
         {
-            if (MenuItems.Count > MaxItemsOnScreen + 1) return;
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-            _activeItem++;
-            MenuItems[_activeItem % (MenuItems.Count)].Selected = true;
+            CurrentSelection++;
+
             Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
             IndexChange(CurrentSelection);
         }
@@ -1222,17 +1152,11 @@ namespace RAGENativeUI
             {
                 if (hoveredUpDown == 1)
                 {
-                    if (MenuItems.Count > MaxItemsOnScreen + 1)
-                        GoUpOverflow();
-                    else
-                        GoUp();
+                    GoUp();
                 }
                 else
                 {
-                    if (MenuItems.Count > MaxItemsOnScreen + 1)
-                        GoDownOverflow();
-                    else
-                        GoDown();
+                    GoDown();
                 }
                 instructionalButtons.Update();
             }
@@ -1314,7 +1238,7 @@ namespace RAGENativeUI
         {
             BeginScriptGfx();
 
-            int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen + 1);
+            int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen);
             float x1 = itemsX, y1 = itemsY - 0.00138888f; // background top-left
             float x2 = itemsX + menuWidth, y2 = y1 + visibleItemCount * itemHeight; // background bottom-right
             N.GetScriptGfxPosition(x1, y1, out x1, out y1);
@@ -1324,8 +1248,7 @@ namespace RAGENativeUI
 
             if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
             {
-                int firstVisibleItem = Math.Max(0, _minItem);
-                int hoveredIdx = firstVisibleItem + (int)((mouseY - y1) / itemHeight);
+                int hoveredIdx = minItem + (int)((mouseY - y1) / itemHeight);
 
                 if (hoveredItem != hoveredIdx)
                 {
@@ -1348,7 +1271,7 @@ namespace RAGENativeUI
 
         private void UpdateHoveredUpDown(float mouseX, float mouseY)
         {
-            if (MenuItems.Count > MaxItemsOnScreen + 1)
+            if (MenuItems.Count > MaxItemsOnScreen)
             {
                 BeginScriptGfx();
 
@@ -1590,19 +1513,13 @@ namespace RAGENativeUI
             if (MenuItems.Count == 0) return;
             if (IsControlBeingPressed(Common.MenuControls.Up, key))
             {
-                if (MenuItems.Count > MaxItemsOnScreen + 1)
-                    GoUpOverflow();
-                else
-                    GoUp();
+                GoUp();
                 instructionalButtons.Update();
             }
 
             else if (IsControlBeingPressed(Common.MenuControls.Down, key))
             {
-                if (MenuItems.Count > MaxItemsOnScreen + 1)
-                    GoDownOverflow();
-                else
-                    GoDown();
+                GoDown();
                 instructionalButtons.Update();
             }
 
@@ -1683,6 +1600,49 @@ namespace RAGENativeUI
             N.EnableControlAction(0, GameControl.LookUpDown);
         }
 
+        private void UpdateVisibleItemsIndices()
+        {
+            if (MaxItemsOnScreen >= MenuItems.Count)
+            {
+                minItem = 0;
+                maxItem = MenuItems.Count - 1;
+                return;
+            }
+
+            if (minItem == -1 || maxItem == -1) // if no previous selection
+            {
+                minItem = 0;
+                maxItem = Math.Min(MenuItems.Count, MaxItemsOnScreen) - 1;
+            }
+            else if (currentItem < minItem) // moved selection up, out of current visible item
+            {
+                minItem = currentItem;
+                maxItem = currentItem + Math.Min(MaxItemsOnScreen, MenuItems.Count) - 1;
+            }
+            else if (currentItem > maxItem) // moved selection down, out of current visible item
+            {
+                minItem = currentItem - Math.Min(MaxItemsOnScreen, MenuItems.Count) + 1;
+                maxItem = currentItem;
+            }
+            else if (maxItem - minItem + 1 != MaxItemsOnScreen) // MaxItemsOnScreen changed
+            {
+                if (maxItem == currentItem)
+                {
+                    minItem = maxItem - Math.Min(maxItemsOnScreen, MenuItems.Count) + 1;
+                }
+                else
+                {
+                    maxItem = minItem + Math.Min(maxItemsOnScreen, MenuItems.Count) - 1;
+                    if (maxItem >= MenuItems.Count)
+                    {
+                        int diff = maxItem - MenuItems.Count + 1;
+                        maxItem -= diff;
+                        minItem -= diff;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Change whether this menu is visible to the user.
         /// </summary>
@@ -1702,25 +1662,52 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Returns the current selected item's index.
-        /// Change the current selected item to index. Use this after you add or remove items dynamically.
+        /// Gets or sets the current selected item's index. When setting it, the specified value will be wrap around between 0 and the number of items.
+        /// Returns -1 if no selection exists, for example, when no items have been added to the menu.
         /// </summary>
         public int CurrentSelection
         {
-            get { return _activeItem % MenuItems.Count; }
+            get => currentItem;
             set
             {
-                MenuItems[_activeItem % (MenuItems.Count)].Selected = false;
-                _activeItem = 1000 - (1000 % MenuItems.Count) + value;
-                if (CurrentSelection > _maxItem)
+                if (MenuItems.Count == 0)
                 {
-                    _maxItem = CurrentSelection;
-                    _minItem = CurrentSelection - MaxItemsOnScreen;
+                    currentItem = -1;
+                    minItem = -1;
+                    maxItem = -1;
                 }
-                else if (CurrentSelection < _minItem)
+                else
                 {
-                    _maxItem = MaxItemsOnScreen + CurrentSelection;
-                    _minItem = CurrentSelection;
+                    if (currentItem >= 0 && currentItem < MenuItems.Count)
+                    {
+                        MenuItems[currentItem].Selected = false;
+                    }
+                    currentItem = Common.Wrap(value, 0, MenuItems.Count);
+                    MenuItems[currentItem].Selected = true;
+
+                    UpdateVisibleItemsIndices();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or set the maximum number of visible items.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">If the specified value is less than 1.</exception>
+        public int MaxItemsOnScreen
+        {
+            get => maxItemsOnScreen;
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), value, $"{nameof(MaxItemsOnScreen)} must be at least 1");
+                }
+
+                if (maxItemsOnScreen != value)
+                {
+                    maxItemsOnScreen = value;
+                    UpdateVisibleItemsIndices();
                 }
             }
         }

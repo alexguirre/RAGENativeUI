@@ -117,5 +117,18 @@ namespace RAGENativeUI
             }
             return Path.GetFullPath(savePath);
         }
+
+
+        /// <param name="min">Maximum value, inclusive</param>
+        /// <param name="max">Maximum value, exclusive</param>
+        internal static int Wrap(int value, int min, int max)
+        {
+            if (value < min)
+                value = (max - (min - value) % (max - min)) % max;
+            else
+                value = min + (value - min) % (max - min);
+
+            return value;
+        }
     }
 }
