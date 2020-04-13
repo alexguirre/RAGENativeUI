@@ -141,18 +141,18 @@ namespace RAGENativeUI.Elements
                                 hoveredColor);
             }
 
-            if (LeftBadge != BadgeStyle.None)
+            if (LeftBadgeInfo != null)
             {
-                DrawBadge(BadgeInfo.FromStyle(LeftBadge), true, x, y, width, height, out leftBadgeOffset);
+                DrawBadge(LeftBadgeInfo, true, x, y, width, height, out leftBadgeOffset);
             }
             else
             {
                 leftBadgeOffset = 0.0f;
             }
 
-            if (RightBadge != BadgeStyle.None)
+            if (RightBadgeInfo != null)
             {
-                DrawBadge(BadgeInfo.FromStyle(RightBadge), false, x, y, width, height, out rightBadgeOffset);
+                DrawBadge(RightBadgeInfo, false, x, y, width, height, out rightBadgeOffset);
             }
             else
             {
@@ -206,6 +206,7 @@ namespace RAGENativeUI.Elements
 
             const float Offset = 0.00078125f * 2.5f;
             float badgeOffset = (badgeW * 0.5f) + Offset;
+            offsetX = badgeOffset + (0.00078125f * 8f);
             if (!badge.IsBlank)
             {
                 Color c = badge.IsWhite ? GetItemTextColor() : Color.White;
@@ -214,6 +215,17 @@ namespace RAGENativeUI.Elements
                                 itemX + badgeOffset :
                                 itemX + itemW - badgeOffset;
                 badge.GetTexture(Selected, out string txd, out string tex);
+                if (badge.Style == BadgeStyle.Custom)
+                {
+                    // built-in badges have textures from 'commonmenu' txd which is already loaded by UIMenu,
+                    // in the case of custom badges we don't know which txd is used so request it
+                    N.RequestStreamedTextureDict(txd);
+                    if (!N.HasStreamedTextureDictLoaded(txd))
+                    {
+                        return;
+                    }
+                }
+
                 Parent.DrawSprite(
                     txd, tex,
                     badgeX,
@@ -222,8 +234,6 @@ namespace RAGENativeUI.Elements
                     badgeH * sizeMult,
                     c);
             }
-
-            offsetX = badgeOffset + (0.00078125f * 8f);
         }
 
         internal Color GetItemTextColor()
@@ -299,16 +309,29 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Gets or sets the current left badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.
         /// </summary>
-        public virtual BadgeStyle LeftBadge { get; set; }
+        public virtual BadgeStyle LeftBadge
+        {
+            get => LeftBadgeInfo == null ? BadgeStyle.None : LeftBadgeInfo.Style;
+            set => LeftBadgeInfo = value == BadgeStyle.None ? null : BadgeInfo.FromStyle(value);
+        }
+
+        public virtual BadgeInfo LeftBadgeInfo { get; set; }
 
         /// <summary>
         /// Gets or sets the current right badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.
         /// </summary>
-        public virtual BadgeStyle RightBadge { get; set; }
+        public virtual BadgeStyle RightBadge
+        {
+            get => RightBadgeInfo == null ? BadgeStyle.None : RightBadgeInfo.Style;
+            set => RightBadgeInfo = value == BadgeStyle.None ? null : BadgeInfo.FromStyle(value);
+        }
+
+        public virtual BadgeInfo RightBadgeInfo { get; set; }
 
         public enum BadgeStyle
         {
             None,
+            Custom,
             Blank,
             BronzeMedal,
             GoldMedal,
@@ -349,10 +372,13 @@ namespace RAGENativeUI.Elements
             public float SizeMultiplier { get; }
             public bool IsBlank => TextureDictionary == null || TextureName == null;
 
-            internal BadgeInfo(BadgeStyle style,
-                               string textureDictionary, string textureName,
-                               string selectedTextureDictionary = null, string selectedTextureName = null,
-                               bool isWhite = false, float sizeMultiplier = 1.0f)
+            /// <summary>
+            /// Constructor for built-in badges.
+            /// </summary>
+            private BadgeInfo(BadgeStyle style,
+                              string textureDictionary, string textureName,
+                              string selectedTextureDictionary = null, string selectedTextureName = null,
+                              bool isWhite = false, float sizeMultiplier = 1.0f)
             {
                 Style = style;
                 TextureDictionary = textureDictionary;
@@ -361,6 +387,13 @@ namespace RAGENativeUI.Elements
                 SelectedTextureName = selectedTextureName;
                 IsWhite = isWhite;
                 SizeMultiplier = sizeMultiplier;
+            }
+
+            public BadgeInfo(string textureDictionary, string textureName,
+                             string selectedTextureDictionary = null, string selectedTextureName = null,
+                             bool isWhite = false, float sizeMultiplier = 1.0f)
+                : this(BadgeStyle.Custom, textureDictionary, textureName, selectedTextureDictionary, selectedTextureName, isWhite, sizeMultiplier)
+            {
             }
 
             internal void GetTexture(bool selected, out string txd, out string tex)
