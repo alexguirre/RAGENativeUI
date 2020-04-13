@@ -209,7 +209,7 @@ namespace RAGENativeUI.Elements
             offsetX = badgeOffset + (0.00078125f * 8f);
             if (!badge.IsBlank)
             {
-                Color c = badge.IsWhite ? GetItemTextColor() : Color.White;
+                Color c = badge.ApplyForeColor ? GetItemTextColor() : Color.White;
                 float sizeMult = badge.SizeMultiplier;
                 float badgeX = left ?
                                 itemX + badgeOffset :
@@ -315,6 +315,9 @@ namespace RAGENativeUI.Elements
             set => LeftBadgeInfo = value == BadgeStyle.None ? null : BadgeInfo.FromStyle(value);
         }
 
+        /// <summary>
+        /// Gets or sets the current left badge. Set it to <c>null</c> to remove the badge.
+        /// </summary>
         public virtual BadgeInfo LeftBadgeInfo { get; set; }
 
         /// <summary>
@@ -326,6 +329,9 @@ namespace RAGENativeUI.Elements
             set => RightBadgeInfo = value == BadgeStyle.None ? null : BadgeInfo.FromStyle(value);
         }
 
+        /// <summary>
+        /// Gets or sets the current right badge. Set it to <c>null</c> to remove the badge.
+        /// </summary>
         public virtual BadgeInfo RightBadgeInfo { get; set; }
 
         public enum BadgeStyle
@@ -364,13 +370,47 @@ namespace RAGENativeUI.Elements
 
         public class BadgeInfo
         {
+            /// <summary>
+            /// Gets the style of this badge. For user-created <see cref="BadgeInfo"/>s, returns <see cref="BadgeStyle.Custom"/>.
+            /// </summary>
             public BadgeStyle Style { get; }
+
+            /// <summary>
+            /// Gets the texture dictionary that contains the texture.
+            /// </summary>
             public string TextureDictionary { get; }
+
+            /// <summary>
+            /// Gets the name of the texture.
+            /// </summary>
             public string TextureName { get; }
+
+            /// <summary>
+            /// Gets the alternative texture dictionary used when the <see cref="UIMenuItem"/> is selected.
+            /// If <c>null</c>, <paramref name="TextureDictionary"/> and <paramref name="TextureName"/> are used always.
+            /// </summary>
             public string SelectedTextureDictionary { get; }
+
+            /// <summary>
+            /// Gets the alternative texture name used when the <see cref="UIMenuItem"/> is selected.
+            /// If <c>null</c>, <paramref name="TextureDictionary"/> and <paramref name="TextureName"/> are used always.
+            /// </summary>
             public string SelectedTextureName { get; }
-            public bool IsWhite { get; }
+
+            /// <summary>
+            /// Gets a value indicating whether to use the foreground color of the <see cref="UIMenuItem"/> when drawing the badge.
+            /// </summary>
+            public bool ApplyForeColor { get; }
+
+            /// <summary>
+            /// Gets the size of the badge.
+            /// </summary>
             public float SizeMultiplier { get; }
+
+            /// <summary>
+            /// Gets a value indicating whether the badge is blank. If <c>true</c>, no texture will be drawn but the <see cref="UIMenuItem"/> contents still get indented.
+            /// A badge is considered blank when <see cref="TextureDictionary"/> or <see cref="TextureName"/> are null.
+            /// </summary>
             public bool IsBlank => TextureDictionary == null || TextureName == null;
 
             /// <summary>
@@ -379,21 +419,41 @@ namespace RAGENativeUI.Elements
             private BadgeInfo(BadgeStyle style,
                               string textureDictionary, string textureName,
                               string selectedTextureDictionary = null, string selectedTextureName = null,
-                              bool isWhite = false, float sizeMultiplier = 1.0f)
+                              bool applyForeColor = false, float sizeMultiplier = 1.0f)
             {
                 Style = style;
                 TextureDictionary = textureDictionary;
                 TextureName = textureName;
                 SelectedTextureDictionary = selectedTextureDictionary;
                 SelectedTextureName = selectedTextureName;
-                IsWhite = isWhite;
+                ApplyForeColor = applyForeColor;
                 SizeMultiplier = sizeMultiplier;
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="BadgeInfo"/> class with <see cref="Style"/> set to <see cref="BadgeStyle.Custom"/>.
+            /// </summary>
+            /// <param name="textureDictionary">The texture dictionary that contains the texture.</param>
+            /// <param name="textureName">The name of the texture.</param>
+            /// <param name="selectedTextureDictionary">
+            /// Alternative texture dictionary used when the <see cref="UIMenuItem"/> is selected.
+            /// If <c>null</c>, <paramref name="textureDictionary"/> and <paramref name="textureName"/> are used always.
+            /// </param>
+            /// <param name="selectedTextureName">
+            /// Alternative texture name used when the <see cref="UIMenuItem"/> is selected.
+            /// If <c>null</c>, <paramref name="textureDictionary"/> and <paramref name="textureName"/> are used always.
+            /// </param>
+            /// <param name="applyForeColor">
+            /// If <c>true</c>, the texture will be drawn with the foreground color of the <see cref="UIMenuItem"/>;
+            /// otherwise, it will be drawn with <see cref="Color.White"/>, keeping its original colors.
+            /// </param>
+            /// <param name="sizeMultiplier">
+            /// Determines the size of the badge.
+            /// </param>
             public BadgeInfo(string textureDictionary, string textureName,
                              string selectedTextureDictionary = null, string selectedTextureName = null,
-                             bool isWhite = false, float sizeMultiplier = 1.0f)
-                : this(BadgeStyle.Custom, textureDictionary, textureName, selectedTextureDictionary, selectedTextureName, isWhite, sizeMultiplier)
+                             bool applyForeColor = false, float sizeMultiplier = 1.0f)
+                : this(BadgeStyle.Custom, textureDictionary, textureName, selectedTextureDictionary, selectedTextureName, applyForeColor, sizeMultiplier)
             {
             }
 
