@@ -12,7 +12,8 @@ namespace RAGENativeUI.Elements
         public static readonly Color DefaultBackColor = Color.Empty,
                                      DefaultHighlightedBackColor = Color.White,
                                      DefaultForeColor = Color.WhiteSmoke,
-                                     DefaultHighlightedForeColor = Color.Black;
+                                     DefaultHighlightedForeColor = Color.Black,
+                                     DefaultDisabledForeColor = Color.FromArgb(163, 159, 148);
         public static readonly float DefaultTextScale = 0.35f;
         public static readonly Common.EFont DefaultTextFont = Common.EFont.ChaletLondon;
 
@@ -39,6 +40,32 @@ namespace RAGENativeUI.Elements
 
         public Color ForeColor { get; set; } = DefaultForeColor;
         public Color HighlightedForeColor { get; set; } = DefaultHighlightedForeColor;
+        public Color DisabledForeColor { get; set; } = DefaultDisabledForeColor;
+
+        /// <summary>
+        /// Gets the current foreground color based on the state of the <see cref="UIMenuItem"/>.
+        /// </summary>
+        public Color CurrentForeColor
+        {
+            get
+            {
+                if (Enabled)
+                {
+                    if (Selected)
+                    {
+                        return HighlightedForeColor;
+                    }
+                    else
+                    {
+                        return ForeColor;
+                    }
+                }
+                else
+                {
+                    return DisabledForeColor;
+                }
+            }
+        }
 
         /// <summary>
         /// Basic menu button.
@@ -186,7 +213,7 @@ namespace RAGENativeUI.Elements
 
         internal void SetTextCommandOptions(bool left = true)
         {
-            Color textColor = GetItemTextColor();
+            Color textColor = CurrentForeColor;
             N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
             N.SetTextScale(0f, left ? _text.Scale : _labelText.Scale);
             N.SetTextJustification(1);
@@ -209,7 +236,7 @@ namespace RAGENativeUI.Elements
             offsetX = badgeOffset + (0.00078125f * 8f);
             if (!badge.IsBlank)
             {
-                Color c = badge.ApplyForeColor ? GetItemTextColor() : Color.White;
+                Color c = badge.ApplyForeColor ? CurrentForeColor : Color.White;
                 float sizeMult = badge.SizeMultiplier;
                 float badgeX = left ?
                                 itemX + badgeOffset :
@@ -233,25 +260,6 @@ namespace RAGENativeUI.Elements
                     badgeW * sizeMult,
                     badgeH * sizeMult,
                     c);
-            }
-        }
-
-        internal Color GetItemTextColor()
-        {
-            if (Enabled)
-            {
-                if (Selected)
-                {
-                    return HighlightedForeColor;
-                }
-                else
-                {
-                    return ForeColor;
-                }
-            }
-            else
-            {
-                return Color.FromArgb(163, 159, 148);
             }
         }
 

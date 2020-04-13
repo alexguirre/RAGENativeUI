@@ -230,8 +230,6 @@ namespace RAGENativeUI.Elements
                                 (_items.Count > 0 ? _items[Index].ToString() : " ") :
                                 (Collection.Count > 0 ? Collection[Index].DisplayText : " ");
 
-            Color textColor = GetItemTextColor();
-
             SetTextCommandOptions();
             float optTextWidth = TextCommands.GetWidth(selectedOption);
 
@@ -239,6 +237,7 @@ namespace RAGENativeUI.Elements
 
             if (Selected && Enabled)
             {
+                Color textColor = CurrentForeColor;
                 float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                 float optTextY = y + 0.00277776f;
 

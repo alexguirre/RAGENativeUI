@@ -47,7 +47,7 @@ namespace RAGENativeUI.Elements
 
             string cbName;
             bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
-            if (Selected && isDefaultHightlitedForeColor)
+            if (Selected && Enabled && isDefaultHightlitedForeColor)
             {
                 cbName = Checked ? UIMenu.CheckboxTickSelectedTextureName : UIMenu.CheckboxBlankSelectedTextureName;
             }
@@ -62,7 +62,7 @@ namespace RAGENativeUI.Elements
             float spriteX = x + menuWidth - (w * 0.5f) - badgeOffset;
             float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
 
-            Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : Color.FromArgb(163, 159, 148);
+            Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : DisabledForeColor;
             Parent.DrawSprite(UIMenu.CommonTxd, cbName, spriteX, spriteY, w, h, c);
         }
 
