@@ -154,7 +154,7 @@ namespace RAGENativeUI.Elements
             Color barColor = Selected ? HighlightedBackColor : BackColor;
             if (barColor != Color.Empty)
             {
-                Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.NavBarTextureName,
+                UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.NavBarTextureName,
                                   rectX, rectY,
                                   rectWidth, rectHeight,
                                   barColor);
@@ -163,7 +163,7 @@ namespace RAGENativeUI.Elements
             if (Hovered && !Selected)
             {
                 Color hoveredColor = Color.FromArgb(25, 255, 255, 255);
-                Parent.DrawRect(rectX, rectY - 0.00138888f * 0.5f,
+                UIMenu.DrawRect(rectX, rectY - 0.00138888f * 0.5f,
                                 rectWidth, rectHeight - 0.00138888f,
                                 hoveredColor);
             }
@@ -229,7 +229,7 @@ namespace RAGENativeUI.Elements
             // Badges don't look exactly like how game menus do it, but close enough
 
             // use checkbox texture to have a constant size, since different badges have different texture resolution
-            Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.CheckboxTickTextureName, true, out float badgeW, out float badgeH, false);
+            UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.CheckboxTickTextureName, out float badgeW, out float badgeH);
 
             const float Offset = 0.00078125f * 2.5f;
             float badgeOffset = (badgeW * 0.5f) + Offset;
@@ -253,7 +253,7 @@ namespace RAGENativeUI.Elements
                     }
                 }
 
-                Parent.DrawSprite(
+                UIMenu.DrawSprite(
                     txd, tex,
                     badgeX,
                     itemY + (itemH * 0.5f),

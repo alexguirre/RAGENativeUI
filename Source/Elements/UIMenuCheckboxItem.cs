@@ -56,14 +56,14 @@ namespace RAGENativeUI.Elements
                 cbName = Checked ? UIMenu.CheckboxTickTextureName : UIMenu.CheckboxBlankTextureName;
             }
 
-            Parent.GetTextureDrawSize(UIMenu.CommonTxd, cbName, true, out float w, out float h, false);
+            UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, cbName, out float w, out float h);
 
             GetBadgeOffsets(out _, out float badgeOffset);
             float spriteX = x + menuWidth - (w * 0.5f) - badgeOffset;
             float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
 
             Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : DisabledForeColor;
-            Parent.DrawSprite(UIMenu.CommonTxd, cbName, spriteX, spriteY, w, h, c);
+            UIMenu.DrawSprite(UIMenu.CommonTxd, cbName, spriteX, spriteY, w, h, c);
         }
 
         public void CheckboxEventTrigger()

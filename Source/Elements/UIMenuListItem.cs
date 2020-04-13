@@ -245,26 +245,24 @@ namespace RAGENativeUI.Elements
                 TextCommands.Display(selectedOption, optTextX, optTextY);
 
                 {
-                    Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, true, out float w, out float h, false);
+                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float w, out float h);
                     w *= 0.65f;
                     h *= 0.65f;
 
                     float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
                 }
                 {
-                    Parent.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, true, out float w, out float h, false);
+                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
                     w *= 0.65f;
                     h *= 0.65f;
 
                     float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    const int HUD_COLOUR_BLACK = 2;
-                    N.GetHudColour(HUD_COLOUR_BLACK, out int r, out int g, out int b, out int a);
-                    Parent.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
                 }
             }
             else

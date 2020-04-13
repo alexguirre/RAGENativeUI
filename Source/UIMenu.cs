@@ -448,7 +448,6 @@ namespace RAGENativeUI
         }
 
         // drawing variables
-        private float aspectRatio;
         private float menuWidth;
         private float itemHeight = 0.034722f;
         private float itemsX, itemsY;
@@ -456,13 +455,14 @@ namespace RAGENativeUI
         private float customBannerX, customBannerY,
                       customBannerW, customBannerH;
 
-        private bool IsWideScreen => aspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
-        private bool IsUltraWideScreen => aspectRatio > 3.5f; // > 32:9
+        private static float AspectRatio { get; set; } // only updated when a UIMenu is visible
+        private static bool IsWideScreen => AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
+        private static bool IsUltraWideScreen => AspectRatio > 3.5f; // > 32:9
 
-        internal void DrawSprite(string txd, string texName, float x, float y, float w, float h, Color c)
+        internal static void DrawSprite(string txd, string texName, float x, float y, float w, float h, Color c)
             => N.DrawSprite(txd, texName, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
 
-        internal void DrawRect(float x, float y, float w, float h, Color c)
+        internal static void DrawRect(float x, float y, float w, float h, Color c)
             => N.DrawRect(x, y, w, h, c.R, c.G, c.B, c.A);
 
         internal void BeginScriptGfx()
@@ -516,11 +516,12 @@ namespace RAGENativeUI
             if (instructionalButtonsEnabled)
                 instructionalButtons.Draw();
 
-            aspectRatio = N.GetAspectRatio(false);
+            AspectRatio = N.GetAspectRatio(false);
+
             menuWidth = 0.225f;
-            if (aspectRatio < 1.77777f) // less than 16:9
+            if (AspectRatio < 1.77777f) // less than 16:9
             {
-                menuWidth = 0.225f * (16f / 9f / aspectRatio);
+                menuWidth = 0.225f * (16f / 9f / AspectRatio);
             }
 
             menuWidth += (float)WidthOffset / Game.Resolution.Width;
@@ -557,12 +558,12 @@ namespace RAGENativeUI
             float bannerHeight;
             if (_bannerSprite != null)
             {
-                GetTextureDrawSize(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, true, out float bannerWidth, out bannerHeight, false);
+                GetBannerDrawSize(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, out float bannerWidth, out bannerHeight);
                 DrawSprite(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, Color.White);
             }
             else
             {
-                GetTextureDrawSize("commonmenu", "interaction_bgd", true, out float bannerWidth, out bannerHeight, false);
+                GetBannerDrawSize("commonmenu", "interaction_bgd", out float bannerWidth, out bannerHeight);
                 if (_bannerRectangle != null)
                 {
                     DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle.Color);
@@ -783,92 +784,34 @@ namespace RAGENativeUI
         }
 
         // Converted from game scripts
-        internal void GetTextureDrawSize(string txd, string texName, bool bParam2, out float width, out float height, bool bParam5)
+        internal static void GetTextureDrawSize(string txd, string texName, out float width, out float height, bool isBanner = false)
         {
-            bool isBanner()
-            {
-                return (txd == _bannerSprite?.TextureDictionary && texName == _bannerSprite?.TextureName) ||
-                    (txd == "commonmenu" && texName == "interaction_bgd");
-            }
+            float sizeMultiplier = isBanner ? 1.0f : 0.5f;
 
-            float func_341()
-            {
-                if (isBanner())
-                {
-                    return 1.0f;
-                }
-                else
-                {
-                    return 0.5f;
-                }
-            }
+            N.GetScreenResolution(out int screenWidth, out int screenHeight);
+            Vector3 texSize = N.GetTextureResolution(txd, texName);
+            texSize.X = texSize.X * sizeMultiplier;
+            texSize.Y = texSize.Y * sizeMultiplier;
 
-            int screenWidth;
-            int screenHeight;
-            float fVar4;
-            Vector3 texSize;
-
-            fVar4 = 1f;
-            if (bParam5)
-            {
-                N.GetActiveScreenResolution(out screenWidth, out screenHeight);
-                if (IsUltraWideScreen)
-                {
-                    screenWidth = (int)Math.Round(screenHeight * aspectRatio);
-                }
-                float screenRatio = (float)screenWidth / screenHeight;
-                fVar4 = screenRatio / aspectRatio;
-                if (IsUltraWideScreen)
-                {
-                    fVar4 = 1f;
-                }
-                //if (SCRIPT::_GET_NUMBER_OF_INSTANCES_OF_SCRIPT_WITH_NAME_HASH(joaat("director_mode")) > 0)
-                //{
-                //    N.GetScreenResolution(out iVar2, out iVar3);
-                //}
-                screenWidth = (int)Math.Round(screenWidth / fVar4);
-                screenHeight = (int)Math.Round(screenHeight / fVar4);
-            }
-            else
-            {
-                N.GetScreenResolution(out screenWidth, out screenHeight);
-            }
-            texSize = N.GetTextureResolution(txd, texName);
-            texSize.X = (texSize.X * (func_341() / fVar4));
-            texSize.Y = (texSize.Y * (func_341() / fVar4));
-            if (!bParam2)
-            {
-                texSize.X = (texSize.X - 2f);
-                texSize.Y = (texSize.Y - 2f);
-            }
-            //if (iParam0 == 30) // texture with id 30 is unused for menu drawing
-            //{
-            //    vVar7.x = 288f;
-            //    vVar7.y = 106f;
-            //}
-            //if (iParam0 == Banner && MISC::GET_HASH_KEY(&(Global_17345.f_6719[29 /*16*/])) == -1487683087/*crew_logo*/) // no crew logos here
-            //{
-            //    vVar7.x = 106f;
-            //    vVar7.y = 106f;
-            //}
             width = texSize.X / screenWidth * (screenWidth / screenHeight);
             height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
-            if (!bParam5)
+
+            if (!IsWideScreen)
             {
-                if (!IsWideScreen && true/*iParam0 != 30*/) // texture with id 30 is unused for menu drawing, so it's always not equal to 30
-                {
-                    width = width * 1.33f;
-                }
+                width = width * 1.33f;
             }
-            if (isBanner())
+        }
+
+        private void GetBannerDrawSize(string txd, string texName, out float width, out float height)
+        {
+            GetTextureDrawSize(txd, texName, out width, out height, true);
+
+            // TODO: maybe add option to scale banner height with WidthOffset
+            float menuWidthNoOffset = menuWidth - ((float)WidthOffset / Game.Resolution.Width);
+            if (width > menuWidthNoOffset)
             {
-                // TODO: maybe add option to scale banner height with WidthOffset
-                float menuWidthNoOffset = menuWidth - ((float)WidthOffset / Game.Resolution.Width);
-                if (width > menuWidthNoOffset)
-                {
-                    height = (height * (menuWidthNoOffset / width));
-                    width = menuWidth;
-                }
+                height = height * (menuWidthNoOffset / width);
+                width = menuWidth;
             }
         }
 
@@ -1181,7 +1124,7 @@ namespace RAGENativeUI
                 }
                 else if (l.ScrollingEnabled && IsCursorAcceptBeingPressed(l))
                 {
-                    GetTextureDrawSize(CommonTxd, ArrowRightTextureName, true, out float rightW, out _, false);
+                    GetTextureDrawSize(CommonTxd, ArrowRightTextureName, out float rightW, out _);
                     float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
 
                     BeginScriptGfx();
