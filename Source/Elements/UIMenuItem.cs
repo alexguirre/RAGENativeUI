@@ -359,6 +359,7 @@ namespace RAGENativeUI.Elements
             CardSuitDiamonds,
             CardSuitHearts,
             CardSuitSpades,
+            Art,
         }
 
         public class BadgeInfo
@@ -415,7 +416,7 @@ namespace RAGENativeUI.Elements
                                         armour, barber, clothes, franklin, bike, car, gun,
                                         heart, makeup, mask, michael, star, tatoo, trevor,
                                         @lock, tick, cardSuitClubs, cardSuitDiamonds, cardSuitHearts,
-                                        cardSuitSpades;
+                                        cardSuitSpades, art;
 
             private const string Txd = UIMenu.CommonTxd; // just an alias to reduce typing
 
@@ -443,9 +444,10 @@ namespace RAGENativeUI.Elements
             public static BadgeInfo Lock => @lock ?? (@lock = new BadgeInfo(BadgeStyle.Lock, Txd, "shop_lock", null, null, true));
             public static BadgeInfo Tick => tick ?? (tick = new BadgeInfo(BadgeStyle.Tick, Txd, "shop_tick_icon", null, null, true));
             public static BadgeInfo CardSuitClubs => cardSuitClubs ?? (cardSuitClubs = new BadgeInfo(BadgeStyle.CardSuitClubs, Txd, "card_suit_clubs", null, null, true));
-            public static BadgeInfo CardSuitDiamonds => cardSuitDiamonds ?? (cardSuitDiamonds = new BadgeInfo(BadgeStyle.CardSuitDiamonds, Txd, "card_suit_clubs", null, null, true));
+            public static BadgeInfo CardSuitDiamonds => cardSuitDiamonds ?? (cardSuitDiamonds = new BadgeInfo(BadgeStyle.CardSuitDiamonds, Txd, "card_suit_diamonds", null, null, true));
             public static BadgeInfo CardSuitHearts => cardSuitHearts ?? (cardSuitHearts = new BadgeInfo(BadgeStyle.CardSuitHearts, Txd, "card_suit_hearts", null, null, true));
             public static BadgeInfo CardSuitSpades => cardSuitSpades ?? (cardSuitSpades = new BadgeInfo(BadgeStyle.CardSuitSpades, Txd, "card_suit_spades", null, null, true));
+            public static BadgeInfo Art => art ?? (art = new BadgeInfo(BadgeStyle.Art, Txd, "shop_art_icon_a", Txd, "shop_art_icon_b"));
 
             public static BadgeInfo FromStyle(BadgeStyle style) => style switch
             {
@@ -476,6 +478,7 @@ namespace RAGENativeUI.Elements
                 BadgeStyle.CardSuitDiamonds => CardSuitDiamonds,
                 BadgeStyle.CardSuitHearts => CardSuitHearts,
                 BadgeStyle.CardSuitSpades => CardSuitSpades,
+                BadgeStyle.Art => Art,
                 _ => throw new ArgumentException($"No built-in {nameof(BadgeInfo)} for style '{style}'", nameof(style))
             };
         }
