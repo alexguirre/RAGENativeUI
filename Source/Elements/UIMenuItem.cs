@@ -395,13 +395,13 @@ namespace RAGENativeUI.Elements
 
             /// <summary>
             /// Gets the alternative texture dictionary used when the <see cref="UIMenuItem"/> is selected.
-            /// If <c>null</c>, <paramref name="TextureDictionary"/> and <paramref name="TextureName"/> are used always.
+            /// If <c>null</c>, <see cref="TextureDictionary"/> and <see cref="TextureName"/> are used always.
             /// </summary>
             public string SelectedTextureDictionary { get; }
 
             /// <summary>
             /// Gets the alternative texture name used when the <see cref="UIMenuItem"/> is selected.
-            /// If <c>null</c>, <paramref name="TextureDictionary"/> and <paramref name="TextureName"/> are used always.
+            /// If <c>null</c>, <see cref="TextureDictionary"/> and <see cref="TextureName"/> are used always.
             /// </summary>
             public string SelectedTextureName { get; }
 
