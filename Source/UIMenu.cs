@@ -29,6 +29,8 @@ namespace RAGENativeUI
 
     public delegate void ItemSelectEvent(UIMenu sender, UIMenuItem selectedItem, int index);
 
+    public delegate void MenuOpenEvent(UIMenu sender);
+
     public delegate void MenuCloseEvent(UIMenu sender);
 
     public delegate void MenuChangeEvent(UIMenu oldMenu, UIMenu newMenu, bool forward);
@@ -69,8 +71,8 @@ namespace RAGENativeUI
         private int hoveredItem = -1;
         private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
-        private bool _visible;
-        private bool _justOpened = true;
+        private bool visible;
+        private bool justOpened = true;
 
         private int hoveredUpDown = 0; // 0 = none, 1 = up, 2 = down
 
@@ -118,6 +120,11 @@ namespace RAGENativeUI
         /// Called when user selects a simple item.
         /// </summary>
         public event ItemSelectEvent OnItemSelect;
+
+        /// <summary>
+        /// Called when the menu becomes visible.
+        /// </summary>
+        public event MenuOpenEvent OnMenuOpen;
 
         /// <summary>
         /// Called when user closes the menu or goes back in a menu chain.
@@ -1045,7 +1052,7 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessMouse()
         {
-            if (!Visible || _justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
+            if (!Visible || justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
                 N.EnableControlAction(0, GameControl.LookUpDown);
                 N.EnableControlAction(0, GameControl.LookLeftRight);
@@ -1444,9 +1451,9 @@ namespace RAGENativeUI
         public void ProcessControl(Keys key = Keys.None)
         {
             if (!Visible) return;
-            if (_justOpened)
+            if (justOpened)
             {
-                _justOpened = false;
+                justOpened = false;
                 return;
             }
 
@@ -1600,16 +1607,32 @@ namespace RAGENativeUI
         /// </summary>
         public bool Visible
         {
-            get { return _visible; }
+            get => visible;
             set
             {
-                _visible = value;
-                _justOpened = value;
-                instructionalButtons.Update();
-                if (ParentMenu != null || !value) return;
-                if (!ResetCursorOnOpen) return;
-                Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
-                N.SetMouseCursorSprite(1);
+                if (visible != value)
+                {
+                    visible = value;
+                    justOpened = value;
+                    if (visible)
+                    {
+                        MenuOpenEv();
+                    }
+
+                    instructionalButtons.Update();
+                    if (ParentMenu != null || !value)
+                    {
+                        return;
+                    }
+
+                    if (!ResetCursorOnOpen)
+                    {
+                        return;
+                    }
+
+                    Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
+                    N.SetMouseCursorSprite(1);
+                }
             }
         }
 
@@ -1728,6 +1751,11 @@ namespace RAGENativeUI
         protected virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
         {
             OnCheckboxChange?.Invoke(this, sender, Checked);
+        }
+
+        protected virtual void MenuOpenEv()
+        {
+            OnMenuOpen?.Invoke(this);
         }
 
         protected virtual void MenuCloseEv()
