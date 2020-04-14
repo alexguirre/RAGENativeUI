@@ -56,6 +56,7 @@ namespace RAGENativeUI
         internal const string CheckboxBlankTextureName = "shop_box_blank";
         internal const string CheckboxTickSelectedTextureName = "shop_box_tickb";
         internal const string CheckboxBlankSelectedTextureName = "shop_box_blankb";
+        internal const string DefaultBannerTextureName = "interaction_bgd";
 
         private Sprite _bannerSprite;
         private ResRectangle _bannerRectangle;
@@ -139,7 +140,7 @@ namespace RAGENativeUI
         /// </summary>
         /// <param name="title">Title that appears on the big banner.</param>
         /// <param name="subtitle">Subtitle that appears in capital letters in a small black bar.</param>
-        public UIMenu(string title, string subtitle) : this(title, subtitle, new Point(0, 0), "commonmenu", "interaction_bgd")
+        public UIMenu(string title, string subtitle) : this(title, subtitle, new Point(0, 0), CommonTxd, DefaultBannerTextureName)
         {
         }
 
@@ -149,7 +150,7 @@ namespace RAGENativeUI
         /// <param name="title">Title that appears on the big banner.</param>
         /// <param name="subtitle">Subtitle that appears in capital letters in a small black bar. Set to "" if you dont want a subtitle.</param>
         /// <param name="offset">Point object with X and Y data for offsets. Applied to all menu elements.</param>
-        public UIMenu(string title, string subtitle, Point offset) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
+        public UIMenu(string title, string subtitle, Point offset) : this(title, subtitle, offset, CommonTxd, DefaultBannerTextureName)
         {
         }
 
@@ -160,7 +161,7 @@ namespace RAGENativeUI
         /// <param name="subtitle">Subtitle that appears in capital letters in a small black bar. Set to "" if you dont want a subtitle.</param>
         /// <param name="offset">Point object with X and Y data for offsets. Applied to all menu elements.</param>
         /// <param name="customBanner">Your custom Rage.Texture.</param>
-        public UIMenu(string title, string subtitle, Point offset, Texture customBanner) : this(title, subtitle, offset, "commonmenu", "interaction_bgd")
+        public UIMenu(string title, string subtitle, Point offset, Texture customBanner) : this(title, subtitle, offset, CommonTxd, DefaultBannerTextureName)
         {
             _customBanner = customBanner;
         }
@@ -560,19 +561,14 @@ namespace RAGENativeUI
                 return;
             }
 
-            float bannerHeight;
+            GetBannerDrawSize(CommonTxd, DefaultBannerTextureName, out float bannerWidth, out float bannerHeight);
             if (_bannerSprite != null)
             {
-                GetBannerDrawSize(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, out float bannerWidth, out bannerHeight);
                 DrawSprite(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, Color.White);
             }
-            else
+            else if (_bannerRectangle != null)
             {
-                GetBannerDrawSize("commonmenu", "interaction_bgd", out float bannerWidth, out bannerHeight);
-                if (_bannerRectangle != null)
-                {
-                    DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle.Color);
-                }
+                DrawRect(x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, _bannerRectangle.Color);
             }
 
             if (_bannerSprite != null || _bannerRectangle != null)
