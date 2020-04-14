@@ -345,8 +345,6 @@ namespace RAGENativeUI.Elements
         public enum BadgeStyle
         {
             None,
-            Custom,
-            Blank,
             BronzeMedal,
             GoldMedal,
             SilverMedal,
@@ -374,6 +372,8 @@ namespace RAGENativeUI.Elements
             CardSuitHearts,
             CardSuitSpades,
             Art,
+            Blank,
+            Custom,
         }
 
         public class BadgeInfo
