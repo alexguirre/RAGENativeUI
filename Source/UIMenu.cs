@@ -1635,7 +1635,7 @@ namespace RAGENativeUI
                 else
                 {
                     int newIndex = Common.Wrap(value, 0, MenuItems.Count);
-                    Rage.Game.LogTrivial("index:"+newIndex);
+
                     if (currentItem != newIndex || !MenuItems[newIndex].Selected)
                     {
                         if (currentItem >= 0 && currentItem < MenuItems.Count)
