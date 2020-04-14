@@ -355,6 +355,7 @@ namespace RAGENativeUI
             item.Parent = this;
             MenuItems.Add(item);
 
+            RefreshCurrentSelection();
         }
 
         /// <summary>
@@ -366,6 +367,8 @@ namespace RAGENativeUI
         {
             item.Parent = this;
             MenuItems.Insert(index, item);
+
+            RefreshCurrentSelection();
         }
 
         /// <summary>
@@ -380,11 +383,12 @@ namespace RAGENativeUI
                 maxItem = Math.Max(maxItem - 1, 0);
             }
             MenuItems.RemoveAt(index);
-            CurrentSelection = CurrentSelection; // refresh the current selection in case we removed the selected item
+            RefreshCurrentSelection(); // refresh the current selection in case we removed the selected item
         }
 
         /// <summary>
-        /// Reset the current selected item to 0. Use this after you add or remove items dynamically.
+        /// Reset the current selected item to 0. Use this after you add or remove items from <see cref="MenuItems"/> directly
+        /// instead of through <see cref="AddItem(UIMenuItem)"/>, <see cref="AddItem(UIMenuItem, int)"/> or <see cref="RemoveItemAt(int)"/>.
         /// </summary>
         public void RefreshIndex()
         {
@@ -406,6 +410,7 @@ namespace RAGENativeUI
         public void Clear()
         {
             MenuItems.Clear();
+            CurrentSelection = -1;
         }
 
         /// <summary>
@@ -1587,6 +1592,14 @@ namespace RAGENativeUI
         }
 
         /// <summary>
+        /// Refreshes the current item index and min/max visible items, in case they are out of bounds.
+        /// </summary>
+        private void RefreshCurrentSelection()
+        {
+            CurrentSelection = CurrentSelection;
+        }
+
+        /// <summary>
         /// Change whether this menu is visible to the user.
         /// </summary>
         public bool Visible
@@ -1621,12 +1634,17 @@ namespace RAGENativeUI
                 }
                 else
                 {
-                    if (currentItem >= 0 && currentItem < MenuItems.Count)
+                    int newIndex = Common.Wrap(value, 0, MenuItems.Count);
+                    Rage.Game.LogTrivial("index:"+newIndex);
+                    if (currentItem != newIndex || !MenuItems[newIndex].Selected)
                     {
-                        MenuItems[currentItem].Selected = false;
+                        if (currentItem >= 0 && currentItem < MenuItems.Count)
+                        {
+                            MenuItems[currentItem].Selected = false;
+                        }
+                        currentItem = newIndex;
+                        MenuItems[currentItem].Selected = true;
                     }
-                    currentItem = Common.Wrap(value, 0, MenuItems.Count);
-                    MenuItems[currentItem].Selected = true;
 
                     UpdateVisibleItemsIndices();
                 }
