@@ -76,10 +76,6 @@ namespace RAGENativeUI
 
         private int hoveredUpDown = 0; // 0 = none, 1 = up, 2 = down
 
-
-        private readonly InstructionalButtons instructionalButtons;
-        private bool instructionalButtonsEnabled = true;
-
         public string AUDIO_LIBRARY = "HUD_FRONTEND_DEFAULT_SOUNDSET";
 
         public string AUDIO_UPDOWN = "NAV_UP_DOWN";
@@ -143,6 +139,16 @@ namespace RAGENativeUI
         public Dictionary<UIMenuItem, UIMenu> Children { get; private set; }
 
         /// <summary>
+        /// Gets the <see cref="Elements.InstructionalButtons"/> instance used by this menu.
+        /// </summary>
+        public InstructionalButtons InstructionalButtons { get; }
+
+        /// <summary>
+        /// Gets or sets whether the instructional buttons are currently visible.
+        /// </summary>
+        public bool InstructionalButtonsEnabled { get; set; } = true;
+
+        /// <summary>
         /// Basic Menu constructor.
         /// </summary>
         /// <param name="title">Title that appears on the big banner.</param>
@@ -187,9 +193,9 @@ namespace RAGENativeUI
             Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
 
-            instructionalButtons = new InstructionalButtons();
-            instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
-            instructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
+            InstructionalButtons = new InstructionalButtons();
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
             Title = new ResText(title, new Point(0, 0), 0.0f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered);
@@ -318,7 +324,7 @@ namespace RAGENativeUI
         /// <param name="disable"></param>
         public void DisableInstructionalButtons(bool disable)
         {
-            instructionalButtonsEnabled = !disable;
+            InstructionalButtonsEnabled = !disable;
         }
 
         /// <summary>
@@ -526,8 +532,8 @@ namespace RAGENativeUI
             if (AllowCameraMovement && ControlDisablingEnabled)
                 EnableCameraMovement();
 
-            if (instructionalButtonsEnabled)
-                instructionalButtons.Draw();
+            if (InstructionalButtonsEnabled)
+                InstructionalButtons.Draw();
 
             AspectRatio = N.GetAspectRatio(false);
 
@@ -1093,7 +1099,7 @@ namespace RAGENativeUI
                     CurrentSelection = hoveredItem;
                     Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                     IndexChange(CurrentSelection);
-                    instructionalButtons.Update();
+                    InstructionalButtons.Update();
                 }
             }
 
@@ -1109,7 +1115,7 @@ namespace RAGENativeUI
                 {
                     GoDown();
                 }
-                instructionalButtons.Update();
+                InstructionalButtons.Update();
             }
 
             // mouse controls for lists
@@ -1465,13 +1471,13 @@ namespace RAGENativeUI
             if (IsControlBeingPressed(Common.MenuControls.Up, key))
             {
                 GoUp();
-                instructionalButtons.Update();
+                InstructionalButtons.Update();
             }
 
             else if (IsControlBeingPressed(Common.MenuControls.Down, key))
             {
                 GoDown();
-                instructionalButtons.Update();
+                InstructionalButtons.Update();
             }
 
             else if (IsControlBeingPressed(Common.MenuControls.Left, key))
@@ -1504,12 +1510,12 @@ namespace RAGENativeUI
 
         public void AddInstructionalButton(InstructionalButton button)
         {
-            instructionalButtons.Buttons.Add(button);
+            InstructionalButtons.Buttons.Add(button);
         }
 
         public void RemoveInstructionalButton(InstructionalButton button)
         {
-            instructionalButtons.Buttons.Remove(button);
+            InstructionalButtons.Buttons.Remove(button);
         }
 
         /// <summary>
@@ -1619,7 +1625,7 @@ namespace RAGENativeUI
                         MenuOpenEv();
                     }
 
-                    instructionalButtons.Update();
+                    InstructionalButtons.Update();
                     if (ParentMenu != null || !value)
                     {
                         return;
