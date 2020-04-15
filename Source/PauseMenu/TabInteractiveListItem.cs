@@ -228,7 +228,20 @@ namespace RAGENativeUI.PauseMenu
                     var itemText = new ResText("", basePos, 0.35f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right);
 
                     string caption = (convItem.Collection == null ? convItem.IndexToItem(convItem.Index) : convItem.Collection[convItem.Index]).ToString();
-                    int offset = StringMeasurer.MeasureString(caption);
+                    {
+                        // prepare text style for TextCommands.GetWidth
+                        int screenw = Game.Resolution.Width;
+                        int screenh = Game.Resolution.Height;
+                        const float height = 1080f;
+                        float ratio = (float)screenw / screenh;
+                        var width = height * ratio;
+                        float x = (itemText.Position.X) / width;
+                        N.SetTextFont((int)itemText.FontEnum);
+                        N.SetTextScale(0.0f, itemText.Scale);
+                        N.SetTextRightJustify(true);
+                        N.SetTextWrap(0.0f, x);
+                    }
+                    int offset = (int)(TextCommands.GetWidth(caption) * Game.Resolution.Width);
 
                     itemText.Color = convItem.Enabled ? selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
 

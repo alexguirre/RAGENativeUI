@@ -207,7 +207,8 @@ namespace RAGENativeUI.PauseMenu
                 ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 42 + 40 * propLen), new Size(512, 2), Color.FromArgb(fullAlpha, Color.White));
                 ResText.Draw(Heists[Index].Description, new Point((int)res.Width - SafeSize.X - 508, SafeSize.Y + 256 + 45 + 40 * propLen + 4), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size(508, 0));
 
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 44 + 40 * propLen), new Size(512, 45 * (StringMeasurer.MeasureString(Heists[Index].Description) / 500)), Color.FromArgb(blackAlpha, 0, 0, 0));
+                int lineCount = TextCommands.GetLineCount(Heists[Index].Description, 0.0f, 0.0f);
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 44 + 40 * propLen), new Size(512, 45 * lineCount), Color.FromArgb(blackAlpha, 0, 0, 0));
             }
         }
 

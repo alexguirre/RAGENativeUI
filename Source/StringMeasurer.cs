@@ -1,7 +1,10 @@
+using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 
 namespace RAGENativeUI
 {
+    [Obsolete("Use _BEGIN_TEXT_COMMAND_GET_WIDTH ( 0x54CE8AC98E120CAB) and _END_TEXT_COMMAND_GET_WIDTH (0x85F061DA64ED2F67) natives instead."), EditorBrowsable(EditorBrowsableState.Never)]
     public static class StringMeasurer
     {
         private static readonly Dictionary<char, int> CharMap = new Dictionary<char, int>
