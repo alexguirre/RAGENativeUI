@@ -103,6 +103,7 @@
     <Compile Include="Elements\Sprite.cs" />
     <Compile Include="StringMeasurer.cs" />
     <Compile Include="TextCommands.cs" />
+    <Compile Include="TextStyle.cs" />
     <Compile Include="UIMenu.cs" />
     <Compile Include="Elements\UIMenuCheckboxItem.cs" />
     <Compile Include="Elements\UIMenuItem.cs" />

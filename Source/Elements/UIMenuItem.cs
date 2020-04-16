@@ -15,17 +15,7 @@ namespace RAGENativeUI.Elements
                                      DefaultHighlightedForeColor = Color.Black,
                                      DefaultDisabledForeColor = Color.FromArgb(163, 159, 148);
         public static readonly float DefaultTextScale = 0.35f;
-        public static readonly Common.EFont DefaultTextFont = Common.EFont.ChaletLondon;
-
-        // TODO: re-add for backwards compatibility?
-        //protected ResRectangle _rectangle;
-        protected ResText _text = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
-        //protected Sprite _selectedSprite;
-
-        //protected Sprite _badgeLeft;
-        //protected Sprite _badgeRight;
-
-        protected ResText _labelText = new ResText("", Point.Empty, DefaultTextScale, Color.Empty, DefaultTextFont, ResText.Alignment.Left);
+        public static readonly TextFont DefaultTextFont = TextFont.ChaletLondon;
 
         private float leftBadgeOffset = 0.0f;
         private float rightBadgeOffset = 0.0f;
@@ -213,15 +203,16 @@ namespace RAGENativeUI.Elements
 
         internal void SetTextCommandOptions(bool left = true)
         {
+            if (left)
+            {
+                TextStyle.Apply();
+            }
+            else
+            {
+                RightLabelStyle.Apply();
+            }
             Color textColor = CurrentForeColor;
             N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
-            N.SetTextScale(0f, left ? _text.Scale : _labelText.Scale);
-            N.SetTextJustification(1);
-            N.SetTextFont((int)(left ? _text.FontEnum : _labelText.FontEnum));
-            N.SetTextWrap(0f, 1f);
-            N.SetTextCentre(false);
-            N.SetTextDropshadow(0, 0, 0, 0, 0);
-            N.SetTextEdge(0, 0, 0, 0, 0);
         }
 
         private void DrawBadge(BadgeInfo badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)
@@ -275,6 +266,11 @@ namespace RAGENativeUI.Elements
         public string Text { get; set; }
 
         /// <summary>
+        /// Gets or sets the text style for this item's label. Note, the property <see cref="TextStyle.Color"/> is ignored, instead the color returned by <see cref="CurrentForeColor"/> is used.
+        /// </summary>
+        public TextStyle TextStyle { get; set; } = TextStyle.Default.With(font: DefaultTextFont,scale: DefaultTextScale);
+
+        /// <summary>
         /// Returns the menu this item is in.
         /// </summary>
         public UIMenu Parent { get; set; }
@@ -313,6 +309,12 @@ namespace RAGENativeUI.Elements
         /// Gets or sets the current right label.
         /// </summary>
         public virtual string RightLabel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the text style for the right label. Used by <see cref="UIMenuListItem"/> selected option text as well.
+        /// Note, the property <see cref="TextStyle.Color"/> is ignored, instead the color returned by <see cref="CurrentForeColor"/> is used.
+        /// </summary>
+        public TextStyle RightLabelStyle { get; set; } = TextStyle.Default.With(font: DefaultTextFont, scale: DefaultTextScale);
 
         /// <summary>
         /// Gets or sets the current left badge. Set it to <see cref="BadgeStyle.None"/> to remove the badge.

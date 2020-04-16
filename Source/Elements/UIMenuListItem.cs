@@ -230,7 +230,7 @@ namespace RAGENativeUI.Elements
                                 (_items.Count > 0 ? _items[Index].ToString() : " ") :
                                 (Collection.Count > 0 ? Collection[Index].DisplayText : " ");
 
-            SetTextCommandOptions();
+            SetTextCommandOptions(false);
             float optTextWidth = TextCommands.GetWidth(selectedOption);
 
             GetBadgeOffsets(out _, out float badgeOffset);
@@ -241,7 +241,7 @@ namespace RAGENativeUI.Elements
                 float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                 float optTextY = y + 0.00277776f;
 
-                SetTextCommandOptions();
+                SetTextCommandOptions(false);
                 TextCommands.Display(selectedOption, optTextX, optTextY);
 
                 {
@@ -270,7 +270,7 @@ namespace RAGENativeUI.Elements
                 float optTextX = x + width - 0.00390625f - optTextWidth - badgeOffset;
                 float optTextY = y + 0.00277776f;// + 0.00416664f;
 
-                SetTextCommandOptions();
+                SetTextCommandOptions(false);
                 TextCommands.Display(selectedOption, optTextX, optTextY);
             }
         }

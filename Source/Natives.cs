@@ -36,6 +36,7 @@
         /// <param name="start">Left boundary on screen position (0.0 - 1.0).</param>
         /// <param name="end">Right boundary on screen position (0.0 - 1.0).</param>
         public static void SetTextWrap(float start, float end) => Natives.x63145D9C883A1A70(start, end);
+        public static float GetTextHeight(float scale, int font) => Natives.xDB88A37483346780<float>(scale, font);
         public static void BeginTextCommandDisplayText(string format) => Natives.x25FBB336DF1804CB(format);
         public static void EndTextCommandDisplayText(float x, float y) => Natives.xCD015E5BB0D96A57(x, y);
         public static float GetTextScaleHeight(float scale, int font) => Natives.xDB88A37483346780<float>(scale, font);
