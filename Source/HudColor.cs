@@ -1,5 +1,7 @@
 ﻿namespace RAGENativeUI
 {
+    using System.Drawing;
+
     /// <summary>
     /// Defines identifiers that represent the game HUD colors.
     /// </summary>
@@ -908,6 +910,23 @@
     /// </summary>
     public static class HudColorExtensions
     {
+        /// <summary>
+        /// Gets the RGBA value of the specified HUD color.
+        /// </summary>
+        ///<param name="hudColor">The HUD color.</param>
+        public static Color GetColor(this HudColor hudColor)
+        {
+            N.GetHudColour((int)hudColor, out int r, out int g, out int b, out int a);
+            return Color.FromArgb(a, r, g, b);
+        }
+
+        /// <summary>
+        /// Sets the RGBA value of the specified HUD color.
+        /// </summary>
+        /// <param name="hudColor">The HUD color.</param>
+        /// <param name="color">The new color value.</param>
+        public static void SetColor(this HudColor hudColor, Color color) => N.ReplaceHudColourWithRgba((int)hudColor, color.R, color.G, color.B, color.A);
+
         /// <summary>
         /// Gets the real name of the specified HUD color. For example, for <see cref="HudColor.PureWhite"/> it will return "HUD_COLOUR_PURE_WHITE".
         /// </summary>
