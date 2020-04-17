@@ -451,13 +451,8 @@ namespace RAGENativeUI
             }
 
             Size res = Game.Resolution;
-            Size primaryRes = Screen.PrimaryScreen.Bounds.Size; // TODO: this may not work in all cases, especially if the output display is set to other than the primary screen
-            if (res.Width < primaryRes.Width && res.Height < primaryRes.Height) // in case of windowed
-            {
-                primaryRes = res;
-            }
-
-            Point middle = new Point(res.Width / 2, res.Height / 2);
+            SizeF primaryRes = ActualScreenResolution;
+            PointF middle = new PointF(res.Width * 0.5f, res.Height * 0.5f);
 
             g.DrawTexture(_customBanner,
                           (customBannerX - 0.5f) * primaryRes.Width + middle.X,
@@ -474,6 +469,7 @@ namespace RAGENativeUI
         private float customBannerX, customBannerY,
                       customBannerW, customBannerH;
 
+        private static SizeF ActualScreenResolution { get; set; }
         private static float AspectRatio { get; set; } // only updated when a UIMenu is visible
         private static bool IsWideScreen => AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
         private static bool IsUltraWideScreen => AspectRatio > 3.5f; // > 32:9
@@ -535,6 +531,7 @@ namespace RAGENativeUI
             if (InstructionalButtonsEnabled)
                 InstructionalButtons.Draw();
 
+            ActualScreenResolution = Internals.Functions.ActualScreenResolution;
             AspectRatio = N.GetAspectRatio(false);
 
             menuWidth = 0.225f;
@@ -543,12 +540,12 @@ namespace RAGENativeUI
                 menuWidth = 0.225f * (16f / 9f / AspectRatio);
             }
 
-            menuWidth += (float)WidthOffset / Game.Resolution.Width;
+            menuWidth += WidthOffset / ActualScreenResolution.Width;
 
             BeginScriptGfx();
 
-            float x = 0.05f + (float)Offset.X / Game.Resolution.Width;
-            float y = 0.05f + (float)Offset.Y / Game.Resolution.Height;
+            float x = 0.05f + Offset.X / ActualScreenResolution.Width;
+            float y = 0.05f + Offset.Y / ActualScreenResolution.Height;
 
             DrawBanner(x, ref y);
 
@@ -821,7 +818,7 @@ namespace RAGENativeUI
             GetTextureDrawSize(txd, texName, out width, out height, true);
 
             // TODO: maybe add option to scale banner height with WidthOffset
-            float menuWidthNoOffset = menuWidth - ((float)WidthOffset / Game.Resolution.Width);
+            float menuWidthNoOffset = menuWidth - (WidthOffset / ActualScreenResolution.Width);
             if (width > menuWidthNoOffset)
             {
                 height = height * (menuWidthNoOffset / width);
