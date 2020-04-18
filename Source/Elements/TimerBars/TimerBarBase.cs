@@ -38,6 +38,9 @@
         internal const float BarYOffset = ((((0.013f - 0.002f) + 0.001f) + 0.001f) - 0.001f);
         internal const float BarWidth = 0.069f;
         internal const float BarHeight = 0.011f;
+
+        internal const float AccentXOffset = BgWidth - AccentWidth * 0.5f; // 0.951f;
+        internal const float AccentWidth = 0.002f;
     }
 
     public abstract class TimerBarBase
@@ -83,6 +86,11 @@
         /// </summary>
         public Color? Highlight { get; set; }
 
+        /// <summary>
+        /// Gets or sets the current accent color. If not <c>null</c>, a thin line of the specified color is drawn at the right border of the timer bar.
+        /// </summary>
+        public Color? Accent { get; set; }
+
         public TimerBarBase(string label)
         {
             Label = label;
@@ -120,6 +128,12 @@
             }
 
             N.DrawSprite(TB.BgTextureDictionary, TB.BgTextureName, x, y, w, h, 0.0f, 255, 255, 255, 140);
+
+            if (Accent.HasValue)
+            {
+                Color c = Accent.Value;
+                N.DrawRect(x - TB.BgXOffset + TB.AccentXOffset, y, TB.AccentWidth, h, c.R, c.G, c.B, c.A);
+            }
         }
 
         private void DrawLabel(float x, float y)
