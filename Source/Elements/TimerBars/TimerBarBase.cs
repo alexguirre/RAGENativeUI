@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.ComponentModel;
-
-namespace RAGENativeUI.Elements
+﻿namespace RAGENativeUI.Elements
 {
+    using System;
+    using System.ComponentModel;
+    using System.Drawing;
+
     // TimerBar Constants
     internal static class TB
     {
@@ -130,139 +129,6 @@ namespace RAGENativeUI.Elements
                 {
                     return 0.4f;
                 }
-            }
-        }
-    }
-
-    public class TextTimerBar : TimerBarBase
-    {
-        public string Text { get; set; }
-
-        public TextTimerBar(string label, string text) : base(label)
-        {
-            Text = text;
-        }
-
-        [Obsolete("Use TimerBarBase.Draw(float, float) instead."), EditorBrowsable(EditorBrowsableState.Never)]
-        public override void Draw(int interval)
-        {
-            SizeF res = UIMenu.GetScreenResolutionMantainRatio();
-            Point safe = UIMenu.GetSafezoneBounds();
-
-            base.Draw(interval);
-            ResText.Draw(Text, new Point((int)res.Width - safe.X - 10, (int)res.Height - safe.Y - (42 + (4 * interval))), 0.5f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
-        }
-
-        public override void Draw(float x, float y)
-        {
-            base.Draw(x, y);
-
-            y += TB.TextYOffset;
-
-            N.SetTextFont(0);
-            N.SetTextWrap(0.0f, TB.TextWrapEnd);
-            N.SetTextScale(TB.TextScale, TB.TextSize);
-            N.GetHudColour(1, out int r, out int g, out int b, out int a); // TODO: TextColor property
-            N.SetTextColour(r, g, b, a);
-            N.SetTextJustification(2); // Right
-
-            TextCommands.Display(Text, x, y);
-        }
-    }
-
-    public class BarTimerBar : TimerBarBase
-    {
-        // TODO: markers (see timerbar_lines)
-
-        /// <summary>
-        /// Bar percentage. Goes from 0 to 1.
-        /// </summary>
-        public float Percentage { get; set; }
-
-        public Color BackgroundColor { get; set; }
-        public Color ForegroundColor { get; set; }
-
-        public BarTimerBar(string label) : base(label)
-        {
-            N.GetHudColour(8, out int bR, out int bG, out int bB, out int bA); // HUD_COLOUR_REDDARK
-            N.GetHudColour(6, out int fR, out int fG, out int fB, out int fA); // HUD_COLOUR_RED
-
-            BackgroundColor = Color.FromArgb(bA, bR, bG, bB);
-            ForegroundColor = Color.FromArgb(fA, fR, fG, fB);
-        }
-
-        [Obsolete("Use TimerBarBase.Draw(float, float) instead."), EditorBrowsable(EditorBrowsableState.Never)]
-        public override void Draw(int interval)
-        {
-            SizeF res = UIMenu.GetScreenResolutionMantainRatio();
-            Point safe = UIMenu.GetSafezoneBounds();
-
-            base.Draw(interval);
-
-            var start = new Point((int)res.Width - safe.X - 160, (int)res.Height - safe.Y - (28 + (4 * interval)));
-
-            ResRectangle.Draw(start, new Size(150, 15), BackgroundColor);
-            ResRectangle.Draw(start, new Size((int)(150 * Percentage), 15), ForegroundColor);
-        }
-
-        public override void Draw(float x, float y)
-        {
-            base.Draw(x, y);
-
-            x += TB.BarXOffset;
-            y += TB.BarYOffset;
-
-            float w = TB.BarWidth;
-            float h = TB.BarHeight;
-
-            N.DrawRect(x, y, w, h, BackgroundColor.R, BackgroundColor.G, BackgroundColor.B, BackgroundColor.A);
-
-            float fillW = w * Percentage;
-            float fillX = x - w * 0.5f + fillW * 0.5f;
-            N.DrawRect(fillX, y, fillW, h, ForegroundColor.R, ForegroundColor.G, ForegroundColor.B, ForegroundColor.A);
-        }
-    }
-
-    public class TimerBarPool : BaseCollection<TimerBarBase>
-    {
-        public List<TimerBarBase> ToList()
-        {
-            return InternalList;
-        }
-
-        // added for backwards compatibility, BaseCollection.Remove returns a bool and this one doesn't return anything
-        public new void Remove(TimerBarBase item) 
-        {
-            base.Remove(item);
-        }
-
-        public void Draw()
-        {
-            if (InternalList.Count > 0)
-            {
-                N.RequestStreamedTextureDict(TB.BgTextureDictionary);
-                if (!N.HasStreamedTextureDictLoaded(TB.BgTextureDictionary))
-                {
-                    return;
-                }
-
-                N.SetScriptGfxAlign('R', 'B');
-                N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
-
-                float x = TB.InitialX, y = TB.InitialY - (N.BusySpinnerIsOn() ? TB.LoadingPromptYOffset : 0.0f);
-                for (int i = 0; i < InternalList.Count; i++)
-                {
-                    TimerBarBase b = InternalList[i];
-                    b.Draw(x, y);
-                    y -= b.SmallHeight ? TB.SmallHeightWithGap : TB.DefaultHeightWithGap;
-                }
-
-                N.ResetScriptGfxAlign();
-
-                N.HideHudComponentThisFrame(6); // VehicleName
-                N.HideHudComponentThisFrame(7); // AreaName
-                N.HideHudComponentThisFrame(8); // ?
-                N.HideHudComponentThisFrame(9); // StreetName
             }
         }
     }
