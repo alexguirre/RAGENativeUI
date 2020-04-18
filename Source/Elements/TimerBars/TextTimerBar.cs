@@ -6,6 +6,9 @@
 
     public class TextTimerBar : TimerBarBase
     {
+        /// <summary>
+        /// Represents the default value of <see cref="TextStyle"/>.
+        /// </summary>
         public static readonly TextStyle DefaultTextStyle = TextStyle.Default.With(
             scale: TB.TextSize,
             wrap: (0.0f, TB.TextWrapEnd),
@@ -13,6 +16,9 @@
             color: HudColorWhite
         );
 
+        /// <summary>
+        /// Represents the default value of <see cref="TextOffset"/>.
+        /// </summary>
         public static readonly PointF DefaultTextOffset = new PointF(0.0f, TB.TextYOffset);
 
         public string Text { get; set; }

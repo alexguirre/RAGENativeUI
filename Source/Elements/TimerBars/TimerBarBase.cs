@@ -45,6 +45,9 @@
 
     public abstract class TimerBarBase
     {
+        /// <summary>
+        /// Represents the default value of <see cref="LabelStyle"/>.
+        /// </summary>
         public static readonly TextStyle DefaultLabelStyle = TextStyle.Default.With(
             scale: TB.LabelSize,
             wrap: default((float, float)),
@@ -52,6 +55,9 @@
             color: HudColorWhite
         );
 
+        /// <summary>
+        /// Represents the default value of <see cref="LabelOffset"/>.
+        /// </summary>
         public static readonly PointF DefaultLabelOffset = new PointF(0.0f, 0.0f);
 
         // TODO: public SmallHeight property
