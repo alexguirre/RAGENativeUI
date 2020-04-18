@@ -4,7 +4,9 @@
     using System.ComponentModel;
     using System.Drawing;
 
-    // TimerBar Constants
+    /// <summary>
+    /// Internal timer bars constants.
+    /// </summary>
     internal static class TB
     {
         // Most constants are from the game scripts
@@ -43,6 +45,9 @@
         internal const float AccentWidth = 0.002f;
     }
 
+    /// <summary>
+    /// Defines the base class for timer bars.
+    /// </summary>
     public abstract class TimerBarBase
     {
         /// <summary>
@@ -73,9 +78,12 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the label. This is the <see cref="string"/> that appears at the left side of the timer bar.
+        /// </summary>
         public string Label { get; set; }
         /// <summary>
-        /// Gets the label style.
+        /// Gets or sets the label style.
         /// <para>
         /// Note, if the property <see cref="TextStyle.Wrap"/> is set to <c>default((float, float))</c> its value is ignored
         /// and the appropriate wrap bounds are calculated when drawing the timer bar.
@@ -83,7 +91,7 @@
         /// </summary>
         public TextStyle LabelStyle { get; set; } = DefaultLabelStyle;
         /// <summary>
-        /// Gets the position offset of the label in relative coordinates.
+        /// Gets or sets the position offset of the label in relative coordinates.
         /// </summary>
         public PointF LabelOffset { get; set; } = DefaultLabelOffset;
 
@@ -97,6 +105,10 @@
         /// </summary>
         public Color? Accent { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimerBarBase"/> class.
+        /// </summary>
+        /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
         public TimerBarBase(string label)
         {
             Label = label;
@@ -113,6 +125,11 @@
 
         }
 
+        /// <summary>
+        /// Draws this timer bar at the specified position.
+        /// </summary>
+        /// <param name="x">The X-position in relative coordinates.</param>
+        /// <param name="y">The Y-position in relative coordinates.</param>
         public virtual void Draw(float x, float y)
         {
             DrawBackground(x, y);

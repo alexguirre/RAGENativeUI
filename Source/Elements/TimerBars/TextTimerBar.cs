@@ -4,6 +4,9 @@
     using System.ComponentModel;
     using System.Drawing;
 
+    /// <summary>
+    /// Represents a timer bar with text located at the right side.
+    /// </summary>
     public class TextTimerBar : TimerBarBase
     {
         /// <summary>
@@ -21,16 +24,24 @@
         /// </summary>
         public static readonly PointF DefaultTextOffset = new PointF(0.0f, TB.TextYOffset);
 
+        /// <summary>
+        /// Gets or sets the text. This is the string that appears at the right side of the timer bar.
+        /// </summary>
         public string Text { get; set; }
         /// <summary>
-        /// Gets the text style.
+        /// Gets or sets the text style.
         /// </summary>
         public TextStyle TextStyle { get; set; } = DefaultTextStyle;
         /// <summary>
-        /// Gets the position offset of the text in relative coordinates.
+        /// Gets or sets the position offset of the text in relative coordinates.
         /// </summary>
         public PointF TextOffset { get; set; } = DefaultTextOffset;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextTimerBar"/> class.
+        /// </summary>
+        /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
+        /// <param name="text">A <see cref="string"/> that will appear at the right side of the timer bar.</param>
         public TextTimerBar(string label, string text) : base(label)
         {
             Text = text;
@@ -46,6 +57,7 @@
             ResText.Draw(Text, new Point((int)res.Width - safe.X - 10, (int)res.Height - safe.Y - (42 + (4 * interval))), 0.5f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
         }
 
+        /// <inheritdoc/>
         public override void Draw(float x, float y)
         {
             base.Draw(x, y);
