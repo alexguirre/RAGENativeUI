@@ -51,7 +51,6 @@
 
         public static readonly PointF DefaultLabelOffset = new PointF(0.0f, 0.0f);
 
-        // TODO: HighlightColor property
         // TODO: public SmallHeight property
         internal bool SmallHeight => this is BarTimerBar;
 
@@ -78,6 +77,11 @@
         /// Gets the position offset of the label in relative coordinates.
         /// </summary>
         public PointF LabelOffset { get; set; } = DefaultLabelOffset;
+
+        /// <summary>
+        /// Gets or sets the current highlight color. If not <c>null</c>, the timer bar background is drawn with an overlay of the specified color.
+        /// </summary>
+        public Color? Highlight { get; set; }
 
         public TimerBarBase(string label)
         {
@@ -108,6 +112,12 @@
 
             float w = TB.BgWidth;
             float h = SmallHeight ? TB.BgSmallHeight : TB.BgDefaultHeight;
+
+            if (Highlight.HasValue)
+            {
+                Color c = Highlight.Value;
+                N.DrawSprite(TB.BgTextureDictionary, TB.BgHighlightTextureName, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
+            }
 
             N.DrawSprite(TB.BgTextureDictionary, TB.BgTextureName, x, y, w, h, 0.0f, 255, 255, 255, 140);
         }
