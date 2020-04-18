@@ -42,11 +42,42 @@
 
     public abstract class TimerBarBase
     {
+        public static readonly TextStyle DefaultLabelStyle = TextStyle.Default.With(
+            scale: TB.LabelSize,
+            wrap: default((float, float)),
+            justification: TextJustification.Right,
+            color: HudColorWhite
+        );
+
+        public static readonly PointF DefaultLabelOffset = new PointF(0.0f, 0.0f);
+
         // TODO: HighlightColor property
         // TODO: public SmallHeight property
         internal bool SmallHeight => this is BarTimerBar;
 
+        // TODO: remove this when we have some method for accesing HUD colors
+        internal static Color HudColorWhite
+        {
+            get
+            {
+                N.GetHudColour(1, out int r, out int g, out int b, out int a);
+                return Color.FromArgb(a, r, g, b);
+            }
+        }
+
         public string Label { get; set; }
+        /// <summary>
+        /// Gets the label style.
+        /// <para>
+        /// Note, if the property <see cref="TextStyle.Wrap"/> is set to <c>default((float, float))</c> its value is ignored
+        /// and the appropriate wrap bounds are calculated when drawing the timer bar.
+        /// </para>
+        /// </summary>
+        public TextStyle LabelStyle { get; set; } = DefaultLabelStyle;
+        /// <summary>
+        /// Gets the position offset of the label in relative coordinates.
+        /// </summary>
+        public PointF LabelOffset { get; set; } = DefaultLabelOffset;
 
         public TimerBarBase(string label)
         {
@@ -83,22 +114,20 @@
 
         private void DrawLabel(float x, float y)
         {
-
-            float wrapEnd = TB.LabelInitialWrapEnd;
-            if (!N.GetIsWidescreen())
+            LabelStyle.Apply();
+            if (LabelStyle.Wrap == default)
             {
-                wrapEnd -= 0.02f;
+                float wrapEnd = TB.LabelInitialWrapEnd;
+                if (!N.GetIsWidescreen())
+                {
+                    wrapEnd -= 0.02f;
+                }
+                wrapEnd = wrapEnd - (0.03f * WrapEndMultiplier);
+
+                N.SetTextWrap(0.0f, wrapEnd);
             }
-            wrapEnd = wrapEnd - (0.03f * WrapEndMultiplier);
 
-            N.SetTextFont(0);
-            N.SetTextWrap(0.0f, wrapEnd);
-            N.SetTextScale(TB.LabelScale, TB.LabelSize);
-            N.GetHudColour(1, out int r, out int g, out int b, out int a); // TODO: LabelColor property
-            N.SetTextColour(r, g, b, a);
-            N.SetTextJustification(2); // Right
-
-            TextCommands.Display(Label, x, y);
+            TextCommands.Display(Label, x + LabelOffset.X, y + LabelOffset.Y);
         }
 
         private static float WrapEndMultiplier

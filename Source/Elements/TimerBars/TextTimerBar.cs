@@ -6,7 +6,24 @@
 
     public class TextTimerBar : TimerBarBase
     {
+        public static readonly TextStyle DefaultTextStyle = TextStyle.Default.With(
+            scale: TB.TextSize,
+            wrap: (0.0f, TB.TextWrapEnd),
+            justification: TextJustification.Right,
+            color: HudColorWhite
+        );
+
+        public static readonly PointF DefaultTextOffset = new PointF(0.0f, TB.TextYOffset);
+
         public string Text { get; set; }
+        /// <summary>
+        /// Gets the text style.
+        /// </summary>
+        public TextStyle TextStyle { get; set; } = DefaultTextStyle;
+        /// <summary>
+        /// Gets the position offset of the text in relative coordinates.
+        /// </summary>
+        public PointF TextOffset { get; set; } = DefaultTextOffset;
 
         public TextTimerBar(string label, string text) : base(label)
         {
@@ -27,16 +44,8 @@
         {
             base.Draw(x, y);
 
-            y += TB.TextYOffset;
-
-            N.SetTextFont(0);
-            N.SetTextWrap(0.0f, TB.TextWrapEnd);
-            N.SetTextScale(TB.TextScale, TB.TextSize);
-            N.GetHudColour(1, out int r, out int g, out int b, out int a); // TODO: TextColor property
-            N.SetTextColour(r, g, b, a);
-            N.SetTextJustification(2); // Right
-
-            TextCommands.Display(Text, x, y);
+            TextStyle.Apply();
+            TextCommands.Display(Text, x + TextOffset.X, y + TextOffset.Y);
         }
     }
 }
