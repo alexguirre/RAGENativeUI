@@ -10,10 +10,17 @@
     /// </summary>
     public class BarTimerBar : TimerBarBase
     {
+        private float percentage;
+
         /// <summary>
-        /// Gets or sets the progress percentage. It determines how filled the progress bar is and the valid range is from <c>0.0f</c> to <c>1.0f</c>.
+        /// Gets or sets the progress percentage. It determines how filled the progress bar is and
+        /// the valid range is from <c>0.0f</c> to <c>1.0f</c>, values outside this range are clamped.
         /// </summary>
-        public float Percentage { get; set; }
+        public float Percentage
+        {
+            get => percentage;
+            set => percentage = Rage.MathHelper.Clamp(value, 0.0f, 1.0f);
+        }
 
         /// <summary>
         /// Gets or sets the background color of the progress bar.
