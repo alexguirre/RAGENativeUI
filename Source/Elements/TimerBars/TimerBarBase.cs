@@ -43,6 +43,13 @@
 
         internal const float AccentXOffset = BgWidth - AccentWidth * 0.5f; // 0.951f;
         internal const float AccentWidth = 0.002f;
+
+        internal const string MarkersTextureDictionary = "timerbar_lines";
+        /// <summary>
+        /// We use the texture with the marker at 50% because the game only has textures for every 10% interval,
+        /// but here we support any percentage and the 50% texture is the easiest one to offset.
+        /// </summary>
+        internal const string MarkerTextureName = "linemarker50_128";
     }
 
     /// <summary>
