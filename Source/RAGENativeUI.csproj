@@ -85,6 +85,7 @@
     <Compile Include="Elements\Text.cs" />
     <Compile Include="Elements\IElement.cs" />
     <Compile Include="Elements\TimerBars\BarTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\CheckpointsTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TimerBarBase.cs" />
     <Compile Include="Elements\TimerBars\TimerBarPool.cs" />

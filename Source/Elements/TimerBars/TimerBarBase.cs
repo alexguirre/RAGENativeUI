@@ -36,7 +36,7 @@
         internal const float TextScale = 0.332f;
         internal const float TextSize = ((((((0.469f + 0.096f) - 0.017f) + 0.022f) - 0.062f) - 0.001f) - 0.013f);
 
-        internal const float BarXOffset = 0.118f; // == (((((0.919f - 0.081f) + 0.028f) + 0.05f) - 0.001f) - 0.002f) - TimerBarManager.InitialX
+        internal const float BarXOffset = 0.118f; // == (((((0.919f - 0.081f) + 0.028f) + 0.05f) - 0.001f) - 0.002f) - InitialX
         internal const float BarYOffset = ((((0.013f - 0.002f) + 0.001f) + 0.001f) - 0.001f);
         internal const float BarWidth = 0.069f;
         internal const float BarHeight = 0.011f;
@@ -50,6 +50,17 @@
         /// but here we support any percentage and the 50% texture is the easiest one to offset.
         /// </summary>
         internal const string MarkerTextureName = "linemarker50_128";
+
+        internal const string CheckpointTextureDictionary = "timerbars";
+        internal const string CheckpointTextureName = "circle_checkpoints";
+        internal const string CrossTextureDictionary = "cross";
+        internal const string CrossTextureName = "circle_checkpoints_cross";
+
+        internal const float CheckpointXOffset = 0.1495f; // == ((((((((0.919f - 0.081f) + 0.004f) - 0.006f) + 0.05f) - 0.001f) - 0.005f) + 0.065f) - 0.0005f) - InitialX
+        internal const float CheckpointYOffset = ((((0.013f - 0.002f) + 0.001f) + 0.001f) - 0.001f);
+        internal const float CheckpointWidth = 0.012f;
+        internal const float CheckpointHeight = 0.023f;
+        internal const float CheckpointPadding = 0.0094f;
     }
 
     /// <summary>
@@ -73,7 +84,7 @@
         public static readonly PointF DefaultLabelOffset = new PointF(0.0f, 0.0f);
 
         // TODO: public SmallHeight property
-        internal bool SmallHeight => this is BarTimerBar;
+        internal bool SmallHeight => this is BarTimerBar || this is CheckpointsTimerBar;
 
         // TODO: remove this when we have some method for accesing HUD colors
         internal static Color HudColorWhite
