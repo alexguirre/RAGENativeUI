@@ -86,6 +86,7 @@
     <Compile Include="Elements\IElement.cs" />
     <Compile Include="Elements\TimerBars\BarTimerBar.cs" />
     <Compile Include="Elements\TimerBars\CheckpointsTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\IconsTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TimerBarBase.cs" />
     <Compile Include="Elements\TimerBars\TimerBarPool.cs" />
@@ -118,7 +119,6 @@
     <Compile Include="Elements\ResText.cs" />
     <Compile Include="Elements\Scaleform.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

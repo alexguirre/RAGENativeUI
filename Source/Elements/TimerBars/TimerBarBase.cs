@@ -61,6 +61,11 @@
         internal const float CheckpointWidth = 0.012f;
         internal const float CheckpointHeight = 0.023f;
         internal const float CheckpointPadding = 0.0094f;
+
+        internal const float IconXOffset = 0.145f + 0.001f;
+        internal const float IconYOffset = 0.016f * 0.5f;
+        internal const float IconWidth = 0.016f + 0.003f;
+        internal const float IconHeight = 0.032f + 0.004f;
     }
 
     /// <summary>
