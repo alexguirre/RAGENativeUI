@@ -8,6 +8,7 @@
     /// <summary>
     /// Represents a timer bar containing a progress bar.
     /// </summary>
+    /// <seealso cref="TimerBarMarker"/>
     public class BarTimerBar : TimerBarBase
     {
         private float percentage;
@@ -32,9 +33,9 @@
         public Color ForegroundColor { get; set; }
 
         /// <summary>
-        /// Gets a list containing the markers of the progress bar.
+        /// Gets a list containing the <see cref="TimerBarMarker"/>s of the progress bar.
         /// </summary>
-        public IList<Marker> Markers { get; }
+        public IList<TimerBarMarker> Markers { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BarTimerBar"/> class.
@@ -48,7 +49,7 @@
             BackgroundColor = Color.FromArgb(bA, bR, bG, bB);
             ForegroundColor = Color.FromArgb(fA, fR, fG, fB);
 
-            Markers = new List<Marker>();
+            Markers = new List<TimerBarMarker>();
         }
 
         [Obsolete("Use TimerBarBase.Draw(float, float) instead."), EditorBrowsable(EditorBrowsableState.Never)]
@@ -91,7 +92,7 @@
                 }
 
                 float markerOrigX = x - w * 0.5f;
-                foreach (Marker m in Markers)
+                foreach (TimerBarMarker m in Markers)
                 {
                     float markerX = markerOrigX + w * m.Percentage;
 
@@ -99,59 +100,59 @@
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Defines a <see cref="BarTimerBar"/> marker. A marker is represented as a thin line over the progress bar at the specified <see cref="Percentage"/>.
+    /// </summary>
+    public struct TimerBarMarker : IEquatable<TimerBarMarker>
+    {
+        /// <summary>
+        /// Gets the percentage at which the marker is placed. Its range is from <c>0.0f</c> to <c>1.0f</c>.
+        /// </summary>
+        public float Percentage { get; }
 
         /// <summary>
-        /// Defines a progress bar marker. A marker is represented as a thin line over the progress bar at the specified <see cref="Percentage"/>.
+        /// Gets the color of the marker.
         /// </summary>
-        public struct Marker : IEquatable<Marker>
+        public Color Color { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimerBarMarker"/> structure.
+        /// </summary>
+        /// <param name="percentage">
+        /// The percentage at which the marker is placed.
+        /// Valid range is from <c>0.0f</c> to <c>1.0f</c>, values outside this range are clamped.
+        /// </param>
+        /// <param name="color">The color of the marker.</param>
+        public TimerBarMarker(float percentage, Color color)
         {
-            /// <summary>
-            /// Gets the percentage at which the marker is placed. Its range is from <c>0.0f</c> to <c>1.0f</c>.
-            /// </summary>
-            public float Percentage { get; }
+            Percentage = Rage.MathHelper.Clamp(percentage, 0.0f, 1.0f);
+            Color = color;
+        }
 
-            /// <summary>
-            /// Gets the color of the marker.
-            /// </summary>
-            public Color Color { get; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimerBarMarker"/> structure with <see cref="Color"/> set to <see cref="Color.Black"/>.
+        /// </summary>
+        /// <param name="percentage">
+        /// The percentage at which the marker is placed.
+        /// Its valid range is from <c>0.0f</c> to <c>1.0f</c>, values outside this range are clamped.
+        /// </param>
+        public TimerBarMarker(float percentage) : this(percentage, Color.Black)
+        {
+        }
 
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Marker"/> structure.
-            /// </summary>
-            /// <param name="percentage">
-            /// The percentage at which the marker is placed.
-            /// Valid range is from <c>0.0f</c> to <c>1.0f</c>, values outside this range are clamped.
-            /// </param>
-            /// <param name="color">The color of the marker.</param>
-            public Marker(float percentage, Color color)
-            {
-                Percentage = Rage.MathHelper.Clamp(percentage, 0.0f, 1.0f);
-                Color = color;
-            }
+        /// <inheritdoc/>
+        public override int GetHashCode() => (Percentage, Color).GetHashCode();
 
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Marker"/> structure with <see cref="Color"/> set to <see cref="Color.Black"/>.
-            /// </summary>
-            /// <param name="percentage">
-            /// The percentage at which the marker is placed.
-            /// Its valid range is from <c>0.0f</c> to <c>1.0f</c>, values outside this range are clamped.
-            /// </param>
-            public Marker(float percentage) : this(percentage, Color.Black)
-            {
-            }
+        /// <inheritdoc/>
+        public override bool Equals(object other) => other is TimerBarMarker m && Equals(m);
 
-            /// <inheritdoc/>
-            public override int GetHashCode() => (Percentage, Color).GetHashCode();
-
-            /// <inheritdoc/>
-            public override bool Equals(object other) => other is Marker m && Equals(m);
-
-            /// <inheritdoc/>
-            public bool Equals(Marker other)
-            {
-                return Percentage == other.Percentage &&
-                       Color == other.Color;
-            }
+        /// <inheritdoc/>
+        public bool Equals(TimerBarMarker other)
+        {
+            return Percentage == other.Percentage &&
+                   Color == other.Color;
         }
     }
 }
