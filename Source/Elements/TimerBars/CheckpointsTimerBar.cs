@@ -20,6 +20,8 @@
     {
         /// <summary>
         /// Gets the list containing the <see cref="Checkpoint"/>s of the timer bar.
+        /// The checkpoints are shown from right to left: the checkpoint at index 0 is the right-most circle
+        /// and the last checkpoint in the list is the left-most circle.
         /// </summary>
         public IList<Checkpoint> Checkpoints { get; }
 
@@ -28,6 +30,7 @@
         /// </summary>
         /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
         /// <param name="numberOfCheckpoints">Determines the number of <see cref="Checkpoint"/>s created initially.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="numberOfCheckpoints"/> is negative.</exception>
         public CheckpointsTimerBar(string label, int numberOfCheckpoints) : base(label)
         {
             if (numberOfCheckpoints < 0)
@@ -55,30 +58,35 @@
                 bool requestedCrossTxd = false;
                 foreach (Checkpoint cp in Checkpoints)
                 {
-                    Color circleColor = cp.State switch
+                    if (cp != null)
                     {
-                        CheckpointState.Completed => cp.Color,
-                        CheckpointState.Failed => Color.Black,
-                        _ => Color.FromArgb(51, 255, 255, 255),
-                    };
-
-                    N.DrawSprite(TB.CheckpointTextureDictionary, TB.CheckpointTextureName, x, y, TB.CheckpointWidth, TB.CheckpointHeight, 0.0f, circleColor.R, circleColor.G, circleColor.B, circleColor.A);
-
-                    if (cp.IsCrossedOut)
-                    {
-                        if (!requestedCrossTxd)
+                        Color circleColor = cp.State switch
                         {
-                            N.RequestStreamedTextureDict(TB.CrossTextureDictionary);
-                            if (!N.HasStreamedTextureDictLoaded(TB.CrossTextureDictionary))
+                            CheckpointState.Completed => cp.Color,
+                            CheckpointState.Failed => Color.Black,
+                            _ => Color.FromArgb(51, 255, 255, 255),
+                        };
+
+                        N.DrawSprite(TB.CheckpointTextureDictionary, TB.CheckpointTextureName, x, y, TB.CheckpointWidth, TB.CheckpointHeight, 0.0f,
+                                    circleColor.R, circleColor.G, circleColor.B, circleColor.A);
+
+                        if (cp.IsCrossedOut)
+                        {
+                            if (!requestedCrossTxd)
                             {
-                                break;
+                                N.RequestStreamedTextureDict(TB.CrossTextureDictionary);
+                                if (!N.HasStreamedTextureDictLoaded(TB.CrossTextureDictionary))
+                                {
+                                    break;
+                                }
+
+                                requestedCrossTxd = true;
                             }
 
-                            requestedCrossTxd = true;
+                            int crossColor = cp.State == CheckpointState.Failed ? 255 : 0;
+                            N.DrawSprite(TB.CrossTextureDictionary, TB.CrossTextureName, x, y, TB.CheckpointWidth, TB.CheckpointHeight, 0.0f,
+                                        crossColor, crossColor, crossColor, 250);
                         }
-
-                        int crossColor = cp.State == CheckpointState.Failed ? 255 : 0;
-                        N.DrawSprite(TB.CrossTextureDictionary, TB.CrossTextureName, x, y, TB.CheckpointWidth, TB.CheckpointHeight, 0.0f, crossColor, crossColor, crossColor, 250);
                     }
 
                     x -= TB.CheckpointPadding;
