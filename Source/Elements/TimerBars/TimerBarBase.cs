@@ -98,10 +98,18 @@
             }
         }
 
+        private string label;
+
         /// <summary>
         /// Gets or sets the label. This is the <see cref="string"/> that appears at the left side of the timer bar.
         /// </summary>
-        public string Label { get; set; }
+        /// <exception cref="ArgumentNullException"><c>value</c> is <c>null</c>.</exception>
+        public string Label
+        {
+            get => label;
+            set => label = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
         /// <summary>
         /// Gets or sets the label style.
         /// </summary>
@@ -110,6 +118,7 @@
         /// when applying the style based on the current aspect ratio.
         /// </remarks>
         public TextStyle LabelStyle { get; set; } = DefaultLabelStyle;
+
         /// <summary>
         /// Gets or sets the position offset of the label in relative coordinates.
         /// </summary>
@@ -136,6 +145,7 @@
         /// Initializes a new instance of the <see cref="TimerBarBase"/> class.
         /// </summary>
         /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="label"/> is <c>null</c>.</exception>
         public TimerBarBase(string label)
         {
             Label = label;

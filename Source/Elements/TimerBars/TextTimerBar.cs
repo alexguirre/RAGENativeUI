@@ -24,14 +24,23 @@
         /// </summary>
         public static readonly PointF DefaultTextOffset = new PointF(0.0f, TB.TextYOffset);
 
+        private string text;
+
         /// <summary>
-        /// Gets or sets the text. This is the string that appears at the right side of the timer bar.
+        /// Gets or sets the text. This is the <see cref="string"/> that appears at the right side of the timer bar.
         /// </summary>
-        public string Text { get; set; }
+        /// <exception cref="ArgumentNullException"><c>value</c> is <c>null</c>.</exception>
+        public string Text
+        {
+            get => text;
+            set => text = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
         /// <summary>
         /// Gets or sets the text style.
         /// </summary>
         public TextStyle TextStyle { get; set; } = DefaultTextStyle;
+
         /// <summary>
         /// Gets or sets the position offset of the text in relative coordinates.
         /// </summary>
@@ -42,6 +51,7 @@
         /// </summary>
         /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
         /// <param name="text">A <see cref="string"/> that will appear at the right side of the timer bar.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="label"/> or <paramref name="text"/> are <c>null</c>.</exception>
         public TextTimerBar(string label, string text) : base(label)
         {
             Text = text;
