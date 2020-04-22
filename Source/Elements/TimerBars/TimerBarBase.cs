@@ -80,23 +80,13 @@
             scale: TB.LabelSize,
             wrap: (0.0f, TB.LabelInitialWrapEnd),
             justification: TextJustification.Right,
-            color: HudColorWhite
+            color: HudColor.White.GetColor()
         );
 
         /// <summary>
         /// Represents the default value of <see cref="LabelOffset"/>.
         /// </summary>
         public static readonly PointF DefaultLabelOffset = new PointF(0.0f, 0.0f);
-
-        // TODO: remove this when we have some method for accesing HUD colors
-        internal static Color HudColorWhite
-        {
-            get
-            {
-                N.GetHudColour(1, out int r, out int g, out int b, out int a);
-                return Color.FromArgb(a, r, g, b);
-            }
-        }
 
         private string label;
 
