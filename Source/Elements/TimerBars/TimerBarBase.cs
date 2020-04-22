@@ -179,10 +179,7 @@
 
             float w = TB.BgWidth;
             float h = Thin ? TB.BgSmallHeight : TB.BgDefaultHeight;
-            /*
-             0.028f -> 0.012f
-             0.036f -> 0.008f
-             */
+
             if (Highlight.HasValue)
             {
                 Color c = Highlight.Value;
