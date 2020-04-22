@@ -84,7 +84,12 @@
     <Compile Include="Elements\Rectangle.cs" />
     <Compile Include="Elements\Text.cs" />
     <Compile Include="Elements\IElement.cs" />
-    <Compile Include="Elements\TimerBars.cs" />
+    <Compile Include="Elements\TimerBars\BarTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\CheckpointsTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\IconsTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
+    <Compile Include="Elements\TimerBars\TimerBarBase.cs" />
+    <Compile Include="Elements\TimerBars\TimerBarPool.cs" />
     <Compile Include="Elements\UIMenuColoredItem.cs" />
     <Compile Include="Elements\InstructionalButtons.cs" />
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
@@ -114,7 +119,6 @@
     <Compile Include="Elements\ResText.cs" />
     <Compile Include="Elements\Scaleform.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
