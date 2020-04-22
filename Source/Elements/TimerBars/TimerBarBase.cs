@@ -78,7 +78,7 @@
         /// </summary>
         public static readonly TextStyle DefaultLabelStyle = TextStyle.Default.With(
             scale: TB.LabelSize,
-            wrap: default((float, float)),
+            wrap: (0.0f, TB.LabelInitialWrapEnd),
             justification: TextJustification.Right,
             color: HudColorWhite
         );
@@ -107,11 +107,11 @@
         public string Label { get; set; }
         /// <summary>
         /// Gets or sets the label style.
-        /// <para>
-        /// Note, if the property <see cref="TextStyle.Wrap"/> is set to <c>default((float, float))</c> its value is ignored
-        /// and the appropriate wrap bounds are calculated when drawing the timer bar.
-        /// </para>
         /// </summary>
+        /// <remarks>
+        /// Note, the <c>End</c> value of the property <see cref="TextStyle.Wrap"/> is slightly modified
+        /// when applying the style based on the current aspect ratio.
+        /// </remarks>
         public TextStyle LabelStyle { get; set; } = DefaultLabelStyle;
         /// <summary>
         /// Gets or sets the position offset of the label in relative coordinates.
@@ -145,7 +145,6 @@
 
             ResText.Draw(Label, new Point((int)res.Width - safe.X - 180, (int)res.Height - safe.Y - (30 + (4 * interval))), 0.3f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
             Sprite.Draw("timerbars", "all_black_bg", new Point((int)res.Width - safe.X - 298, (int)res.Height - safe.Y - (40 + (4 * interval))), new Size(300, 37), 0f, Color.FromArgb(180, 255, 255, 255));
-
         }
 
         /// <summary>
@@ -184,19 +183,14 @@
 
         private void DrawLabel(float x, float y)
         {
-            LabelStyle.Apply();
-            if (LabelStyle.Wrap == default)
+            var wrap = LabelStyle.Wrap;
+            if (!N.GetIsWidescreen())
             {
-                float wrapEnd = TB.LabelInitialWrapEnd;
-                if (!N.GetIsWidescreen())
-                {
-                    wrapEnd -= 0.02f;
-                }
-                wrapEnd = wrapEnd - (0.03f * WrapEndMultiplier);
-
-                N.SetTextWrap(0.0f, wrapEnd);
+                wrap.End -= 0.02f;
             }
+            wrap.End -= 0.03f * WrapEndMultiplier;
 
+            LabelStyle.With(wrap: wrap).Apply();
             TextCommands.Display(Label, x + LabelOffset.X, y + LabelOffset.Y);
         }
 
