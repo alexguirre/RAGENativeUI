@@ -33,7 +33,7 @@
                 {
                     TimerBarBase b = InternalList[i];
                     b.Draw(x, y);
-                    y -= b.SmallHeight ? TB.SmallHeightWithGap : TB.DefaultHeightWithGap;
+                    y -= b.Thin ? TB.SmallHeightWithGap : TB.DefaultHeightWithGap;
                 }
 
                 N.ResetScriptGfxAlign();

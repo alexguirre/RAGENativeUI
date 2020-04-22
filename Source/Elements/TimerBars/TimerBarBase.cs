@@ -88,9 +88,6 @@
         /// </summary>
         public static readonly PointF DefaultLabelOffset = new PointF(0.0f, 0.0f);
 
-        // TODO: public SmallHeight property
-        internal bool SmallHeight => this is BarTimerBar || this is CheckpointsTimerBar;
-
         // TODO: remove this when we have some method for accesing HUD colors
         internal static Color HudColorWhite
         {
@@ -129,6 +126,13 @@
         public Color? Accent { get; set; }
 
         /// <summary>
+        /// Gets or sets the height of this timer bar.
+        /// If <c>false</c>, it uses the default height (like <see cref="TextTimerBar"/>),
+        /// otherwise, it uses a slightly smaller height (like <see cref="BarTimerBar"/>).
+        /// </summary>
+        protected internal bool Thin { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TimerBarBase"/> class.
         /// </summary>
         /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
@@ -161,11 +165,14 @@
         private void DrawBackground(float x, float y)
         {
             x += TB.BgXOffset;
-            y += SmallHeight ? TB.BgSmallYOffset : TB.BgDefaultYOffset;
+            y += Thin ? TB.BgSmallYOffset : TB.BgDefaultYOffset;
 
             float w = TB.BgWidth;
-            float h = SmallHeight ? TB.BgSmallHeight : TB.BgDefaultHeight;
-
+            float h = Thin ? TB.BgSmallHeight : TB.BgDefaultHeight;
+            /*
+             0.028f -> 0.012f
+             0.036f -> 0.008f
+             */
             if (Highlight.HasValue)
             {
                 Color c = Highlight.Value;

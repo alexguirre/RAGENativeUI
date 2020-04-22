@@ -38,6 +38,8 @@
                 throw new ArgumentOutOfRangeException(nameof(numberOfCheckpoints), numberOfCheckpoints, $"{nameof(numberOfCheckpoints)} is negative");
             }
 
+            Thin = true;
+
             Checkpoints = new List<TimerBarCheckpoint>();
             for (int i = 0; i < numberOfCheckpoints; i++)
             {

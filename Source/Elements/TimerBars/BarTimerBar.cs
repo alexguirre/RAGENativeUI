@@ -43,6 +43,8 @@
         /// <param name="label">A <see cref="string"/> that will appear at the left side of the timer bar.</param>
         public BarTimerBar(string label) : base(label)
         {
+            Thin = true;
+
             N.GetHudColour(8, out int bR, out int bG, out int bB, out int bA); // HUD_COLOUR_REDDARK
             N.GetHudColour(6, out int fR, out int fG, out int fB, out int fA); // HUD_COLOUR_RED
 
