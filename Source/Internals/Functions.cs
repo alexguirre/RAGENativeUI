@@ -2,23 +2,22 @@
 {
     using System;
     using System.Drawing;
-    using System.Runtime.InteropServices;
-    using System.Security;
 
     using Rage;
 
+    using static RAGENativeUI.IL.Invoker;
+
     internal static class Functions
     {
-        [SuppressUnmanagedCodeSecurity] private delegate float RetFloat();
-
-        private static readonly RetFloat getActualScreenWidth, getActualScreenHeight;
+        private static readonly IntPtr getActualScreenWidth, getActualScreenHeight;
 
         static Functions()
         {
             // TODO: move this to Module Initializer
             IntPtr[] addresses = Game.FindAllOccurrencesOfPattern("48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??");
-            getActualScreenHeight = Marshal.GetDelegateForFunctionPointer<RetFloat>(addresses[0]);
-            getActualScreenWidth = Marshal.GetDelegateForFunctionPointer<RetFloat>(addresses[1]);
+
+            getActualScreenHeight = addresses[0];
+            getActualScreenWidth = addresses[1];
         }
 
         /// <summary>
@@ -30,7 +29,7 @@
             {
                 using var tls = UsingTls.Scope();
 
-                return new SizeF(getActualScreenWidth(), getActualScreenHeight());
+                return new SizeF(InvokeRetFloat(getActualScreenWidth), InvokeRetFloat(getActualScreenHeight));
             }
         }
     }
