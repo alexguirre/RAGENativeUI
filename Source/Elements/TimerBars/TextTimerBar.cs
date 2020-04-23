@@ -16,7 +16,7 @@
             scale: TB.TextSize,
             wrap: (0.0f, TB.TextWrapEnd),
             justification: TextJustification.Right,
-            color: HudColorWhite
+            color: HudColor.White.GetColor()
         );
 
         /// <summary>
