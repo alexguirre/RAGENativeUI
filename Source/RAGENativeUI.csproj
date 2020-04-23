@@ -60,6 +60,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RAGENativeUI.IL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>IL\bin\RAGENativeUI.IL.dll</HintPath>
+    </Reference>
     <Reference Include="RagePluginHookSDK">
       <HintPath>..\Dependencies\RagePluginHookSDK.dll</HintPath>
       <Private>False</Private>
@@ -124,6 +128,9 @@
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>dotnet build "$(ProjectDir)\IL\RAGENativeUI.IL.ilproj" --configuration "$(ConfigurationName)" --output "$(ProjectDir)\IL\bin\"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
