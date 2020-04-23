@@ -94,6 +94,7 @@
     <Compile Include="Elements\InstructionalButtons.cs" />
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
     <Compile Include="DisplayItemsCollection.cs" />
+    <Compile Include="HudColor.cs" />
     <Compile Include="Internals\Functions.cs" />
     <Compile Include="Internals\UsingTls.cs" />
     <Compile Include="MenuPool.cs" />

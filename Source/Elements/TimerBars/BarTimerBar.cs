@@ -45,11 +45,8 @@
         {
             Thin = true;
 
-            N.GetHudColour(8, out int bR, out int bG, out int bB, out int bA); // HUD_COLOUR_REDDARK
-            N.GetHudColour(6, out int fR, out int fG, out int fB, out int fA); // HUD_COLOUR_RED
-
-            BackgroundColor = Color.FromArgb(bA, bR, bG, bB);
-            ForegroundColor = Color.FromArgb(fA, fR, fG, fB);
+            BackgroundColor = HudColor.RedDark.GetColor();
+            ForegroundColor = HudColor.Red.GetColor();
 
             Markers = new List<TimerBarMarker>();
         }
