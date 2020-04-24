@@ -124,10 +124,26 @@
     <Compile Include="Elements\ResText.cs" />
     <Compile Include="Elements\Scaleform.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ilmerge">
+      <Version>3.0.29</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+copy $(SolutionDir)\..\Dependencies\RagePluginHookSDK.dll RagePluginHook.dll
+
+$(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll RAGENativeUI.IL.dll
+
+del RAGENativeUI.dll
+del RAGENativeUI.pdb
+del RAGENativeUI.IL.dll
+move "$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll
+move "$(Temp)\RAGENativeUI.pdb" RAGENativeUI.pdb
+
+del RagePluginHook.dll
+)</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>dotnet build "$(ProjectDir)\IL\RAGENativeUI.IL.ilproj" --configuration "$(ConfigurationName)" --output "$(ProjectDir)\IL\bin\"</PreBuildEvent>
