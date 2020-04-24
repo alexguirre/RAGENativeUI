@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.IL">
+    <!-- Make sure that the DebuggableAttribute is set properly. -->
+    <PropertyGroup>
+        <DebugOptimization>IMPL</DebugOptimization>
+        <DebugOptimization Condition="'$(ConfigurationGroup)' == 'Release'">OPT</DebugOptimization>
+    </PropertyGroup>
+    <PropertyGroup>
+        <ProjectGuid>{9D64E97E-B608-465D-BECE-C4E430DCC077}</ProjectGuid>
+        <TargetFramework>net472</TargetFramework>
+        <MicrosoftNetCoreIlasmPackageVersion>3.0.0-preview-27318-01</MicrosoftNetCoreIlasmPackageVersion>
+        <IncludePath >include</IncludePath>
+        <IlasmFlags>$(IlasmFlags) -INCLUDE=$(IncludePath) -DEBUG=$(DebugOptimization)</IlasmFlags>
+    </PropertyGroup>
+    <ItemGroup>
+        <ILResourceReference Include="$(RefPath)$(TargetFileName)" />
+    </ItemGroup>
+</Project>
