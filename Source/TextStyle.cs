@@ -126,21 +126,14 @@
         /// </summary>
         public void Apply()
         {
-            N.SetTextFont((int)Font);
-            N.SetTextColour(Color.R, Color.G, Color.B, Color.A);
-            N.SetTextScale(0.0f, Scale);
-            N.SetTextJustification((int)Justification);
-            N.SetTextWrap(Wrap.Start, Wrap.End);
-
-            if (Outline)
-            {
-                N.SetTextOutline();
-            }
-            
-            if (DropShadow)
-            {
-                N.SetTextDropShadow();
-            }
+            ref var s = ref Internals.Variables.ScriptTextStyle;
+            s.Font = (int)Font;
+            s.Color = Color.ToArgb();
+            s.Scale = Scale;
+            s.Justification = (byte)Justification;
+            s.Wrap = Wrap;
+            s.Outline = Outline;
+            s.DropShadow = DropShadow;
         }
 
         /// <summary>
@@ -187,6 +180,9 @@
         }
 
         /// <inheritdoc/>
+        public override string ToString() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).ToString();
+
+        /// <inheritdoc/>
         public override int GetHashCode() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).GetHashCode();
 
         /// <inheritdoc/>
@@ -211,5 +207,27 @@
             font: TextFont.ChaletLondon,
             color: Color.FromArgb(0xFF, 0xE1, 0xE1, 0xE1)
         );
+
+        /// <summary>
+        /// Gets or sets the text style currently applied. The setter is equivalent to <see cref="Apply"/>.
+        /// </summary>
+        public static TextStyle Current
+        {
+            get
+            {
+                ref var s = ref Internals.Variables.ScriptTextStyle;
+                return new TextStyle(
+                    (TextFont)s.Font,
+                    Color.FromArgb(s.Color),
+                    s.Scale,
+                    (TextJustification)s.Justification,
+                    s.Wrap.Start,
+                    s.Wrap.End,
+                    s.DropShadow,
+                    s.Outline
+                    );
+            }
+            set => value.Apply();
+        }
     }
 }

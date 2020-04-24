@@ -1,10 +1,5 @@
 #include "coreassembly.h"
 
-.assembly RAGENativeUI.IL
-{
-    .ver 1:0:0:0
-}
-
 .module RAGENativeUI.IL.dll
 
 .class public abstract auto ansi sealed beforefieldinit RAGENativeUI.IL.Invoker
