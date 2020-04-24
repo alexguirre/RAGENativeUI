@@ -22,7 +22,9 @@ jobs:
           location: Dependencies/
 
       - name: Build
-        run: msbuild Source/RAGENativeUI.sln /p:Configuration=${{ matrix.config }} /p:Platform=x64
+        run: |
+          msbuild Source/RAGENativeUI.sln /t:restore
+          msbuild Source/RAGENativeUI.sln /p:Configuration=${{ matrix.config }} /p:Platform=x64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
