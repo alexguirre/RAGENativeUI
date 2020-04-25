@@ -750,7 +750,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            string description = MenuItems[CurrentSelection].Description;
+            string description = DescriptionOverride ?? MenuItems[CurrentSelection].Description;
             if (!String.IsNullOrWhiteSpace(description))
             {
                 y += 0.00277776f * 2f;
@@ -1725,6 +1725,13 @@ namespace RAGENativeUI
         /// The text that overrides the counter string.
         /// </value>
         public string CounterOverride { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description override.
+        /// If not <c>null</c>, this <see cref="string"/> is shown instead of
+        /// the <see cref="UIMenuItem.Description"/> of the currently selected item.
+        /// </summary>
+        public string DescriptionOverride { get; set; }
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
