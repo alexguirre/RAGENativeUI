@@ -13,11 +13,9 @@
 
         static Functions()
         {
-            // TODO: move this to Module Initializer
-            IntPtr[] addresses = Game.FindAllOccurrencesOfPattern("48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??");
-
-            getActualScreenHeight = addresses[0];
-            getActualScreenWidth = addresses[1];
+            const string pattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
+            getActualScreenHeight = Game.FindPattern(pattern);
+            getActualScreenWidth = Game.FindPattern(pattern, getActualScreenHeight + 1);
         }
 
         /// <summary>

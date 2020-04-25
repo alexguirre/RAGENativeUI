@@ -11,10 +11,9 @@
 
         static unsafe Variables()
         {
-            // TODO: move this to Module Initializer
-            IntPtr address = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8A C3 E8 ?? ?? ?? ?? 83 25");
+            scriptTextStyle = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8A C3 E8 ?? ?? ?? ?? 83 25");
 
-            scriptTextStyle = address + *(int*)(address + 3) + 7;
+            scriptTextStyle = scriptTextStyle + *(int*)(scriptTextStyle + 3) + 7;
         }
 
         public static ref CTextStyle ScriptTextStyle => ref IL.Unsafe.AsRef<CTextStyle>(scriptTextStyle);

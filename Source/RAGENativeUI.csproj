@@ -100,6 +100,7 @@
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Internals\Functions.cs" />
+    <Compile Include="Internals\ModuleInitializer.cs" />
     <Compile Include="Internals\UsingTls.cs" />
     <Compile Include="Internals\Variables.cs" />
     <Compile Include="MenuPool.cs" />
@@ -128,6 +129,11 @@
   <ItemGroup>
     <PackageReference Include="ilmerge">
       <Version>3.0.29</Version>
+    </PackageReference>
+    <PackageReference Include="InjectModuleInitializer">
+      <Version>2.0.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
