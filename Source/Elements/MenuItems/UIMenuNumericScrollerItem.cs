@@ -16,17 +16,17 @@
 
         public T Value
         {
-            get => selectedValue.Value;
+            get => selectedValue;
             set
             {
-                if (!value.Equals(selectedValue.Value))
+                if (!value.Equals(selectedValue))
                 {
-                    if (value.CompareTo(minimum.Value) < 0)
+                    if (value.CompareTo(minimum) < 0)
                     {
                         throw new ArgumentOutOfRangeException(nameof(value), "value < minimum");
                     }
 
-                    if (value.CompareTo(maximum.Value) > 0)
+                    if (value.CompareTo(maximum) > 0)
                     {
                         throw new ArgumentOutOfRangeException(nameof(value), "value > maximum");
                     }
@@ -41,10 +41,10 @@
             get => minimum;
             set
             {
-                if (!value.Equals(minimum.Value))
+                if (!value.Equals(minimum))
                 {
                     minimum = value;
-                    if (minimum.Value.CompareTo(maximum.Value) > 0)
+                    if (minimum.Value.CompareTo(maximum) > 0)
                     {
                         maximum = minimum;
                     }
@@ -59,10 +59,10 @@
             get => maximum;
             set
             {
-                if (!value.Equals(maximum.Value))
+                if (!value.Equals(maximum))
                 {
                     maximum = value;
-                    if (minimum.Value.CompareTo(maximum.Value) > 0)
+                    if (minimum.Value.CompareTo(maximum) > 0)
                     {
                         minimum = maximum;
                     }
@@ -77,7 +77,7 @@
             get => step;
             set
             {
-                if (!value.Equals(step.Value))
+                if (!value.Equals(step))
                 {
                     if (step.Value.CompareTo(default) < 0)
                     {
@@ -93,7 +93,7 @@
 
         /// <inheritdoc/>
         public override string OptionText => selectedValueText;
-        
+
         /// <inheritdoc/>
         public override int OptionCount => ((maximum - minimum) / step).CastToInt() + 1;
 
@@ -176,7 +176,7 @@
         /// </summary>
         private struct Number
         {
-            public T Value { get; set; }
+            public T Value { get; }
 
             public Number(T value) => Value = value;
 
@@ -251,7 +251,7 @@
                 throw new InvalidOperationException();
             }
 
-            public static Number operator*(Number a, Number b)
+            public static Number operator *(Number a, Number b)
             {
                 if (typeof(T) == typeof(sbyte)) return (T)(object)((sbyte)(object)a.Value * (sbyte)(object)b.Value);
                 if (typeof(T) == typeof(byte)) return (T)(object)((byte)(object)a.Value * (byte)(object)b.Value);
@@ -268,7 +268,7 @@
                 throw new InvalidOperationException();
             }
 
-            public static Number operator/(Number a, Number b)
+            public static Number operator /(Number a, Number b)
             {
                 if (typeof(T) == typeof(sbyte)) return (T)(object)((sbyte)(object)a.Value / (sbyte)(object)b.Value);
                 if (typeof(T) == typeof(byte)) return (T)(object)((byte)(object)a.Value / (byte)(object)b.Value);
