@@ -58,6 +58,11 @@ namespace RAGENativeUI.Elements
         }
 
         /// <summary>
+        /// Set if this item is <see cref="UIMenuScrollerItem"/> or <see cref="UIMenuListItem"/>. Temporal property until <see cref="UIMenuListItem"/> is removed.
+        /// </summary>
+        internal UIMenuScrollerProxy ScrollerProxy { get; set; }
+
+        /// <summary>
         /// Basic menu button.
         /// </summary>
         /// <param name="text">Button label.</param>
@@ -211,8 +216,7 @@ namespace RAGENativeUI.Elements
             {
                 RightLabelStyle.Apply();
             }
-            Color textColor = CurrentForeColor;
-            N.SetTextColour(textColor.R, textColor.G, textColor.B, textColor.A);
+            Internals.Variables.ScriptTextStyle.Color = CurrentForeColor.ToArgb();
         }
 
         private void DrawBadge(BadgeInfo badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)

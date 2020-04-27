@@ -94,8 +94,10 @@
     <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TimerBarBase.cs" />
     <Compile Include="Elements\TimerBars\TimerBarPool.cs" />
+    <Compile Include="Elements\UIMenuScrollerItem.cs" />
     <Compile Include="Elements\UIMenuColoredItem.cs" />
     <Compile Include="Elements\InstructionalButtons.cs" />
+    <Compile Include="Elements\UIMenuNumericScrollerItem.cs" />
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="HudColor.cs" />

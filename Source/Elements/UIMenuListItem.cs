@@ -134,6 +134,7 @@ namespace RAGENativeUI.Elements
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
                 ResText.Alignment.Left) {TextAlignment = ResText.Alignment.Right};
             Index = index;
+            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
@@ -152,6 +153,7 @@ namespace RAGENativeUI.Elements
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
                 ResText.Alignment.Left)
             { TextAlignment = ResText.Alignment.Right };
+            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
