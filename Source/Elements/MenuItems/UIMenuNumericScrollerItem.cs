@@ -2,6 +2,16 @@
 {
     using System;
 
+    /// <summary>
+    /// Represents a scroller item that displays numeric values within a range.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The numeric type to use. Possible types are: <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>,
+    /// <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="float"/>, <see cref="double"/> and <see cref="decimal"/>.
+    /// <para>
+    /// If some other type that meets the constraints is used, a <see cref="InvalidOperationException"/> will be thrown at runtime.
+    /// </para>
+    /// </typeparam>
     public class UIMenuNumericScrollerItem<T> : UIMenuScrollerItem
         // As close as we can get to limit T to numeric types at compile time. If a type meets 
         // these constraints and is not a numeric type, an exception will be thrown at runtime
@@ -14,6 +24,15 @@
         private Number maximum;
         private bool allowSync;
 
+        /// <summary>
+        /// Gets or sets the currently selected value. When changing its value, the new value is rounded to nearest possible
+        /// value depending on the <see cref="Minimum"/>, <see cref="Maximum"/> and <see cref="Step"/> values.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <c>value</c> is less than <see cref="Minimum"/>.
+        /// -or-
+        /// <c>value</c> is greater than <see cref="Maximum"/>.
+        /// </exception>
         public T Value
         {
             get => selectedValue;
@@ -23,12 +42,12 @@
                 {
                     if (value.CompareTo(minimum) < 0)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(value), "value < minimum");
+                        throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} is less than {nameof(Minimum)}");
                     }
 
                     if (value.CompareTo(maximum) > 0)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(value), "value > maximum");
+                        throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} is greater than {nameof(Maximum)}");
                     }
 
                     Index = IndexOfValue(value);
@@ -36,6 +55,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the minimum value of the numeric scroller, inclusive.
+        /// </summary>
         public T Minimum
         {
             get => minimum;
@@ -54,6 +76,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the maximum value of the numeric scroller, inclusive.
+        /// </summary>
         public T Maximum
         {
             get => maximum;
@@ -62,7 +87,7 @@
                 if (!value.Equals(maximum))
                 {
                     maximum = value;
-                    if (minimum.Value.CompareTo(maximum) > 0)
+                    if (maximum.Value.CompareTo(minimum) < 0)
                     {
                         minimum = maximum;
                     }
@@ -72,6 +97,12 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value to increment or decrement when scrolling.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <c>value</c> is negative or zero.
+        /// </exception>
         public T Step
         {
             get => step;
@@ -79,9 +110,9 @@
             {
                 if (!value.Equals(step))
                 {
-                    if (step.Value.CompareTo(default) < 0)
+                    if (value.CompareTo(default) <= 0)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(value), "negative");
+                        throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} is negative or zero");
                     }
 
                     step = value;
@@ -92,16 +123,20 @@
         }
 
         /// <inheritdoc/>
-        public override string OptionText => selectedValueText;
+        public override string OptionText => selectedValueText; // don't need to handle IsEmpty case, since it can never be empty, Min and Max are inclusive and always have some value
 
         /// <inheritdoc/>
-        public override int OptionCount => ((maximum - minimum) / step).CastToInt() + 1;
+        public override int OptionCount
+            => (int)Math.Round((maximum.ToDecimal() - minimum.ToDecimal()) / step.ToDecimal()) + 1; // cast to decimal to avoid overflows on smaller numeric types
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UIMenuNumericScrollerItem{T}"/> class.
         /// </summary>
         /// <param name="text">The <see cref="UIMenuNumericScrollerItem{T}"/>'s label.</param>
         /// <param name="description">The <see cref="UIMenuNumericScrollerItem{T}"/>'s description.</param>
+        /// <param name="minimum">The minimum value.</param>
+        /// <param name="maximum">The maximum value.</param>
+        /// <param name="step">The value to increment or decrement when scrolling.</param>
         public UIMenuNumericScrollerItem(string text, string description, T minimum, T maximum, T step) : base(text, description)
         {
             if (!Number.IsTypeValid())
@@ -118,6 +153,7 @@
             Index = OptionCount / 2;
         }
 
+        /// <inheritdoc/>
         protected override void OnSelectedIndexChanged(int oldIndex, int newIndex)
         {
             SyncSelectedValueToIndex();
@@ -156,7 +192,8 @@
 
         private int IndexOfValue(T value)
         {
-            return ((value - minimum) / step).CastToInt();
+            // cast to decimal to avoid overflows on smaller numeric types
+            return (int)Math.Round((new Number(value).ToDecimal() - minimum.ToDecimal()) / step.ToDecimal());
         }
 
         private T ClampValue(T value)
@@ -180,23 +217,6 @@
 
             public Number(T value) => Value = value;
 
-            public int CastToInt()
-            {
-                if (typeof(T) == typeof(sbyte)) return (int)(sbyte)(object)Value;
-                if (typeof(T) == typeof(byte)) return (int)(byte)(object)Value;
-                if (typeof(T) == typeof(short)) return (int)(short)(object)Value;
-                if (typeof(T) == typeof(ushort)) return (int)(ushort)(object)Value;
-                if (typeof(T) == typeof(int)) return (int)(int)(object)Value;
-                if (typeof(T) == typeof(uint)) return (int)(uint)(object)Value;
-                if (typeof(T) == typeof(long)) return (int)(long)(object)Value;
-                if (typeof(T) == typeof(ulong)) return (int)(ulong)(object)Value;
-                if (typeof(T) == typeof(float)) return (int)(float)(object)Value;
-                if (typeof(T) == typeof(double)) return (int)(double)(object)Value;
-                if (typeof(T) == typeof(decimal)) return (int)(decimal)(object)Value;
-
-                throw new InvalidOperationException();
-            }
-
             public static Number FromInt(int n)
             {
                 if (typeof(T) == typeof(sbyte)) return (T)(object)(sbyte)n;
@@ -214,15 +234,32 @@
                 throw new InvalidOperationException();
             }
 
+            public decimal ToDecimal()
+            {
+                if (typeof(T) == typeof(sbyte)) return (sbyte)(object)Value;
+                if (typeof(T) == typeof(byte)) return (byte)(object)Value;
+                if (typeof(T) == typeof(short)) return (short)(object)Value;
+                if (typeof(T) == typeof(ushort)) return (ushort)(object)Value;
+                if (typeof(T) == typeof(int)) return (int)(object)Value;
+                if (typeof(T) == typeof(uint)) return (uint)(object)Value;
+                if (typeof(T) == typeof(long)) return (long)(object)Value;
+                if (typeof(T) == typeof(ulong)) return (ulong)(object)Value;
+                if (typeof(T) == typeof(float)) return (decimal)(float)(object)Value;
+                if (typeof(T) == typeof(double)) return (decimal)(double)(object)Value;
+                if (typeof(T) == typeof(decimal)) return (decimal)(object)Value;
+
+                throw new InvalidOperationException();
+            }
+
             public static implicit operator Number(T value) => new Number(value);
             public static implicit operator T(Number number) => number.Value;
 
             public static Number operator +(Number a, Number b)
             {
-                if (typeof(T) == typeof(sbyte)) return (T)(object)((sbyte)(object)a.Value + (sbyte)(object)b.Value);
-                if (typeof(T) == typeof(byte)) return (T)(object)((byte)(object)a.Value + (byte)(object)b.Value);
-                if (typeof(T) == typeof(short)) return (T)(object)((short)(object)a.Value + (short)(object)b.Value);
-                if (typeof(T) == typeof(ushort)) return (T)(object)((ushort)(object)a.Value + (ushort)(object)b.Value);
+                if (typeof(T) == typeof(sbyte)) return (T)(object)(sbyte)((sbyte)(object)a.Value + (sbyte)(object)b.Value);
+                if (typeof(T) == typeof(byte)) return (T)(object)(byte)((byte)(object)a.Value + (byte)(object)b.Value);
+                if (typeof(T) == typeof(short)) return (T)(object)(short)((short)(object)a.Value + (short)(object)b.Value);
+                if (typeof(T) == typeof(ushort)) return (T)(object)(ushort)((ushort)(object)a.Value + (ushort)(object)b.Value);
                 if (typeof(T) == typeof(int)) return (T)(object)((int)(object)a.Value + (int)(object)b.Value);
                 if (typeof(T) == typeof(uint)) return (T)(object)((uint)(object)a.Value + (uint)(object)b.Value);
                 if (typeof(T) == typeof(long)) return (T)(object)((long)(object)a.Value + (long)(object)b.Value);
@@ -236,10 +273,10 @@
 
             public static Number operator -(Number a, Number b)
             {
-                if (typeof(T) == typeof(sbyte)) return (T)(object)((sbyte)(object)a.Value - (sbyte)(object)b.Value);
-                if (typeof(T) == typeof(byte)) return (T)(object)((byte)(object)a.Value - (byte)(object)b.Value);
-                if (typeof(T) == typeof(short)) return (T)(object)((short)(object)a.Value - (short)(object)b.Value);
-                if (typeof(T) == typeof(ushort)) return (T)(object)((ushort)(object)a.Value - (ushort)(object)b.Value);
+                if (typeof(T) == typeof(sbyte)) return (T)(object)(sbyte)((sbyte)(object)a.Value - (sbyte)(object)b.Value);
+                if (typeof(T) == typeof(byte)) return (T)(object)(byte)((byte)(object)a.Value - (byte)(object)b.Value);
+                if (typeof(T) == typeof(short)) return (T)(object)(short)((short)(object)a.Value - (short)(object)b.Value);
+                if (typeof(T) == typeof(ushort)) return (T)(object)(ushort)((ushort)(object)a.Value - (ushort)(object)b.Value);
                 if (typeof(T) == typeof(int)) return (T)(object)((int)(object)a.Value - (int)(object)b.Value);
                 if (typeof(T) == typeof(uint)) return (T)(object)((uint)(object)a.Value - (uint)(object)b.Value);
                 if (typeof(T) == typeof(long)) return (T)(object)((long)(object)a.Value - (long)(object)b.Value);
@@ -253,10 +290,10 @@
 
             public static Number operator *(Number a, Number b)
             {
-                if (typeof(T) == typeof(sbyte)) return (T)(object)((sbyte)(object)a.Value * (sbyte)(object)b.Value);
-                if (typeof(T) == typeof(byte)) return (T)(object)((byte)(object)a.Value * (byte)(object)b.Value);
-                if (typeof(T) == typeof(short)) return (T)(object)((short)(object)a.Value * (short)(object)b.Value);
-                if (typeof(T) == typeof(ushort)) return (T)(object)((ushort)(object)a.Value * (ushort)(object)b.Value);
+                if (typeof(T) == typeof(sbyte)) return (T)(object)(sbyte)((sbyte)(object)a.Value * (sbyte)(object)b.Value);
+                if (typeof(T) == typeof(byte)) return (T)(object)(byte)((byte)(object)a.Value * (byte)(object)b.Value);
+                if (typeof(T) == typeof(short)) return (T)(object)(short)((short)(object)a.Value * (short)(object)b.Value);
+                if (typeof(T) == typeof(ushort)) return (T)(object)(ushort)((ushort)(object)a.Value * (ushort)(object)b.Value);
                 if (typeof(T) == typeof(int)) return (T)(object)((int)(object)a.Value * (int)(object)b.Value);
                 if (typeof(T) == typeof(uint)) return (T)(object)((uint)(object)a.Value * (uint)(object)b.Value);
                 if (typeof(T) == typeof(long)) return (T)(object)((long)(object)a.Value * (long)(object)b.Value);
@@ -270,10 +307,10 @@
 
             public static Number operator /(Number a, Number b)
             {
-                if (typeof(T) == typeof(sbyte)) return (T)(object)((sbyte)(object)a.Value / (sbyte)(object)b.Value);
-                if (typeof(T) == typeof(byte)) return (T)(object)((byte)(object)a.Value / (byte)(object)b.Value);
-                if (typeof(T) == typeof(short)) return (T)(object)((short)(object)a.Value / (short)(object)b.Value);
-                if (typeof(T) == typeof(ushort)) return (T)(object)((ushort)(object)a.Value / (ushort)(object)b.Value);
+                if (typeof(T) == typeof(sbyte)) return (T)(object)(sbyte)((sbyte)(object)a.Value / (sbyte)(object)b.Value);
+                if (typeof(T) == typeof(byte)) return (T)(object)(byte)((byte)(object)a.Value / (byte)(object)b.Value);
+                if (typeof(T) == typeof(short)) return (T)(object)(short)((short)(object)a.Value / (short)(object)b.Value);
+                if (typeof(T) == typeof(ushort)) return (T)(object)(ushort)((ushort)(object)a.Value / (ushort)(object)b.Value);
                 if (typeof(T) == typeof(int)) return (T)(object)((int)(object)a.Value / (int)(object)b.Value);
                 if (typeof(T) == typeof(uint)) return (T)(object)((uint)(object)a.Value / (uint)(object)b.Value);
                 if (typeof(T) == typeof(long)) return (T)(object)((long)(object)a.Value / (long)(object)b.Value);
@@ -299,6 +336,8 @@
                        typeof(T) == typeof(double) ||
                        typeof(T) == typeof(decimal);
             }
+
+            public override string ToString() => Value.ToString();
         }
     }
 }

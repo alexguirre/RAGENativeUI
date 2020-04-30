@@ -3,37 +3,52 @@
     using System;
     using System.Drawing;
 
-    // TODO: how should it behave when empty (OptionCount == 0)?
+    /// <summary>
+    /// Implements the basic functionality of an item with multiple options to choose from through scrolling, with left/right arrows.
+    /// </summary>
     public abstract class UIMenuScrollerItem : UIMenuItem
     {
-        private int index;
+        /// <summary>
+        /// Defines the value of <see cref="Index"/> when <see cref="IsEmpty"/> is <c>true</c>.
+        /// </summary>
+        public const int EmptyIndex = -1;
+
+        private int index = EmptyIndex;
 
         /// <summary>
-        /// Gets or sets the index of the selected option.
+        /// Gets or sets the index of the selected option. When <see cref="IsEmpty"/> is <c>true</c>, <see cref="EmptyIndex"/> is returned.
         /// </summary>
+        /// <exception cref="ArgumentException">
+        /// <c>value</c> is not <see cref="EmptyIndex"/> when <see cref="IsEmpty"/> is <c>true</c>.
+        /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <c>value</c> is less than zero.
+        /// <c>value</c> is negative.
         /// -or-
         /// <c>value</c> is equal to or greater than <see cref="OptionCount"/>.
         /// </exception>
         public virtual int Index 
         {
-            get => index;
+            get => IsEmpty ? EmptyIndex : index;
             set
             {
-                if (value != index)
+                int oldIndex = Index;
+                if (value != oldIndex)
                 {
+                    if (IsEmpty && value != EmptyIndex)
+                    {
+                        throw new ArgumentException(nameof(value), $"{nameof(IsEmpty)} is true and {nameof(value)} is not equal to {nameof(EmptyIndex)}");
+                    }
+
                     if (value < 0)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(value), "value < 0");
+                        throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} is negative");
                     }
 
                     if (value >= OptionCount)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(value), "value >= OptionCount");
+                        throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} is equal or greater than {nameof(OptionCount)}");
                     }
 
-                    int oldIndex = index;
                     index = value;
                     OnSelectedIndexChanged(oldIndex, value);
                 }
@@ -46,9 +61,21 @@
         public abstract int OptionCount { get; }
 
         /// <summary>
-        /// Gets the text displayed for the selected option.
+        /// Gets the text to display as the currently selected option.
         /// </summary>
+        /// <remarks>
+        /// This property is also used when <see cref="IsEmpty"/> is <c>true</c>, so the implementation needs to take into account this
+        /// state, for example it may return <c>null</c>.
+        /// </remarks>
         public abstract string OptionText { get; }
+
+        /// <summary>
+        /// Gets whether any option is available.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> when <see cref="OptionCount"/> is zero or negative; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsEmpty => OptionCount <= 0;
 
         /// <summary>
         /// Occurs when the value of <see cref="Index"/> changes, either programmatically or when the user interacts with the item.
@@ -56,12 +83,12 @@
         public event ItemScrollerEvent IndexChanged;
 
         /// <summary>
-        /// Enables or disables scrolling by holding the key
+        /// Enables or disables scrolling through the options.
         /// </summary>
         public bool ScrollingEnabled { get; set; } = true;
 
         /// <inheritdoc/>
-        public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuListItem)} cannot have a right label."); }
+        public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuScrollerItem)} cannot have a right label."); }
 
         // temp until menu controls are refactored
         internal uint HoldTime;
@@ -82,6 +109,11 @@
         /// </summary>
         protected internal virtual void ScrollToNextOption()
         {
+            if (IsEmpty)
+            {
+                return;
+            }
+
             int newIndex = Index + 1;
 
             if (newIndex > (OptionCount - 1)) // wrap around
@@ -95,6 +127,11 @@
         /// </summary>
         protected internal virtual void ScrollToPreviousOption()
         {
+            if (IsEmpty)
+            {
+                return;
+            }
+
             int newIndex = Index - 1;
 
             if (newIndex < 0) // wrap around
@@ -108,7 +145,7 @@
         {
             base.Draw(x, y, width, height);
 
-            string selectedOption = OptionText;
+            string selectedOption = OptionText ?? string.Empty;
 
             SetTextCommandOptions(false);
             float optTextWidth = TextCommands.GetWidth(selectedOption);
