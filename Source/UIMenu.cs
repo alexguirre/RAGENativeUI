@@ -1455,10 +1455,6 @@ namespace RAGENativeUI
                         return true;
                     }
                 }
-                else if (HasControlJustBeenPressed(control, key))
-                {
-                    return true;
-                }
 
             }
             return false;
