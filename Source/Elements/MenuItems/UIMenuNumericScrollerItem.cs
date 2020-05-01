@@ -23,6 +23,8 @@
         private Number minimum;
         private Number maximum;
         private bool allowSync;
+        private string format;
+        private IFormatProvider formatProvider;
 
         /// <summary>
         /// Gets or sets the currently selected value. When changing its value, the new value is rounded to nearest possible
@@ -129,6 +131,41 @@
         public override int OptionCount
             => (int)Math.Round((maximum.ToDecimal() - minimum.ToDecimal()) / step.ToDecimal()) + 1; // cast to decimal to avoid overflows on smaller numeric types
 
+        // TODO: provide some sane default format for floating-point types?
+        // otherwise their display can vary from "1" to "0.25" to "0.0100000000002183"
+        /// <summary>
+        /// Gets or sets the format to use for displaying the current value. If <c>null</c>, the default format defined for <typeparamref name="T"/> is used.
+        /// </summary>
+        public string Format
+        {
+            get => format;
+            set
+            {
+                if (value != format)
+                {
+                    format = value;
+                    SyncSelectedTextToValue();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the provider to use to format the current value. If <c>null</c>, the numeric format information from
+        /// the current locale setting of the operating system is used.
+        /// </summary>
+        public IFormatProvider FormatProvider
+        {
+            get => formatProvider;
+            set
+            {
+                if (value != formatProvider)
+                {
+                    formatProvider = value;
+                    SyncSelectedTextToValue();
+                }
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UIMenuNumericScrollerItem{T}"/> class.
         /// </summary>
@@ -167,7 +204,7 @@
         private void SetSelectedValueRaw(Number n)
         {
             selectedValue = n;
-            selectedValueText = n.Value.ToString(); // TODO: allow custom formatting
+            SyncSelectedTextToValue();
         }
 
         private void SyncSelectedValueToIndex()
@@ -188,6 +225,16 @@
             }
 
             Index = IndexOfValue(ClampValue(Value));
+        }
+
+        private void SyncSelectedTextToValue()
+        {
+            if (!allowSync)
+            {
+                return;
+            }
+
+            selectedValueText = selectedValue.Value.ToString(Format, FormatProvider);
         }
 
         private int IndexOfValue(T value)
