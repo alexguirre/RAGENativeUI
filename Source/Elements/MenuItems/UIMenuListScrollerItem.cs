@@ -47,7 +47,7 @@
                 {
                     items = value;
 
-                    Index = IsEmpty ? EmptyIndex : ((Index == EmptyIndex ? 0 : Index) % OptionCount); // in case the new list has a different size
+                    Index = IsEmpty ? EmptyIndex : (Index % OptionCount); // in case the new list has a different size
                 }
             }
         }

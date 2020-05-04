@@ -28,7 +28,26 @@
         /// </exception>
         public virtual int Index 
         {
-            get => IsEmpty ? EmptyIndex : index;
+            get
+            {
+                if (IsEmpty)
+                {
+                    return EmptyIndex;
+                }
+
+                int idx = index;
+                int count = OptionCount;
+                if (idx < 0 || idx >= count)
+                {
+                    // in case OptionCount changed and index is now out of bounds or index has EmptyIndex and the scroller is no longer empty
+                    int oldIndex = idx;
+                    idx = idx == EmptyIndex ? 0 : (idx % count);
+                    index = idx;
+                    OnSelectedIndexChanged(oldIndex, idx);
+                }
+
+                return idx;
+            }
             set
             {
                 int oldIndex = Index;
