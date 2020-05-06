@@ -1428,7 +1428,7 @@ namespace RAGENativeUI
                 }
                 return false;
             }
-            else if (MenuItems[CurrentSelection].ScrollerProxy != null && MenuItems[CurrentSelection].Enabled)
+            else if (MenuItems[CurrentSelection].ScrollerProxy != null && (MenuItems[CurrentSelection].Enabled || MenuItems[CurrentSelection].ScrollerProxy.GetScrollingEnabledWhenDisabled()))
             {
                 UIMenuItem it = MenuItems[CurrentSelection];
                 if (it.ScrollerProxy.GetScrollingEnabled())

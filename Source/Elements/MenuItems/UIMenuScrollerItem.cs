@@ -102,9 +102,17 @@
         public event ItemScrollerEvent IndexChanged;
 
         /// <summary>
-        /// Enables or disables scrolling through the options.
+        /// Gets or sets whether scrolling through the options is enabled.
         /// </summary>
         public bool ScrollingEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether scrolling through the options is enabled when <see cref="UIMenuItem.Enabled"/> is <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// The property <see cref="ScrollingEnabled"/> still has to be <c>true</c> to enable scrolling when the item is disabled.
+        /// </remarks>
+        public bool ScrollingEnabledWhenDisabled { get; set; } = false;
 
         /// <inheritdoc/>
         public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuScrollerItem)} cannot have a right label."); }
@@ -171,9 +179,14 @@
 
             GetBadgeOffsets(out _, out float badgeOffset);
 
-            if (Selected && Enabled && ScrollingEnabled)
+            if (Selected && (Enabled || ScrollingEnabledWhenDisabled) && ScrollingEnabled)
             {
-                Color textColor = CurrentForeColor;
+                Color arrowsColor = CurrentForeColor;
+                if (!Enabled)
+                {
+                    arrowsColor = HighlightedForeColor;
+                }
+
                 float optTextX = x + width - (0.00390625f * 1.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                 float optTextY = y + 0.00277776f;
 
@@ -186,7 +199,7 @@
                     float spriteX = x + width - (0.00390625f * 0.5f) - (w * 0.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, arrowsColor);
                 }
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
@@ -194,7 +207,7 @@
                     float spriteX = x + width - (0.00390625f * 1.5f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, arrowsColor);
                 }
             }
             else
@@ -229,6 +242,7 @@
 
         public UIMenuItem Item { get; }
         public Func<bool> GetScrollingEnabled { get; }
+        public Func<bool> GetScrollingEnabledWhenDisabled { get; }
         public Func<uint> GetHoldTimeBeforeScroll { get; }
         public GetHoldTimeDelegate GetHoldTime { get; }
         public Action<int> SetIndex { get; }
@@ -237,6 +251,7 @@
         {
             Item = item;
             GetScrollingEnabled = () => item.ScrollingEnabled;
+            GetScrollingEnabledWhenDisabled = () => item.ScrollingEnabledWhenDisabled;
             GetHoldTimeBeforeScroll = () => item.HoldTimeBeforeScroll;
             GetHoldTime = () => ref item.HoldTime;
             SetIndex = i => item.Index = i;
@@ -246,6 +261,7 @@
         {
             Item = item;
             GetScrollingEnabled = () => item.ScrollingEnabled;
+            GetScrollingEnabledWhenDisabled = () => false;
             GetHoldTimeBeforeScroll = () => item.HoldTimeBeforeScroll;
             GetHoldTime = () => ref item._holdTime;
             SetIndex = i => item.Index = i;
