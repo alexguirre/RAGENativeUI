@@ -99,10 +99,10 @@
     <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="HudColor.cs" />
-    <Compile Include="Internals\Functions.cs" />
+    <Compile Include="Internals\atArray.cs" />
+    <Compile Include="Internals\Memory.cs" />
     <Compile Include="Internals\ModuleInitializer.cs" />
     <Compile Include="Internals\UsingTls.cs" />
-    <Compile Include="Internals\Variables.cs" />
     <Compile Include="MenuPool.cs" />
     <Compile Include="Natives.cs" />
     <Compile Include="PauseMenu\TabInteractiveListItem.cs" />

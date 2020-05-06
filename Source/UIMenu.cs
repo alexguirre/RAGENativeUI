@@ -531,7 +531,7 @@ namespace RAGENativeUI
             if (InstructionalButtonsEnabled)
                 InstructionalButtons.Draw();
 
-            ActualScreenResolution = Internals.Functions.ActualScreenResolution;
+            ActualScreenResolution = Internals.Screen.ActualResolution;
             AspectRatio = N.GetAspectRatio(false);
 
             menuWidth = 0.225f;

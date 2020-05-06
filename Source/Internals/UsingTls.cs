@@ -15,25 +15,44 @@
             }
         }
 
+        private static void EnsureTlsPointers()
+        {
+            if (mainThreadTls == IntPtr.Zero)
+            {
+                mainThreadTls = WinFunctions.GetTlsPointer(WinFunctions.GetProcessMainThreadId());
+            }
+
+            if (thisThreadTls == IntPtr.Zero)
+            {
+                thisThreadTls = WinFunctions.GetTlsPointer(WinFunctions.GetCurrentThreadId());
+            }
+        }
+
         public static UsingTls Scope()
         {
             if (thisThreadRefCount == 0)
             {
-                if (mainThreadTls == IntPtr.Zero)
-                {
-                    mainThreadTls = WinFunctions.GetTlsPointer(WinFunctions.GetProcessMainThreadId());
-                }
-
-                if (thisThreadTls == IntPtr.Zero)
-                {
-                    thisThreadTls = WinFunctions.GetTlsPointer(WinFunctions.GetCurrentThreadId());
-                }
+                EnsureTlsPointers();
 
                 WinFunctions.GetTlsValues(thisThreadTls, thisThreadSavedValues, Offsets);
                 WinFunctions.CopyTlsValues(mainThreadTls, thisThreadTls, Offsets);
             }
             thisThreadRefCount++;
             return default;
+        }
+
+        public static unsafe long Get(int offset)
+        {
+            EnsureTlsPointers();
+
+            return *(long*)(*(byte**)thisThreadTls + offset);
+        }
+
+        public static unsafe void Set(int offset, long value)
+        {
+            EnsureTlsPointers();
+
+            *(long*)(*(byte**)thisThreadTls + offset) = value;
         }
 
         private static readonly int[] Offsets = { 0xC8 };

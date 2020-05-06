@@ -1,6 +1,7 @@
 ﻿namespace RAGENativeUI.Elements
 {
     using System.Collections.Generic;
+    using RAGENativeUI.Internals;
 
     public class TimerBarPool : BaseCollection<TimerBarBase>
     {
@@ -28,7 +29,9 @@
                 N.SetScriptGfxAlign('R', 'B');
                 N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
 
-                float x = TB.InitialX, y = TB.InitialY - (N.BusySpinnerIsOn() ? TB.LoadingPromptYOffset : 0.0f);
+                int yOffset = GetInstructionalButtonsRows();
+
+                float x = TB.InitialX, y = TB.InitialY - (TB.LoadingPromptYOffset * yOffset);
                 for (int i = 0; i < InternalList.Count; i++)
                 {
                     TimerBarBase b = InternalList[i];
@@ -43,6 +46,21 @@
                 N.HideHudComponentThisFrame(8); // ?
                 N.HideHudComponentThisFrame(9); // StreetName
             }
+        }
+
+        private static int GetInstructionalButtonsRows()
+        {
+            foreach (int sf in CBusySpinner.InstructionalButtons)
+            {
+                if (CScaleformMgr.IsMovieRendering(sf))
+                {
+                    ref GFxMovieView v = ref CScaleformMgr.GetRawMovieView(sf);
+
+                    return (int)v.GetVariableDouble("TIMELINE.backgrounds.length");
+                }
+            }
+
+            return N.BusySpinnerIsOn() ? 1 : 0;
         }
     }
 }

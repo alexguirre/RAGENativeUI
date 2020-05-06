@@ -126,7 +126,7 @@
         /// </summary>
         public void Apply()
         {
-            ref var s = ref Internals.Variables.ScriptTextStyle;
+            ref var s = ref Internals.CTextStyle.ScriptStyle;
             s.Font = (int)Font;
             s.Color = Color.ToArgb();
             s.Scale = Scale;
@@ -215,7 +215,7 @@
         {
             get
             {
-                ref var s = ref Internals.Variables.ScriptTextStyle;
+                ref var s = ref Internals.CTextStyle.ScriptStyle;
                 return new TextStyle(
                     (TextFont)s.Font,
                     Color.FromArgb(s.Color),
