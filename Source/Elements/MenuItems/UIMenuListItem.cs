@@ -240,7 +240,7 @@ namespace RAGENativeUI.Elements
             if (Selected && Enabled)
             {
                 Color textColor = CurrentForeColor;
-                float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                float optTextX = x + width - (0.00390625f * 1.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                 float optTextY = y + 0.00277776f;
 
                 SetTextCommandOptions(false);
@@ -248,20 +248,16 @@ namespace RAGENativeUI.Elements
 
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float w, out float h);
-                    w *= 0.65f;
-                    h *= 0.65f;
 
-                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - badgeOffset;
+                    float spriteX = x + width - (0.00390625f * 0.5f) - (w * 0.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
                     UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
                 }
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
-                    w *= 0.65f;
-                    h *= 0.65f;
 
-                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                    float spriteX = x + width - (0.00390625f * 1.5f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
                     UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
@@ -270,7 +266,7 @@ namespace RAGENativeUI.Elements
             else
             {
                 float optTextX = x + width - 0.00390625f - optTextWidth - badgeOffset;
-                float optTextY = y + 0.00277776f;// + 0.00416664f;
+                float optTextY = y + 0.00277776f;
 
                 SetTextCommandOptions(false);
                 TextCommands.Display(selectedOption, optTextX, optTextY);
