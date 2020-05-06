@@ -209,7 +209,7 @@
                 SetTextCommandOptions(false);
                 if (!ScrollingEnabled)
                 {
-                    Internals.Variables.ScriptTextStyle.Color = DisabledForeColor.ToArgb();
+                    Internals.CTextStyle.ScriptStyle.Color = DisabledForeColor.ToArgb();
                 }
                 TextCommands.Display(selectedOption, optTextX, optTextY);
             }

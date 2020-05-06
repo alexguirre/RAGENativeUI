@@ -216,7 +216,7 @@ namespace RAGENativeUI.Elements
             {
                 RightLabelStyle.Apply();
             }
-            Internals.Variables.ScriptTextStyle.Color = CurrentForeColor.ToArgb();
+            Internals.CTextStyle.ScriptStyle.Color = CurrentForeColor.ToArgb();
         }
 
         private void DrawBadge(BadgeInfo badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)
