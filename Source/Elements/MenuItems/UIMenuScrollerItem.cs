@@ -117,6 +117,8 @@
         /// <inheritdoc/>
         public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuScrollerItem)} cannot have a right label."); }
 
+        public SliderStyleOptions? SliderStyle { get; set; }
+
         // temp until menu controls are refactored
         internal uint HoldTime;
         internal uint HoldTimeBeforeScroll = 200;
@@ -184,6 +186,18 @@
         {
             base.Draw(x, y, width, height);
 
+            if (SliderStyle.HasValue)
+            {
+                DrawSlider(x, y, width, height);
+            }
+            else
+            {
+                DrawScroller(x, y, width, height);
+            }
+        }
+
+        private void DrawScroller(float x, float y, float width, float height)
+        {
             string selectedOption = OptionText ?? string.Empty;
 
             SetTextCommandOptions(false);
@@ -234,6 +248,29 @@
                 }
                 TextCommands.Display(selectedOption, optTextX, optTextY);
             }
+        }
+
+        // TODO: mouse input for slider
+        // TODO: how should the slider look when ScrollingEnabled is false?
+        private void DrawSlider(float x, float y, float width, float height)
+        {
+            GetBadgeOffsets(out float badgeLeftOffset, out float badgeRightOffset);
+
+            float percentage = IsEmpty ? 0.0f : (OptionCount == 1 ? 1.0f : ((float)Index / (OptionCount - 1)));
+
+            SliderStyleOptions s = SliderStyle.Value;
+
+            const float BorderPadding = 0.00390625f;
+            float barWidth = (width - badgeLeftOffset - badgeRightOffset - BorderPadding * 2.0f) * s.Width;
+            float barHeight = (height - BorderPadding * 2.0f) * s.Height;
+            float barX = x + width - BorderPadding - badgeRightOffset - barWidth * 0.5f;
+            float barY = y + height * 0.5f;
+
+            UIMenu.DrawRect(barX, barY, barWidth, barHeight, s.BackgroundColor);
+
+            float fillWidth = barWidth * percentage;
+            float fillX = barX - barWidth * 0.5f + fillWidth * 0.5f;
+            UIMenu.DrawRect(fillX, barY, fillWidth, barHeight, s.ForegroundColor);
         }
 
         protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
@@ -332,6 +369,22 @@
         protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
         {
             IndexChanged?.Invoke(this, oldIndex, newIndex);
+        }
+
+        public struct SliderStyleOptions
+        {
+            public Color ForegroundColor { get; set; }
+            public Color BackgroundColor { get; set; }
+            public float Width { get; set; } // as a percentage of the item width
+            public float Height { get; set; } // as a percentage of the item height
+
+            public static readonly SliderStyleOptions Default = new SliderStyleOptions
+            {
+                ForegroundColor = HudColor.Blue.GetColor(),
+                BackgroundColor = HudColor.BlueDark.GetColor(),
+                Width = 0.45f,
+                Height = 0.275f,
+            };
         }
     }
 
