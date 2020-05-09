@@ -299,11 +299,16 @@ namespace RAGENativeUI.Elements
             return consumed;
         }
 
-        protected internal enum MouseHoverInput { JustPressed, JustReleased, Pressed, Released }
-        protected internal virtual bool OnMouseHoverInput(UIMenu menu, PointF mousePos, RectangleF itemBounds, MouseHoverInput input)
+        protected internal enum MouseInput { JustPressed, JustReleased, Pressed, Released }
+        protected internal virtual bool OnMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
         {
+            if (menu == null)
+            {
+                throw new ArgumentNullException(nameof(menu));
+            }
+
             bool consumed = false;
-            if (input == MouseHoverInput.JustReleased && Selected)
+            if (input == MouseInput.JustReleased && Selected && Hovered)
             {
                 consumed = true;
                 OnInput(menu, Common.MenuControls.Select);

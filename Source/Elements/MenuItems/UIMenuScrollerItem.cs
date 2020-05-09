@@ -261,11 +261,15 @@
             return consumed;
         }
 
-        protected internal override bool OnMouseHoverInput(UIMenu menu, PointF mousePos, RectangleF itemBounds, MouseHoverInput input)
+        protected internal override bool OnMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
         {
-            bool consumed = false;
+            if (menu == null)
+            {
+                throw new ArgumentNullException(nameof(menu));
+            }
 
-            if (Selected)
+            bool consumed = false;
+            if (Selected && Hovered)
             {
                 bool inSelectBounds = false;
                 float selectBoundsX = itemBounds.X + itemBounds.Width * 0.33333f;
@@ -276,14 +280,14 @@
                     // approximately hovering the label, first 1/3 of the item width
                     // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
                     //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
-                    if (input == MouseHoverInput.JustReleased)
+                    if (input == MouseInput.JustReleased)
                     {
                         consumed = true;
                         OnInput(menu, Common.MenuControls.Select);
                     }
                 }
 
-                if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && input == MouseHoverInput.Pressed)
+                if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && input == MouseInput.Pressed)
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
 

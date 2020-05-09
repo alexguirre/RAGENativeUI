@@ -70,10 +70,10 @@ namespace RAGENativeUI
         private Texture _customBanner;
 
         private int currentItem;
+        private RectangleF currentItemBounds = RectangleF.Empty;
         private int minItem;
         private int maxItem;
         private int hoveredItem = -1;
-        private RectangleF hoveredItemBounds = RectangleF.Empty;
         private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
         private bool visible;
@@ -569,6 +569,8 @@ namespace RAGENativeUI
             DrawDescription(x, ref y);
 
             EndScriptGfx();
+
+            justOpened = false;
         }
 
         private void DrawBanner(float x, ref float y)
@@ -711,6 +713,16 @@ namespace RAGENativeUI
 
             for (int index = minItem; index <= maxItem; index++)
             {
+                if (CurrentSelection == index)
+                {
+                    float x1 = x, y1 = y;
+                    float x2 = x + menuWidth, y2 = y + itemHeight;
+                    N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+                    N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+                    currentItemBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
+                }
+
                 var item = MenuItems[index];
                 item.Draw(x, y, menuWidth, itemHeight);
                 y += itemHeight;
@@ -1067,75 +1079,79 @@ namespace RAGENativeUI
 
             UpdateHoveredItem(mouseX, mouseY);
 
-            if (hoveredItem != -1)
+            if (hoveredItem != -1 && hoveredItem != CurrentSelection && Game.IsControlJustReleased(2, GameControl.CursorAccept))
             {
-                UIMenuItem i = MenuItems[hoveredItem];
-
-                UIMenuItem.MouseHoverInput input = UIMenuItem.MouseHoverInput.Released;
-                if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
-                {
-                    input = UIMenuItem.MouseHoverInput.JustPressed;
-                }
-                else if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
-                {
-                    input = UIMenuItem.MouseHoverInput.JustReleased;
-                }
-                else if (i.ScrollerProxy == null ? IsCursorAcceptBeingPressed() : IsCursorAcceptBeingPressed(i.ScrollerProxy))
-                {
-                    input = UIMenuItem.MouseHoverInput.Pressed;
-                }
-
-                bool eventConsumed = i.OnMouseHoverInput(this, new PointF(mouseX, mouseY), hoveredItemBounds, input);
-                if (!i.Selected && input == UIMenuItem.MouseHoverInput.JustReleased && !eventConsumed)
-                {
                     CurrentSelection = hoveredItem;
                     Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                     IndexChange(CurrentSelection);
                     InstructionalButtons.Update();
-                }
             }
             else
             {
-                UpdateHoveredUpDown(mouseX, mouseY);
-
-                if (hoveredUpDown != 0 && IsCursorAcceptBeingPressed())
+                // send mouse input event to selected item
                 {
-                    if (hoveredUpDown == 1)
+                    UIMenuItem selectedItem = MenuItems[CurrentSelection];
+
+                    UIMenuItem.MouseInput input = UIMenuItem.MouseInput.Released;
+                    if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
                     {
-                        GoUp();
+                        input = UIMenuItem.MouseInput.JustPressed;
                     }
-                    else
+                    else if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
                     {
-                        GoDown();
+                        input = UIMenuItem.MouseInput.JustReleased;
                     }
-                    InstructionalButtons.Update();
+                    else if (selectedItem.ScrollerProxy == null ? IsCursorAcceptBeingPressed() : IsCursorAcceptBeingPressed(selectedItem.ScrollerProxy))
+                    {
+                        input = UIMenuItem.MouseInput.Pressed;
+                    }
+
+                    selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
                 }
 
-                if (MouseEdgeEnabled)
+                if (hoveredItem == -1)
                 {
-                    const int CursorLeftArrow = 6, CursorRightArrow = 7;
+                    UpdateHoveredUpDown(mouseX, mouseY);
 
-                    if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                    if (hoveredUpDown != 0 && IsCursorAcceptBeingPressed())
                     {
-                        N.SetMouseCursorSprite(CursorRightArrow);
-                        float mult = 0.05f - (1f - mouseX);
-                        if (mult > 0.05f)
+                        if (hoveredUpDown == 1)
                         {
-                            mult = 0.05f;
+                            GoUp();
                         }
-
-                        N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                        else
+                        {
+                            GoDown();
+                        }
+                        InstructionalButtons.Update();
                     }
-                    else if (mouseX < (0.05f * 0.75f)) // left edge
-                    {
-                        N.SetMouseCursorSprite(CursorLeftArrow);
-                        float mult = 0.05f - mouseX;
-                        if (mult > 0.05f)
-                        {
-                            mult = 0.05f;
-                        }
 
-                        N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
+                    if (MouseEdgeEnabled)
+                    {
+                        const int CursorLeftArrow = 6, CursorRightArrow = 7;
+
+                        if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                        {
+                            N.SetMouseCursorSprite(CursorRightArrow);
+                            float mult = 0.05f - (1f - mouseX);
+                            if (mult > 0.05f)
+                            {
+                                mult = 0.05f;
+                            }
+
+                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                        }
+                        else if (mouseX < (0.05f * 0.75f)) // left edge
+                        {
+                            N.SetMouseCursorSprite(CursorLeftArrow);
+                            float mult = 0.05f - mouseX;
+                            if (mult > 0.05f)
+                            {
+                                mult = 0.05f;
+                            }
+
+                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
+                        }
                     }
                 }
             }
@@ -1167,7 +1183,6 @@ namespace RAGENativeUI
                     // hover new item
                     MenuItems[hoveredIdx].Hovered = true;
                     hoveredItem = hoveredIdx;
-                    hoveredItemBounds = new RectangleF(x1, y1 + (int)((mouseY - y1) / itemHeight) * itemHeight, x2 - x1, itemHeight);
                 }
             }
             else if (hoveredItem != -1)
@@ -1405,14 +1420,7 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl(Keys key = Keys.None)
         {
-            if (!Visible) return;
-            if (justOpened)
-            {
-                justOpened = false;
-                return;
-            }
-
-            if (MenuItems.Count == 0)
+            if (!Visible || justOpened || MenuItems.Count == 0)
             {
                 return;
             }
