@@ -240,19 +240,83 @@
         {
             bool consumed = base.OnInput(menu, control);
 
-            switch (control)
+            if (ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled))
             {
-                case Common.MenuControls.Left:
-                    consumed = true;
-                    Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
-                    ScrollToPreviousOption();
-                    break;
+                switch (control)
+                {
+                    case Common.MenuControls.Left:
+                        consumed = true;
+                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                        ScrollToPreviousOption();
+                        break;
 
-                case Common.MenuControls.Right:
+                    case Common.MenuControls.Right:
+                        consumed = true;
+                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                        ScrollToNextOption();
+                        break;
+                }
+            }
+
+            return consumed;
+        }
+
+        protected internal override bool OnMouseHoverInput(UIMenu menu, PointF mousePos, RectangleF itemBounds, MouseHoverInput input)
+        {
+            bool consumed = false;
+
+            if (Selected)
+            {
+                bool inSelectBounds = false;
+                float selectBoundsX = itemBounds.X + itemBounds.Width * 0.33333f;
+
+                if (mousePos.X <= selectBoundsX)
+                {
+                    inSelectBounds = true;
+                    // approximately hovering the label, first 1/3 of the item width
+                    // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
+                    //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
+                    if (input == MouseHoverInput.JustReleased)
+                    {
+                        consumed = true;
+                        OnInput(menu, Common.MenuControls.Select);
+                    }
+                }
+
+                if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && input == MouseHoverInput.Pressed)
+                {
+                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
+
+                    float rightX = (0.00390625f * 1.0f) + (rightW * 1.0f) + (0.0046875f * 0.75f);
+
+                    if (menu.ScaleWithSafezone)
+                    {
+                        N.SetScriptGfxAlign('L', 'T');
+                        N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+                    }
+                    N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
+                    N.GetScriptGfxPosition(0.0f, 0.0f, out float borderX, out _);
+                    if (menu.ScaleWithSafezone)
+                    {
+                        N.ResetScriptGfxAlign();
+                    }
+
+                    rightX = itemBounds.Right - rightX + borderX;
+
+                    // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
+                    //  - If to the right of the right arrow's left border, go right
+                    //  - Anywhere else in the item, go left.
+                    // This is how the vanilla menus behave
                     consumed = true;
-                    Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
-                    ScrollToNextOption();
-                    break;
+                    if (mousePos.X >= rightX)
+                    {
+                        OnInput(menu, Common.MenuControls.Right);
+                    }
+                    else
+                    {
+                        OnInput(menu, Common.MenuControls.Left);
+                    }
+                }
             }
 
             return consumed;

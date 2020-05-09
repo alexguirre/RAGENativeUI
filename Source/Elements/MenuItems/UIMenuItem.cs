@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.ComponentModel;
-using System.Windows.Forms;
 
 namespace RAGENativeUI.Elements
 {
@@ -295,6 +294,19 @@ namespace RAGENativeUI.Elements
                     Common.PlaySound(menu.AUDIO_BACK, menu.AUDIO_LIBRARY);
                     menu.Close();
                     break;
+            }
+
+            return consumed;
+        }
+
+        protected internal enum MouseHoverInput { JustPressed, JustReleased, Pressed, Released }
+        protected internal virtual bool OnMouseHoverInput(UIMenu menu, PointF mousePos, RectangleF itemBounds, MouseHoverInput input)
+        {
+            bool consumed = false;
+            if (input == MouseHoverInput.JustReleased && Selected)
+            {
+                consumed = true;
+                OnInput(menu, Common.MenuControls.Select);
             }
 
             return consumed;
