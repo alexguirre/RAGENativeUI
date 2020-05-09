@@ -273,6 +273,38 @@ namespace RAGENativeUI.Elements
             }
         }
 
+        protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
+        {
+            bool consumed = base.OnInput(menu, control);
+
+            switch (control)
+            {
+                case Common.MenuControls.Left:
+                    consumed = true;
+                    if ((Collection == null ? Items.Count : Collection.Count) != 0)
+                    {
+                        Index--;
+                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                        menu.ListChange(this, Index);
+                        ListChangedTrigger(Index);
+                    }
+                    break;
+
+                case Common.MenuControls.Right:
+                    consumed = true;
+                    if ((Collection == null ? Items.Count : Collection.Count) != 0)
+                    {
+                        Index++;
+                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                        menu.ListChange(this, Index);
+                        ListChangedTrigger(Index);
+                    }
+                    break;
+            }
+
+            return consumed;
+        }
+
         internal virtual void ListChangedTrigger(int newindex)
         {
             OnListChanged?.Invoke(this, newindex);

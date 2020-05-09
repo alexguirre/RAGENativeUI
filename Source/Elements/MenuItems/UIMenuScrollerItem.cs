@@ -134,37 +134,49 @@
         /// <summary>
         /// Scrolls to the next option following the selected option.
         /// </summary>
-        protected internal virtual void ScrollToNextOption()
+        public virtual void ScrollToNextOption(UIMenu menu = null)
         {
             if (IsEmpty)
             {
                 return;
             }
 
-            int newIndex = Index + 1;
+            int oldIndex = Index;
+            int newIndex = oldIndex + 1;
 
             if (newIndex > (OptionCount - 1)) // wrap around
                 newIndex = 0;
 
             Index = newIndex;
+
+            if (menu != null && oldIndex != newIndex)
+            {
+                menu.ScrollerChange(this, oldIndex, newIndex);
+            }
         }
 
         /// <summary>
         /// Scrolls to the option previous to the selected option.
         /// </summary>
-        protected internal virtual void ScrollToPreviousOption()
+        public virtual void ScrollToPreviousOption(UIMenu menu = null)
         {
             if (IsEmpty)
             {
                 return;
             }
 
-            int newIndex = Index - 1;
+            int oldIndex = Index;
+            int newIndex = oldIndex - 1;
 
             if (newIndex < 0) // wrap around
                 newIndex = OptionCount - 1;
 
             Index = newIndex;
+
+            if (menu != null && oldIndex != newIndex)
+            {
+                menu.ScrollerChange(this, oldIndex, newIndex);
+            }
         }
 
         /// <inheritdoc/>
@@ -222,6 +234,28 @@
                 }
                 TextCommands.Display(selectedOption, optTextX, optTextY);
             }
+        }
+
+        protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
+        {
+            bool consumed = base.OnInput(menu, control);
+
+            switch (control)
+            {
+                case Common.MenuControls.Left:
+                    consumed = true;
+                    Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                    ScrollToPreviousOption();
+                    break;
+
+                case Common.MenuControls.Right:
+                    consumed = true;
+                    Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                    ScrollToNextOption();
+                    break;
+            }
+
+            return consumed;
         }
 
         /// <summary>

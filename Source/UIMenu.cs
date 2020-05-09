@@ -927,10 +927,13 @@ namespace RAGENativeUI
         /// </summary>
         public void GoUp()
         {
-            CurrentSelection--;
+            if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Up))
+            {
+                CurrentSelection--;
 
-            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-            IndexChange(CurrentSelection);
+                Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                IndexChange(CurrentSelection);
+            }
         }
 
         /// <summary>
@@ -947,106 +950,55 @@ namespace RAGENativeUI
         /// </summary>
         public void GoDown()
         {
-            CurrentSelection++;
+            if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
+            {
+                CurrentSelection++;
 
-            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-            IndexChange(CurrentSelection);
+                Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                IndexChange(CurrentSelection);
+            }
         }
 
         /// <summary>
         /// Go left on a MenuListItem.
         /// </summary>
-        public void GoLeft()
-        {
-            UIMenuItem selectedItem = MenuItems[CurrentSelection];
-
-            if (selectedItem is UIMenuScrollerItem scroller)
-            {
-                int oldIndex = scroller.Index;
-
-                scroller.ScrollToPreviousOption();
-                Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-                
-                int newIndex = scroller.Index;
-                if (oldIndex != newIndex)
-                {
-                    ScrollerChange(scroller, oldIndex, newIndex);
-                }
-            }
-            else
-            {
-                if (!(selectedItem is UIMenuListItem)) return;
-                var it = (UIMenuListItem)selectedItem;
-                if ((it.Collection == null ? it.Items.Count : it.Collection.Count) == 0) return;
-                it.Index--;
-                Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-                ListChange(it, it.Index);
-                it.ListChangedTrigger(it.Index);
-            }
-        }
+        public void GoLeft() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Left);
 
         /// <summary>
         /// Go right on a MenuListItem.
         /// </summary>
-        public void GoRight()
-        {
-            UIMenuItem selectedItem = MenuItems[CurrentSelection];
-
-            if (selectedItem is UIMenuScrollerItem scroller)
-            {
-                scroller.ScrollToNextOption();
-                Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-            }
-            else
-            {
-                if (!(selectedItem is UIMenuListItem)) return;
-                var it = (UIMenuListItem)selectedItem;
-                if ((it.Collection == null ? it.Items.Count : it.Collection.Count) == 0) return;
-                it.Index++;
-                Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-                ListChange(it, it.Index);
-                it.ListChangedTrigger(it.Index);
-            }
-        }
+        public void GoRight() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Right);
 
         /// <summary>
         /// Activate the current selected item.
         /// </summary>
-        public void SelectItem()
-        {
-            if (!MenuItems[CurrentSelection].Enabled)
-            {
-                Common.PlaySound(AUDIO_ERROR, AUDIO_LIBRARY);
-                return;
-            }
-            if (MenuItems[CurrentSelection] is UIMenuCheckboxItem)
-            {
-                var it = (UIMenuCheckboxItem)MenuItems[CurrentSelection];
-                it.Checked = !it.Checked;
-                Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
-                CheckboxChange(it, it.Checked);
-                it.CheckboxEventTrigger();
-            }
-            else
-            {
-                Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
-                ItemSelect(MenuItems[CurrentSelection], CurrentSelection);
-                MenuItems[CurrentSelection].ItemActivate(this);
-                if (!Children.ContainsKey(MenuItems[CurrentSelection])) return;
-                Visible = false;
-                Children[MenuItems[CurrentSelection]].Visible = true;
-                MenuChangeEv(Children[MenuItems[CurrentSelection]], true);
-            }
-        }
+        public void SelectItem() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Select);
 
         /// <summary>
         /// Close or go back in a menu chain.
         /// </summary>
-        public void GoBack()
+        public void GoBack() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back);
+
+        // opens the menu binded to the specified item
+        public void OpenChildMenu(UIMenuItem item)
         {
-            Common.PlaySound(AUDIO_BACK, AUDIO_LIBRARY);
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            if (Children.TryGetValue(item, out UIMenu childMenu))
+            {
+                Visible = false;
+                childMenu.Visible = true;
+                MenuChangeEv(childMenu, true);
+            }
+        }
+
+        public void Close(bool openParentMenu = true)
+        {
             Visible = false;
-            if (ParentMenu != null)
+            if (openParentMenu && ParentMenu != null)
             {
                 var tmp = Cursor.Position;
                 ParentMenu.Visible = true;
@@ -1496,33 +1448,34 @@ namespace RAGENativeUI
                 return;
             }
 
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
             if (HasControlJustBeenReleaseed(Common.MenuControls.Back, key))
             {
                 GoBack();
             }
-            if (MenuItems.Count == 0) return;
+
             if (IsControlBeingPressed(Common.MenuControls.Up, key))
             {
                 GoUp();
                 InstructionalButtons.Update();
             }
-
             else if (IsControlBeingPressed(Common.MenuControls.Down, key))
             {
                 GoDown();
                 InstructionalButtons.Update();
             }
-
             else if (IsControlBeingPressed(Common.MenuControls.Left, key))
             {
                 GoLeft();
             }
-
             else if (IsControlBeingPressed(Common.MenuControls.Right, key))
             {
                 GoRight();
             }
-
             else if (HasControlJustBeenPressed(Common.MenuControls.Select, key))
             {
                 SelectItem();
@@ -1783,22 +1736,22 @@ namespace RAGENativeUI
             OnIndexChange?.Invoke(this, newindex);
         }
 
-        protected virtual void ListChange(UIMenuListItem sender, int newindex)
+        protected internal virtual void ListChange(UIMenuListItem sender, int newindex)
         {
             OnListChange?.Invoke(this, sender, newindex);
         }
 
-        protected virtual void ScrollerChange(UIMenuScrollerItem sender, int oldIndex, int newindex)
+        protected internal virtual void ScrollerChange(UIMenuScrollerItem sender, int oldIndex, int newindex)
         {
             OnScrollerChange?.Invoke(this, sender, oldIndex, newindex);
         }
 
-        protected virtual void ItemSelect(UIMenuItem selecteditem, int index)
+        protected internal virtual void ItemSelect(UIMenuItem selecteditem, int index)
         {
             OnItemSelect?.Invoke(this, selecteditem, index);
         }
 
-        protected virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
+        protected internal virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
         {
             OnCheckboxChange?.Invoke(this, sender, Checked);
         }

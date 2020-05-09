@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace RAGENativeUI.Elements
 {
@@ -106,6 +107,12 @@ namespace RAGENativeUI.Elements
         /// Whether this item is enabled or disabled (text is greyed out and you cannot select it).
         /// </summary>
         public virtual bool Enabled { get; set; }
+
+        public void Activate(UIMenu menu = null)
+        {
+            menu?.ItemSelect(this, menu.MenuItems.IndexOf(this));
+            ItemActivate(menu);
+        }
 
         internal virtual void ItemActivate(UIMenu sender)
         {
@@ -256,6 +263,41 @@ namespace RAGENativeUI.Elements
                     badgeH * sizeMult,
                     c);
             }
+        }
+
+        protected internal virtual bool OnInput(UIMenu menu, Common.MenuControls control)
+        {
+            if (menu == null)
+            {
+                throw new ArgumentNullException(nameof(menu));
+            }
+
+            bool consumed = false;
+            switch (control)
+            {
+                case Common.MenuControls.Select:
+                    consumed = true;
+                    if (!Enabled)
+                    {
+                        Common.PlaySound(menu.AUDIO_ERROR, menu.AUDIO_LIBRARY);
+                        break;
+                    }
+
+                    Common.PlaySound(menu.AUDIO_SELECT, menu.AUDIO_LIBRARY);
+
+                    Activate(menu);
+                    menu.OpenChildMenu(this);
+                    break;
+
+                case Common.MenuControls.Back:
+                    consumed = true;
+
+                    Common.PlaySound(menu.AUDIO_BACK, menu.AUDIO_LIBRARY);
+                    menu.Close();
+                    break;
+            }
+
+            return consumed;
         }
 
         /// <summary>
