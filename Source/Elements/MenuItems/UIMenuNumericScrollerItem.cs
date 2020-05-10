@@ -23,8 +23,7 @@
         private Number minimum;
         private Number maximum;
         private bool allowSync;
-        private string format;
-        private IFormatProvider formatProvider;
+        private Func<T, string> formatter;
 
         /// <summary>
         /// Gets or sets the currently selected value. When changing its value, the new value is rounded to nearest possible
@@ -134,33 +133,26 @@
         // TODO: provide some sane default format for floating-point types?
         // otherwise their display can vary from "1" to "0.25" to "0.0100000000002183"
         /// <summary>
-        /// Gets or sets the format to use for displaying the current value. If <c>null</c>, the default format defined for <typeparamref name="T"/> is used.
+        /// Gets or sets the formatter used to display the selected item.
+        /// A <see cref="Func{T, TResult}"/> that takes in a <typeparamref name="T"/> and returns its <see cref="string"/> representation.
         /// </summary>
-        public string Format
+        /// <exception cref="ArgumentNullException">
+        /// <c>value</c> is null.
+        /// </exception>
+        /// <seealso cref="DefaultFormatter(T)"/>
+        public Func<T, string> Formatter
         {
-            get => format;
+            get => formatter;
             set
             {
-                if (value != format)
+                if (value == null)
                 {
-                    format = value;
-                    SyncSelectedTextToValue();
+                    throw new ArgumentNullException(nameof(value));
                 }
-            }
-        }
 
-        /// <summary>
-        /// Gets or sets the provider to use to format the current value. If <c>null</c>, the numeric format information from
-        /// the current locale setting of the operating system is used.
-        /// </summary>
-        public IFormatProvider FormatProvider
-        {
-            get => formatProvider;
-            set
-            {
-                if (value != formatProvider)
+                if (value != formatter)
                 {
-                    formatProvider = value;
+                    formatter = value;
                     SyncSelectedTextToValue();
                 }
             }
@@ -182,6 +174,7 @@
             }
 
             allowSync = false;
+            Formatter = DefaultFormatter;
             Step = step;
             Minimum = minimum;
             Maximum = maximum;
@@ -234,7 +227,7 @@
                 return;
             }
 
-            selectedValueText = selectedValue.Value.ToString(Format, FormatProvider);
+            selectedValueText = Formatter(selectedValue.Value);
         }
 
         private int IndexOfValue(T value)
@@ -252,6 +245,19 @@
                 value = maximum;
 
             return value;
+        }
+
+        /// <summary>
+        /// The default value of <see cref="Formatter"/>.
+        /// The returned <see cref="string"/> is obtained through the <see cref="object.ToString"/> method of <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="value">The value to format.</param>
+        /// <returns>
+        /// The <see cref="string"/> representation of <paramref name="value"/>.
+        /// </returns>
+        public static string DefaultFormatter(T value)
+        {
+            return value.ToString();
         }
 
         /// <summary>
