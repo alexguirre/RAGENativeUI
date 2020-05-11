@@ -2,6 +2,7 @@
 {
     using System;
     using System.Drawing;
+    using Rage;
 
     /// <summary>
     /// Implements the basic functionality of an item with multiple options to choose from through scrolling, with left/right arrows.
@@ -254,23 +255,15 @@
         // TODO: how should the slider look when ScrollingEnabled is false?
         private void DrawSlider(float x, float y, float width, float height)
         {
-            GetBadgeOffsets(out float badgeLeftOffset, out float badgeRightOffset);
-
             float percentage = IsEmpty ? 0.0f : (OptionCount == 1 ? 1.0f : ((float)Index / (OptionCount - 1)));
 
+            RectangleF r = GetSliderBarBounds(x, y, width, height);
             SliderStyleOptions s = SliderStyle.Value;
 
-            const float BorderPadding = 0.00390625f;
-            float barWidth = (width - badgeLeftOffset - badgeRightOffset - BorderPadding * 2.0f) * s.Width;
-            float barHeight = (height - BorderPadding * 2.0f) * s.Height;
-            float barX = x + width - BorderPadding - badgeRightOffset - barWidth * 0.5f;
-            float barY = y + height * 0.5f;
+            UIMenu.DrawRect(r.X + r.Width * 0.5f, r.Y + r.Height * 0.5f, r.Width, r.Height, s.BackgroundColor);
 
-            UIMenu.DrawRect(barX, barY, barWidth, barHeight, s.BackgroundColor);
-
-            float fillWidth = barWidth * percentage;
-            float fillX = barX - barWidth * 0.5f + fillWidth * 0.5f;
-            UIMenu.DrawRect(fillX, barY, fillWidth, barHeight, s.ForegroundColor);
+            float fillWidth = r.Width * percentage;
+            UIMenu.DrawRect(r.X + fillWidth * 0.5f, r.Y + r.Height * 0.5f, fillWidth, r.Height, s.ForegroundColor);
         }
 
         protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
@@ -305,62 +298,136 @@
                 throw new ArgumentNullException(nameof(menu));
             }
 
-            bool consumed = false;
-            if (Selected && Hovered)
+            if (SliderStyle.HasValue)
             {
-                bool inSelectBounds = false;
-                float selectBoundsX = itemBounds.X + itemBounds.Width * 0.33333f;
+                return OnSliderMouseInput(menu, itemBounds, mousePos, input);
+            }
+            else
+            {
+                return OnScrollerMouseInput(menu, itemBounds, mousePos, input);
+            }
+        }
 
-                if (mousePos.X <= selectBoundsX)
+        private bool OnScrollerMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
+        {
+            if (!Selected || !Hovered)
+            {
+                return false;
+            }
+
+            bool consumed = false;
+            bool inSelectBounds = false;
+            float selectBoundsX = itemBounds.X + itemBounds.Width * 0.33333f;
+
+            if (mousePos.X <= selectBoundsX)
+            {
+                inSelectBounds = true;
+                // approximately hovering the label, first 1/3 of the item width
+                // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
+                //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
+                if (input == MouseInput.JustReleased)
                 {
-                    inSelectBounds = true;
-                    // approximately hovering the label, first 1/3 of the item width
-                    // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
-                    //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
-                    if (input == MouseInput.JustReleased)
-                    {
-                        consumed = true;
-                        OnInput(menu, Common.MenuControls.Select);
-                    }
+                    consumed = true;
+                    OnInput(menu, Common.MenuControls.Select);
+                }
+            }
+
+            if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && input == MouseInput.PressedRepeat)
+            {
+                UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
+
+                float rightX = (0.00390625f * 1.0f) + (rightW * 1.0f) + (0.0046875f * 0.75f);
+
+                if (menu.ScaleWithSafezone)
+                {
+                    N.SetScriptGfxAlign('L', 'T');
+                    N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+                }
+                N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
+                N.GetScriptGfxPosition(0.0f, 0.0f, out float borderX, out _);
+                if (menu.ScaleWithSafezone)
+                {
+                    N.ResetScriptGfxAlign();
                 }
 
-                if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && input == MouseInput.Pressed)
+                rightX = itemBounds.Right - rightX + borderX;
+
+                // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
+                //  - If to the right of the right arrow's left border, go right
+                //  - Anywhere else in the item, go left.
+                // This is how the vanilla menus behave
+                consumed = true;
+                if (mousePos.X >= rightX)
                 {
-                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
-
-                    float rightX = (0.00390625f * 1.0f) + (rightW * 1.0f) + (0.0046875f * 0.75f);
-
-                    if (menu.ScaleWithSafezone)
-                    {
-                        N.SetScriptGfxAlign('L', 'T');
-                        N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
-                    }
-                    N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
-                    N.GetScriptGfxPosition(0.0f, 0.0f, out float borderX, out _);
-                    if (menu.ScaleWithSafezone)
-                    {
-                        N.ResetScriptGfxAlign();
-                    }
-
-                    rightX = itemBounds.Right - rightX + borderX;
-
-                    // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
-                    //  - If to the right of the right arrow's left border, go right
-                    //  - Anywhere else in the item, go left.
-                    // This is how the vanilla menus behave
-                    consumed = true;
-                    if (mousePos.X >= rightX)
-                    {
-                        OnInput(menu, Common.MenuControls.Right);
-                    }
-                    else
-                    {
-                        OnInput(menu, Common.MenuControls.Left);
-                    }
+                    OnInput(menu, Common.MenuControls.Right);
+                }
+                else
+                {
+                    OnInput(menu, Common.MenuControls.Left);
                 }
             }
 
             return consumed;
+        }
+
+        private bool mouseDownOnSlider = false;
+        private bool OnSliderMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
+        {
+            if (!Selected)
+            {
+                return false;
+            }
+
+            RectangleF r = GetSliderBarBounds(itemBounds.X, itemBounds.Y, itemBounds.Width, itemBounds.Height);
+
+            bool consumed = false;
+            if (input == MouseInput.JustPressed && Hovered && mousePos.X >= r.X && mousePos.X <= (r.X + r.Width))
+            {
+                mouseDownOnSlider = true;
+            }
+
+            if (mouseDownOnSlider)
+            {
+                if (OptionCount > 1)
+                {
+                    consumed = true;
+                    float percentage = (mousePos.X - r.X) / r.Width;
+                    percentage = MathHelper.Clamp(percentage, 0.0f, 1.0f);
+                    int newIndex = (int)Math.Round(percentage * (OptionCount - 1));
+                    if (newIndex != Index)
+                    {
+                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                    }
+                    Index = newIndex;
+                }
+
+                if (input == MouseInput.JustReleased || input == MouseInput.Released)
+                {
+                    mouseDownOnSlider = false;
+                }
+            }
+            else if (input == MouseInput.JustReleased && Hovered && mousePos.X < (r.X - 0.00390625f * 2.0f))
+            {
+                consumed = true;
+                OnInput(menu, Common.MenuControls.Select);
+            }
+
+            return consumed;
+        }
+
+        private RectangleF GetSliderBarBounds(float x, float y, float width, float height)
+        {
+            GetBadgeOffsets(out float badgeLeftOffset, out float badgeRightOffset);
+
+            const float BorderPadding = 0.00390625f;
+
+            SliderStyleOptions s = SliderStyle.Value;
+            float barWidth = (width - badgeLeftOffset - badgeRightOffset - BorderPadding * 2.0f) * s.Width;
+            float barHeight = (height - BorderPadding * 2.0f) * s.Height;
+            float barX = x + width - BorderPadding - badgeRightOffset - barWidth;
+            float barY = y + height * 0.5f - barHeight * 0.5f;
+
+            return new RectangleF(barX, barY, barWidth, barHeight);
         }
 
         /// <summary>
@@ -381,7 +448,7 @@
             public static readonly SliderStyleOptions Default = new SliderStyleOptions
             {
                 ForegroundColor = HudColor.Blue.GetColor(),
-                BackgroundColor = HudColor.BlueDark.GetColor(),
+                BackgroundColor = Color.FromArgb(120, HudColor.Blue.GetColor()),
                 Width = 0.45f,
                 Height = 0.275f,
             };

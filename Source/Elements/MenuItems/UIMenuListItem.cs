@@ -335,7 +335,7 @@ namespace RAGENativeUI.Elements
                     }
                 }
 
-                if (!inSelectBounds && ScrollingEnabled && Enabled && input == MouseInput.Pressed)
+                if (!inSelectBounds && ScrollingEnabled && Enabled && input == MouseInput.PressedRepeat)
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
 

@@ -299,7 +299,7 @@ namespace RAGENativeUI.Elements
             return consumed;
         }
 
-        protected internal enum MouseInput { JustPressed, JustReleased, Pressed, Released }
+        protected internal enum MouseInput { JustPressed, JustReleased, Pressed, PressedRepeat, Released }
         protected internal virtual bool OnMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
         {
             if (menu == null)

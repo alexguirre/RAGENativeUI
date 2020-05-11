@@ -1077,43 +1077,51 @@ namespace RAGENativeUI
             float mouseX = N.GetControlNormal(2, GameControl.CursorX);
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
 
-            UpdateHoveredItem(mouseX, mouseY);
+            bool cursorPressedRepeat = IsCursorAcceptBeingPressed();
 
-            if (hoveredItem != -1 && hoveredItem != CurrentSelection && Game.IsControlJustReleased(2, GameControl.CursorAccept))
+            // send mouse input event to selected item
+            UIMenuItem selectedItem = MenuItems[CurrentSelection];
+
+            UIMenuItem.MouseInput input = UIMenuItem.MouseInput.Released;
+            if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
             {
-                    CurrentSelection = hoveredItem;
-                    Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-                    IndexChange(CurrentSelection);
-                    InstructionalButtons.Update();
+                input = UIMenuItem.MouseInput.JustPressed;
             }
-            else
+            else if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
             {
-                // send mouse input event to selected item
+                input = UIMenuItem.MouseInput.JustReleased;
+            }
+            else if (selectedItem.ScrollerProxy == null ? cursorPressedRepeat : IsCursorAcceptBeingPressed(selectedItem.ScrollerProxy))
+            {
+                input = UIMenuItem.MouseInput.PressedRepeat;
+            }
+            else if (Game.IsControlPressed(2, GameControl.CursorAccept))
+            {
+                input = UIMenuItem.MouseInput.Pressed;
+            }
+
+            bool mouseInputConsumed = selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
+            //Game.DisplaySubtitle($"mouseInputConsumed = {mouseInputConsumed}");
+            if (!mouseInputConsumed)
+            {
+                UpdateHoveredItem(mouseX, mouseY);
+
+                if (hoveredItem != -1)
                 {
-                    UIMenuItem selectedItem = MenuItems[CurrentSelection];
-
-                    UIMenuItem.MouseInput input = UIMenuItem.MouseInput.Released;
-                    if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
+                    hoveredUpDown = 0;
+                    if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
                     {
-                        input = UIMenuItem.MouseInput.JustPressed;
+                        CurrentSelection = hoveredItem;
+                        Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                        IndexChange(CurrentSelection);
+                        InstructionalButtons.Update();
                     }
-                    else if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
-                    {
-                        input = UIMenuItem.MouseInput.JustReleased;
-                    }
-                    else if (selectedItem.ScrollerProxy == null ? IsCursorAcceptBeingPressed() : IsCursorAcceptBeingPressed(selectedItem.ScrollerProxy))
-                    {
-                        input = UIMenuItem.MouseInput.Pressed;
-                    }
-
-                    selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
                 }
-
-                if (hoveredItem == -1)
+                else if (hoveredItem == -1)
                 {
                     UpdateHoveredUpDown(mouseX, mouseY);
 
-                    if (hoveredUpDown != 0 && IsCursorAcceptBeingPressed())
+                    if (hoveredUpDown != 0 && cursorPressedRepeat)
                     {
                         if (hoveredUpDown == 1)
                         {
@@ -1152,6 +1160,7 @@ namespace RAGENativeUI
 
                             N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
                         }
+
                     }
                 }
             }
