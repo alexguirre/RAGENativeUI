@@ -926,9 +926,6 @@ namespace RAGENativeUI
             return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
-        /// <summary>
-        /// Go up the menu if the number of items is more than maximum items on screen.
-        /// </summary>
         [Obsolete("Use UIMenu.GoUp() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoUpOverflow()
         {
@@ -936,7 +933,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go up the menu if the number of items is less than or equal to the maximum items on screen.
+        /// Sends a <see cref="Common.MenuControls.Up"/> input event to the selected item. If not consumed, the previous item is selected.
         /// </summary>
         public void GoUp()
         {
@@ -949,9 +946,6 @@ namespace RAGENativeUI
             }
         }
 
-        /// <summary>
-        /// Go down the menu if the number of items is more than maximum items on screen.
-        /// </summary>
         [Obsolete("Use UIMenu.GoDown() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoDownOverflow()
         {
@@ -959,7 +953,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go up the menu if the number of items is less than or equal to the maximum items on screen.
+        /// Sends a <see cref="Common.MenuControls.Down"/> input event to the selected item. If not consumed, the next item is selected.
         /// </summary>
         public void GoDown()
         {
@@ -973,26 +967,30 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go left on a MenuListItem.
+        /// Sends a <see cref="Common.MenuControls.Left"/> input event to the selected item.
         /// </summary>
         public void GoLeft() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Left);
 
         /// <summary>
-        /// Go right on a MenuListItem.
+        /// Sends a <see cref="Common.MenuControls.Right"/> input event to the selected item.
         /// </summary>
         public void GoRight() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Right);
 
         /// <summary>
-        /// Activate the current selected item.
+        /// Sends a <see cref="Common.MenuControls.Select"/> input event to the selected item.
         /// </summary>
         public void SelectItem() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Select);
 
         /// <summary>
-        /// Close or go back in a menu chain.
+        /// Sends a <see cref="Common.MenuControls.Back"/> input event to the selected item.
         /// </summary>
         public void GoBack() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back);
 
-        // opens the menu binded to the specified item
+        /// <summary>
+        /// Opens the menu binded to the specified item, if any.
+        /// </summary>
+        /// <param name="item">The item with the binded menu.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="item"/> is null.</exception>
         public void OpenChildMenu(UIMenuItem item)
         {
             if (item == null)
@@ -1008,6 +1006,10 @@ namespace RAGENativeUI
             }
         }
 
+        /// <summary>
+        /// Closes this menu.
+        /// </summary>
+        /// <param name="openParentMenu">If <c>true</c> and <see cref="ParentMenu"/> is not <c>null</c>, the parent menu is open after closing this menu.</param>
         public void Close(bool openParentMenu = true)
         {
             Visible = false;
@@ -1101,7 +1103,6 @@ namespace RAGENativeUI
             }
 
             bool mouseInputConsumed = selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
-            //Game.DisplaySubtitle($"mouseInputConsumed = {mouseInputConsumed}");
             if (!mouseInputConsumed)
             {
                 UpdateHoveredItem(mouseX, mouseY);

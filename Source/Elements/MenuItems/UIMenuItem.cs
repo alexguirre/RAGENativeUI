@@ -107,6 +107,10 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public virtual bool Enabled { get; set; }
 
+        /// <summary>
+        /// Activates this item.
+        /// </summary>
+        /// <param name="menu">The <see cref="UIMenu"/> that is calling this method, or <c>null</c> if no menu is involved.</param>
         public void Activate(UIMenu menu = null)
         {
             menu?.ItemSelect(this, menu.MenuItems.IndexOf(this));
@@ -264,6 +268,13 @@ namespace RAGENativeUI.Elements
             }
         }
 
+        /// <summary>
+        /// Handles an input event when this item is selected.
+        /// </summary>
+        /// <param name="menu">The source <see cref="UIMenu"/> for this event.</param>
+        /// <param name="control">The input control to handle.</param>
+        /// <returns><c>true</c> if the input was consumed, such that the source <paramref name="menu"/> may not use it again; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="menu"/> is <c>null</c>.</exception>
         protected internal virtual bool OnInput(UIMenu menu, Common.MenuControls control)
         {
             if (menu == null)
@@ -299,7 +310,21 @@ namespace RAGENativeUI.Elements
             return consumed;
         }
 
+        /// <summary>
+        /// Defines the left mouse button states for <see cref="OnMouseInput(UIMenu, RectangleF, PointF, MouseInput)"/>.
+        /// </summary>
+        /// <seealso cref="OnMouseInput(UIMenu, RectangleF, PointF, MouseInput)"/>
         protected internal enum MouseInput { JustPressed, JustReleased, Pressed, PressedRepeat, Released }
+
+        /// <summary>
+        /// Handles a mouse input event when this item is selected.
+        /// </summary>
+        /// <param name="menu">The source <see cref="UIMenu"/> for this event.</param>
+        /// <param name="itemBounds">The position and size of this item on screen, in relative coordinates.</param>
+        /// <param name="mousePos">The position of the mouse, in relative coordinates.</param>
+        /// <param name="input">The state of the left mouse button (control <see cref="Rage.GameControl.CursorAccept"/>).</param>
+        /// <returns><c>true</c> if the input was consumed, such that the source <paramref name="menu"/> may not use it again; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="menu"/> is <c>null</c>.</exception>
         protected internal virtual bool OnMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
         {
             if (menu == null)

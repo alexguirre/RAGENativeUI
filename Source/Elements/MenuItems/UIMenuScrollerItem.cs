@@ -137,6 +137,7 @@
         /// <summary>
         /// Scrolls to the next option following the selected option.
         /// </summary>
+        /// <param name="menu">The <see cref="UIMenu"/> that is calling this method, or <c>null</c> if no menu is involved.</param>
         public virtual void ScrollToNextOption(UIMenu menu = null)
         {
             if (IsEmpty)
@@ -161,6 +162,7 @@
         /// <summary>
         /// Scrolls to the option previous to the selected option.
         /// </summary>
+        /// <param name="menu">The <see cref="UIMenu"/> that is calling this method, or <c>null</c> if no menu is involved.</param>
         public virtual void ScrollToPreviousOption(UIMenu menu = null)
         {
             if (IsEmpty)
@@ -251,7 +253,6 @@
             }
         }
 
-        // TODO: mouse input for slider
         // TODO: how should the slider look when ScrollingEnabled is false?
         private void DrawSlider(float x, float y, float width, float height)
         {
@@ -266,6 +267,7 @@
             UIMenu.DrawRect(r.X + fillWidth * 0.5f, r.Y + r.Height * 0.5f, fillWidth, r.Height, s.ForegroundColor);
         }
 
+        /// <inheritdoc/>
         protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
         {
             bool consumed = base.OnInput(menu, control);
@@ -277,13 +279,13 @@
                     case Common.MenuControls.Left:
                         consumed = true;
                         Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
-                        ScrollToPreviousOption();
+                        ScrollToPreviousOption(menu);
                         break;
 
                     case Common.MenuControls.Right:
                         consumed = true;
                         Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
-                        ScrollToNextOption();
+                        ScrollToNextOption(menu);
                         break;
                 }
             }
@@ -291,6 +293,7 @@
             return consumed;
         }
 
+        /// <inheritdoc/>
         protected internal override bool OnMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
         {
             if (menu == null)
@@ -431,7 +434,7 @@
         }
 
         /// <summary>
-        /// Triggers <see cref="IndexChanged"/> event.
+        /// Triggers the <see cref="IndexChanged"/> event.
         /// </summary>
         protected virtual void OnSelectedIndexChanged(int oldIndex, int newIndex)
         {
