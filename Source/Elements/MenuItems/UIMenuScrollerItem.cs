@@ -115,6 +115,12 @@
         /// </remarks>
         public bool ScrollingEnabledWhenDisabled { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets whether when the last item is selected, it can continue scrolling to the first item, and vice versa.
+        /// The default value is <c>true</c>.
+        /// </summary>
+        public bool AllowWrapAround { get; set; } = true;
+
         /// <inheritdoc/>
         public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuScrollerItem)} cannot have a right label."); }
 
@@ -138,24 +144,37 @@
         /// Scrolls to the next option following the selected option.
         /// </summary>
         /// <param name="menu">The <see cref="UIMenu"/> that is calling this method, or <c>null</c> if no menu is involved.</param>
-        public virtual void ScrollToNextOption(UIMenu menu = null)
+        /// <returns><c>true</c> if <see cref="Index"/> changed; otherwise, <c>false</c>.</returns>
+        public virtual bool ScrollToNextOption(UIMenu menu = null)
         {
             if (IsEmpty)
             {
-                return;
+                return false;
             }
 
             int oldIndex = Index;
             int newIndex = oldIndex + 1;
 
             if (newIndex > (OptionCount - 1)) // wrap around
+            {
+                if (!AllowWrapAround)
+                {
+                    return false;
+                }
+
                 newIndex = 0;
+            }
 
             Index = newIndex;
 
-            if (menu != null && oldIndex != newIndex)
+            if (oldIndex != newIndex)
             {
-                menu.ScrollerChange(this, oldIndex, newIndex);
+                menu?.ScrollerChange(this, oldIndex, newIndex);
+                return true;
+            }
+            else 
+            {
+                return false;
             }
         }
 
@@ -163,24 +182,37 @@
         /// Scrolls to the option previous to the selected option.
         /// </summary>
         /// <param name="menu">The <see cref="UIMenu"/> that is calling this method, or <c>null</c> if no menu is involved.</param>
-        public virtual void ScrollToPreviousOption(UIMenu menu = null)
+        /// <returns><c>true</c> if <see cref="Index"/> changed; otherwise, <c>false</c>.</returns>
+        public virtual bool ScrollToPreviousOption(UIMenu menu = null)
         {
             if (IsEmpty)
             {
-                return;
+                return false;
             }
 
             int oldIndex = Index;
             int newIndex = oldIndex - 1;
 
             if (newIndex < 0) // wrap around
+            {
+                if (!AllowWrapAround)
+                {
+                    return false;
+                }
+
                 newIndex = OptionCount - 1;
+            }
 
             Index = newIndex;
 
-            if (menu != null && oldIndex != newIndex)
+            if (oldIndex != newIndex)
             {
-                menu.ScrollerChange(this, oldIndex, newIndex);
+                menu?.ScrollerChange(this, oldIndex, newIndex);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -228,7 +260,8 @@
                     float spriteX = x + width - (0.00390625f * 0.5f) - (w * 0.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, arrowsColor);
+                    Color c = (!AllowWrapAround && Index == OptionCount - 1 || IsEmpty) ? DisabledForeColor : arrowsColor;
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, c);
                 }
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
@@ -236,7 +269,8 @@
                     float spriteX = x + width - (0.00390625f * 1.5f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
-                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, arrowsColor);
+                    Color c = (!AllowWrapAround && Index == 0 || IsEmpty) ? DisabledForeColor : arrowsColor;
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, c);
                 }
             }
             else
@@ -274,19 +308,23 @@
 
             if (ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled))
             {
+                bool playSound = false;
                 switch (control)
                 {
                     case Common.MenuControls.Left:
                         consumed = true;
-                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
-                        ScrollToPreviousOption(menu);
+                        playSound = ScrollToPreviousOption(menu);
                         break;
 
                     case Common.MenuControls.Right:
                         consumed = true;
-                        Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
-                        ScrollToNextOption(menu);
+                        playSound = ScrollToNextOption(menu);
                         break;
+                }
+
+                if (playSound)
+                {
+                    Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
                 }
             }
 
