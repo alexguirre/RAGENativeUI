@@ -1497,21 +1497,19 @@ namespace RAGENativeUI
             {
                 if (resetLists)
                 {
-                    if (item.ScrollerProxy != null)
+                    if (item is UIMenuListItem l)
                     {
-                        item.ScrollerProxy.SetIndex(0);
-                        continue;
+                        l.Index = 0;
+                    }
+                    else if (item is UIMenuScrollerItem s)
+                    {
+                        s.Index = s.IsEmpty ? UIMenuScrollerItem.EmptyIndex : 0;
                     }
                 }
 
-                if (resetCheckboxes)
+                if (resetCheckboxes && item is UIMenuCheckboxItem c)
                 {
-                    UIMenuCheckboxItem itemAsCheckbox = item as UIMenuCheckboxItem;
-                    if (itemAsCheckbox != null)
-                    {
-                        itemAsCheckbox.Checked = false;
-                        continue;
-                    }
+                    c.Checked = false;
                 }
             }
             CurrentSelection = 0;

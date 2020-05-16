@@ -630,33 +630,28 @@
     /// </summary>
     internal sealed class UIMenuScrollerProxy
     {
+        // TODO: need to refactor UIMenu input handling to be able to fully remove this class
         public delegate ref uint GetHoldTimeDelegate();
 
-        public UIMenuItem Item { get; }
         public Func<bool> GetScrollingEnabled { get; }
         public Func<bool> GetScrollingEnabledWhenDisabled { get; }
         public Func<uint> GetHoldTimeBeforeScroll { get; }
         public GetHoldTimeDelegate GetHoldTime { get; }
-        public Action<int> SetIndex { get; }
 
         public UIMenuScrollerProxy(UIMenuScrollerItem item)
         {
-            Item = item;
             GetScrollingEnabled = () => item.ScrollingEnabled;
             GetScrollingEnabledWhenDisabled = () => item.ScrollingEnabledWhenDisabled;
             GetHoldTimeBeforeScroll = () => item.HoldTimeBeforeScroll;
             GetHoldTime = () => ref item.HoldTime;
-            SetIndex = i => item.Index = i;
         }
 
         public UIMenuScrollerProxy(UIMenuListItem item)
         {
-            Item = item;
             GetScrollingEnabled = () => item.ScrollingEnabled;
             GetScrollingEnabledWhenDisabled = () => false;
             GetHoldTimeBeforeScroll = () => item.HoldTimeBeforeScroll;
             GetHoldTime = () => ref item._holdTime;
-            SetIndex = i => item.Index = i;
         }
     }
 }
