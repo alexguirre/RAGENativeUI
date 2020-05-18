@@ -17,14 +17,28 @@
         private Func<T, string> formatter;
 
         /// <summary>
-        /// Gets the item that is currently selected.
+        /// Gets or sets the item that is currently selected.
         /// </summary>
         /// <exception cref="InvalidOperationException">
-        /// <see cref="Items"/> is empty.
+        /// <see cref="Items"/> is empty while getting the selected item.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// The value in a set operation is not contained in <see cref="Items"/>.
         /// </exception>
         public T SelectedItem
         {
             get => IsEmpty ? throw new InvalidOperationException($"{nameof(Items)} list is empty") : Items[Index];
+            set
+            {
+                int i = Items.IndexOf(value);
+
+                if (i == -1)
+                {
+                    throw new ArgumentException($"{nameof(Items)} list does not contain the specified value ({value})", nameof(value));
+                }
+
+                Index = i;
+            }
         }
 
         /// <summary>
