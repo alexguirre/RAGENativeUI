@@ -142,8 +142,6 @@
         public override int OptionCount
             => (int)Math.Round((maximum.ToDecimal() - minimum.ToDecimal()) / step.ToDecimal()) + 1; // cast to decimal to avoid overflows on smaller numeric types
 
-        // TODO: provide some sane default format for floating-point types?
-        // otherwise their display can vary from "1" to "0.25" to "0.0100000000002183"
         /// <summary>
         /// Gets or sets the formatter used to display the selected item.
         /// A <see cref="Func{T, TResult}"/> that takes in a <typeparamref name="T"/> and returns its <see cref="string"/> representation.
@@ -260,6 +258,7 @@
         /// <summary>
         /// The default value of <see cref="Formatter"/>.
         /// The returned <see cref="string"/> is obtained through the <see cref="object.ToString"/> method of <typeparamref name="T"/>.
+        /// If <typeparamref name="T"/> is a floating-point type, the value is formatted with 2 decimal places.
         /// </summary>
         /// <param name="value">The value to format.</param>
         /// <returns>
@@ -267,7 +266,14 @@
         /// </returns>
         public static string DefaultFormatter(T value)
         {
-            return value.ToString();
+            if (typeof(T) == typeof(float) || typeof(T) == typeof(double) || typeof(T) == typeof(decimal))
+            {
+                return value.ToString("0.00", null);
+            }
+            else
+            {
+                return value.ToString();
+            }
         }
 
         /// <summary>
