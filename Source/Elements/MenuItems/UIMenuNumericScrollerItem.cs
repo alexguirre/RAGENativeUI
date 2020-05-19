@@ -24,6 +24,7 @@
         private Number maximum;
         private bool allowSync;
         private Func<T, string> formatter;
+        private bool needsFormatting;
 
         /// <summary>
         /// Gets or sets the currently selected value. When changing its value, the new value is rounded to nearest possible
@@ -124,8 +125,19 @@
         }
 
         /// <inheritdoc/>
-        public override string OptionText => selectedValueText; // don't need to handle IsEmpty case, since it can never be empty, Min and Max are inclusive and always have some value
+        public override string OptionText
+        {
+            get
+            {
+                if (needsFormatting)
+                {
+                    needsFormatting = false;
+                    selectedValueText = Formatter(selectedValue);
+                }
 
+                return selectedValueText;
+            }
+        }
         /// <inheritdoc/>
         public override int OptionCount
             => (int)Math.Round((maximum.ToDecimal() - minimum.ToDecimal()) / step.ToDecimal()) + 1; // cast to decimal to avoid overflows on smaller numeric types
@@ -153,7 +165,7 @@
                 if (value != formatter)
                 {
                     formatter = value;
-                    SyncSelectedTextToValue();
+                    Reformat();
                 }
             }
         }
@@ -163,8 +175,8 @@
         /// </summary>
         /// <param name="text">The <see cref="UIMenuNumericScrollerItem{T}"/>'s label.</param>
         /// <param name="description">The <see cref="UIMenuNumericScrollerItem{T}"/>'s description.</param>
-        /// <param name="minimum">The minimum value.</param>
-        /// <param name="maximum">The maximum value.</param>
+        /// <param name="minimum">The minimum value, inclusive.</param>
+        /// <param name="maximum">The maximum value, inclusive.</param>
         /// <param name="step">The value to increment or decrement when scrolling.</param>
         public UIMenuNumericScrollerItem(string text, string description, T minimum, T maximum, T step) : base(text, description)
         {
@@ -183,6 +195,14 @@
             Index = OptionCount / 2;
         }
 
+        /// <summary>
+        /// Requests <see cref="OptionText"/> to be updated based on the current <see cref="Value"/>.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Formatter"/> may not be invoked until <see cref="OptionText"/> is accessed.
+        /// </remarks>
+        public void Reformat() => needsFormatting = true;
+
         /// <inheritdoc/>
         protected override void OnSelectedIndexChanged(int oldIndex, int newIndex)
         {
@@ -197,7 +217,7 @@
         private void SetSelectedValueRaw(Number n)
         {
             selectedValue = n;
-            SyncSelectedTextToValue();
+            Reformat();
         }
 
         private void SyncSelectedValueToIndex()
@@ -218,16 +238,6 @@
             }
 
             Index = IndexOfValue(ClampValue(Value));
-        }
-
-        private void SyncSelectedTextToValue()
-        {
-            if (!allowSync)
-            {
-                return;
-            }
-
-            selectedValueText = Formatter(selectedValue.Value);
         }
 
         private int IndexOfValue(T value)

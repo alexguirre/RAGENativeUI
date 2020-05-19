@@ -15,6 +15,7 @@
         private IList<T> items;
         private string selectedItemText;
         private Func<T, string> formatter;
+        private bool needsFormatting;
 
         /// <summary>
         /// Gets or sets the item that is currently selected.
@@ -62,6 +63,7 @@
                     items = value;
 
                     Index = IsEmpty ? EmptyIndex : (Index % OptionCount); // in case the new list has a different size
+                    Reformat(); // reformat in case the index didn't change but the list has a different value at that position
                 }
             }
         }
@@ -87,14 +89,30 @@
                 if (value != formatter)
                 {
                     formatter = value;
-                    SyncSelectedItemText();
+                    Reformat();
                 }
             }
         }
 
         /// <inheritdoc/>
-        public override string OptionText => IsEmpty ? null : selectedItemText;
+        public override string OptionText
+        {
+            get
+            {
+                if (IsEmpty)
+                {
+                    return null;
+                }
 
+                if (needsFormatting)
+                {
+                    needsFormatting = false;
+                    selectedItemText = Formatter(SelectedItem);
+                }
+
+                return selectedItemText;
+            }
+        }
         /// <inheritdoc/>
         public override int OptionCount => Items.Count;
 
@@ -119,17 +137,20 @@
         {
         }
 
+        /// <summary>
+        /// Requests <see cref="OptionText"/> to be updated based on the current <see cref="SelectedItem"/>.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Formatter"/> may not be invoked until <see cref="OptionText"/> is accessed.
+        /// </remarks>
+        public void Reformat() => needsFormatting = true;
+
         /// <inheritdoc/>
         protected override void OnSelectedIndexChanged(int oldIndex, int newIndex)
         {
-            SyncSelectedItemText();
+            Reformat();
 
             base.OnSelectedIndexChanged(oldIndex, newIndex);
-        }
-
-        private void SyncSelectedItemText()
-        {
-            selectedItemText = (Items == null || IsEmpty) ? null : Formatter(SelectedItem);
         }
 
         /// <summary>
