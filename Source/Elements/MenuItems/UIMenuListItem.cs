@@ -134,6 +134,7 @@ namespace RAGENativeUI.Elements
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
                 ResText.Alignment.Left) {TextAlignment = ResText.Alignment.Right};
             Index = index;
+            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
@@ -152,6 +153,7 @@ namespace RAGENativeUI.Elements
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
                 ResText.Alignment.Left)
             { TextAlignment = ResText.Alignment.Right };
+            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
@@ -238,7 +240,7 @@ namespace RAGENativeUI.Elements
             if (Selected && Enabled)
             {
                 Color textColor = CurrentForeColor;
-                float optTextX = x + width - 0.00390625f - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                float optTextX = x + width - (0.00390625f * 1.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                 float optTextY = y + 0.00277776f;
 
                 SetTextCommandOptions(false);
@@ -246,20 +248,16 @@ namespace RAGENativeUI.Elements
 
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float w, out float h);
-                    w *= 0.65f;
-                    h *= 0.65f;
 
-                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - badgeOffset;
+                    float spriteX = x + width - (0.00390625f * 0.5f) - (w * 0.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
                     UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, textColor);
                 }
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
-                    w *= 0.65f;
-                    h *= 0.65f;
 
-                    float spriteX = x + width - (0.00390625f * 1.0f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                    float spriteX = x + width - (0.00390625f * 1.5f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
                     float spriteY = y + (0.034722f * 0.5f);
 
                     UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, textColor);
@@ -268,11 +266,112 @@ namespace RAGENativeUI.Elements
             else
             {
                 float optTextX = x + width - 0.00390625f - optTextWidth - badgeOffset;
-                float optTextY = y + 0.00277776f;// + 0.00416664f;
+                float optTextY = y + 0.00277776f;
 
                 SetTextCommandOptions(false);
                 TextCommands.Display(selectedOption, optTextX, optTextY);
             }
+        }
+
+        protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
+        {
+            bool consumed = base.OnInput(menu, control);
+
+            if (ScrollingEnabled && Enabled)
+            {
+                switch (control)
+                {
+                    case Common.MenuControls.Left:
+                        consumed = true;
+                        if ((Collection == null ? Items.Count : Collection.Count) != 0)
+                        {
+                            Index--;
+                            Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                            menu.ListChange(this, Index);
+                            ListChangedTrigger(Index);
+                        }
+                        break;
+
+                    case Common.MenuControls.Right:
+                        consumed = true;
+                        if ((Collection == null ? Items.Count : Collection.Count) != 0)
+                        {
+                            Index++;
+                            Common.PlaySound(menu.AUDIO_LEFTRIGHT, menu.AUDIO_LIBRARY);
+                            menu.ListChange(this, Index);
+                            ListChangedTrigger(Index);
+                        }
+                        break;
+                }
+            }
+
+            return consumed;
+        }
+
+        protected internal override bool OnMouseInput(UIMenu menu, RectangleF itemBounds, PointF mousePos, MouseInput input)
+        {
+            // copied from UIMenuScrollerItem.OnMouseInput
+            if (menu == null)
+            {
+                throw new ArgumentNullException(nameof(menu));
+            }
+
+            bool consumed = false;
+            if (Selected && Hovered)
+            {
+                bool inSelectBounds = false;
+                float selectBoundsX = itemBounds.X + itemBounds.Width * 0.33333f;
+
+                if (mousePos.X <= selectBoundsX)
+                {
+                    inSelectBounds = true;
+                    // approximately hovering the label, first 1/3 of the item width
+                    // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
+                    //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
+                    if (input == MouseInput.JustReleased)
+                    {
+                        consumed = true;
+                        OnInput(menu, Common.MenuControls.Select);
+                    }
+                }
+
+                if (!inSelectBounds && ScrollingEnabled && Enabled && input == MouseInput.PressedRepeat)
+                {
+                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
+
+                    float rightX = (0.00390625f * 1.0f) + (rightW * /*0.5f*/1) + (0.0046875f * 0.75f);
+
+                    if (menu.ScaleWithSafezone)
+                    {
+                        N.SetScriptGfxAlign('L', 'T');
+                        N.SetScriptGfxAlignParams(-0.05f, -0.05f, 0.0f, 0.0f);
+                    }
+                    N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
+                    N.GetScriptGfxPosition(0.0f, 0.0f, out float borderX, out _);
+                    if (menu.ScaleWithSafezone)
+                    {
+                        N.ResetScriptGfxAlign();
+                    }
+
+                    rightX = itemBounds.Right - rightX + borderX;
+
+                    // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
+                    //  - If to the right of the right arrow's left border, go right
+                    //  - Anywhere else in the item, go left.
+                    // This is how the vanilla menus behave
+                    consumed = true;
+                    if (mousePos.X >= rightX)
+                    {
+                        OnInput(menu, Common.MenuControls.Right);
+                    }
+                    else
+                    {
+                        OnInput(menu, Common.MenuControls.Left);
+                    }
+                }
+            }
+
+            return consumed;
         }
 
         internal virtual void ListChangedTrigger(int newindex)

@@ -84,6 +84,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Elements\BigMessage.cs" />
     <Compile Include="Elements\Container.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuListScrollerItem.cs" />
     <Compile Include="Elements\MissionPassedScreen.cs" />
     <Compile Include="Elements\Rectangle.cs" />
     <Compile Include="Elements\Text.cs" />
@@ -94,9 +95,11 @@
     <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
     <Compile Include="Elements\TimerBars\TimerBarBase.cs" />
     <Compile Include="Elements\TimerBars\TimerBarPool.cs" />
-    <Compile Include="Elements\UIMenuColoredItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuScrollerItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuColoredItem.cs" />
     <Compile Include="Elements\InstructionalButtons.cs" />
-    <Compile Include="Elements\UIMenuSwitchMenusItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuNumericScrollerItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuSwitchMenusItem.cs" />
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Internals\atArray.cs" />
@@ -119,9 +122,9 @@
     <Compile Include="TextCommands.cs" />
     <Compile Include="TextStyle.cs" />
     <Compile Include="UIMenu.cs" />
-    <Compile Include="Elements\UIMenuCheckboxItem.cs" />
-    <Compile Include="Elements\UIMenuItem.cs" />
-    <Compile Include="Elements\UIMenuListItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuCheckboxItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuItem.cs" />
+    <Compile Include="Elements\MenuItems\UIMenuListItem.cs" />
     <Compile Include="Elements\ResRectangle.cs" />
     <Compile Include="Elements\ResText.cs" />
     <Compile Include="Elements\Scaleform.cs" />

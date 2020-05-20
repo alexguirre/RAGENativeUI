@@ -66,6 +66,28 @@ namespace RAGENativeUI.Elements
             UIMenu.DrawSprite(UIMenu.CommonTxd, cbName, spriteX, spriteY, w, h, c);
         }
 
+        protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
+        {
+            bool consumed = base.OnInput(menu, control);
+
+            switch (control)
+            {
+                case Common.MenuControls.Select when Enabled:
+                    consumed = true;
+                    Toggle(menu);
+                    break;
+            }
+
+            return consumed;
+        }
+
+        public void Toggle(UIMenu menu = null)
+        {
+            Checked = !Checked;
+            menu?.CheckboxChange(this, Checked);
+            CheckboxEventTrigger();
+        }
+
         public void CheckboxEventTrigger()
         {
             CheckboxEvent?.Invoke(this, Checked);

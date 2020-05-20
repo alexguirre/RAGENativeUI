@@ -27,6 +27,8 @@ namespace RAGENativeUI
 
     public delegate void CheckboxChangeEvent(UIMenu sender, UIMenuCheckboxItem checkboxItem, bool Checked);
 
+    public delegate void ScrollerChangedEvent(UIMenu sender, UIMenuScrollerItem item, int oldIndex, int newIndex);
+    
     public delegate void ItemSelectEvent(UIMenu sender, UIMenuItem selectedItem, int index);
 
     public delegate void MenuOpenEvent(UIMenu sender);
@@ -40,6 +42,8 @@ namespace RAGENativeUI
     public delegate void ItemCheckboxEvent(UIMenuCheckboxItem sender, bool Checked);
 
     public delegate void ItemListEvent(UIMenuItem sender, int newIndex);
+
+    public delegate void ItemScrollerEvent(UIMenuScrollerItem sender, int oldIndex, int newIndex);
 
     /// <summary>
     /// Base class for RAGENativeUI. Calls the next events: OnIndexChange, OnListChanged, OnCheckboxChange, OnItemSelect, OnMenuClose, OnMenuchange.
@@ -66,6 +70,7 @@ namespace RAGENativeUI
         private Texture _customBanner;
 
         private int currentItem;
+        private RectangleF currentItemBounds = RectangleF.Empty;
         private int minItem;
         private int maxItem;
         private int hoveredItem = -1;
@@ -106,6 +111,8 @@ namespace RAGENativeUI
         /// Called when user presses left or right, changing a list position.
         /// </summary>
         public event ListChangedEvent OnListChange;
+
+        public event ScrollerChangedEvent OnScrollerChange;
 
         /// <summary>
         /// Called when user presses enter on a checkbox item.
@@ -562,6 +569,8 @@ namespace RAGENativeUI
             DrawDescription(x, ref y);
 
             EndScriptGfx();
+
+            justOpened = false;
         }
 
         private void DrawBanner(float x, ref float y)
@@ -704,6 +713,16 @@ namespace RAGENativeUI
 
             for (int index = minItem; index <= maxItem; index++)
             {
+                if (CurrentSelection == index)
+                {
+                    float x1 = x, y1 = y;
+                    float x2 = x + menuWidth, y2 = y + itemHeight;
+                    N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+                    N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+                    currentItemBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
+                }
+
                 var item = MenuItems[index];
                 item.Draw(x, y, menuWidth, itemHeight);
                 y += itemHeight;
@@ -907,9 +926,6 @@ namespace RAGENativeUI
             return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
-        /// <summary>
-        /// Go up the menu if the number of items is more than maximum items on screen.
-        /// </summary>
         [Obsolete("Use UIMenu.GoUp() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoUpOverflow()
         {
@@ -917,19 +933,19 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go up the menu if the number of items is less than or equal to the maximum items on screen.
+        /// Sends a <see cref="Common.MenuControls.Up"/> input event to the selected item. If not consumed, the previous item is selected.
         /// </summary>
         public void GoUp()
         {
-            CurrentSelection--;
+            if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Up))
+            {
+                CurrentSelection--;
 
-            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-            IndexChange(CurrentSelection);
+                Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                IndexChange(CurrentSelection);
+            }
         }
 
-        /// <summary>
-        /// Go down the menu if the number of items is more than maximum items on screen.
-        /// </summary>
         [Obsolete("Use UIMenu.GoDown() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoDownOverflow()
         {
@@ -937,82 +953,67 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Go up the menu if the number of items is less than or equal to the maximum items on screen.
+        /// Sends a <see cref="Common.MenuControls.Down"/> input event to the selected item. If not consumed, the next item is selected.
         /// </summary>
         public void GoDown()
         {
-            CurrentSelection++;
-
-            Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-            IndexChange(CurrentSelection);
-        }
-
-        /// <summary>
-        /// Go left on a MenuListItem.
-        /// </summary>
-        public void GoLeft()
-        {
-            if (!(MenuItems[CurrentSelection] is UIMenuListItem)) return;
-            var it = (UIMenuListItem)MenuItems[CurrentSelection];
-            if ((it.Collection == null ? it.Items.Count : it.Collection.Count) == 0) return;
-            it.Index--;
-            Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-            ListChange(it, it.Index);
-            it.ListChangedTrigger(it.Index);
-        }
-
-        /// <summary>
-        /// Go right on a MenuListItem.
-        /// </summary>
-        public void GoRight()
-        {
-            if (!(MenuItems[CurrentSelection] is UIMenuListItem)) return;
-            var it = (UIMenuListItem)MenuItems[CurrentSelection];
-            if ((it.Collection == null ? it.Items.Count : it.Collection.Count) == 0) return;
-            it.Index++;
-            Common.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
-            ListChange(it, it.Index);
-            it.ListChangedTrigger(it.Index);
-        }
-
-        /// <summary>
-        /// Activate the current selected item.
-        /// </summary>
-        public void SelectItem()
-        {
-            if (!MenuItems[CurrentSelection].Enabled)
+            if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
             {
-                Common.PlaySound(AUDIO_ERROR, AUDIO_LIBRARY);
-                return;
+                CurrentSelection++;
+
+                Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                IndexChange(CurrentSelection);
             }
-            if (MenuItems[CurrentSelection] is UIMenuCheckboxItem)
+        }
+
+        /// <summary>
+        /// Sends a <see cref="Common.MenuControls.Left"/> input event to the selected item.
+        /// </summary>
+        public void GoLeft() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Left);
+
+        /// <summary>
+        /// Sends a <see cref="Common.MenuControls.Right"/> input event to the selected item.
+        /// </summary>
+        public void GoRight() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Right);
+
+        /// <summary>
+        /// Sends a <see cref="Common.MenuControls.Select"/> input event to the selected item.
+        /// </summary>
+        public void SelectItem() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Select);
+
+        /// <summary>
+        /// Sends a <see cref="Common.MenuControls.Back"/> input event to the selected item.
+        /// </summary>
+        public void GoBack() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back);
+
+        /// <summary>
+        /// Opens the menu binded to the specified item, if any.
+        /// </summary>
+        /// <param name="item">The item with the binded menu.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="item"/> is null.</exception>
+        public void OpenChildMenu(UIMenuItem item)
+        {
+            if (item == null)
             {
-                var it = (UIMenuCheckboxItem)MenuItems[CurrentSelection];
-                it.Checked = !it.Checked;
-                Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
-                CheckboxChange(it, it.Checked);
-                it.CheckboxEventTrigger();
+                throw new ArgumentNullException(nameof(item));
             }
-            else
+
+            if (Children.TryGetValue(item, out UIMenu childMenu))
             {
-                Common.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
-                ItemSelect(MenuItems[CurrentSelection], CurrentSelection);
-                MenuItems[CurrentSelection].ItemActivate(this);
-                if (!Children.ContainsKey(MenuItems[CurrentSelection])) return;
                 Visible = false;
-                Children[MenuItems[CurrentSelection]].Visible = true;
-                MenuChangeEv(Children[MenuItems[CurrentSelection]], true);
+                childMenu.Visible = true;
+                MenuChangeEv(childMenu, true);
             }
         }
 
         /// <summary>
-        /// Close or go back in a menu chain.
+        /// Closes this menu.
         /// </summary>
-        public void GoBack()
+        /// <param name="openParentMenu">If <c>true</c> and <see cref="ParentMenu"/> is not <c>null</c>, the parent menu is open after closing this menu.</param>
+        public void Close(bool openParentMenu = true)
         {
-            Common.PlaySound(AUDIO_BACK, AUDIO_LIBRARY);
             Visible = false;
-            if (ParentMenu != null)
+            if (openParentMenu && ParentMenu != null)
             {
                 var tmp = Cursor.Position;
                 ParentMenu.Visible = true;
@@ -1078,112 +1079,90 @@ namespace RAGENativeUI
             float mouseX = N.GetControlNormal(2, GameControl.CursorX);
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
 
-            UpdateHoveredItem(mouseX, mouseY);
+            bool cursorPressedRepeat = IsCursorAcceptBeingPressed();
 
-            if (hoveredItem != -1 && Game.IsControlJustReleased(2, GameControl.CursorAccept))
+            // send mouse input event to selected item
+            UIMenuItem selectedItem = MenuItems[CurrentSelection];
+
+            UIMenuItem.MouseInput input = UIMenuItem.MouseInput.Released;
+            if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
             {
-                UIMenuItem i = MenuItems[hoveredItem];
-
-                if (i.Selected)
-                {
-                    if (!(i is UIMenuListItem)) // list item select is handled below, along with arrow controls
-                    {
-                        SelectItem();
-                    }
-                }
-                else
-                {
-                    CurrentSelection = hoveredItem;
-                    Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-                    IndexChange(CurrentSelection);
-                    InstructionalButtons.Update();
-                }
+                input = UIMenuItem.MouseInput.JustPressed;
+            }
+            else if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+            {
+                input = UIMenuItem.MouseInput.JustReleased;
+            }
+            else if (selectedItem.ScrollerProxy == null ? cursorPressedRepeat : IsCursorAcceptBeingPressed(selectedItem.ScrollerProxy))
+            {
+                input = UIMenuItem.MouseInput.PressedRepeat;
+            }
+            else if (Game.IsControlPressed(2, GameControl.CursorAccept))
+            {
+                input = UIMenuItem.MouseInput.Pressed;
             }
 
-            UpdateHoveredUpDown(mouseX, mouseY);
-
-            if (hoveredUpDown != 0 && IsCursorAcceptBeingPressed())
+            bool mouseInputConsumed = selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
+            if (!mouseInputConsumed)
             {
-                if (hoveredUpDown == 1)
-                {
-                    GoUp();
-                }
-                else
-                {
-                    GoDown();
-                }
-                InstructionalButtons.Update();
-            }
+                UpdateHoveredItem(mouseX, mouseY);
 
-            // mouse controls for lists
-            if (hoveredItem != -1 && MenuItems[hoveredItem] is UIMenuListItem l && l.Selected && l.Enabled)
-            {
-                BeginScriptGfx();
-                float selectBoundsX = itemsX + (menuWidth * 0.33333f);
-                N.GetScriptGfxPosition(selectBoundsX, 0.0f, out selectBoundsX, out _);
-                EndScriptGfx();
-
-                if (mouseX <= selectBoundsX)
+                if (hoveredItem != -1)
                 {
-                    // approximately hovering the label, first 1/3 of the item width
-                    // TODO: game shows cursor sprite 5 when hovering this part, but only if the item does something when selected.
-                    //       Here, we don't really know if the user does something when selected, maybe add some bool property in UIMenuListItem?
-                    if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+                    hoveredUpDown = 0;
+                    if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
                     {
-                        SelectItem();
+                        CurrentSelection = hoveredItem;
+                        Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                        IndexChange(CurrentSelection);
+                        InstructionalButtons.Update();
                     }
                 }
-                else if (l.ScrollingEnabled && IsCursorAcceptBeingPressed(l))
+                else if (hoveredItem == -1)
                 {
-                    GetTextureDrawSize(CommonTxd, ArrowRightTextureName, out float rightW, out _);
-                    float rightX = itemsX + menuWidth - (0.00390625f * 1.0f) - (rightW * 0.5f) - (0.0046875f * 0.75f);
+                    UpdateHoveredUpDown(mouseX, mouseY);
 
-                    BeginScriptGfx();
-
-                    N.GetScriptGfxPosition(rightX, 0.0f, out rightX, out _);
-
-                    EndScriptGfx();
-
-                    // It does not check if the mouse in exactly on top of the arrow sprites intentionally:
-                    //  - If to the right of the right arrow's left border, go right
-                    //  - Anywhere else in the item, go left.
-                    // This is how the vanilla menus behave
-                    if (mouseX >= rightX)
+                    if (hoveredUpDown != 0 && cursorPressedRepeat)
                     {
-                        GoRight();
-                    }
-                    else
-                    {
-                        GoLeft();
-                    }
-                }
-            }
-
-            if (MouseEdgeEnabled && hoveredItem == -1)
-            {
-                const int CursorLeftArrow = 6, CursorRightArrow = 7;
-
-                if (mouseX > (1f - (0.05f * 0.75f))) // right edge
-                {
-                    N.SetMouseCursorSprite(CursorRightArrow);
-                    float mult = 0.05f - (1f - mouseX);
-                    if (mult > 0.05f)
-                    {
-                        mult = 0.05f;
+                        if (hoveredUpDown == 1)
+                        {
+                            GoUp();
+                        }
+                        else
+                        {
+                            GoDown();
+                        }
+                        InstructionalButtons.Update();
                     }
 
-                    N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
-                }
-                else if (mouseX < (0.05f * 0.75f)) // left edge
-                {
-                    N.SetMouseCursorSprite(CursorLeftArrow);
-                    float mult = 0.05f - mouseX;
-                    if (mult > 0.05f)
+                    if (MouseEdgeEnabled)
                     {
-                        mult = 0.05f;
-                    }
+                        const int CursorLeftArrow = 6, CursorRightArrow = 7;
 
-                    N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
+                        if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                        {
+                            N.SetMouseCursorSprite(CursorRightArrow);
+                            float mult = 0.05f - (1f - mouseX);
+                            if (mult > 0.05f)
+                            {
+                                mult = 0.05f;
+                            }
+
+                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                        }
+                        else if (mouseX < (0.05f * 0.75f)) // left edge
+                        {
+                            N.SetMouseCursorSprite(CursorLeftArrow);
+                            float mult = 0.05f - mouseX;
+                            if (mult > 0.05f)
+                            {
+                                mult = 0.05f;
+                            }
+
+                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
+                        }
+
+                    }
                 }
             }
         }
@@ -1390,13 +1369,14 @@ namespace RAGENativeUI
                 }
                 return false;
             }
-            else if ((MenuItems[CurrentSelection] is UIMenuListItem) && MenuItems[CurrentSelection].Enabled)
+            else if (MenuItems[CurrentSelection].ScrollerProxy != null && (MenuItems[CurrentSelection].Enabled || MenuItems[CurrentSelection].ScrollerProxy.GetScrollingEnabledWhenDisabled()))
             {
-                UIMenuListItem it = (UIMenuListItem)MenuItems[CurrentSelection];
-                if (it.ScrollingEnabled)
+                UIMenuItem it = MenuItems[CurrentSelection];
+                if (it.ScrollerProxy.GetScrollingEnabled())
                 {
-                    if (HasControlJustBeenReleaseed(control, key)) { it._holdTime = 0; }
-                    if (Game.GameTime <= it._holdTime)
+                    ref uint itHoldTime = ref it.ScrollerProxy.GetHoldTime();
+                    if (HasControlJustBeenReleaseed(control, key)) { itHoldTime = 0; }
+                    if (Game.GameTime <= itHoldTime)
                     {
                         return false;
                     }
@@ -1406,29 +1386,26 @@ namespace RAGENativeUI
                     {
                         if (tmpKeys.Any(Game.IsKeyDownRightNow))
                         {
-                            it._holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                            itHoldTime = Game.GameTime + it.ScrollerProxy.GetHoldTimeBeforeScroll();
                             return true;
                         }
                     }
                     if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
                     {
-                        it._holdTime = Game.GameTime + it.HoldTimeBeforeScroll;
+                        itHoldTime = Game.GameTime + it.ScrollerProxy.GetHoldTimeBeforeScroll();
                         return true;
                     }
-                }
-                else if (HasControlJustBeenPressed(control, key))
-                {
-                    return true;
                 }
 
             }
             return false;
         }
 
-        private bool IsCursorAcceptBeingPressed(UIMenuListItem list = null)
-        {
-            ref uint holdTime = ref (list != null ? ref list._holdTime : ref _holdTime);
+        private bool IsCursorAcceptBeingPressed() => IsCursorAcceptBeingPressed(ref _holdTime, HoldTimeBeforeScroll);
+        private bool IsCursorAcceptBeingPressed(UIMenuScrollerProxy s) => IsCursorAcceptBeingPressed(ref s.GetHoldTime(), s.GetHoldTimeBeforeScroll());
 
+        private bool IsCursorAcceptBeingPressed(ref uint holdTime, uint holdTimeBeforeScroll)
+        {
             if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
             {
                 holdTime = 0;
@@ -1441,7 +1418,7 @@ namespace RAGENativeUI
 
             if (Game.IsControlPressed(2, GameControl.CursorAccept))
             {
-                holdTime = Game.GameTime + (list != null ? list.HoldTimeBeforeScroll : HoldTimeBeforeScroll);
+                holdTime = Game.GameTime + holdTimeBeforeScroll;
                 return true;
             }
 
@@ -1453,10 +1430,8 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl(Keys key = Keys.None)
         {
-            if (!Visible) return;
-            if (justOpened)
+            if (!Visible || justOpened || MenuItems.Count == 0)
             {
-                justOpened = false;
                 return;
             }
 
@@ -1464,29 +1439,25 @@ namespace RAGENativeUI
             {
                 GoBack();
             }
-            if (MenuItems.Count == 0) return;
+
             if (IsControlBeingPressed(Common.MenuControls.Up, key))
             {
                 GoUp();
                 InstructionalButtons.Update();
             }
-
             else if (IsControlBeingPressed(Common.MenuControls.Down, key))
             {
                 GoDown();
                 InstructionalButtons.Update();
             }
-
             else if (IsControlBeingPressed(Common.MenuControls.Left, key))
             {
                 GoLeft();
             }
-
             else if (IsControlBeingPressed(Common.MenuControls.Right, key))
             {
                 GoRight();
             }
-
             else if (HasControlJustBeenPressed(Common.MenuControls.Select, key))
             {
                 SelectItem();
@@ -1526,22 +1497,19 @@ namespace RAGENativeUI
             {
                 if (resetLists)
                 {
-                    UIMenuListItem itemAsList = item as UIMenuListItem;
-                    if (itemAsList != null)
+                    if (item is UIMenuListItem l)
                     {
-                        itemAsList.Index = 0;
-                        continue;
+                        l.Index = 0;
+                    }
+                    else if (item is UIMenuScrollerItem s)
+                    {
+                        s.Index = s.IsEmpty ? UIMenuScrollerItem.EmptyIndex : 0;
                     }
                 }
 
-                if (resetCheckboxes)
+                if (resetCheckboxes && item is UIMenuCheckboxItem c)
                 {
-                    UIMenuCheckboxItem itemAsCheckbox = item as UIMenuCheckboxItem;
-                    if (itemAsCheckbox != null)
-                    {
-                        itemAsCheckbox.Checked = false;
-                        continue;
-                    }
+                    c.Checked = false;
                 }
             }
             CurrentSelection = 0;
@@ -1748,17 +1716,22 @@ namespace RAGENativeUI
             OnIndexChange?.Invoke(this, newindex);
         }
 
-        protected virtual void ListChange(UIMenuListItem sender, int newindex)
+        protected internal virtual void ListChange(UIMenuListItem sender, int newindex)
         {
             OnListChange?.Invoke(this, sender, newindex);
         }
 
-        protected virtual void ItemSelect(UIMenuItem selecteditem, int index)
+        protected internal virtual void ScrollerChange(UIMenuScrollerItem sender, int oldIndex, int newindex)
+        {
+            OnScrollerChange?.Invoke(this, sender, oldIndex, newindex);
+        }
+
+        protected internal virtual void ItemSelect(UIMenuItem selecteditem, int index)
         {
             OnItemSelect?.Invoke(this, selecteditem, index);
         }
 
-        protected virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
+        protected internal virtual void CheckboxChange(UIMenuCheckboxItem sender, bool Checked)
         {
             OnCheckboxChange?.Invoke(this, sender, Checked);
         }
