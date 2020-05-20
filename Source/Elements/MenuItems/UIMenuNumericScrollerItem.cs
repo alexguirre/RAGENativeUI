@@ -225,7 +225,30 @@
                 return;
             }
 
-            SetSelectedValueRaw(Minimum + Number.FromInt(Index) * Step);
+            int i = Index;
+
+            Number newValue;
+            if (i == 0)
+            {
+                newValue = Minimum;
+            }
+            else if (i == OptionCount - 1)
+            {
+                newValue = Maximum;
+            }
+            else
+            {
+                try
+                {
+                    newValue = Minimum + Number.FromInt(i) * Step;
+                }
+                catch (OverflowException)
+                {
+                    newValue = Value;
+                }
+            }
+
+            SetSelectedValueRaw(newValue);
         }
 
         private void SyncSelectedIndexToValue()
