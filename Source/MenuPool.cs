@@ -23,7 +23,7 @@ namespace RAGENativeUI
         public string AUDIO_SELECT { set { InternalList.ForEach(m => m.AUDIO_SELECT = value); } }
         public string AUDIO_BACK { set { InternalList.ForEach(m => m.AUDIO_BACK = value); } }
         public string AUDIO_ERROR { set { InternalList.ForEach(m => m.AUDIO_ERROR = value); } }
-        public int WidthOffset { set { InternalList.ForEach(m => m.SetMenuWidthOffset(value)); } }
+        public int WidthOffset { set { InternalList.ForEach(m => m.WidthOffset = value); } }
         public string CounterPretext { set { InternalList.ForEach(m => m.CounterPretext = value); } }
         public bool DisableInstructionalButtons { set { InternalList.ForEach(m => m.DisableInstructionalButtons(value)); } }
 
@@ -57,7 +57,11 @@ namespace RAGENativeUI
         /// </summary>
         public void RefreshIndex()
         {
-            foreach (UIMenu menu in InternalList) menu.RefreshIndex();
+            for (int i = 0; i < InternalList.Count; i++)
+            {
+                UIMenu menu = InternalList[i];
+                menu.RefreshIndex();
+            }
         }
 
         /// <summary>
@@ -74,8 +78,9 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl()
         {
-            foreach (UIMenu menu in InternalList)
+            for (int i = 0; i < InternalList.Count; i++)
             {
+                UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.ProcessControl();
@@ -90,8 +95,9 @@ namespace RAGENativeUI
         /// <param name="key"></param>
         public void ProcessKey(Keys key)
         {
-            foreach (UIMenu menu in InternalList)
+            for (int i = 0; i < InternalList.Count; i++)
             {
+                UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.ProcessKey(key);
@@ -105,8 +111,9 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessMouse()
         {
-            foreach (UIMenu menu in InternalList)
+            for (int i = 0; i < InternalList.Count; i++)
             {
+                UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.ProcessMouse();
@@ -120,8 +127,9 @@ namespace RAGENativeUI
         /// </summary>
         public void Draw()
         {
-            foreach (UIMenu menu in InternalList)
+            for (int i = 0; i < InternalList.Count; i++)
             {
+                UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.Draw();
@@ -148,8 +156,9 @@ namespace RAGENativeUI
             ICollection<Keys> pressedKeys = Common.GetPressedKeys();
             bool checkPressedKeys = pressedKeys != null;
 
-            foreach (UIMenu menu in InternalList)
+            for (int i = 0; i < InternalList.Count; i++)
             {
+                UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.ProcessControl();
@@ -161,6 +170,14 @@ namespace RAGENativeUI
                         }
                     }
                     menu.ProcessMouse();
+                }
+            }
+
+            for (int i = 0; i < InternalList.Count; i++)
+            {
+                UIMenu menu = InternalList[i];
+                if (menu.Visible)
+                {
                     menu.Draw();
                 }
             }
@@ -182,7 +199,11 @@ namespace RAGENativeUI
         /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
         public void DrawBanners(Graphics g)
         {
-            InternalList.ForEach(menu => menu.DrawBanner(g));
+            for (int i = 0; i < InternalList.Count; i++)
+            {
+                UIMenu menu = InternalList[i];
+                menu.DrawBanner(g);
+            }
         }
 
         /// <summary>
@@ -190,8 +211,9 @@ namespace RAGENativeUI
         /// </summary>
         public void CloseAllMenus()
         {
-            foreach (UIMenu menu in InternalList)
+            for (int i = 0; i < InternalList.Count; i++)
             {
+                UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.Visible = false;
