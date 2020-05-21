@@ -298,13 +298,6 @@ namespace RAGENativeUI.Elements
                     Activate(menu);
                     menu.OpenChildMenu(this);
                     break;
-
-                case Common.MenuControls.Back:
-                    consumed = true;
-
-                    Common.PlaySound(menu.AUDIO_BACK, menu.AUDIO_LIBRARY);
-                    menu.Close();
-                    break;
             }
 
             return consumed;

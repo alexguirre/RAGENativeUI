@@ -708,6 +708,11 @@ namespace RAGENativeUI
 
         private void DrawItems(float x, ref float y)
         {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
             itemsX = x;
             itemsY = y;
 
@@ -764,7 +769,7 @@ namespace RAGENativeUI
 
         private void DrawDescription(float x, ref float y)
         {
-            if (MenuItems.Count == 0)
+            if (DescriptionOverride == null && MenuItems.Count == 0)
             {
                 return;
             }
@@ -937,6 +942,11 @@ namespace RAGENativeUI
         /// </summary>
         public void GoUp()
         {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Up))
             {
                 CurrentSelection--;
@@ -957,6 +967,11 @@ namespace RAGENativeUI
         /// </summary>
         public void GoDown()
         {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+            
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
             {
                 CurrentSelection++;
@@ -969,22 +984,53 @@ namespace RAGENativeUI
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Left"/> input event to the selected item.
         /// </summary>
-        public void GoLeft() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Left);
+        public void GoLeft()
+        {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+            
+            MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Left);
+        }
 
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Right"/> input event to the selected item.
         /// </summary>
-        public void GoRight() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Right);
+        public void GoRight()
+        {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
+            MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Right);
+        }
 
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Select"/> input event to the selected item.
         /// </summary>
-        public void SelectItem() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Select);
+        public void SelectItem()
+        {
+            if (MenuItems.Count == 0)
+            {
+                return;
+            }
+
+            MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Select);
+        }
 
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Back"/> input event to the selected item.
         /// </summary>
-        public void GoBack() => MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back);
+        public void GoBack()
+        {
+            if (MenuItems.Count == 0 || !MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back))
+            {
+                Common.PlaySound(AUDIO_BACK, AUDIO_LIBRARY);
+                Close();
+            }
+        }
 
         /// <summary>
         /// Opens the menu binded to the specified item, if any.
@@ -1369,7 +1415,7 @@ namespace RAGENativeUI
                 }
                 return false;
             }
-            else if (MenuItems[CurrentSelection].ScrollerProxy != null && (MenuItems[CurrentSelection].Enabled || MenuItems[CurrentSelection].ScrollerProxy.GetScrollingEnabledWhenDisabled()))
+            else if (MenuItems.Count > 0 && MenuItems[CurrentSelection].ScrollerProxy != null && (MenuItems[CurrentSelection].Enabled || MenuItems[CurrentSelection].ScrollerProxy.GetScrollingEnabledWhenDisabled()))
             {
                 UIMenuItem it = MenuItems[CurrentSelection];
                 if (it.ScrollerProxy.GetScrollingEnabled())
@@ -1430,7 +1476,7 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessControl(Keys key = Keys.None)
         {
-            if (!Visible || justOpened || MenuItems.Count == 0)
+            if (!Visible || justOpened)
             {
                 return;
             }
