@@ -187,14 +187,17 @@
 
         private void DrawLabel(float x, float y)
         {
-            var wrap = LabelStyle.Wrap;
+            TextStyle s = LabelStyle;
+
+            var wrap = s.Wrap;
             if (!N.GetIsWidescreen())
             {
                 wrap.End -= 0.02f;
             }
             wrap.End -= 0.03f * WrapEndMultiplier;
-
-            LabelStyle.With(wrap: wrap).Apply();
+            s.Wrap = wrap;
+            
+            s.Apply();
             TextCommands.Display(Label, x + LabelOffset.X, y + LabelOffset.Y);
         }
 

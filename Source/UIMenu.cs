@@ -52,6 +52,39 @@ namespace RAGENativeUI
     {
         public const int DefaultMaxItemsOnScreen = 10;
 
+        /// <summary>
+        /// Represents the default value of <see cref="TitleStyle"/>.
+        /// </summary>
+        public static readonly TextStyle DefaultTitleStyle = TextStyle.Default.With(
+                                                                    color: Color.White,
+                                                                    font: TextFont.HouseScript,
+                                                                    justification: TextJustification.Center,
+                                                                    scale: 1.025f);
+        /// <summary>
+        /// Represents the default value of <see cref="SubtitleStyle"/>.
+        /// </summary>
+        public static readonly TextStyle DefaultSubtitleStyle = TextStyle.Default.With(
+                                                                    color: Color.White,
+                                                                    font: TextFont.ChaletLondon,
+                                                                    justification: TextJustification.Left,
+                                                                    scale: 0.35f);
+        /// <summary>
+        /// Represents the default value of <see cref="CounterStyle"/>.
+        /// </summary>
+        public static readonly TextStyle DefaultCounterStyle = TextStyle.Default.With(
+                                                                    color: Color.White,
+                                                                    font: TextFont.ChaletLondon,
+                                                                    justification: TextJustification.Left,
+                                                                    scale: 0.35f);
+        /// <summary>
+        /// Represents the default value of <see cref="DescriptionStyle"/>.
+        /// </summary>
+        public static readonly TextStyle DefaultDescriptionStyle = TextStyle.Default.With(
+                                                                    color: Color.WhiteSmoke,
+                                                                    font: TextFont.ChaletLondon,
+                                                                    justification: TextJustification.Left,
+                                                                    scale: 0.35f);
+
         internal const string CommonTxd = "commonmenu";
         internal const string BackgroundTextureName = "gradient_bgd";
         internal const string UpAndDownTextureName = "shop_arrows_upanddown";
@@ -205,8 +238,9 @@ namespace RAGENativeUI
             InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
 
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
-            Title = new ResText(title, new Point(0, 0), 0.0f, Color.White, Common.EFont.HouseScript, ResText.Alignment.Centered);
-            Subtitle = new ResText(subtitle, new Point(0, 0), 0.0f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Left);
+            Title = title;
+            Subtitle = subtitle;
+
             if (subtitle != null && subtitle.StartsWith("~"))
             {
                 CounterPretext = subtitle.Substring(0, subtitle.IndexOf('~', 1) + 1);
@@ -607,34 +641,37 @@ namespace RAGENativeUI
 
         private void DrawTitle(float x, float y, float bannerHeight)
         {
+            if (Title == null)
+            {
+                return;
+            }
+
             float titleX = x + menuWidth * 0.5f;
             float titleY = y + bannerHeight * 0.225f;
 
-            N.SetTextFont((int)Title.FontEnum);
-            N.SetTextScale(0.0f, 1.025f);
-            Color c = Title.Color;
-            N.SetTextColour(c.R, c.G, c.B, c.A);
-            N.SetTextWrap(x, x + menuWidth);
-            N.SetTextCentre(true);
-
-            TextCommands.Display(Title.Caption, titleX, titleY);
+            TextStyle s = TitleStyle;
+            s.Wrap = (x, x + menuWidth);
+            s.Apply();
+            TextCommands.Display(Title, titleX, titleY);
         }
 
         private void DrawSubtitle(float x, ref float y)
         {
-            if (Subtitle.Caption != null)
+            if (Subtitle == null)
             {
-                float subtitleWidth = menuWidth;
-                float subtitleHeight = itemHeight;
-
-                DrawRect(x + menuWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
-
-                DrawSubtitleText(x, y);
-
-                DrawSubtitleCounter(x, y);
-
-                y += subtitleHeight;
+                return;
             }
+
+            float subtitleWidth = menuWidth;
+            float subtitleHeight = itemHeight;
+
+            DrawRect(x + subtitleWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
+
+            DrawSubtitleText(x, y);
+
+            DrawSubtitleCounter(x, y);
+
+            y += subtitleHeight;
         }
 
         private void DrawSubtitleText(float x, float y)
@@ -642,16 +679,10 @@ namespace RAGENativeUI
             float subTextX = x + 0.00390625f;
             float subTextY = y + 0.00416664f;
 
-            N.SetTextFont((int)Subtitle.FontEnum);
-            N.SetTextScale(0f, 0.35f);
-            Color c = Subtitle.Color;
-            N.SetTextColour(c.R, c.G, c.B, c.A);
-            N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
-            N.SetTextCentre(false);
-            N.SetTextDropshadow(0, 0, 0, 0, 0);
-            N.SetTextEdge(0, 0, 0, 0, 0);
-
-            TextCommands.Display(Subtitle.Caption, subTextX, subTextY);
+            TextStyle s = SubtitleStyle;
+            s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
+            s.Apply();
+            TextCommands.Display(Subtitle, subTextX, subTextY);
         }
 
         private void DrawSubtitleCounter(float x, float y)
@@ -671,25 +702,16 @@ namespace RAGENativeUI
                 return;
             }
 
-            void SetCounterTextOptions()
-            {
-                N.SetTextFont((int)Subtitle.FontEnum);
-                N.SetTextScale(0f, 0.35f);
-                Color c = Subtitle.Color;
-                N.SetTextColour(c.R, c.G, c.B, c.A);
-                N.SetTextWrap(x + 0.0046875f, x + menuWidth - 0.0046875f);
-                N.SetTextCentre(false);
-                N.SetTextDropshadow(0, 0, 0, 0, 0);
-                N.SetTextEdge(0, 0, 0, 0, 0);
-            }
+            TextStyle s = CounterStyle;
+            s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
 
-            SetCounterTextOptions();
+            s.Apply();
             float counterWidth = TextCommands.GetWidth(counterText);
 
             float counterX = x + menuWidth - 0.00390625f - counterWidth;
             float counterY = y + 0.00416664f;
 
-            SetCounterTextOptions();
+            s.Apply();
             TextCommands.Display(counterText, counterX, counterY);
         }
 
@@ -783,21 +805,11 @@ namespace RAGENativeUI
                 float textXEnd = x + menuWidth - 0.0046875f; // x - menuWidth * 0.5f + menuWidth - 0.0046875f
 
                 Color backColor = Color.FromArgb(186, 0, 0, 0);
-                Color foreColor = Color.FromArgb(240, 240, 240);
 
-                void SetDescriptionTextOptions()
-                {
-                    N.SetTextFont(0);
-                    N.SetTextScale(0f, 0.35f);
-                    N.SetTextLeading(2);
-                    N.SetTextColour(foreColor.R, foreColor.G, foreColor.B, foreColor.A);
-                    N.SetTextWrap(textX, textXEnd);
-                    N.SetTextCentre(false);
-                    N.SetTextDropshadow(0, 0, 0, 0, 0);
-                    N.SetTextEdge(0, 0, 0, 0, 0);
-                }
+                TextStyle s = DescriptionStyle;
+                s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
 
-                SetDescriptionTextOptions();
+                s.Apply();
                 int lineCount = TextCommands.GetLineCount(description, textX, y + 0.00277776f);
 
                 Color separatorBarColor = Color.Black;
@@ -811,7 +823,7 @@ namespace RAGENativeUI
                            descHeight,
                            backColor);
 
-                SetDescriptionTextOptions();
+                s.Apply();
                 TextCommands.Display(description, textX, y + 0.00277776f);
 
                 y += descHeight;
@@ -1715,14 +1727,26 @@ namespace RAGENativeUI
         public static bool IsUsingController => !N.IsInputDisabled(2);
 
         /// <summary>
-        /// Returns the title object.
+        /// Gets or sets the title text.
         /// </summary>
-        public ResText Title { get; private set; }
+        public string Title { get; set; }
 
         /// <summary>
-        /// Returns the subtitle object.
+        /// Gets or sets the title text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
         /// </summary>
-        public ResText Subtitle { get; private set; }
+        /// <seealso cref="DefaultTitleStyle"/>
+        public TextStyle TitleStyle { get; set; } = DefaultTitleStyle;
+
+        /// <summary>
+        /// Gets or sets the subtitle text.
+        /// </summary>
+        public string Subtitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subtitle text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
+        /// </summary>
+        /// <seealso cref="DefaultSubtitleStyle"/>
+        public TextStyle SubtitleStyle { get; set; } = DefaultSubtitleStyle;
 
         /// <summary>
         /// String to pre-attach to the counter string. Useful for color codes.
@@ -1741,11 +1765,23 @@ namespace RAGENativeUI
         public string CounterOverride { get; set; }
 
         /// <summary>
+        /// Gets or sets the counter text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
+        /// </summary>
+        /// <seealso cref="DefaultCounterStyle"/>
+        public TextStyle CounterStyle { get; set; } = DefaultCounterStyle;
+
+        /// <summary>
         /// Gets or sets the description override.
         /// If not <c>null</c>, this <see cref="string"/> is shown instead of
         /// the <see cref="UIMenuItem.Description"/> of the currently selected item.
         /// </summary>
         public string DescriptionOverride { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
+        /// </summary>
+        /// <seealso cref="DefaultDescriptionStyle"/>
+        public TextStyle DescriptionStyle { get; set; } = DefaultDescriptionStyle;
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.

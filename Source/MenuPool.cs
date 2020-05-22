@@ -45,7 +45,7 @@ namespace RAGENativeUI
         {
             var item = new UIMenuItem(text);
             menu.AddItem(item);
-            var submenu = new UIMenu(menu.Title.Caption, text);
+            var submenu = new UIMenu(menu.Title, text);
             this.Add(submenu);
             menu.BindMenuToItem(submenu, item);
             return submenu;

@@ -41,7 +41,7 @@
         private float? characterHeight;
 
         /// <summary>
-        /// Gets the font of the text.
+        /// Gets or sets the font of the text.
         /// </summary>
         public TextFont Font
         {
@@ -57,12 +57,12 @@
         }
 
         /// <summary>
-        /// Gets the color of the text.
+        /// Gets or sets the color of the text.
         /// </summary>
         public Color Color { get; set; }
 
         /// <summary>
-        /// Gets the size of the text.
+        /// Gets or sets the size of the text.
         /// </summary>
         public float Scale
         {
@@ -78,22 +78,22 @@
         }
 
         /// <summary>
-        /// Gets how the text is aligned.
+        /// Gets or sets how the text is aligned.
         /// </summary>
         public TextJustification Justification { get; set; }
 
         /// <summary>
-        /// Gets the bounds where the text will be wrapped, in relative coordinates along the X-axis.
+        /// Gets or sets the bounds where the text will be wrapped, in relative coordinates along the X-axis.
         /// </summary>
         public (float Start, float End) Wrap { get; set; }
 
         /// <summary>
-        /// Gets whether a drop shadow is applied to the text.
+        /// Gets or sets whether a drop shadow is applied to the text.
         /// </summary>
         public bool DropShadow { get; set; }
 
         /// <summary>
-        /// Gets whether an black outline is applied to the text.
+        /// Gets or sets whether an black outline is applied to the text.
         /// </summary>
         public bool Outline { get; set; }
 
