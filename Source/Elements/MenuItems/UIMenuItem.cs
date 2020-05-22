@@ -241,7 +241,7 @@ namespace RAGENativeUI.Elements
             offsetX = badgeOffset + (0.00078125f * 8f);
             if (!badge.IsBlank)
             {
-                Color c = badge.ApplyForeColor ? CurrentForeColor : Color.White;
+                Color c = badge.Color ?? CurrentForeColor;
                 float sizeMult = badge.SizeMultiplier;
                 float badgeX = left ?
                                 itemX + badgeOffset :
@@ -461,42 +461,97 @@ namespace RAGENativeUI.Elements
 
         public class BadgeInfo
         {
+            private string textureDictionary;
+            private string textureName;
+            private string selectedTextureDictionary;
+            private string selectedTextureName;
+            private Color? color;
+            private float sizeMultiplier;
+
             /// <summary>
             /// Gets the style of this badge. For user-created <see cref="BadgeInfo"/>s, returns <see cref="BadgeStyle.Custom"/>.
             /// </summary>
-            public BadgeStyle Style { get; }
+            public BadgeStyle Style { get; private set; }
 
             /// <summary>
-            /// Gets the texture dictionary that contains the texture.
+            /// Gets or sets the texture dictionary that contains the texture.
             /// </summary>
-            public string TextureDictionary { get; }
+            public string TextureDictionary
+            {
+                get => textureDictionary;
+                set
+                {
+                    textureDictionary = value;
+                    Style = BadgeStyle.Custom;
+                }
+            }
 
             /// <summary>
-            /// Gets the name of the texture.
+            /// Gets or sets the name of the texture.
             /// </summary>
-            public string TextureName { get; }
+            public string TextureName
+            {
+                get => textureName;
+                set
+                {
+                    textureName = value;
+                    Style = BadgeStyle.Custom;
+                }
+            }
 
             /// <summary>
-            /// Gets the alternative texture dictionary used when the <see cref="UIMenuItem"/> is selected.
+            /// Gets or sets the alternative texture dictionary used when the <see cref="UIMenuItem"/> is selected.
             /// If <c>null</c>, <see cref="TextureDictionary"/> and <see cref="TextureName"/> are used always.
             /// </summary>
-            public string SelectedTextureDictionary { get; }
+            public string SelectedTextureDictionary
+            {
+                get => selectedTextureDictionary;
+                set
+                {
+                    selectedTextureDictionary = value;
+                    Style = BadgeStyle.Custom;
+                }
+            }
 
             /// <summary>
-            /// Gets the alternative texture name used when the <see cref="UIMenuItem"/> is selected.
+            /// Gets or sets the alternative texture name used when the <see cref="UIMenuItem"/> is selected.
             /// If <c>null</c>, <see cref="TextureDictionary"/> and <see cref="TextureName"/> are used always.
             /// </summary>
-            public string SelectedTextureName { get; }
+            public string SelectedTextureName
+            {
+                get => selectedTextureName;
+                set
+                {
+                    selectedTextureName = value;
+                    Style = BadgeStyle.Custom;
+                }
+            }
 
             /// <summary>
-            /// Gets a value indicating whether to use the foreground color of the <see cref="UIMenuItem"/> when drawing the badge.
+            /// Gets or sets the color used when drawing the badge. If <c>null</c> the foreground color of the <see cref="UIMenuItem"/> is used.
             /// </summary>
-            public bool ApplyForeColor { get; }
+            public Color? Color
+            {
+                get => color;
+                set
+                {
+                    color = value;
+                    Style = BadgeStyle.Custom;
+                }
+            }
 
             /// <summary>
-            /// Gets the size of the badge.
+            /// Gets or sets the size of the badge.
             /// </summary>
-            public float SizeMultiplier { get; }
+            public float SizeMultiplier
+            {
+                get => sizeMultiplier;
+                set
+                {
+                    sizeMultiplier = value;
+                    Style = BadgeStyle.Custom;
+                }
+            }
 
             /// <summary>
             /// Gets a value indicating whether the badge is blank. If <c>true</c>, no texture will be drawn but the <see cref="UIMenuItem"/> contents still get indented.
@@ -509,16 +564,17 @@ namespace RAGENativeUI.Elements
             /// </summary>
             private BadgeInfo(BadgeStyle style,
                               string textureDictionary, string textureName,
+                              Color? color,
                               string selectedTextureDictionary = null, string selectedTextureName = null,
-                              bool applyForeColor = false, float sizeMultiplier = 1.0f)
+                              float sizeMultiplier = 1.0f)
             {
-                Style = style;
                 TextureDictionary = textureDictionary;
                 TextureName = textureName;
                 SelectedTextureDictionary = selectedTextureDictionary;
                 SelectedTextureName = selectedTextureName;
-                ApplyForeColor = applyForeColor;
+                Color = color;
                 SizeMultiplier = sizeMultiplier;
+                Style = style; // set the style last because the properties setters change it to Custom
             }
 
             /// <summary>
@@ -534,17 +590,17 @@ namespace RAGENativeUI.Elements
             /// Alternative texture name used when the <see cref="UIMenuItem"/> is selected.
             /// If <c>null</c>, <paramref name="textureDictionary"/> and <paramref name="textureName"/> are used always.
             /// </param>
-            /// <param name="applyForeColor">
-            /// If <c>true</c>, the texture will be drawn with the foreground color of the <see cref="UIMenuItem"/>;
-            /// otherwise, it will be drawn with <see cref="Color.White"/>, keeping its original colors.
+            /// <param name="color">
+            /// Determines the color used when drawing this badge. If <c>null</c>, the foreground color of the <see cref="UIMenuItem"/> is used.
             /// </param>
             /// <param name="sizeMultiplier">
             /// Determines the size of the badge.
             /// </param>
             public BadgeInfo(string textureDictionary, string textureName,
+                             Color? color,
                              string selectedTextureDictionary = null, string selectedTextureName = null,
-                             bool applyForeColor = false, float sizeMultiplier = 1.0f)
-                : this(BadgeStyle.Custom, textureDictionary, textureName, selectedTextureDictionary, selectedTextureName, applyForeColor, sizeMultiplier)
+                             float sizeMultiplier = 1.0f)
+                : this(BadgeStyle.Custom, textureDictionary, textureName, color, selectedTextureDictionary, selectedTextureName, sizeMultiplier)
             {
             }
 
@@ -562,43 +618,38 @@ namespace RAGENativeUI.Elements
                 }
             }
 
-            // built-in badges
-            private static BadgeInfo blank, bronzeMedal, goldMedal, silverMedal, alert, crown, ammo,
-                                        armour, barber, clothes, franklin, bike, car, gun,
-                                        heart, makeup, mask, michael, star, tatoo, trevor,
-                                        @lock, tick, cardSuitClubs, cardSuitDiamonds, cardSuitHearts,
-                                        cardSuitSpades, art;
-
             private const string Txd = UIMenu.CommonTxd; // just an alias to reduce typing
+            private static readonly Color White = System.Drawing.Color.White;
 
-            public static BadgeInfo Blank => blank ?? (blank = new BadgeInfo(BadgeStyle.Blank, null, null));
-            public static BadgeInfo BronzeMedal => bronzeMedal ?? (bronzeMedal = new BadgeInfo(BadgeStyle.BronzeMedal, Txd, "mp_medal_bronze"));
-            public static BadgeInfo GoldMedal => goldMedal ?? (goldMedal = new BadgeInfo(BadgeStyle.GoldMedal, Txd, "mp_medal_gold"));
-            public static BadgeInfo SilverMedal => silverMedal ?? (silverMedal = new BadgeInfo(BadgeStyle.SilverMedal, Txd, "medal_silver", null, null, false, 0.5f));
-            public static BadgeInfo Alert => alert ?? (alert = new BadgeInfo(BadgeStyle.Alert, Txd, "mp_alerttriangle"));
-            public static BadgeInfo Crown => crown ?? (crown = new BadgeInfo(BadgeStyle.Crown, Txd, "mp_hostcrown", null, null, true, 0.5f));
-            public static BadgeInfo Ammo => ammo ?? (ammo = new BadgeInfo(BadgeStyle.Ammo, Txd, "shop_ammo_icon_a", Txd, "shop_ammo_icon_b"));
-            public static BadgeInfo Armour => armour ?? (armour = new BadgeInfo(BadgeStyle.Armour, Txd, "shop_armour_icon_a", Txd, "shop_armour_icon_b"));
-            public static BadgeInfo Barber => barber ?? (barber = new BadgeInfo(BadgeStyle.Barber, Txd, "shop_barber_icon_a", Txd, "shop_barber_icon_b"));
-            public static BadgeInfo Clothes => clothes ?? (clothes = new BadgeInfo(BadgeStyle.Clothes, Txd, "shop_clothing_icon_a", Txd, "shop_clothing_icon_b"));
-            public static BadgeInfo Franklin => franklin ?? (franklin = new BadgeInfo(BadgeStyle.Franklin, Txd, "shop_franklin_icon_a", Txd, "shop_franklin_icon_b"));
-            public static BadgeInfo Bike => bike ?? (bike = new BadgeInfo(BadgeStyle.Bike, Txd, "shop_garage_bike_icon_a", Txd, "shop_garage_bike_icon_b"));
-            public static BadgeInfo Car => car ?? (car = new BadgeInfo(BadgeStyle.Car, Txd, "shop_garage_icon_a", Txd, "shop_garage_icon_b"));
-            public static BadgeInfo Gun => gun ?? (gun = new BadgeInfo(BadgeStyle.Gun, Txd, "shop_gunclub_icon_a", Txd, "shop_gunclub_icon_b"));
-            public static BadgeInfo Heart => heart ?? (heart = new BadgeInfo(BadgeStyle.Heart, Txd, "shop_health_icon_a", Txd, "shop_health_icon_b"));
-            public static BadgeInfo Makeup => makeup ?? (makeup = new BadgeInfo(BadgeStyle.Makeup, Txd, "shop_makeup_icon_a", Txd, "shop_makeup_icon_b"));
-            public static BadgeInfo Mask => mask ?? (mask = new BadgeInfo(BadgeStyle.Mask, Txd, "shop_mask_icon_a", Txd, "shop_mask_icon_b"));
-            public static BadgeInfo Michael => michael ?? (michael = new BadgeInfo(BadgeStyle.Michael, Txd, "shop_michael_icon_a", Txd, "shop_michael_icon_b"));
-            public static BadgeInfo Star => star ?? (star = new BadgeInfo(BadgeStyle.Star, Txd, "shop_new_star"));
-            public static BadgeInfo Tatoo => tatoo ?? (tatoo = new BadgeInfo(BadgeStyle.Tatoo, Txd, "shop_tattoos_icon_a", Txd, "shop_tattoos_icon_b"));
-            public static BadgeInfo Trevor => trevor ?? (trevor = new BadgeInfo(BadgeStyle.Trevor, Txd, "shop_trevor_icon_a", Txd, "shop_trevor_icon_b"));
-            public static BadgeInfo Lock => @lock ?? (@lock = new BadgeInfo(BadgeStyle.Lock, Txd, "shop_lock", null, null, true));
-            public static BadgeInfo Tick => tick ?? (tick = new BadgeInfo(BadgeStyle.Tick, Txd, "shop_tick_icon", null, null, true));
-            public static BadgeInfo CardSuitClubs => cardSuitClubs ?? (cardSuitClubs = new BadgeInfo(BadgeStyle.CardSuitClubs, Txd, "card_suit_clubs", null, null, true));
-            public static BadgeInfo CardSuitDiamonds => cardSuitDiamonds ?? (cardSuitDiamonds = new BadgeInfo(BadgeStyle.CardSuitDiamonds, Txd, "card_suit_diamonds", null, null, true));
-            public static BadgeInfo CardSuitHearts => cardSuitHearts ?? (cardSuitHearts = new BadgeInfo(BadgeStyle.CardSuitHearts, Txd, "card_suit_hearts", null, null, true));
-            public static BadgeInfo CardSuitSpades => cardSuitSpades ?? (cardSuitSpades = new BadgeInfo(BadgeStyle.CardSuitSpades, Txd, "card_suit_spades", null, null, true));
-            public static BadgeInfo Art => art ?? (art = new BadgeInfo(BadgeStyle.Art, Txd, "shop_art_icon_a", Txd, "shop_art_icon_b"));
+            // built-in badges
+            public static BadgeInfo Blank => new BadgeInfo(BadgeStyle.Blank, null, null, null);
+            public static BadgeInfo BronzeMedal => new BadgeInfo(BadgeStyle.BronzeMedal, Txd, "mp_medal_bronze", White);
+            public static BadgeInfo GoldMedal => new BadgeInfo(BadgeStyle.GoldMedal, Txd, "mp_medal_gold", White);
+            public static BadgeInfo SilverMedal => new BadgeInfo(BadgeStyle.SilverMedal, Txd, "medal_silver", White, sizeMultiplier: 0.5f);
+            public static BadgeInfo Alert => new BadgeInfo(BadgeStyle.Alert, Txd, "mp_alerttriangle", White);
+            public static BadgeInfo Crown => new BadgeInfo(BadgeStyle.Crown, Txd, "mp_hostcrown", null, sizeMultiplier: 0.5f);
+            public static BadgeInfo Ammo => new BadgeInfo(BadgeStyle.Ammo, Txd, "shop_ammo_icon_a", White, Txd, "shop_ammo_icon_b");
+            public static BadgeInfo Armour => new BadgeInfo(BadgeStyle.Armour, Txd, "shop_armour_icon_a", White, Txd, "shop_armour_icon_b");
+            public static BadgeInfo Barber => new BadgeInfo(BadgeStyle.Barber, Txd, "shop_barber_icon_a", White, Txd, "shop_barber_icon_b");
+            public static BadgeInfo Clothes => new BadgeInfo(BadgeStyle.Clothes, Txd, "shop_clothing_icon_a", White, Txd, "shop_clothing_icon_b");
+            public static BadgeInfo Franklin => new BadgeInfo(BadgeStyle.Franklin, Txd, "shop_franklin_icon_a", White, Txd, "shop_franklin_icon_b");
+            public static BadgeInfo Bike => new BadgeInfo(BadgeStyle.Bike, Txd, "shop_garage_bike_icon_a", White, Txd, "shop_garage_bike_icon_b");
+            public static BadgeInfo Car => new BadgeInfo(BadgeStyle.Car, Txd, "shop_garage_icon_a", White, Txd, "shop_garage_icon_b");
+            public static BadgeInfo Gun => new BadgeInfo(BadgeStyle.Gun, Txd, "shop_gunclub_icon_a", White, Txd, "shop_gunclub_icon_b");
+            public static BadgeInfo Heart => new BadgeInfo(BadgeStyle.Heart, Txd, "shop_health_icon_a", White, Txd, "shop_health_icon_b");
+            public static BadgeInfo Makeup => new BadgeInfo(BadgeStyle.Makeup, Txd, "shop_makeup_icon_a", White, Txd, "shop_makeup_icon_b");
+            public static BadgeInfo Mask => new BadgeInfo(BadgeStyle.Mask, Txd, "shop_mask_icon_a", White, Txd, "shop_mask_icon_b");
+            public static BadgeInfo Michael => new BadgeInfo(BadgeStyle.Michael, Txd, "shop_michael_icon_a", White, Txd, "shop_michael_icon_b");
+            public static BadgeInfo Star => new BadgeInfo(BadgeStyle.Star, Txd, "shop_new_star", White);
+            public static BadgeInfo Tatoo => new BadgeInfo(BadgeStyle.Tatoo, Txd, "shop_tattoos_icon_a", White, Txd, "shop_tattoos_icon_b");
+            public static BadgeInfo Trevor => new BadgeInfo(BadgeStyle.Trevor, Txd, "shop_trevor_icon_a", White, Txd, "shop_trevor_icon_b");
+            public static BadgeInfo Lock => new BadgeInfo(BadgeStyle.Lock, Txd, "shop_lock", null);
+            public static BadgeInfo Tick => new BadgeInfo(BadgeStyle.Tick, Txd, "shop_tick_icon", null);
+            public static BadgeInfo CardSuitClubs => new BadgeInfo(BadgeStyle.CardSuitClubs, Txd, "card_suit_clubs", null);
+            public static BadgeInfo CardSuitDiamonds => new BadgeInfo(BadgeStyle.CardSuitDiamonds, Txd, "card_suit_diamonds", null);
+            public static BadgeInfo CardSuitHearts => new BadgeInfo(BadgeStyle.CardSuitHearts, Txd, "card_suit_hearts", null);
+            public static BadgeInfo CardSuitSpades => new BadgeInfo(BadgeStyle.CardSuitSpades, Txd, "card_suit_spades", null);
+            public static BadgeInfo Art => new BadgeInfo(BadgeStyle.Art, Txd, "shop_art_icon_a", White, Txd, "shop_art_icon_b");
 
             public static BadgeInfo FromStyle(BadgeStyle style) => style switch
             {

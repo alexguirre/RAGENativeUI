@@ -294,13 +294,13 @@ namespace RAGENativeUI.PauseMenu
 
         private static Color BadgeToColor(UIMenuItem.BadgeInfo badge, bool selected)
         {
-            if (badge.ApplyForeColor)
+            if (badge.Color == null)
             {
                 return selected ? Color.FromArgb(255, 0, 0, 0) : Color.FromArgb(255, 255, 255, 255);
             }
             else
             {
-                return Color.FromArgb(255, 255, 255, 255);
+                return badge.Color.Value;
             }
         }
 
