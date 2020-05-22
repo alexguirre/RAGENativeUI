@@ -34,50 +34,77 @@
     /// <summary>
     /// Defines the appearance of text.
     /// </summary>
-    public readonly struct TextStyle : IEquatable<TextStyle>
+    public struct TextStyle : IEquatable<TextStyle>
     {
+        private TextFont font;
+        private float scale;
+        private float? characterHeight;
+
         /// <summary>
         /// Gets the font of the text.
         /// </summary>
-        public TextFont Font { get; }
+        public TextFont Font
+        {
+            readonly get => font;
+            set
+            {
+                if (value != font)
+                {
+                    font = value;
+                    characterHeight = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the color of the text.
         /// </summary>
-        public Color Color { get; }
+        public Color Color { get; set; }
 
         /// <summary>
         /// Gets the size of the text.
         /// </summary>
-        public float Scale { get; }
+        public float Scale
+        {
+            readonly get => scale;
+            set
+            {
+                if (value != scale)
+                {
+                    scale = value;
+                    characterHeight = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets how the text is aligned.
         /// </summary>
-        public TextJustification Justification { get; }
+        public TextJustification Justification { get; set; }
 
         /// <summary>
         /// Gets the bounds where the text will be wrapped, in relative coordinates along the X-axis.
         /// </summary>
-        public (float Start, float End) Wrap { get; }
+        public (float Start, float End) Wrap { get; set; }
 
         /// <summary>
         /// Gets whether a drop shadow is applied to the text.
         /// </summary>
-        public bool DropShadow { get; }
+        public bool DropShadow { get; set; }
 
         /// <summary>
         /// Gets whether an black outline is applied to the text.
         /// </summary>
-        public bool Outline { get; }
+        public bool Outline { get; set; }
 
         /// <summary>
         /// Gets the height of a character in relative coordinates. It depends on the <see cref="Font"/> and the <see cref="Scale"/>.
         /// </summary>
-        public float CharacterHeight { get; }
+        public float CharacterHeight => characterHeight ?? (characterHeight = N.GetTextHeight(Scale, (int)Font)).Value;
 
         private TextStyle(TextFont font, Color color, float scale, TextJustification justification, 
-                          (float Start, float End) wrap, bool dropShadow, bool outline, float characterHeight)
+                          (float Start, float End) wrap, bool dropShadow, bool outline, float? characterHeight = null)
+            : this()
         {
             Font = font;
             Color = color;
@@ -86,7 +113,7 @@
             Wrap = wrap;
             DropShadow = dropShadow;
             Outline = outline;
-            CharacterHeight = characterHeight;
+            this.characterHeight = characterHeight;
         }
 
         /// <summary>
@@ -116,7 +143,7 @@
             float wrapStart = 0.0f, float wrapEnd = 1.0f,
             bool dropShadow = false,
             bool outline = false)
-            : this(font, color, scale, justification, (wrapStart, wrapEnd), dropShadow, outline, N.GetTextHeight(scale, (int)font))
+            : this(font, color, scale, justification, (wrapStart, wrapEnd), dropShadow, outline)
         {
 
         }
@@ -124,7 +151,7 @@
         /// <summary>
         /// Applies this style for the next text command.
         /// </summary>
-        public void Apply()
+        public readonly void Apply()
         {
             ref var s = ref Internals.CTextStyle.ScriptStyle;
             s.Font = (int)Font;
@@ -141,7 +168,7 @@
         /// For each parameter, if it is <c>null</c> the copy keeps the value of the corresponding property of this style, otherwise, it uses the new value.
         /// <para>
         /// For creating your own styles, the recommended way is to derive them from a base <see cref="TextStyle"/>, for example <see cref="Default"/>.
-        /// With this method you only have to specify the properties you want to change.
+        /// With this method you only have to specify the properties you want to change using named arguments.
         /// The following snippet shows how to give the <see cref="Default"/> style a dark red color and a drop shadow.
         /// <code lang="C#">
         /// TextStyle myStyle = TextStyle.Default.With(color: Color.FromArgb(120, 0, 0), dropShadow: true);
@@ -156,7 +183,7 @@
         /// <param name="dropShadow">If specified, determines whether a drop shadow is applied to the text.</param>
         /// <param name="outline">If specified, determines whether a black outline is applied to the text.</param>
         /// <returns>A copy of this <see cref="TextStyle"/> with the specified properties changed.</returns>
-        public TextStyle With(
+        public readonly TextStyle With(
             TextFont? font = null,
             Color? color = null,
             float? scale = null,
@@ -165,31 +192,31 @@
             bool? dropShadow = null,
             bool? outline = null)
         {
-            TextFont newFont = font ?? this.Font;
-            float newScale = scale ?? this.Scale;
+            TextFont newFont = font ?? Font;
+            float newScale = scale ?? Scale;
             return new TextStyle(
                 font: newFont,
-                color: color ?? this.Color,
+                color: color ?? Color,
                 scale: newScale,
-                justification: justification ?? this.Justification,
-                wrap: wrap ?? this.Wrap,
-                dropShadow: dropShadow ?? this.DropShadow,
-                outline: outline ?? this.Outline,
-                characterHeight: (newFont != this.Font || newScale != this.Scale) ? N.GetTextHeight(newScale, (int)newFont) : this.CharacterHeight
+                justification: justification ?? Justification,
+                wrap: wrap ?? Wrap,
+                dropShadow: dropShadow ?? DropShadow,
+                outline: outline ?? Outline,
+                characterHeight: (newFont != Font || newScale != Scale) ? null : characterHeight
             );
         }
 
         /// <inheritdoc/>
-        public override string ToString() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).ToString();
+        public override readonly string ToString() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).ToString();
 
         /// <inheritdoc/>
-        public override int GetHashCode() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).GetHashCode();
+        public override readonly int GetHashCode() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).GetHashCode();
 
         /// <inheritdoc/>
-        public override bool Equals(object other) => other is TextStyle s && Equals(s);
+        public override readonly bool Equals(object other) => other is TextStyle s && Equals(s);
 
         /// <inheritdoc/>
-        public bool Equals(TextStyle other)
+        public readonly bool Equals(TextStyle other)
         {
             return Font == other.Font &&
                    Color == other.Color &&
