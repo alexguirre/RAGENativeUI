@@ -391,7 +391,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Set the banner to your own custom texture. Set it to null if you want to restore the banner.
+        /// Set the banner to your own custom texture.
         /// </summary>
         /// <param name="texture">Rage.Texture object</param>
         public void SetBannerType(Texture texture)
@@ -400,6 +400,11 @@ namespace RAGENativeUI
             _bannerRectangle = null;
             _customBanner = texture;
         }
+
+        /// <summary>
+        /// Removes the banner.
+        /// </summary>
+        public void RemoveBanner() => SetBannerType((Sprite)null);
 
         /// <summary>
         /// Add an item to the menu.
