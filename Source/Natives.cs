@@ -60,13 +60,7 @@
 
         // Same as GET_SCREEN_RESOLUTION (0x888D57E407E63624) 
         public static void GetScreenResolution(out int x, out int y) { x = 1280; y = 720; }
-        // Same as _GET_ACTIVE_SCREEN_RESOLUTION (0x873C9F3104101DD3)
-        public static void GetActiveScreenResolution(out int x, out int y)
-        {
-            System.Drawing.Size r = Game.Resolution;
-            x = r.Width;
-            y = r.Height;
-        }
+        public static void GetActiveScreenResolution(out int x, out int y) => Natives.x873C9F3104101DD3(out x, out y);
         public static float GetAspectRatio(bool b) => Natives.xF1307EF624A80D87<float>(b);
         public static bool GetIsWidescreen() => Natives.x30CF4BDA4FCB1905<bool>();
 

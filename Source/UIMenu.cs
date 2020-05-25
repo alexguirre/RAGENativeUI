@@ -50,7 +50,15 @@ namespace RAGENativeUI
     /// </summary>
     public class UIMenu
     {
+        /// <summary>
+        /// Represents the default value of <see cref="MaxItemsOnScreen"/>.
+        /// </summary>
         public const int DefaultMaxItemsOnScreen = 10;
+
+        /// <summary>
+        /// Represents the default value of <see cref="Width"/>.
+        /// </summary>
+        public const float DefaultWidth = 0.225f;
 
         /// <summary>
         /// Represents the default value of <see cref="TitleStyle"/>.
@@ -145,6 +153,9 @@ namespace RAGENativeUI
         /// </summary>
         public event ListChangedEvent OnListChange;
 
+        /// <summary>
+        /// Called when user scrolls through a <see cref="UIMenuScrollerItem"/>, changing its index.
+        /// </summary>
         public event ScrollerChangedEvent OnScrollerChange;
 
         /// <summary>
@@ -231,7 +242,6 @@ namespace RAGENativeUI
         {
             Offset = offset;
             Children = new Dictionary<UIMenuItem, UIMenu>();
-            WidthOffset = 0;
 
             InstructionalButtons = new InstructionalButtons();
             InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
@@ -265,7 +275,31 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets or sets the current width offset in pixels.
         /// </summary>
-        public int WidthOffset { get; set; }
+        public int WidthOffset { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the menu width in relative coordinates.
+        /// </summary>
+        public float Width { get; set; } = DefaultWidth;
+
+        /// <summary>
+        /// Gets the menu width in relative coordinates, adjusted for the current aspect ratio and <see cref="WidthOffset"/> value.
+        /// </summary>
+        public float AdjustedWidth
+        {
+            get
+            {
+                float adjusted = Width;
+                if (AspectRatio < 1.77777f) // less than 16:9
+                {
+                    adjusted *= 16f / 9f / AspectRatio;
+                }
+
+                adjusted += WidthOffset / ActualScreenResolution.Width;
+
+                return adjusted;
+            }
+        }
 
         /// <summary>
         /// Change the menu's width. The width is calculated as DefaultWidth + WidthOffset, so a width offset of 10 would enlarge the menu by 10 pixels.
@@ -489,7 +523,7 @@ namespace RAGENativeUI
         /// </para>
         /// </summary>
         /// <param name="g">The <see cref="Rage.Graphics"/> to draw on.</param>
-        public void DrawBanner(Rage.Graphics g)
+        public virtual void DrawBanner(Rage.Graphics g)
         {
             if (!Visible || _customBanner == null)
             {
@@ -510,13 +544,16 @@ namespace RAGENativeUI
         // drawing variables
         private float menuWidth;
         private float itemHeight = 0.034722f;
-        private float itemsX, itemsY;
-        private float upDownX, upDownY;
+        private float itemsX, itemsY; // start position of the items, for mouse input
+        private float upDownX, upDownY; // start position of the up-down arrows, for mouse input
         private float customBannerX, customBannerY,
                       customBannerW, customBannerH;
 
-        private static SizeF ActualScreenResolution { get; set; }
-        private static float AspectRatio { get; set; } // only updated when a UIMenu is visible
+        private static SizeF? actualScreenResolution;
+        private static float? aspectRatio;
+
+        private static SizeF ActualScreenResolution => actualScreenResolution ??= Internals.Screen.ActualResolution;
+        private static float AspectRatio => aspectRatio ??= N.GetAspectRatio(false);
         private static bool IsWideScreen => AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
         private static bool IsUltraWideScreen => AspectRatio > 3.5f; // > 32:9
 
@@ -526,7 +563,11 @@ namespace RAGENativeUI
         internal static void DrawRect(float x, float y, float w, float h, Color c)
             => N.DrawRect(x, y, w, h, c.R, c.G, c.B, c.A);
 
-        internal void BeginScriptGfx()
+        /// <summary>
+        /// Called before drawing the menu or before getting screen coordinates for mouse input.
+        /// Intended to align the menu with the safe zone using the <c>SET_SCRIPT_GFX_*</c> natives.
+        /// </summary>
+        protected virtual void BeginDraw()
         {
             if (ScaleWithSafezone)
             {
@@ -535,7 +576,10 @@ namespace RAGENativeUI
             }
         }
 
-        internal void EndScriptGfx()
+        /// <summary>
+        /// Called after drawing the menu or after getting screen coordinates for mouse input to reset the state modified in <see cref="BeginDraw"/>.
+        /// </summary>
+        protected virtual void EndDraw()
         {
             if (ScaleWithSafezone)
             {
@@ -546,7 +590,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Draw the menu and all of it's components.
         /// </summary>
-        public void Draw()
+        public virtual void Draw()
         {
             if (!Visible)
             {
@@ -577,18 +621,13 @@ namespace RAGENativeUI
             if (InstructionalButtonsEnabled)
                 InstructionalButtons.Draw();
 
-            ActualScreenResolution = Internals.Screen.ActualResolution;
-            AspectRatio = N.GetAspectRatio(false);
+            // set to null to recalculate them the next time they are accessed, in case their values changed
+            actualScreenResolution = null;
+            aspectRatio = null;
 
-            menuWidth = 0.225f;
-            if (AspectRatio < 1.77777f) // less than 16:9
-            {
-                menuWidth = 0.225f * (16f / 9f / AspectRatio);
-            }
+            menuWidth = AdjustedWidth; // save to a field to avoid calculating AdjustedWidth multiple times each tick
 
-            menuWidth += WidthOffset / ActualScreenResolution.Width;
-
-            BeginScriptGfx();
+            BeginDraw();
 
             float x = 0.05f + Offset.X / ActualScreenResolution.Width;
             float y = 0.05f + Offset.Y / ActualScreenResolution.Height;
@@ -597,9 +636,7 @@ namespace RAGENativeUI
 
             DrawSubtitle(x, ref y);
 
-            float headerBottom = y;
-
-            DrawBackground(x, headerBottom);
+            DrawBackground(x, y);
 
             DrawItems(x, ref y);
 
@@ -607,12 +644,20 @@ namespace RAGENativeUI
 
             DrawDescription(x, ref y);
 
-            EndScriptGfx();
+            EndDraw();
 
             justOpened = false;
         }
 
-        private void DrawBanner(float x, ref float y)
+        /// <summary>
+        /// Draws the banner and title at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">
+        /// The position along the Y-axis in relative coordinates.
+        /// When this method returns, contains the position right below the banner.
+        /// </param>
+        protected virtual void DrawBanner(float x, ref float y)
         {
             if (_bannerSprite == null && _bannerRectangle == null && _customBanner == null)
             {
@@ -660,7 +705,15 @@ namespace RAGENativeUI
             TextCommands.Display(Title, titleX, titleY);
         }
 
-        private void DrawSubtitle(float x, ref float y)
+        /// <summary>
+        /// Draws the subtitle at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">
+        /// The position along the Y-axis in relative coordinates.
+        /// When this method returns, contains the position right below the subtitle.
+        /// </param>
+        protected virtual void DrawSubtitle(float x, ref float y)
         {
             if (Subtitle == null)
             {
@@ -720,20 +773,33 @@ namespace RAGENativeUI
             TextCommands.Display(counterText, counterX, counterY);
         }
 
-        private void DrawBackground(float x, float headerBottom)
+        /// <summary>
+        /// Draws the items background at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">The position along the Y-axis in relative coordinates.</param>
+        protected virtual void DrawBackground(float x, float y)
         {
             float bgWidth = menuWidth;
             float bgHeight = itemHeight * Math.Min(MenuItems.Count, MaxItemsOnScreen);
 
             DrawSprite(CommonTxd, BackgroundTextureName,
                        x + bgWidth * 0.5f,
-                       headerBottom + bgHeight * 0.5f - 0.00138888f,
+                       y + bgHeight * 0.5f - 0.00138888f,
                        bgWidth,
                        bgHeight,
                        Color.White);
         }
 
-        private void DrawItems(float x, ref float y)
+        /// <summary>
+        /// Draws the items beginning at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">
+        /// The position along the Y-axis in relative coordinates.
+        /// When this method returns, contains the position right below the items.
+        /// </param>
+        protected virtual void DrawItems(float x, ref float y)
         {
             if (MenuItems.Count == 0)
             {
@@ -761,7 +827,15 @@ namespace RAGENativeUI
             }
         }
 
-        private void DrawUpDownArrows(float x, ref float y)
+        /// <summary>
+        /// Draws the up-down arrows at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">
+        /// The position along the Y-axis in relative coordinates.
+        /// When this method returns, contains the position right below the up-down arrows.
+        /// </param>
+        protected virtual void DrawUpDownArrows(float x, ref float y)
         {
             if (MenuItems.Count > MaxItemsOnScreen)
             {
@@ -794,7 +868,15 @@ namespace RAGENativeUI
             }
         }
 
-        private void DrawDescription(float x, ref float y)
+        /// <summary>
+        /// Draws the description text and background at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">
+        /// The position along the Y-axis in relative coordinates.
+        /// When this method returns, contains the position right below the description.
+        /// </param>
+        protected virtual void DrawDescription(float x, ref float y)
         {
             if (DescriptionOverride == null && MenuItems.Count == 0)
             {
@@ -812,7 +894,7 @@ namespace RAGENativeUI
                 Color backColor = Color.FromArgb(186, 0, 0, 0);
 
                 TextStyle s = DescriptionStyle;
-                s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
+                s.Wrap = (textX, textXEnd);
 
                 s.Apply();
                 int lineCount = TextCommands.GetLineCount(description, textX, y + 0.00277776f);
@@ -820,7 +902,7 @@ namespace RAGENativeUI
                 Color separatorBarColor = Color.Black;
                 DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
 
-                float descHeight = (N.GetTextScaleHeight(0.35f, 0) * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
+                float descHeight = (s.CharacterHeight * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
                 DrawSprite(CommonTxd, BackgroundTextureName,
                            x + menuWidth * 0.5f,
                            y + (descHeight * 0.5f) - 0.00138888f,
@@ -836,33 +918,53 @@ namespace RAGENativeUI
         }
 
         // Converted from game scripts
-        internal static void GetTextureDrawSize(string txd, string texName, out float width, out float height, bool isBanner = false)
+        internal static void GetTextureDrawSize(string txd, string texName, out float width, out float height)
         {
-            float sizeMultiplier = isBanner ? 1.0f : 0.5f;
-
             N.GetScreenResolution(out int screenWidth, out int screenHeight);
             Vector3 texSize = N.GetTextureResolution(txd, texName);
-            texSize.X = texSize.X * sizeMultiplier;
-            texSize.Y = texSize.Y * sizeMultiplier;
+            texSize.X *= 0.5f;
+            texSize.Y *= 0.5f;
 
             width = texSize.X / screenWidth * (screenWidth / screenHeight);
             height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
 
             if (!IsWideScreen)
             {
-                width = width * 1.33f;
+                width *= 1.33f;
             }
         }
 
         private void GetBannerDrawSize(string txd, string texName, out float width, out float height)
         {
-            GetTextureDrawSize(txd, texName, out width, out height, true);
-
-            // TODO: maybe add option to scale banner height with WidthOffset
-            float menuWidthNoOffset = menuWidth - (WidthOffset / ActualScreenResolution.Width);
-            if (width > menuWidthNoOffset)
+            N.GetActiveScreenResolution(out int screenWidth, out int screenHeight);
+            float aspectRatio = AspectRatio;
+            if (IsUltraWideScreen)
             {
-                height = height * (menuWidthNoOffset / width);
+                screenWidth = (int)Math.Round(screenHeight * aspectRatio);
+            }
+            float screenRatio = (float)screenWidth / screenHeight;
+            float v = screenRatio / aspectRatio;
+            if (IsUltraWideScreen)
+            {
+                v = 1f;
+            }
+
+            screenWidth = (int)Math.Round(screenWidth / v);
+            screenHeight = (int)Math.Round(screenHeight / v);
+
+            Vector3 texSize = N.GetTextureResolution(txd, texName);
+
+            width = texSize.X / screenWidth * (screenWidth / screenHeight);
+            height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
+
+            if (!IsWideScreen)
+            {
+                width *= 1.33f;
+            }
+
+            if (width > DefaultWidth)
+            {
+                height *= DefaultWidth / width;
                 width = menuWidth;
             }
         }
@@ -957,7 +1059,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Up"/> input event to the selected item. If not consumed, the previous item is selected.
         /// </summary>
-        public void GoUp()
+        public virtual void GoUp()
         {
             if (MenuItems.Count == 0)
             {
@@ -982,7 +1084,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Down"/> input event to the selected item. If not consumed, the next item is selected.
         /// </summary>
-        public void GoDown()
+        public virtual void GoDown()
         {
             if (MenuItems.Count == 0)
             {
@@ -1001,7 +1103,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Left"/> input event to the selected item.
         /// </summary>
-        public void GoLeft()
+        public virtual void GoLeft()
         {
             if (MenuItems.Count == 0)
             {
@@ -1014,7 +1116,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Right"/> input event to the selected item.
         /// </summary>
-        public void GoRight()
+        public virtual void GoRight()
         {
             if (MenuItems.Count == 0)
             {
@@ -1027,7 +1129,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Sends a <see cref="Common.MenuControls.Select"/> input event to the selected item.
         /// </summary>
-        public void SelectItem()
+        public virtual void SelectItem()
         {
             if (MenuItems.Count == 0)
             {
@@ -1038,9 +1140,9 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Sends a <see cref="Common.MenuControls.Back"/> input event to the selected item.
+        /// Sends a <see cref="Common.MenuControls.Back"/> input event to the selected item. If not consumed, the menu is closed.
         /// </summary>
-        public void GoBack()
+        public virtual void GoBack()
         {
             if (MenuItems.Count == 0 || !MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back))
             {
@@ -1115,9 +1217,10 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Process the mouse's position and check if it's hovering over any Element. Call this in Game.FrameRender or in a loop.
+        /// Process the mouse input. Checks if the mouse is hovering any <see cref="UIMenuItem"/> or the up-down arrows,
+        /// and sends the appropriate input events to the menu items.
         /// </summary>
-        public void ProcessMouse()
+        public virtual void ProcessMouse()
         {
             if (!Visible || justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
@@ -1232,7 +1335,7 @@ namespace RAGENativeUI
 
         private void UpdateHoveredItem(float mouseX, float mouseY)
         {
-            BeginScriptGfx();
+            BeginDraw();
 
             int visibleItemCount = Math.Min(MenuItems.Count, MaxItemsOnScreen);
             float x1 = itemsX, y1 = itemsY - 0.00138888f; // background top-left
@@ -1240,7 +1343,7 @@ namespace RAGENativeUI
             N.GetScriptGfxPosition(x1, y1, out x1, out y1);
             N.GetScriptGfxPosition(x2, y2, out x2, out y2);
 
-            EndScriptGfx();
+            EndDraw();
 
             if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
             {
@@ -1269,14 +1372,14 @@ namespace RAGENativeUI
         {
             if (MenuItems.Count > MaxItemsOnScreen)
             {
-                BeginScriptGfx();
+                BeginDraw();
 
                 float x1 = upDownX, y1 = upDownY; // up&down rect top-left
                 float x2 = x1 + menuWidth, y2 = y1 + itemHeight; // up&down rect bottom-right
                 N.GetScriptGfxPosition(x1, y1, out x1, out y1);
                 N.GetScriptGfxPosition(x2, y2, out x2, out y2);
 
-                EndScriptGfx();
+                EndDraw();
 
                 if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering up&down rect
                 {
@@ -1491,7 +1594,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Process control-stroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
-        public void ProcessControl(Keys key = Keys.None)
+        public virtual void ProcessControl(Keys key = Keys.None)
         {
             if (!Visible || justOpened)
             {
