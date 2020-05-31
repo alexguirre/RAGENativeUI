@@ -9,6 +9,9 @@
         {
             Game.LogTrivialDebug("[RAGENativeUI] Initializing...");
 
+            Game.LogTrivialDebug($"[RAGENativeUI] > {nameof(Shared)}");
+            RuntimeHelpers.RunClassConstructor(typeof(Shared).TypeHandle);
+
             Game.LogTrivialDebug($"[RAGENativeUI] > {nameof(Memory)}");
             RuntimeHelpers.RunClassConstructor(typeof(Memory).TypeHandle);
 

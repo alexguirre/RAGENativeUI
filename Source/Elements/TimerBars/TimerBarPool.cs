@@ -33,17 +33,34 @@
                 N.SetScriptGfxAlign('R', 'B');
                 N.SetScriptGfxAlignParams(0.0f, 0.0f, 0.952f, 0.949f);
 
-                int buttonsRows = GetInstructionalButtonsRows();
+                uint frame = Game.FrameCount;
+                bool newFrame = frame != Shared.TimerBarsLastFrame;
 
-                float x = TB.InitialX, y = TB.InitialY - (TB.LoadingPromptYOffset * buttonsRows);
+                if (newFrame)
+                {
+                    Shared.TimerBarsLastFrame = frame;
+                    Shared.TimerBarsNumInstructionalButtonsRows = GetInstructionalButtonsRows();
+                    if (ScriptGlobals.TimersBarsTotalHeightAvailable)
+                    {
+                        Shared.TimerBarsIngamehudScriptExecuting = N.GetNumberOfReferencesOfScript(0xC45650F0 /* ingamehud */) > 0;
+                    }
+
+                    N.HideHudComponentThisFrame(6); // VehicleName
+                    N.HideHudComponentThisFrame(7); // AreaName
+                    N.HideHudComponentThisFrame(8); // ?
+                    N.HideHudComponentThisFrame(9); // StreetName
+                }
+
+                float x = TB.InitialX, y = TB.InitialY - (TB.LoadingPromptYOffset * Shared.TimerBarsNumInstructionalButtonsRows);
 
                 ref float totalHeight = ref x; // dummy assignment
-                bool hasTotalHeight = false;
+                bool hasTotalHeight = true;
                 if (Game.Console.IsOpen)
                 {
                     y = lastY;
+                    hasTotalHeight = false;
                 }
-                else if (ScriptGlobals.TimersBarsTotalHeightAvailable && N.GetNumberOfReferencesOfScript(0xC45650F0 /* ingamehud */) > 0)
+                else if (ScriptGlobals.TimersBarsTotalHeightAvailable && Shared.TimerBarsIngamehudScriptExecuting)
                 {
                     ref float timerBarsTotalHeight = ref ScriptGlobals.TimerBarsTotalHeight;
                     ref float timerBarsPrevTotalHeight = ref ScriptGlobals.TimerBarsPrevTotalHeight;
@@ -57,10 +74,20 @@
                     {
                         totalHeight = -0.0075f;
                     }
-
-                    hasTotalHeight = true;
                 }
-                // TODO: fallback for when `ingamehud` script is terminated
+                else
+                {
+                    totalHeight = ref Shared.TimerBarsTotalHeight;
+
+                    if (newFrame)
+                    {
+                        totalHeight = 0.0f;
+                    }
+                    else
+                    {
+                        y -= totalHeight;
+                    }
+                }
 
                 lastY = y;
 
@@ -78,11 +105,6 @@
                 }
 
                 N.ResetScriptGfxAlign();
-
-                N.HideHudComponentThisFrame(6); // VehicleName
-                N.HideHudComponentThisFrame(7); // AreaName
-                N.HideHudComponentThisFrame(8); // ?
-                N.HideHudComponentThisFrame(9); // StreetName
             }
         }
 

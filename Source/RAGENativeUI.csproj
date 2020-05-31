@@ -106,6 +106,7 @@
     <Compile Include="Internals\DebugCommands.cs" />
     <Compile Include="Internals\Memory.cs" />
     <Compile Include="Internals\ModuleInitializer.cs" />
+    <Compile Include="Internals\Shared.cs" />
     <Compile Include="Internals\UsingTls.cs" />
     <Compile Include="MenuPool.cs" />
     <Compile Include="Natives.cs" />
