@@ -77,16 +77,34 @@
             }
         }
 
+        public static float GetWidth(string text, in TextStyle style)
+        {
+            style.Apply();
+            return GetWidth(text);
+        }
+
         public static float GetWidth(string text)
         {
             PushText(N.BeginTextCommandGetWidth, text);
             return N.EndTextCommandGetWidth(true);
         }
 
+        public static void Display(string text, in TextStyle style, float x, float y)
+        {
+            style.Apply();
+            Display(text, x, y);
+        }
+
         public static void Display(string text, float x, float y)
         {
             PushText(N.BeginTextCommandDisplayText, text);
             N.EndTextCommandDisplayText(x, y);
+        }
+
+        public static int GetLineCount(string text, in TextStyle style, float x, float y)
+        {
+            style.Apply();
+            return GetLineCount(text, x , y);
         }
 
         public static int GetLineCount(string text, float x, float y)

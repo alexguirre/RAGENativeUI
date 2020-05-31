@@ -72,8 +72,7 @@
         {
             base.Draw(x, y);
 
-            TextStyle.Apply();
-            TextCommands.Display(Text, x + TextOffset.X, y + TextOffset.Y);
+            TextCommands.Display(Text, TextStyle, x + TextOffset.X, y + TextOffset.Y);
         }
     }
 }

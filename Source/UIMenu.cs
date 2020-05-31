@@ -701,8 +701,7 @@ namespace RAGENativeUI
 
             TextStyle s = TitleStyle;
             s.Wrap = (x, x + menuWidth);
-            s.Apply();
-            TextCommands.Display(Title, titleX, titleY);
+            TextCommands.Display(Title, s, titleX, titleY);
         }
 
         /// <summary>
@@ -739,8 +738,7 @@ namespace RAGENativeUI
 
             TextStyle s = SubtitleStyle;
             s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
-            s.Apply();
-            TextCommands.Display(Subtitle, subTextX, subTextY);
+            TextCommands.Display(Subtitle, s, subTextX, subTextY);
         }
 
         private void DrawSubtitleCounter(float x, float y)
@@ -763,14 +761,12 @@ namespace RAGENativeUI
             TextStyle s = CounterStyle;
             s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
 
-            s.Apply();
-            float counterWidth = TextCommands.GetWidth(counterText);
+            float counterWidth = TextCommands.GetWidth(counterText, s);
 
             float counterX = x + menuWidth - 0.00390625f - counterWidth;
             float counterY = y + 0.00416664f;
 
-            s.Apply();
-            TextCommands.Display(counterText, counterX, counterY);
+            TextCommands.Display(counterText, s, counterX, counterY);
         }
 
         /// <summary>
@@ -896,8 +892,7 @@ namespace RAGENativeUI
                 TextStyle s = DescriptionStyle;
                 s.Wrap = (textX, textXEnd);
 
-                s.Apply();
-                int lineCount = TextCommands.GetLineCount(description, textX, y + 0.00277776f);
+                int lineCount = TextCommands.GetLineCount(description, s, textX, y + 0.00277776f);
 
                 Color separatorBarColor = Color.Black;
                 DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
@@ -910,8 +905,7 @@ namespace RAGENativeUI
                            descHeight,
                            backColor);
 
-                s.Apply();
-                TextCommands.Display(description, textX, y + 0.00277776f);
+                TextCommands.Display(description, s, textX, y + 0.00277776f);
 
                 y += descHeight;
             }

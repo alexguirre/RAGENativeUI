@@ -196,9 +196,8 @@
             }
             wrap.End -= 0.03f * WrapEndMultiplier;
             s.Wrap = wrap;
-            
-            s.Apply();
-            TextCommands.Display(Label, x + LabelOffset.X, y + LabelOffset.Y);
+
+            TextCommands.Display(Label, s, x + LabelOffset.X, y + LabelOffset.Y);
         }
 
         private static float WrapEndMultiplier
