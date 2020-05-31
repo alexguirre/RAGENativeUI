@@ -25,6 +25,7 @@
             if (thisThreadTls == IntPtr.Zero)
             {
                 thisThreadTls = WinFunctions.GetTlsPointer(WinFunctions.GetCurrentThreadId());
+                thisThreadSavedValues = new long[Offsets.Length];
             }
         }
 
@@ -60,7 +61,7 @@
         private static IntPtr mainThreadTls;
         [ThreadStatic] private static int thisThreadRefCount;
         [ThreadStatic] private static IntPtr thisThreadTls;
-        [ThreadStatic] private static readonly long[] thisThreadSavedValues = new long[Offsets.Length];
+        [ThreadStatic] private static long[] thisThreadSavedValues;
 
         private static unsafe class WinFunctions
         {
