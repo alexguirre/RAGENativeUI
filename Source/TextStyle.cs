@@ -153,14 +153,35 @@
         /// </summary>
         public readonly void Apply()
         {
-            ref var s = ref Internals.CTextStyle.ScriptStyle;
-            s.Font = (int)Font;
-            s.Color = Color.ToArgb();
-            s.Scale = Scale;
-            s.Justification = (byte)Justification;
-            s.Wrap = Wrap;
-            s.Outline = Outline;
-            s.DropShadow = DropShadow;
+            if (Internals.CTextStyle.ScriptStyleAvailable)
+            {
+                ref var s = ref Internals.CTextStyle.ScriptStyle;
+                s.Font = (int)Font;
+                s.Color = Color.ToArgb();
+                s.Scale = Scale;
+                s.Justification = (byte)Justification;
+                s.Wrap = Wrap;
+                s.Outline = Outline;
+                s.DropShadow = DropShadow;
+            }
+            else
+            {
+                N.SetTextFont((int)Font);
+                N.SetTextColour(Color.R, Color.G, Color.B, Color.A);
+                N.SetTextScale(0.0f, Scale);
+                N.SetTextJustification((int)Justification);
+                N.SetTextWrap(Wrap.Start, Wrap.End);
+
+                if (Outline)
+                {
+                    N.SetTextOutline();
+                }
+
+                if (DropShadow)
+                {
+                    N.SetTextDropShadow();
+                }
+            }
         }
 
         /// <summary>
@@ -242,17 +263,24 @@
         {
             get
             {
-                ref var s = ref Internals.CTextStyle.ScriptStyle;
-                return new TextStyle(
-                    (TextFont)s.Font,
-                    Color.FromArgb(s.Color),
-                    s.Scale,
-                    (TextJustification)s.Justification,
-                    s.Wrap.Start,
-                    s.Wrap.End,
-                    s.DropShadow,
-                    s.Outline
-                    );
+                if (Internals.CTextStyle.ScriptStyleAvailable)
+                {
+                    ref var s = ref Internals.CTextStyle.ScriptStyle;
+                    return new TextStyle(
+                        (TextFont)s.Font,
+                        Color.FromArgb(s.Color),
+                        s.Scale,
+                        (TextJustification)s.Justification,
+                        s.Wrap.Start,
+                        s.Wrap.End,
+                        s.DropShadow,
+                        s.Outline
+                        );
+                }
+                else
+                {
+                    return Default;
+                }
             }
             set => value.Apply();
         }

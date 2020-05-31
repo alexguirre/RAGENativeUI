@@ -284,11 +284,7 @@
                 float optTextX = x + width - 0.00390625f - optTextWidth - badgeOffset;
                 float optTextY = y + 0.00277776f;
 
-                SetTextCommandOptions(false);
-                if (!ScrollingEnabled)
-                {
-                    Internals.CTextStyle.ScriptStyle.Color = DisabledForeColor.ToArgb();
-                }
+                SetTextCommandOptions(false, !ScrollingEnabled);
                 TextCommands.Display(selectedOption, optTextX, optTextY);
             }
         }

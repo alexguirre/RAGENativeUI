@@ -88,7 +88,7 @@
 
         private static int GetInstructionalButtonsRows()
         {
-            if (CBusySpinner.Available)
+            if (CBusySpinner.Available && CScaleformMgr.Available)
             {
                 foreach (int sf in CBusySpinner.InstructionalButtons)
                 {

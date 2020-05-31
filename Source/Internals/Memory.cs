@@ -24,16 +24,30 @@
 
         static Memory()
         {
-            // TODO: check if patterns are found and provide fallbacks in case they are not found
             const string GetActualResolutionPattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
             Screen_GetActualHeight = Game.FindPattern(GetActualResolutionPattern);
-            Screen_GetActualWidth = Game.FindPattern(GetActualResolutionPattern, Screen_GetActualHeight + 1);
+            if (Screen_GetActualHeight != IntPtr.Zero)
+            {
+                Screen_GetActualWidth = Game.FindPattern(GetActualResolutionPattern, Screen_GetActualHeight + 1);
+            }
 
             CTextStyle_ScriptStyle = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8A C3 E8 ?? ?? ?? ?? 83 25");
-            CTextStyle_ScriptStyle += *(int*)(CTextStyle_ScriptStyle + 3) + 7;
+            if (CTextStyle_ScriptStyle != IntPtr.Zero)
+            {
+                CTextStyle_ScriptStyle += *(int*)(CTextStyle_ScriptStyle + 3) + 7;
+            }
 
-            CScaleformMgr_IsMovieRendering = Game.FindPattern("65 48 8B 04 25 ?? ?? ?? ?? 8B F9 48 8B 04 D0 B9 ?? ?? ?? ?? 8B 14 01") - 0x10;
-            CScaleformMgr_GetRawMovieView = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 3B D8 7D 78") - 0x10;
+            CScaleformMgr_IsMovieRendering = Game.FindPattern("65 48 8B 04 25 ?? ?? ?? ?? 8B F9 48 8B 04 D0 B9 ?? ?? ?? ?? 8B 14 01");
+            if (CScaleformMgr_IsMovieRendering != IntPtr.Zero)
+            {
+                CScaleformMgr_IsMovieRendering -= 0x10;
+            }
+
+            CScaleformMgr_GetRawMovieView = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 3B D8 7D 78");
+            if (CScaleformMgr_GetRawMovieView != IntPtr.Zero)
+            {
+                CScaleformMgr_GetRawMovieView -= 0x10;
+            }
 
             CBusySpinner_InstructionalButtons = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 33 DB 8B F8 85 C0");
             if (CBusySpinner_InstructionalButtons != IntPtr.Zero)
@@ -125,6 +139,8 @@
 
     internal static class Screen
     {
+        private static readonly bool Available = Memory.Screen_GetActualWidth != IntPtr.Zero && Memory.Screen_GetActualHeight != IntPtr.Zero;
+
         /// <summary>
         /// Gets the resolution of the main screen, the one containing the UI in case multiple screens are used.
         /// </summary>
@@ -132,9 +148,16 @@
         {
             get
             {
-                using var tls = UsingTls.Scope();
+                if (Available)
+                {
+                    using var tls = UsingTls.Scope();
 
-                return new SizeF(InvokeRetFloat(Memory.Screen_GetActualWidth), InvokeRetFloat(Memory.Screen_GetActualHeight));
+                    return new SizeF(InvokeRetFloat(Memory.Screen_GetActualWidth), InvokeRetFloat(Memory.Screen_GetActualHeight));
+                }
+                else
+                {
+                    return Game.Resolution; // not the same since this the resolution of all screens combined, but good enough as a fallback
+                }
             }
         }
     }
@@ -155,6 +178,8 @@
 
 
         public static ref CTextStyle ScriptStyle => ref AsRef<CTextStyle>(Memory.CTextStyle_ScriptStyle);
+
+        public static readonly bool ScriptStyleAvailable = Memory.CTextStyle_ScriptStyle != IntPtr.Zero;
     }
 
     internal static class CScaleformMgr
@@ -172,6 +197,8 @@
             UsingTls.Set(0xB4, v);
             return b;
         }
+
+        public static readonly bool Available = Memory.CScaleformMgr_GetRawMovieView != IntPtr.Zero && Memory.CScaleformMgr_IsMovieRendering != IntPtr.Zero;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 0x18)]

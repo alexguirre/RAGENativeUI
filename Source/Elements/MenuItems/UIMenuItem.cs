@@ -216,17 +216,12 @@ namespace RAGENativeUI.Elements
             right = rightBadgeOffset;
         }
 
-        internal void SetTextCommandOptions(bool left = true)
+        internal void SetTextCommandOptions(bool left = true, bool disabledColor = false)
         {
-            if (left)
-            {
-                TextStyle.Apply();
-            }
-            else
-            {
-                RightLabelStyle.Apply();
-            }
-            Internals.CTextStyle.ScriptStyle.Color = CurrentForeColor.ToArgb();
+            TextStyle s = left ? TextStyle : RightLabelStyle;
+            s.Color = disabledColor ? DisabledForeColor : CurrentForeColor;
+
+            s.Apply();
         }
 
         private void DrawBadge(BadgeInfo badge, bool left, float itemX, float itemY, float itemW, float itemH, out float offsetX)
