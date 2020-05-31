@@ -103,6 +103,7 @@
     <Compile Include="DisplayItemsCollection.cs" />
     <Compile Include="HudColor.cs" />
     <Compile Include="Internals\atArray.cs" />
+    <Compile Include="Internals\DebugCommands.cs" />
     <Compile Include="Internals\Memory.cs" />
     <Compile Include="Internals\ModuleInitializer.cs" />
     <Compile Include="Internals\UsingTls.cs" />

@@ -45,4 +45,15 @@
         calli   unmanaged cdecl void*(int32)
         ret
     }
+    
+    .method public hidebysig static void* InvokeRetPointer(native int fnPtr, void* arg1, uint32 arg1) cil managed aggressiveinlining
+    {
+        .maxstack 3
+
+        ldarg.1
+        ldarg.2
+        ldarg.0
+        calli   unmanaged cdecl void*(void*, uint32)
+        ret
+    }
 }

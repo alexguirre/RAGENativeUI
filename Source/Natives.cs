@@ -137,6 +137,8 @@
         /// If true, in multiple-screens setups, limits the range of GameControl.CursorX to only the main screen.
         /// </summary>
         public static void x5B73C77D9EB66E24(bool value) => Natives.x5B73C77D9EB66E24(value);
+
+        public static int GetNumberOfReferencesOfScript(uint nameHash) => Natives.x2C83A9DA6BFFC4F9<int>(nameHash);
     }
 }
 
