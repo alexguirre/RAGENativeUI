@@ -18,10 +18,13 @@ namespace RAGENativeUI.Internals
         public static ref float TimerBarsTotalHeight => ref data->TimerBarsTotalHeight;
         public static ref int TimerBarsNumInstructionalButtonsRows => ref data->TimerBarsNumInstructionalButtonsRows;
         public static ref bool TimerBarsIngamehudScriptExecuting => ref data->TimerBarsIngamehudScriptExecuting;
+        public static long* MemoryAddresses => data->MemoryAddresses;
+        public static int* MemoryInts => data->MemoryInts;
 
         static Shared()
         {
             Game.LogTrivialDebug($"[RAGENativeUI::Shared] Init from '{System.AppDomain.CurrentDomain.FriendlyName}'");
+            Game.LogTrivialDebug($"[RAGENativeUI::Shared] > sizeof(SharedData) = {sizeof(SharedData)}");
 
             mappedFile = MemoryMappedFile.CreateOrOpen(MappedFileName, sizeof(SharedData));
             mappedFileAccessor = mappedFile.CreateViewAccessor(0, sizeof(SharedData));
@@ -29,7 +32,6 @@ namespace RAGENativeUI.Internals
             byte* ptr = null;
             mappedFileAccessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
             data = (SharedData*)ptr;
-            *data = default;
         }
 
         private static void Shutdown()
@@ -58,6 +60,8 @@ namespace RAGENativeUI.Internals
             public float TimerBarsTotalHeight;
             public int TimerBarsNumInstructionalButtonsRows;
             public bool TimerBarsIngamehudScriptExecuting;
+            public fixed long MemoryAddresses[7];
+            public fixed int MemoryInts[3];
         }
     }
 }

@@ -25,51 +25,91 @@
         static Memory()
         {
             const string GetActualResolutionPattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
-            Screen_GetActualHeight = Game.FindPattern(GetActualResolutionPattern);
+
+            Screen_GetActualHeight = FindAddress(0, () => Game.FindPattern(GetActualResolutionPattern));
             if (Screen_GetActualHeight != IntPtr.Zero)
             {
-                Screen_GetActualWidth = Game.FindPattern(GetActualResolutionPattern, Screen_GetActualHeight + 1);
+                Screen_GetActualWidth = FindAddress(1, () => Game.FindPattern(GetActualResolutionPattern, Screen_GetActualHeight + 1));
             }
 
-            CTextStyle_ScriptStyle = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8A C3 E8 ?? ?? ?? ?? 83 25");
-            if (CTextStyle_ScriptStyle != IntPtr.Zero)
+            CTextStyle_ScriptStyle = FindAddress(2, () =>
             {
-                CTextStyle_ScriptStyle += *(int*)(CTextStyle_ScriptStyle + 3) + 7;
+                IntPtr addr = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8A C3 E8 ?? ?? ?? ?? 83 25");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
+
+            CScaleformMgr_IsMovieRendering = FindAddress(3, () =>
+            {
+                IntPtr addr = Game.FindPattern("65 48 8B 04 25 ?? ?? ?? ?? 8B F9 48 8B 04 D0 B9 ?? ?? ?? ?? 8B 14 01");
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x10;
+                }
+                return addr;
+            });
+
+            CScaleformMgr_GetRawMovieView = FindAddress(4, () =>
+            {
+                IntPtr addr = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 3B D8 7D 78");
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x10;
+                }
+                return addr;
+            });
+
+            CBusySpinner_InstructionalButtons = FindAddress(5, () =>
+            {
+                IntPtr addr = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 33 DB 8B F8 85 C0");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7 - 8;
+                }
+                return addr;
+            });
+
+            IntPtr scrProgramRegistryAddr = FindAddress(6, () => Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D0 44 8B F0 89 85"));
+            if (scrProgramRegistryAddr != IntPtr.Zero)
+            {
+                scrProgramRegistry_sm_Instance = scrProgramRegistryAddr + * (int*)(scrProgramRegistryAddr + 3) + 7;
+                scrProgramRegistry_Find = scrProgramRegistryAddr + *(int*)(scrProgramRegistryAddr + 19) + 23;
             }
 
-            CScaleformMgr_IsMovieRendering = Game.FindPattern("65 48 8B 04 25 ?? ?? ?? ?? 8B F9 48 8B 04 D0 B9 ?? ?? ?? ?? 8B 14 01");
-            if (CScaleformMgr_IsMovieRendering != IntPtr.Zero)
+            if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
-                CScaleformMgr_IsMovieRendering -= 0x10;
+                IntPtr ingamehudAddr = FindPatternInScript("ingamehud",
+                                                        new byte[] { 0x6F, 0x39, 0x08, 0x5F, 0x00, 0x00, 0x00, 0x5E, 0x00, 0x00, 0x00, 0x47 },
+                                                        new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF });
+                if (ingamehudAddr != IntPtr.Zero)
+                {
+                    Shared.MemoryInts[0] = TimerbarsPrevTotalHeightGlobalId = *(int*)(ingamehudAddr + 4) & 0xFFFFFF;
+                    Shared.MemoryInts[1] = TimershudSharedGlobalId = *(int*)(ingamehudAddr + 8) & 0xFFFFFF;
+                    Shared.MemoryInts[2] = TimershudSharedTimerbarsTotalHeightOffset = *(short*)(ingamehudAddr + 12);
+                }
             }
-
-            CScaleformMgr_GetRawMovieView = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 3B D8 7D 78");
-            if (CScaleformMgr_GetRawMovieView != IntPtr.Zero)
+            else
             {
-                CScaleformMgr_GetRawMovieView -= 0x10;
+                TimerbarsPrevTotalHeightGlobalId = Shared.MemoryInts[0];
+                TimershudSharedGlobalId = Shared.MemoryInts[1];
+                TimershudSharedTimerbarsTotalHeightOffset = Shared.MemoryInts[2];
             }
+        }
 
-            CBusySpinner_InstructionalButtons = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 33 DB 8B F8 85 C0");
-            if (CBusySpinner_InstructionalButtons != IntPtr.Zero)
+        private static IntPtr FindAddress(int key, Func<IntPtr> find)
+        {
+            if(Shared.MemoryAddresses[key] == 0)
             {
-                CBusySpinner_InstructionalButtons = CBusySpinner_InstructionalButtons + *(int*)(CBusySpinner_InstructionalButtons + 3) + 7 - 8;
+                IntPtr addr = find();
+                Shared.MemoryAddresses[key] = addr.ToInt64();
+                return addr;
             }
-
-            scrProgramRegistry_sm_Instance = scrProgramRegistry_Find = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D0 44 8B F0 89 85");
-            if (scrProgramRegistry_sm_Instance != IntPtr.Zero)
+            else
             {
-                scrProgramRegistry_sm_Instance += *(int*)(scrProgramRegistry_sm_Instance + 3) + 7;
-                scrProgramRegistry_Find += *(int*)(scrProgramRegistry_Find + 19) + 23;
-            }
-
-            IntPtr addr = FindPatternInScript("ingamehud",
-                                           new byte[] { 0x6F, 0x39, 0x08, 0x5F, 0x00, 0x00, 0x00, 0x5E, 0x00, 0x00, 0x00, 0x47 },
-                                           new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF });
-            if (addr != IntPtr.Zero)
-            {
-                TimerbarsPrevTotalHeightGlobalId = *(int*)(addr + 4) & 0xFFFFFF;
-                TimershudSharedGlobalId = *(int*)(addr + 8) & 0xFFFFFF;
-                TimershudSharedTimerbarsTotalHeightOffset = *(short*)(addr + 12);
+                return (IntPtr)Shared.MemoryAddresses[key];
             }
         }
 

@@ -10,10 +10,25 @@
             Game.LogTrivialDebug("[RAGENativeUI] Initializing...");
 
             Game.LogTrivialDebug($"[RAGENativeUI] > {nameof(Shared)}");
+#if DEBUG
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
             RuntimeHelpers.RunClassConstructor(typeof(Shared).TypeHandle);
+#if DEBUG
+            sw.Stop();
+            Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
+#endif
+
 
             Game.LogTrivialDebug($"[RAGENativeUI] > {nameof(Memory)}");
+#if DEBUG
+            sw.Restart();
+#endif
             RuntimeHelpers.RunClassConstructor(typeof(Memory).TypeHandle);
+#if DEBUG
+            sw.Stop();
+            Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
+#endif
 
 #if DEBUG
             Game.LogTrivialDebug("[RAGENativeUI] > Registering debug commands");
