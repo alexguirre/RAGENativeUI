@@ -118,7 +118,8 @@ namespace RAGENativeUI
         private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
         private bool visible;
-        private bool justOpened = true;
+        private bool justOpenedProcessInput = true;
+        private bool justOpenedProcessMouse = true;
 
         private int hoveredUpDown = 0; // 0 = none, 1 = up, 2 = down
 
@@ -183,8 +184,7 @@ namespace RAGENativeUI
         /// </summary>
         public event MenuChangeEvent OnMenuChange;
 
-        //Keys
-        private readonly Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>> _keyDictionary = new Dictionary<Common.MenuControls, Tuple<List<Keys>, List<Tuple<GameControl, int>>>>();
+        private readonly Controls controls = new Controls();
 
         //Tree structure
         public Dictionary<UIMenuItem, UIMenu> Children { get; private set; }
@@ -244,8 +244,8 @@ namespace RAGENativeUI
             Children = new Dictionary<UIMenuItem, UIMenu>();
 
             InstructionalButtons = new InstructionalButtons();
-            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneSelect, "Select"));
-            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendAccept, "Select"));
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendCancel, "Back"));
 
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
             Title = title;
@@ -258,18 +258,21 @@ namespace RAGENativeUI
 
             CurrentSelection = -1;
 
-            SetKey(Common.MenuControls.Up, GameControl.CellphoneUp);
-            SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp);
+            SetKey(Common.MenuControls.Up, GameControl.FrontendUp, 2);
+            SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp, 2);
 
-            SetKey(Common.MenuControls.Down, GameControl.CellphoneDown);
-            SetKey(Common.MenuControls.Down, GameControl.CursorScrollDown);
+            SetKey(Common.MenuControls.Down, GameControl.FrontendDown, 2);
+            SetKey(Common.MenuControls.Down, GameControl.CursorScrollDown, 2);
 
-            SetKey(Common.MenuControls.Left, GameControl.CellphoneLeft);
-            SetKey(Common.MenuControls.Right, GameControl.CellphoneRight);
-            SetKey(Common.MenuControls.Select, GameControl.FrontendAccept);
+            SetKey(Common.MenuControls.Left, GameControl.FrontendLeft, 2);
 
-            SetKey(Common.MenuControls.Back, GameControl.CellphoneCancel);
-            SetKey(Common.MenuControls.Back, GameControl.FrontendPause);
+            SetKey(Common.MenuControls.Right, GameControl.FrontendRight, 2);
+
+            SetKey(Common.MenuControls.Select, GameControl.FrontendAccept, 2);
+
+            SetKey(Common.MenuControls.Back, GameControl.FrontendCancel, 2);
+            SetKey(Common.MenuControls.Back, GameControl.FrontendPause, 2);
+            SetKey(Common.MenuControls.Back, GameControl.CursorCancel, 2);
         }
 
         /// <summary>
@@ -645,8 +648,6 @@ namespace RAGENativeUI
             DrawDescription(x, ref y);
 
             EndDraw();
-
-            justOpened = false;
         }
 
         /// <summary>
@@ -1216,7 +1217,7 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void ProcessMouse()
         {
-            if (!Visible || justOpened || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
+            if (!Visible || justOpenedProcessMouse || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
                 N.EnableControlAction(0, GameControl.LookUpDown);
                 N.EnableControlAction(0, GameControl.LookLeftRight);
@@ -1228,6 +1229,8 @@ namespace RAGENativeUI
                     hoveredItem = -1;
                 }
                 hoveredUpDown = 0;
+
+                justOpenedProcessMouse = false;
                 return;
             }
 
@@ -1239,25 +1242,23 @@ namespace RAGENativeUI
             float mouseX = N.GetControlNormal(2, GameControl.CursorX);
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
 
-            bool cursorPressedRepeat = IsCursorAcceptBeingPressed();
-
             // send mouse input event to selected item
             UIMenuItem selectedItem = MenuItems[CurrentSelection];
 
             UIMenuItem.MouseInput input = UIMenuItem.MouseInput.Released;
-            if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
+            if (controls.CursorAccept.IsJustPressed)
             {
                 input = UIMenuItem.MouseInput.JustPressed;
             }
-            else if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
+            else if (controls.CursorAccept.IsJustReleased)
             {
                 input = UIMenuItem.MouseInput.JustReleased;
             }
-            else if (selectedItem.ScrollerProxy == null ? cursorPressedRepeat : IsCursorAcceptBeingPressed(selectedItem.ScrollerProxy))
+            else if (controls.CursorAccept.IsJustPressedRepeated)
             {
                 input = UIMenuItem.MouseInput.PressedRepeat;
             }
-            else if (Game.IsControlPressed(2, GameControl.CursorAccept))
+            else if (controls.CursorAccept.IsPressed)
             {
                 input = UIMenuItem.MouseInput.Pressed;
             }
@@ -1282,7 +1283,7 @@ namespace RAGENativeUI
                 {
                     UpdateHoveredUpDown(mouseX, mouseY);
 
-                    if (hoveredUpDown != 0 && cursorPressedRepeat)
+                    if (hoveredUpDown != 0 && controls.CursorAccept.IsJustPressedRepeated)
                     {
                         if (hoveredUpDown == 1)
                         {
@@ -1388,24 +1389,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Set a key to control a menu. Can be multiple keys for each control.
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="keyToSet"></param>
-        public void SetKey(Common.MenuControls control, Keys keyToSet)
-        {
-            if (_keyDictionary.ContainsKey(control))
-                _keyDictionary[control].Item1.Add(keyToSet);
-            else
-            {
-                _keyDictionary.Add(control,
-                    new Tuple<List<Keys>, List<Tuple<GameControl, int>>>(new List<Keys>(), new List<Tuple<GameControl, int>>()));
-                _keyDictionary[control].Item1.Add(keyToSet);
-            }
-        }
-
-        /// <summary>
-        /// Set a Rage.GameControl to control a menu. Can be multiple controls. This applies it to all indexes.
+        /// Set a <see cref="GameControl"/> to control a menu. Can be multiple controls. This applies it to all indexes.
         /// </summary>
         /// <param name="control"></param>
         /// <param name="gtaControl"></param>
@@ -1417,222 +1401,84 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Set a Rage.GameControl to control a menu only on a specific index.
+        /// Set a <see cref="GameControl"/> to control a menu only on a specific index.
         /// </summary>
         /// <param name="control"></param>
         /// <param name="gtaControl"></param>
         /// <param name="controlIndex"></param>
-        public void SetKey(Common.MenuControls control, GameControl gtaControl, int controlIndex)
-        {
-            if (_keyDictionary.ContainsKey(control))
-                _keyDictionary[control].Item2.Add(new Tuple<GameControl, int>(gtaControl, controlIndex));
-            else
-            {
-                _keyDictionary.Add(control,
-                    new Tuple<List<Keys>, List<Tuple<GameControl, int>>>(new List<Keys>(), new List<Tuple<GameControl, int>>()));
-                _keyDictionary[control].Item2.Add(new Tuple<GameControl, int>(gtaControl, controlIndex));
-            }
-
-        }
+        public void SetKey(Common.MenuControls control, GameControl gtaControl, int controlIndex) => controls[control].NativeControls.Add((controlIndex, gtaControl));
 
         /// <summary>
-        /// Remove all controls on a control.
+        /// Sets how fast the input events of <paramref name="control"/> are triggered.
         /// </summary>
         /// <param name="control"></param>
-        public void ResetKey(Common.MenuControls control)
+        /// <param name="acceleration">An array containing the control acceleration. If <c>null</c>, the default acceleration is used.</param>
+        /// <exception cref="ArgumentException"><paramref name="acceleration"/> length is 0.</exception>
+        public void SetKeyAcceleration(Common.MenuControls control, AccelerationStep[] acceleration)
         {
-            _keyDictionary[control].Item1.Clear();
-            _keyDictionary[control].Item2.Clear();
-        }
-
-        /// <summary>
-        /// Check whether a menucontrol has been pressed.
-        /// </summary>
-        /// <param name="control">Control to check for.</param>
-        /// <param name="key">Key if you're using keys.</param>
-        /// <returns></returns>
-        public bool HasControlJustBeenPressed(Common.MenuControls control, Keys key = Keys.None)
-        {
-            List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-            List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
-
-            if (key != Keys.None)
+            AccelerationStep[] newAcceleration = DefaultRepeatAcceleration;
+            if (acceleration != null)
             {
-                if (tmpKeys.Any(Game.IsKeyDown))
+                if (acceleration.Length == 0)
                 {
-                    return true;
+                    throw new ArgumentException("The array lenght must be greater than 0", nameof(acceleration));
                 }
+
+                newAcceleration = new AccelerationStep[acceleration.Length];
+                Array.Copy(acceleration, newAcceleration, acceleration.Length);
+                Array.Sort(newAcceleration, (a, b) => a.HeldTime.CompareTo(b.HeldTime));
             }
-            if (tmpControls.Any(tuple => Game.IsControlJustPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustPressed(tuple.Item2, tuple.Item1)))
-                return true;
-            return false;
+
+            controls[control].RepeatAcceleration = newAcceleration;
         }
 
         /// <summary>
-        /// Check whether a menucontrol has been released.
-        /// </summary>
-        /// <param name="control">Control to check for.</param>
-        /// <param name="key">Key if you're using keys.</param>
-        /// <returns></returns>
-        public bool HasControlJustBeenReleaseed(Common.MenuControls control, Keys key = Keys.None)
-        {
-            List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-            List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
-
-            if (key != Keys.None)
-            {
-                if (tmpKeys.Any(Game.IsKeyDown))
-                {
-                    return true;
-                }
-            }
-            if (tmpControls.Any(tuple => Game.IsControlJustReleased(tuple.Item2, tuple.Item1) || Common.IsDisabledControlJustReleased(tuple.Item2, tuple.Item1)))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public uint HoldTimeBeforeScroll = 200;
-
-        private uint _holdTime;
-        /// <summary>
-        /// Checks whether a menucontrol is being pressed and if selected item is UIListItem, uses UIListItem variables
+        /// Remove all controls on a control and sets its default acceleration.
         /// </summary>
         /// <param name="control"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public bool IsControlBeingPressed(Common.MenuControls control, Keys key = Keys.None)
-        {
-            if (control != Common.MenuControls.Left && control != Common.MenuControls.Right)
-            {
-                if (HasControlJustBeenReleaseed(control, key)) _holdTime = 0;
-                if (Game.GameTime <= _holdTime)
-                {
-                    return false;
-                }
-                List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-                List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
-                if (key != Keys.None)
-                {
-                    if (tmpKeys.Any(Game.IsKeyDownRightNow))
-                    {
-                        _holdTime = Game.GameTime + HoldTimeBeforeScroll;
-                        return true;
-                    }
-                }
-                if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
-                {
-                    _holdTime = Game.GameTime + HoldTimeBeforeScroll;
-                    return true;
-                }
-                return false;
-            }
-            else if (MenuItems.Count > 0 && MenuItems[CurrentSelection].ScrollerProxy != null && (MenuItems[CurrentSelection].Enabled || MenuItems[CurrentSelection].ScrollerProxy.GetScrollingEnabledWhenDisabled()))
-            {
-                UIMenuItem it = MenuItems[CurrentSelection];
-                if (it.ScrollerProxy.GetScrollingEnabled())
-                {
-                    ref uint itHoldTime = ref it.ScrollerProxy.GetHoldTime();
-                    if (HasControlJustBeenReleaseed(control, key)) { itHoldTime = 0; }
-                    if (Game.GameTime <= itHoldTime)
-                    {
-                        return false;
-                    }
-                    List<Keys> tmpKeys = new List<Keys>(_keyDictionary[control].Item1);
-                    List<Tuple<GameControl, int>> tmpControls = new List<Tuple<GameControl, int>>(_keyDictionary[control].Item2);
-                    if (key != Keys.None)
-                    {
-                        if (tmpKeys.Any(Game.IsKeyDownRightNow))
-                        {
-                            itHoldTime = Game.GameTime + it.ScrollerProxy.GetHoldTimeBeforeScroll();
-                            return true;
-                        }
-                    }
-                    if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1) || Common.IsDisabledControlPressed(tuple.Item2, tuple.Item1)))
-                    {
-                        itHoldTime = Game.GameTime + it.ScrollerProxy.GetHoldTimeBeforeScroll();
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        }
-
-        private bool IsCursorAcceptBeingPressed() => IsCursorAcceptBeingPressed(ref _holdTime, HoldTimeBeforeScroll);
-        private bool IsCursorAcceptBeingPressed(UIMenuScrollerProxy s) => IsCursorAcceptBeingPressed(ref s.GetHoldTime(), s.GetHoldTimeBeforeScroll());
-
-        private bool IsCursorAcceptBeingPressed(ref uint holdTime, uint holdTimeBeforeScroll)
-        {
-            if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
-            {
-                holdTime = 0;
-            }
-
-            if (Game.GameTime <= holdTime)
-            {
-                return false;
-            }
-
-            if (Game.IsControlPressed(2, GameControl.CursorAccept))
-            {
-                holdTime = Game.GameTime + holdTimeBeforeScroll;
-                return true;
-            }
-
-            return false;
-        }
+        public void ResetKey(Common.MenuControls control) => controls[control].Reset();
 
         /// <summary>
         /// Process control-stroke. Call this in the Game.FrameRender event or in a loop.
         /// </summary>
-        public virtual void ProcessControl(Keys key = Keys.None)
+        public virtual void ProcessControl()
         {
-            if (!Visible || justOpened)
+            if (!Visible)
             {
                 return;
             }
 
-            if (HasControlJustBeenReleaseed(Common.MenuControls.Back, key))
+            controls.Update();
+
+            if (justOpenedProcessInput)
+            {
+                justOpenedProcessInput = false;
+                return;
+            }
+
+            if (controls[Common.MenuControls.Back].IsJustReleased)
             {
                 GoBack();
             }
-
-            if (IsControlBeingPressed(Common.MenuControls.Up, key))
-            {
-                GoUp();
-                InstructionalButtons.Update();
-            }
-            else if (IsControlBeingPressed(Common.MenuControls.Down, key))
-            {
-                GoDown();
-                InstructionalButtons.Update();
-            }
-            else if (IsControlBeingPressed(Common.MenuControls.Left, key))
-            {
-                GoLeft();
-            }
-            else if (IsControlBeingPressed(Common.MenuControls.Right, key))
-            {
-                GoRight();
-            }
-            else if (HasControlJustBeenPressed(Common.MenuControls.Select, key))
+            else if (controls[Common.MenuControls.Select].IsJustReleased)
             {
                 SelectItem();
             }
-
-        }
-
-        /// <summary>
-        /// Process keystroke. Call this in the Game.FrameRender event or in a loop.
-        /// </summary>
-        public void ProcessKey(Keys key)
-        {
-            if ((from object menuControl in Enum.GetValues(typeof(Common.MenuControls)) select new List<Keys>(_keyDictionary[(Common.MenuControls)menuControl].Item1)).Any(tmpKeys => tmpKeys.Any(k => k == key)))
+            else if (controls[Common.MenuControls.Up].IsJustPressedRepeated)
             {
-                ProcessControl(key);
+                GoUp();
+            }
+            else if (controls[Common.MenuControls.Down].IsJustPressedRepeated)
+            {
+                GoDown();
+            }
+            else if (controls[Common.MenuControls.Left].IsJustPressedRepeated)
+            {
+                GoLeft();
+            }
+            else if (controls[Common.MenuControls.Right].IsJustPressedRepeated)
+            {
+                GoRight();
             }
         }
 
@@ -1744,7 +1590,8 @@ namespace RAGENativeUI
                 if (visible != value)
                 {
                     visible = value;
-                    justOpened = value;
+                    justOpenedProcessInput = value;
+                    justOpenedProcessMouse = value;
                     if (visible)
                     {
                         MenuOpenEv();
@@ -1934,5 +1781,143 @@ namespace RAGENativeUI
         {
             OnMenuChange?.Invoke(this, newmenu, forward);
         }
+
+        private sealed class Controls
+        {
+            private static readonly int NumControls = Enum.GetValues(typeof(Common.MenuControls)).Length;
+
+            private readonly Control[] controls = new Control[NumControls];
+
+            public Control this[Common.MenuControls control] => controls[(int)control];
+            public Control CursorAccept { get; } = new Control();
+
+            public Controls()
+            {
+                for (int i = 0; i < controls.Length; i++)
+                {
+                    controls[i] = new Control();
+                }
+
+                CursorAccept.NativeControls.Add((2, GameControl.CursorAccept));
+            }
+
+            public void Update()
+            {
+                uint gameTime = Game.GameTime;
+                for (int i = 0; i < controls.Length; i++)
+                {
+                    controls[i].Update(gameTime);
+                }
+                CursorAccept.Update(gameTime);
+            }
+        }
+
+        private sealed class Control
+        {
+            private uint pressedStartTime;
+            private uint nextRepeatTime;
+            private int repeatAccelerationIndex;
+
+            public IList<(int Index, GameControl Control)> NativeControls { get; } = new List<(int, GameControl)>();
+            public AccelerationStep[] RepeatAcceleration { get; set; } = DefaultRepeatAcceleration;
+            public bool IsJustReleased { get; private set; }
+            public bool IsJustPressed { get; private set; }
+            public bool IsReleased { get; private set; }
+            public bool IsPressed { get; private set; }
+            public bool IsJustPressedRepeated { get; private set; }
+
+            public void Reset()
+            {
+                NativeControls.Clear();
+                RepeatAcceleration = DefaultRepeatAcceleration;
+            }
+
+            public void Update(uint gameTime)
+            {
+                foreach (var c in NativeControls)
+                {
+                    N.SetInputExclusive(c.Index, c.Control);
+                }
+
+                bool prevPressed = IsPressed;
+                IsJustPressed = NativeControls.Any(c => Game.IsControlJustPressed(c.Index, c.Control));
+                IsPressed = IsJustPressed || NativeControls.Any(c => Game.IsControlPressed(c.Index, c.Control));
+                IsReleased = !IsPressed;
+                IsJustPressedRepeated = IsJustPressed;
+
+                if (IsPressed)
+                {
+                    if (IsJustPressed || (prevPressed != IsPressed))
+                    {
+                        pressedStartTime = gameTime;
+                        repeatAccelerationIndex = 0;
+                        nextRepeatTime = GetNextRepeatTime(gameTime);
+                    }
+
+                    if (gameTime >= nextRepeatTime)
+                    {
+                        IsJustPressedRepeated = true;
+                        nextRepeatTime = GetNextRepeatTime(gameTime);
+                    }
+                }
+                else
+                {
+                    IsJustReleased = NativeControls.Any(c => Game.IsControlJustReleased(c.Index, c.Control));
+                }
+            }
+
+            private uint GetHeldTime(uint gameTime)
+            {
+                return gameTime - pressedStartTime;
+            }
+
+            private uint GetNextRepeatTime(uint gameTime)
+            {
+                uint heldTime = GetHeldTime(gameTime);
+                AccelerationStep[] acc = RepeatAcceleration;
+                while (repeatAccelerationIndex < acc.Length - 1 &&
+                       acc[repeatAccelerationIndex + 1].HeldTime < heldTime)
+                {
+                    repeatAccelerationIndex++;
+                }
+
+                return gameTime + acc[repeatAccelerationIndex].TimeBetweenRepeats;
+            }
+        }
+
+        /// <summary>
+        /// Defines the how fast the input events of a control are triggered.
+        /// </summary>
+        public readonly struct AccelerationStep
+        {
+            /// <summary>
+            /// Gets the number of milliseconds the control must be pressed before using the <see cref="TimeBetweenRepeats"/> of this step.
+            /// </summary>
+            public uint HeldTime { get; }
+            
+            /// <summary>
+            /// Gets the number of milliseconds between input events of the control.
+            /// </summary>
+            public uint TimeBetweenRepeats { get; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="AccelerationStep"/> structure.
+            /// </summary>
+            /// <param name="heldTime">Determines the number of milliseconds the control must be pressed before using the <see cref="TimeBetweenRepeats"/> of this step.</param>
+            /// <param name="timeBetweenRepeats">Determines the number of milliseconds between input events of the control.</param>
+            public AccelerationStep(uint heldTime, uint timeBetweenRepeats)
+            {
+                HeldTime = heldTime;
+                TimeBetweenRepeats = timeBetweenRepeats;
+            }
+        }
+
+        private static readonly AccelerationStep[] DefaultRepeatAcceleration = new AccelerationStep[]
+        {
+            new AccelerationStep(0, 300),
+            new AccelerationStep(1000, 180),
+            new AccelerationStep(2000, 110),
+            new AccelerationStep(6000, 50),
+        };
     }
 }

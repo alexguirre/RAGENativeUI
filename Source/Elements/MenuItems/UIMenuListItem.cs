@@ -19,8 +19,6 @@ namespace RAGENativeUI.Elements
         [Obsolete("UIMenuListItem._items will be removed soon, use UIMenuListItem.Collection instead.")]
         protected List<dynamic> _items;
 
-        internal uint _holdTime; //used instead of UIMenu's _holdtime to eliminate issues with menu switches instantly switching back
-
         /// <summary>
         /// Gets or sets the items from this <see cref="UIMenuListItem"/> instance.
         /// </summary>
@@ -66,10 +64,6 @@ namespace RAGENativeUI.Elements
         /// Enables or disables scrolling through the list by holding the key
         /// </summary>
         public bool ScrollingEnabled = true;
-         /// <summary>
-        /// Hold time in milliseconds before scrolling to the next item on list when holding the key [Default = 200]
-        /// </summary>
-        public uint HoldTimeBeforeScroll = 200;
 
         /// <summary>
         /// Triggered when the list is changed.
@@ -134,7 +128,6 @@ namespace RAGENativeUI.Elements
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
                 ResText.Alignment.Left) {TextAlignment = ResText.Alignment.Right};
             Index = index;
-            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
@@ -153,7 +146,6 @@ namespace RAGENativeUI.Elements
             _itemText = new ResText("", new Point(290, y + 104), 0.35f, Color.White, Common.EFont.ChaletLondon,
                 ResText.Alignment.Left)
             { TextAlignment = ResText.Alignment.Right };
-            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
@@ -335,7 +327,7 @@ namespace RAGENativeUI.Elements
                     }
                 }
 
-                if (!inSelectBounds && ScrollingEnabled && Enabled && input == MouseInput.PressedRepeat)
+                if (!inSelectBounds && ScrollingEnabled && Enabled && (input == MouseInput.JustPressed || input == MouseInput.PressedRepeat))
                 {
                     UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
 

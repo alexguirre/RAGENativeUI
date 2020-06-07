@@ -88,24 +88,6 @@ namespace RAGENativeUI
             }
         }
 
-
-        /// <summary>
-        /// Processes all of your visible menus' keys.
-        /// </summary>
-        /// <param name="key"></param>
-        public void ProcessKey(Keys key)
-        {
-            for (int i = 0; i < InternalList.Count; i++)
-            {
-                UIMenu menu = InternalList[i];
-                if (menu.Visible)
-                {
-                    menu.ProcessKey(key);
-                }
-            }
-        }
-
-
         /// <summary>
         /// Processes all of your visible menus' mouses.
         /// </summary>
@@ -120,7 +102,6 @@ namespace RAGENativeUI
                 }
             }
         }
-        
 
         /// <summary>
         /// Draws all visible menus.
@@ -153,22 +134,12 @@ namespace RAGENativeUI
         /// </summary>
         public void ProcessMenus()
         {
-            ICollection<Keys> pressedKeys = Common.GetPressedKeys();
-            bool checkPressedKeys = pressedKeys != null;
-
             for (int i = 0; i < InternalList.Count; i++)
             {
                 UIMenu menu = InternalList[i];
                 if (menu.Visible)
                 {
                     menu.ProcessControl();
-                    if (checkPressedKeys)
-                    {
-                        foreach (Keys key in pressedKeys)
-                        {
-                            menu.ProcessKey(key);
-                        }
-                    }
                     menu.ProcessMouse();
                 }
             }
@@ -254,11 +225,6 @@ namespace RAGENativeUI
         public void SetKey(Common.MenuControls menuControl, GameControl control, int controllerIndex)
         {
             InternalList.ForEach(m => m.SetKey(menuControl, control, controllerIndex));
-        }
-
-        public void SetKey(Common.MenuControls menuControl, Keys control)
-        {
-            InternalList.ForEach(m => m.SetKey(menuControl, control));
         }
 
         public void ResetKey(Common.MenuControls menuControl)

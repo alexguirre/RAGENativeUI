@@ -58,11 +58,6 @@ namespace RAGENativeUI.Elements
         }
 
         /// <summary>
-        /// Set if this item is <see cref="UIMenuScrollerItem"/> or <see cref="UIMenuListItem"/>. Temporal property until <see cref="UIMenuListItem"/> is removed.
-        /// </summary>
-        internal UIMenuScrollerProxy ScrollerProxy { get; set; }
-
-        /// <summary>
         /// Basic menu button.
         /// </summary>
         /// <param name="text">Button label.</param>

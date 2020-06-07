@@ -124,6 +124,7 @@
         public static void EnableAllControlActions(int index) => Natives.EnableAllControlActions(index);
         public static void DisableAllControlActions(int index) => Natives.DisableAllControlActions(index);
         public static float GetControlNormal(int index, GameControl control) => Natives.GetControlNormal<float>(index, (int)control);
+        public static void SetInputExclusive(int index, GameControl control) => Natives.xEDE476E5EE29EDB1(index, (int)control);
 
         public static void SetMouseCursorActiveThisFrame() => Natives.xAAE7CE1D63167423();
         public static void SetMouseCursorSprite(int spriteId) => Natives.x8DB8CFFD58B62552(spriteId);

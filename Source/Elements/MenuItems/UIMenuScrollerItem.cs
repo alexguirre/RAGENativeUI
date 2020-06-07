@@ -132,10 +132,6 @@
         /// </summary>
         public UIMenuScrollerSliderBar SliderBar { get; set; }
 
-        // temp until menu controls are refactored
-        internal uint HoldTime;
-        internal uint HoldTimeBeforeScroll = 200;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UIMenuScrollerItem"/> class.
         /// </summary>
@@ -143,7 +139,6 @@
         /// <param name="description">The <see cref="UIMenuScrollerItem"/>'s description.</param>
         public UIMenuScrollerItem(string text, string description) : base(text, description)
         {
-            ScrollerProxy = new UIMenuScrollerProxy(this);
         }
 
         /// <summary>
@@ -391,7 +386,7 @@
                 }
             }
 
-            if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && input == MouseInput.PressedRepeat)
+            if (!inSelectBounds && ScrollingEnabled && (Enabled || ScrollingEnabledWhenDisabled) && (input == MouseInput.JustPressed || input == MouseInput.PressedRepeat))
             {
                 UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float rightW, out _);
 
@@ -618,36 +613,6 @@
         {
             return Percentage == other.Percentage &&
                    Color == other.Color;
-        }
-    }
-
-    /// <summary>
-    /// Helper class to allow to share code between <see cref="UIMenuScrollerItem"/> and <see cref="UIMenuListItem"/>.
-    /// </summary>
-    internal sealed class UIMenuScrollerProxy
-    {
-        // TODO: need to refactor UIMenu input handling to be able to fully remove this class
-        public delegate ref uint GetHoldTimeDelegate();
-
-        public Func<bool> GetScrollingEnabled { get; }
-        public Func<bool> GetScrollingEnabledWhenDisabled { get; }
-        public Func<uint> GetHoldTimeBeforeScroll { get; }
-        public GetHoldTimeDelegate GetHoldTime { get; }
-
-        public UIMenuScrollerProxy(UIMenuScrollerItem item)
-        {
-            GetScrollingEnabled = () => item.ScrollingEnabled;
-            GetScrollingEnabledWhenDisabled = () => item.ScrollingEnabledWhenDisabled;
-            GetHoldTimeBeforeScroll = () => item.HoldTimeBeforeScroll;
-            GetHoldTime = () => ref item.HoldTime;
-        }
-
-        public UIMenuScrollerProxy(UIMenuListItem item)
-        {
-            GetScrollingEnabled = () => item.ScrollingEnabled;
-            GetScrollingEnabledWhenDisabled = () => false;
-            GetHoldTimeBeforeScroll = () => item.HoldTimeBeforeScroll;
-            GetHoldTime = () => ref item._holdTime;
         }
     }
 }
