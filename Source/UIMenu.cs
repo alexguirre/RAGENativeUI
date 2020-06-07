@@ -93,6 +93,11 @@ namespace RAGENativeUI
                                                                     justification: TextJustification.Left,
                                                                     scale: 0.35f);
 
+        /// <summary>
+        /// Represets the default value of <see cref="DescriptionSeparatorColor"/>
+        /// </summary>
+        public static readonly Color DefaultDescriptionSeparatorColor = Color.Black;
+
         internal const string CommonTxd = "commonmenu";
         internal const string BackgroundTextureName = "gradient_bgd";
         internal const string UpAndDownTextureName = "shop_arrows_upanddown";
@@ -895,9 +900,6 @@ namespace RAGENativeUI
 
                 int lineCount = TextCommands.GetLineCount(description, s, textX, y + 0.00277776f);
 
-                Color separatorBarColor = Color.Black;
-                DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, separatorBarColor);
-
                 float descHeight = (s.CharacterHeight * lineCount) + (0.00138888f * 13f) + (0.00138888f * 5f * (lineCount - 1));
                 DrawSprite(CommonTxd, BackgroundTextureName,
                            x + menuWidth * 0.5f,
@@ -905,6 +907,8 @@ namespace RAGENativeUI
                            menuWidth,
                            descHeight,
                            backColor);
+
+                DrawRect(x + menuWidth * 0.5f, y - 0.00277776f * 0.5f, menuWidth, 0.00277776f, DescriptionSeparatorColor);
 
                 TextCommands.Display(description, s, textX, y + 0.00277776f);
 
@@ -1731,6 +1735,12 @@ namespace RAGENativeUI
         /// </summary>
         /// <seealso cref="DefaultDescriptionStyle"/>
         public TextStyle DescriptionStyle { get; set; } = DefaultDescriptionStyle;
+
+        /// <summary>
+        /// Gets or sets the color of the description separator bar.
+        /// </summary>
+        /// <seealso cref="DefaultDescriptionSeparatorColor"/>
+        public Color DescriptionSeparatorColor { get; set; } = DefaultDescriptionSeparatorColor;
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
