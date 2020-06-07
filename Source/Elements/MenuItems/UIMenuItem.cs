@@ -151,13 +151,18 @@ namespace RAGENativeUI.Elements
             float rectX = x + rectWidth * 0.5f;
             float rectY = y + rectHeight * 0.5f;
 
-            Color barColor = Selected ? HighlightedBackColor : BackColor;
-            if (barColor != Color.Empty)
+            if (Selected)
             {
                 UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.NavBarTextureName,
                                   rectX, rectY,
                                   rectWidth, rectHeight,
-                                  barColor);
+                                  HighlightedBackColor);
+            }
+            else if (BackColor != Color.Empty)
+            {
+                UIMenu.DrawRect(rectX, rectY,
+                                rectWidth, rectHeight,
+                                BackColor);
             }
 
             if (Hovered && !Selected)
