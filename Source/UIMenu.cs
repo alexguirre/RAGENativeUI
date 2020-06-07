@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using Rage;
 using Rage.Native;
 using RAGENativeUI.Elements;
+using RAGENativeUI.Internals;
 
 namespace RAGENativeUI
 {
@@ -109,6 +110,17 @@ namespace RAGENativeUI
         internal const string CheckboxTickSelectedTextureName = "shop_box_tickb";
         internal const string CheckboxBlankSelectedTextureName = "shop_box_blankb";
         internal const string DefaultBannerTextureName = "interaction_bgd";
+
+        /// <summary>
+        /// Keeps track of the number of visible menus from the executing plugin.
+        /// Used to keep <see cref="Shared.NumberOfVisibleMenus"/> consistent when unloading the plugin with some menu open.
+        /// </summary>
+        internal static uint NumberOfVisibleMenus { get; set; }
+
+        /// <summary>
+        /// Gets whether any menu is currently visible. Includes menus from the executing plugin and from other plugins.
+        /// </summary>
+        public static bool IsAnyMenuVisible => Shared.NumberOfVisibleMenus > 0;
 
         private Sprite _bannerSprite;
         private ResRectangle _bannerRectangle;
@@ -297,13 +309,15 @@ namespace RAGENativeUI
         {
             get
             {
+                UpdateScreenVars();
+
                 float adjusted = Width;
-                if (AspectRatio < 1.77777f) // less than 16:9
+                if (Shared.AspectRatio < 1.77777f) // less than 16:9
                 {
-                    adjusted *= 16f / 9f / AspectRatio;
+                    adjusted *= 16f / 9f / Shared.AspectRatio;
                 }
 
-                adjusted += WidthOffset / ActualScreenResolution.Width;
+                adjusted += WidthOffset / Shared.ActualScreenResolution.Width;
 
                 return adjusted;
             }
@@ -539,7 +553,7 @@ namespace RAGENativeUI
             }
 
             Size res = Game.Resolution;
-            SizeF primaryRes = ActualScreenResolution;
+            SizeF primaryRes = Shared.ActualScreenResolution;
             PointF middle = new PointF(res.Width * 0.5f, res.Height * 0.5f);
 
             g.DrawTexture(_customBanner,
@@ -557,13 +571,8 @@ namespace RAGENativeUI
         private float customBannerX, customBannerY,
                       customBannerW, customBannerH;
 
-        private static SizeF? actualScreenResolution;
-        private static float? aspectRatio;
-
-        private static SizeF ActualScreenResolution => actualScreenResolution ??= Internals.Screen.ActualResolution;
-        private static float AspectRatio => aspectRatio ??= N.GetAspectRatio(false);
-        private static bool IsWideScreen => AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
-        private static bool IsUltraWideScreen => AspectRatio > 3.5f; // > 32:9
+        private static bool IsWideScreen => Shared.AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
+        private static bool IsUltraWideScreen => Shared.AspectRatio > 3.5f; // > 32:9
 
         internal static void DrawSprite(string txd, string texName, float x, float y, float w, float h, Color c)
             => N.DrawSprite(txd, texName, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
@@ -592,6 +601,17 @@ namespace RAGENativeUI
             if (ScaleWithSafezone)
             {
                 N.ResetScriptGfxAlign();
+            }
+        }
+
+        private void UpdateScreenVars()
+        {
+            uint frame = Game.FrameCount;
+            if (frame != Shared.ScreenLastFrame)
+            {
+                Shared.ScreenLastFrame = frame;
+                Shared.ActualScreenResolution = Internals.Screen.ActualResolution;
+                Shared.AspectRatio = N.GetAspectRatio(false);
             }
         }
 
@@ -629,16 +649,14 @@ namespace RAGENativeUI
             if (InstructionalButtonsEnabled)
                 InstructionalButtons.Draw();
 
-            // set to null to recalculate them the next time they are accessed, in case their values changed
-            actualScreenResolution = null;
-            aspectRatio = null;
+            UpdateScreenVars();
 
             menuWidth = AdjustedWidth; // save to a field to avoid calculating AdjustedWidth multiple times each tick
 
             BeginDraw();
 
-            float x = 0.05f + Offset.X / ActualScreenResolution.Width;
-            float y = 0.05f + Offset.Y / ActualScreenResolution.Height;
+            float x = 0.05f + Offset.X / Shared.ActualScreenResolution.Width;
+            float y = 0.05f + Offset.Y / Shared.ActualScreenResolution.Height;
 
             DrawBanner(x, ref y);
 
@@ -936,7 +954,7 @@ namespace RAGENativeUI
         private void GetBannerDrawSize(string txd, string texName, out float width, out float height)
         {
             N.GetActiveScreenResolution(out int screenWidth, out int screenHeight);
-            float aspectRatio = AspectRatio;
+            float aspectRatio = Shared.AspectRatio;
             if (IsUltraWideScreen)
             {
                 screenWidth = (int)Math.Round(screenHeight * aspectRatio);
@@ -1598,7 +1616,14 @@ namespace RAGENativeUI
                     justOpenedProcessMouse = value;
                     if (visible)
                     {
+                        Shared.NumberOfVisibleMenus++;
+                        NumberOfVisibleMenus++;
                         MenuOpenEv();
+                    }
+                    else
+                    {
+                        Shared.NumberOfVisibleMenus--;
+                        NumberOfVisibleMenus--;
                     }
 
                     InstructionalButtons.Update();
@@ -1612,7 +1637,8 @@ namespace RAGENativeUI
                         return;
                     }
 
-                    Cursor.Position = new Point(Screen.PrimaryScreen.Bounds.Width / 2, Screen.PrimaryScreen.Bounds.Height / 2);
+                    Cursor.Position = new Point(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / 2,
+                                                System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2);
                     N.SetMouseCursorSprite(1);
                 }
             }
