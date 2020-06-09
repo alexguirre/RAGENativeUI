@@ -175,6 +175,53 @@
 
         public static ref float TimerBarsTotalHeight => ref AsRef<float>(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedTimerbarsTotalHeightOffset * 8);
         public static ref float TimerBarsPrevTotalHeight => ref AsRef<float>(Game.GetScriptGlobalVariableAddress(Memory.TimerbarsPrevTotalHeightGlobalId));
+
+#if false // not needed for now
+        public static readonly bool MenuIdsAvailable = true;
+        public static ref ScriptUIntArray MenuIds => ref AsRef<ScriptUIntArray>(Game.GetScriptGlobalVariableAddress(22350) + 5721 * 8);
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct ScriptUIntArray
+        {
+            [FieldOffset(0x0)] public int Size;
+
+            public ref uint this[int index] => ref *(uint*)((byte*)AsPointer(ref this) + 8 + (8 * (Size - index - 1)));
+
+            public Enumerator GetEnumerator() => new Enumerator(ref this);
+
+            public ref struct Enumerator
+            {
+                private readonly ScriptUIntArray* array;
+                private int index;
+
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                public Enumerator(ref ScriptUIntArray arr)
+                {
+                    array = (ScriptUIntArray*)AsPointer(ref arr);
+                    index = -1;
+                }
+
+                [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                public bool MoveNext()
+                {
+                    int newIndex = index + 1;
+                    if (newIndex < array->Size)
+                    {
+                        index = newIndex;
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                public ref uint Current
+                {
+                    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                    get => ref (*array)[index];
+                }
+            }
+        }
+#endif
     }
 
     internal static class Screen
