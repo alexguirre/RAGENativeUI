@@ -122,6 +122,28 @@ namespace RAGENativeUI
         /// </summary>
         public static bool IsAnyMenuVisible => Shared.NumberOfVisibleMenus > 0;
 
+#if false
+        // This can be used to detect if any native script menu is initialized such that the script can draw it.
+        // Initially added to add support for native script menus to IsAnyMenuVisible but this method is not accurate enough,
+        // some scripts may only set the menuId in the array while the menu is visible, others may keep it when not drawing it (i.e. gunshop, golf).
+        // So for now disabled
+        public static bool IsAnyGameMenuReady
+        {
+            get
+            {
+                foreach (uint menuId in ScriptGlobals.MenuIds)
+                {
+                    if (menuId != 0)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+#endif
+
         private Sprite _bannerSprite;
         private ResRectangle _bannerRectangle;
 
