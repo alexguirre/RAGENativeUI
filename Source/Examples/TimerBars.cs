@@ -5,6 +5,7 @@
     using System.Windows.Forms;
     using System.Linq;
     using Rage;
+    using Rage.Native;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
 
@@ -85,6 +86,11 @@
 
             // text
             {
+                var textItem = NewTextEditingItem(nameof(TextTimerBar.Text), "Select to edit the timer bar text.",
+                                               () => text.Text,
+                                               s => text.Text = s);
+
+                textMenu.AddItem(textItem);
                 AddCommonMenuItems(textMenu, text);
             }
 
@@ -111,26 +117,84 @@
                     progressBar.BackgroundColor = background.SelectedItem.GetColor();
                 };
 
+                var markers = new UIMenuCheckboxItem("Markers", false);
+                markers.CheckboxEvent += (m, v) =>
+                {
+                    if (v)
+                    {
+                        progressBar.Markers.Add(new TimerBarMarker(0.25f));
+                        progressBar.Markers.Add(new TimerBarMarker(0.50f));
+                        progressBar.Markers.Add(new TimerBarMarker(0.75f));
+                    }
+                    else
+                    {
+                        progressBar.Markers.Clear();
+                    }
+                };
+
                 progressBarMenu.AddItem(percentage);
                 progressBarMenu.AddItem(foreground);
                 progressBarMenu.AddItem(background);
+                progressBarMenu.AddItem(markers);
                 AddCommonMenuItems(progressBarMenu, progressBar);
             }
 
             // checkpoints
             {
+                var state = new UIMenuListScrollerItem<TimerBarCheckpointState>("State", "", (TimerBarCheckpointState[])Enum.GetValues(typeof(TimerBarCheckpointState)));
+                state.IndexChanged += (s, o, n) =>
+                {
+                    foreach (var cp in checkpoints.Checkpoints)
+                    {
+                        cp.State = state.SelectedItem;
+                    }
+                };
+
+                var crossedOut = new UIMenuCheckboxItem("Crossed Out", false);
+                crossedOut.CheckboxEvent += (s, v) =>
+                {
+                    foreach (var cp in checkpoints.Checkpoints)
+                    {
+                        cp.IsCrossedOut = v;
+                    }
+                };
+
+                var color = NewColorsItem("Color", "");
+                color.IndexChanged += (s, o, n) =>
+                {
+                    Color c = color.SelectedItem.GetColor();
+                    foreach (var cp in checkpoints.Checkpoints)
+                    {
+                        cp.Color = c;
+                    }
+                };
+
                 var num = new UIMenuNumericScrollerItem<int>("Number of Checkpoints", "", 0, 16, 1);
                 num.Value = checkpoints.Checkpoints.Count;
                 num.IndexChanged += (s, o, n) =>
                 {
-                    checkpoints.Checkpoints.Clear();
-                    for (int i = 0; i < num.Value; i++)
+                    if (checkpoints.Checkpoints.Count > num.Value)
                     {
-                        checkpoints.Checkpoints.Add(new TimerBarCheckpoint());
+                        checkpoints.Checkpoints = checkpoints.Checkpoints.Take(num.Value).ToList();
+                    }
+                    else
+                    {
+                        Color c = color.SelectedItem.GetColor();
+                        for (int i = checkpoints.Checkpoints.Count; i < num.Value; i++)
+                        {
+                            var cp = new TimerBarCheckpoint();
+                            cp.Color = c;
+                            cp.IsCrossedOut = crossedOut.Checked;
+                            cp.State = state.SelectedItem;
+                            checkpoints.Checkpoints.Add(cp);
+                        }
                     }
                 };
 
                 checkpointsMenu.AddItem(num);
+                checkpointsMenu.AddItem(state);
+                checkpointsMenu.AddItem(crossedOut);
+                checkpointsMenu.AddItem(color);
                 AddCommonMenuItems(checkpointsMenu, checkpoints);
             }
 
@@ -191,7 +255,11 @@
 
         private void AddCommonMenuItems(UIMenu menu, TimerBarBase tb)
         {
-            var accent = NewColorsItem(nameof(BarTimerBar.Accent), "Select to toggle the timer bar accent.");
+            var label = NewTextEditingItem(nameof(TimerBarBase.Label), "Select to edit the timer bar label.",
+                                           () => tb.Label,
+                                           s => tb.Label = s);
+
+            var accent = NewColorsItem(nameof(TimerBarBase.Accent), "Select to toggle the timer bar accent.");
             accent.ScrollingEnabled = false;
             accent.Activated += (m, s) =>
             {
@@ -203,7 +271,7 @@
                 tb.Accent = accent.SelectedItem.GetColor();
             };
 
-            var highlight = NewColorsItem(nameof(BarTimerBar.Highlight), "Select to toggle the timer bar highlight.");
+            var highlight = NewColorsItem(nameof(TimerBarBase.Highlight), "Select to toggle the timer bar highlight.");
             highlight.ScrollingEnabled = false;
             highlight.Activated += (m, s) =>
             {
@@ -215,8 +283,37 @@
                 tb.Highlight = highlight.SelectedItem.GetColor();
             };
 
+            menu.AddItem(label);
             menu.AddItem(accent);
             menu.AddItem(highlight);
+        }
+
+        private UIMenuItem NewTextEditingItem(string text, string description, Func<string> getter, Action<string> setter)
+        {
+            var item = new UIMenuItem(text, description);
+            item.RightLabel = getter();
+            item.Activated += (m, s) =>
+            {
+                Plugin.Pool.Draw();
+
+                NativeFunction.Natives.DISPLAY_ONSCREEN_KEYBOARD(6, "", "", getter(), "", "", "", 16);
+                int state;
+                while ((state = NativeFunction.Natives.UPDATE_ONSCREEN_KEYBOARD<int>()) == 0)
+                {
+                    GameFiber.Yield();
+                    // keep drawing the menus but don't process inputs, since we are blocking the menu processing fiber
+                    Plugin.Pool.Draw();
+                }
+
+                if (state == 1)
+                {
+                    string str = NativeFunction.Natives.GET_ONSCREEN_KEYBOARD_RESULT<string>();
+                    setter(str);
+                    item.RightLabel = str;
+                }
+            };
+
+            return item;
         }
 
         private UIMenuListScrollerItem<HudColor> NewColorsItem(string text, string description)
