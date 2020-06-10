@@ -108,7 +108,7 @@
             }
         }
 
-        private static int GetInstructionalButtonsRows()
+        private static unsafe int GetInstructionalButtonsRows()
         {
             if (CBusySpinner.Available && CScaleformMgr.Available)
             {
@@ -116,9 +116,15 @@
                 {
                     if (CScaleformMgr.IsMovieRendering(sf))
                     {
-                        ref GFxMovieView v = ref CScaleformMgr.GetRawMovieView(sf);
-
-                        return (int)v.GetVariableDouble("TIMELINE.backgrounds.length");
+                        CScaleformMgr.LockMovie(sf);
+                        GFxMovieView* v = CScaleformMgr.GetRawMovieView(sf);
+                        if (v != null)
+                        {
+                            int val = (int)v->GetVariableDouble("TIMELINE.backgrounds.length");
+                            CScaleformMgr.UnlockMovie(sf);
+                            return val;
+                        }
+                        CScaleformMgr.UnlockMovie(sf);
                     }
                 }
             }

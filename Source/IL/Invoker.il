@@ -56,4 +56,14 @@
         calli   unmanaged cdecl void*(void*, uint32)
         ret
     }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, int32 arg1) cil managed aggressiveinlining
+    {
+        .maxstack 2
+
+        ldarg.1
+        ldarg.0
+        calli   unmanaged cdecl void(int32)
+        ret
+    }
 }

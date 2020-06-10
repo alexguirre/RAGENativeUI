@@ -79,7 +79,7 @@
             public SizeF ActualScreenResolution;
             public float AspectRatio;
             public uint NumberOfVisibleMenus;
-            public fixed long MemoryAddresses[7];
+            public fixed long MemoryAddresses[9];
             public fixed int MemoryInts[3];
         }
     }

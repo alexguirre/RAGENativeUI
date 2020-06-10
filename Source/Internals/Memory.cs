@@ -15,6 +15,8 @@
         public static readonly IntPtr CTextStyle_ScriptStyle;
         public static readonly IntPtr CScaleformMgr_IsMovieRendering;
         public static readonly IntPtr CScaleformMgr_GetRawMovieView;
+        public static readonly IntPtr CScaleformMgr_LockMovie;
+        public static readonly IntPtr CScaleformMgr_UnlockMovie;
         public static readonly IntPtr CBusySpinner_InstructionalButtons;
         public static readonly IntPtr scrProgramRegistry_sm_Instance;
         public static readonly IntPtr scrProgramRegistry_Find;
@@ -26,13 +28,13 @@
         {
             const string GetActualResolutionPattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
 
-            Screen_GetActualHeight = FindAddress(0, () => Game.FindPattern(GetActualResolutionPattern));
+            Screen_GetActualHeight = FindAddress(() => Game.FindPattern(GetActualResolutionPattern));
             if (Screen_GetActualHeight != IntPtr.Zero)
             {
-                Screen_GetActualWidth = FindAddress(1, () => Game.FindPattern(GetActualResolutionPattern, Screen_GetActualHeight + 1));
+                Screen_GetActualWidth = FindAddress(() => Game.FindPattern(GetActualResolutionPattern, Screen_GetActualHeight + 1));
             }
 
-            CTextStyle_ScriptStyle = FindAddress(2, () =>
+            CTextStyle_ScriptStyle = FindAddress(() =>
             {
                 IntPtr addr = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8A C3 E8 ?? ?? ?? ?? 83 25");
                 if (addr != IntPtr.Zero)
@@ -42,7 +44,7 @@
                 return addr;
             });
 
-            CScaleformMgr_IsMovieRendering = FindAddress(3, () =>
+            CScaleformMgr_IsMovieRendering = FindAddress(() =>
             {
                 IntPtr addr = Game.FindPattern("65 48 8B 04 25 ?? ?? ?? ?? 8B F9 48 8B 04 D0 B9 ?? ?? ?? ?? 8B 14 01");
                 if (addr != IntPtr.Zero)
@@ -52,7 +54,7 @@
                 return addr;
             });
 
-            CScaleformMgr_GetRawMovieView = FindAddress(4, () =>
+            CScaleformMgr_GetRawMovieView = FindAddress(() =>
             {
                 IntPtr addr = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 3B D8 7D 78");
                 if (addr != IntPtr.Zero)
@@ -62,7 +64,27 @@
                 return addr;
             });
 
-            CBusySpinner_InstructionalButtons = FindAddress(5, () =>
+            CScaleformMgr_LockMovie = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 48 8D 77 40 48 8D 9F ?? ?? ?? ?? BD");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 1) + 5;
+                }
+                return addr;
+            });
+
+            CScaleformMgr_UnlockMovie = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 8B 4D D8 8B C1 25");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 1) + 5;
+                }
+                return addr;
+            });
+
+            CBusySpinner_InstructionalButtons = FindAddress(() =>
             {
                 IntPtr addr = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 33 DB 8B F8 85 C0");
                 if (addr != IntPtr.Zero)
@@ -72,7 +94,7 @@
                 return addr;
             });
 
-            IntPtr scrProgramRegistryAddr = FindAddress(6, () => Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D0 44 8B F0 89 85"));
+            IntPtr scrProgramRegistryAddr = FindAddress(() => Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D0 44 8B F0 89 85"));
             if (scrProgramRegistryAddr != IntPtr.Zero)
             {
                 scrProgramRegistry_sm_Instance = scrProgramRegistryAddr + * (int*)(scrProgramRegistryAddr + 3) + 7;
@@ -99,9 +121,11 @@
             }
         }
 
-        private static IntPtr FindAddress(int key, Func<IntPtr> find)
+        private static int findAddressKey = 0;
+        private static IntPtr FindAddress(Func<IntPtr> find)
         {
-            if(Shared.MemoryAddresses[key] == 0)
+            int key = findAddressKey++;
+            if (Shared.MemoryAddresses[key] == 0)
             {
                 IntPtr addr = find();
                 Shared.MemoryAddresses[key] = addr.ToInt64();
@@ -271,7 +295,7 @@
 
     internal static class CScaleformMgr
     {
-        public static unsafe ref GFxMovieView GetRawMovieView(int index) => ref AsRef<GFxMovieView>(InvokeRetPointer(Memory.CScaleformMgr_GetRawMovieView, index));
+        public static unsafe GFxMovieView* GetRawMovieView(int index) => (GFxMovieView*)InvokeRetPointer(Memory.CScaleformMgr_GetRawMovieView, index);
 
         public static bool IsMovieRendering(int index)
         {
@@ -285,7 +309,24 @@
             return b;
         }
 
-        public static readonly bool Available = Memory.CScaleformMgr_GetRawMovieView != IntPtr.Zero && Memory.CScaleformMgr_IsMovieRendering != IntPtr.Zero;
+        public static void LockMovie(int index)
+        {
+            long v = UsingTls.Get(0xB4);
+            UsingTls.Set(0xB4, 1);
+            Invoke(Memory.CScaleformMgr_LockMovie, index);
+            UsingTls.Set(0xB4, v);
+        }
+
+        public static void UnlockMovie(int index)
+        {
+            long v = UsingTls.Get(0xB4);
+            UsingTls.Set(0xB4, 1);
+            Invoke(Memory.CScaleformMgr_UnlockMovie, index);
+            UsingTls.Set(0xB4, v);
+        }
+
+        public static readonly bool Available = Memory.CScaleformMgr_GetRawMovieView != IntPtr.Zero && Memory.CScaleformMgr_IsMovieRendering != IntPtr.Zero &&
+                                                Memory.CScaleformMgr_LockMovie != IntPtr.Zero && Memory.CScaleformMgr_UnlockMovie != IntPtr.Zero;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 0x18)]
