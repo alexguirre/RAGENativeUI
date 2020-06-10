@@ -12,6 +12,7 @@
     public class BarTimerBar : TimerBarBase
     {
         private float percentage;
+        private IList<TimerBarMarker> markers;
 
         /// <summary>
         /// Gets or sets the progress percentage. It determines how filled the progress bar is and
@@ -33,9 +34,16 @@
         public Color ForegroundColor { get; set; }
 
         /// <summary>
-        /// Gets a list containing the <see cref="TimerBarMarker"/>s of the progress bar.
+        /// Gets or sets a list containing the <see cref="TimerBarMarker"/>s of the progress bar.
         /// </summary>
-        public IList<TimerBarMarker> Markers { get; }
+        /// <exception cref="ArgumentNullException">
+        /// <c>value</c> is null.
+        /// </exception>
+        public IList<TimerBarMarker> Markers
+        {
+            get => markers;
+            set => markers = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BarTimerBar"/> class.

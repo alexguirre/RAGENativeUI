@@ -10,12 +10,21 @@
     /// <seealso cref="TimerBarIcon"/>
     public class IconsTimerBar : TimerBarBase
     {
+        private IList<TimerBarIcon> icons;
+
         /// <summary>
-        /// Gets the list containing the <see cref="TimerBarIcon"/>s of the timer bar.
+        /// Gets or sets the list containing the <see cref="TimerBarIcon"/>s of the timer bar.
         /// The icons are shown from right to left: the icons at index 0 is the right-most one
         /// and the last icon in the list is the left-most one.
         /// </summary>
-        public IList<TimerBarIcon> Icons { get; }
+        /// <exception cref="ArgumentNullException">
+        /// <c>value</c> is null.
+        /// </exception>
+        public IList<TimerBarIcon> Icons
+        {
+            get => icons;
+            set => icons = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IconsTimerBar"/> class.

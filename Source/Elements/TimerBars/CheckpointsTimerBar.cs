@@ -18,12 +18,21 @@
     /// <see cref="TimerBarCheckpointState"/>
     public class CheckpointsTimerBar : TimerBarBase
     {
+        private IList<TimerBarCheckpoint> checkpoints;
+
         /// <summary>
-        /// Gets the list containing the <see cref="TimerBarCheckpoint"/>s of the timer bar.
+        /// Gets or sets the list containing the <see cref="TimerBarCheckpoint"/>s of the timer bar.
         /// The checkpoints are shown from right to left: the checkpoint at index 0 is the right-most circle
         /// and the last checkpoint in the list is the left-most circle.
         /// </summary>
-        public IList<TimerBarCheckpoint> Checkpoints { get; }
+        /// <exception cref="ArgumentNullException">
+        /// <c>value</c> is null.
+        /// </exception>
+        public IList<TimerBarCheckpoint> Checkpoints
+        {
+            get => checkpoints;
+            set => checkpoints = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckpointsTimerBar"/> class.
