@@ -14,20 +14,21 @@
 
         private static void Main()
         {
-            MainMenu = CreateMenu("SHOWCASE");
+            MainMenu = new UIMenu(MenuTitle, "SHOWCASE");
+            Pool.Add(MainMenu);
 
             {
                 UIMenuItem item = new UIMenuItem("Menu Items", "Showcases the available menu items");
 
                 MainMenu.AddItem(item);
-                MainMenu.BindMenuToItem(CreateMenuItemsShowcaseMenu(), item);
+                MainMenu.BindMenuToItem(new MenuItems(), item);
             }
 
             {
                 UIMenuItem item = new UIMenuItem("Timer Bars", "Showcases the available timer bars");
 
                 MainMenu.AddItem(item);
-                MainMenu.BindMenuToItem(CreateTimerBarsShowcaseMenu(), item);
+                MainMenu.BindMenuToItem(new TimerBars(), item);
             }
 
             while (true)
@@ -42,21 +43,5 @@
                 Pool.ProcessMenus();
             }
         }
-
-        private static UIMenu CreateMenu(string subtitle)
-        {
-            UIMenu m = new UIMenu(MenuTitle, subtitle);
-            Pool.Add(m);
-            return m;
-        }
-
-        private static UIMenu CreateMenuItemsShowcaseMenu()
-        {
-            UIMenu m = new UIMenu(MenuTitle, "MENU ITEMS");
-            Pool.Add(m);
-            return m;
-        }
-
-        private static UIMenu CreateTimerBarsShowcaseMenu() => new TimerBars();
     }
 }
