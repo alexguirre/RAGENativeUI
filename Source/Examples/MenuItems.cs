@@ -1,12 +1,16 @@
 ﻿namespace RNUIExamples
 {
+    using System;
     using System.Drawing;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
+    using Rage;
+
+    using static Util;
 
     internal class MenuItems : UIMenu
     {
-        public MenuItems() : base(Plugin.MenuTitle, "MENU ITEMS")
+        public MenuItems() : base(Plugin.MenuTitle, "MENUS")
         {
             Plugin.Pool.Add(this);
 
@@ -15,20 +19,136 @@
 
         private void CreateMenuItems()
         {
+            UIMenuItem visualOptionsBindItem = new UIMenuItem("Visual Options", $"Demonstrates the visual options of the ~b~{nameof(UIMenu)}~s~ class.");
             UIMenuItem checkboxBindItem = new UIMenuItem("Checkbox", $"Demonstrates the ~b~{nameof(UIMenuCheckboxItem)}~s~ class.");
             UIMenuItem scrollerBindItem = new UIMenuItem("Scroller", $"Demonstrates the ~b~{nameof(UIMenuListScrollerItem<int>)}~s~ and ~b~{nameof(UIMenuNumericScrollerItem<int>)}~s~ classes.");
-            
+
+            UIMenu visualOptionsMenu = new UIMenu(Title, Subtitle + ": VISUAL OPTIONS");
             UIMenu checkboxMenu = new UIMenu(Title, Subtitle + ": CHECKBOX");
             UIMenu scrollerMenu = new UIMenu(Title, Subtitle + ": SCROLLER");
 
+            Plugin.Pool.Add(visualOptionsMenu);
             Plugin.Pool.Add(checkboxMenu);
             Plugin.Pool.Add(scrollerMenu);
 
+            AddItem(visualOptionsBindItem);
             AddItem(checkboxBindItem);
             AddItem(scrollerBindItem);
 
+            BindMenuToItem(visualOptionsMenu, visualOptionsBindItem);
             BindMenuToItem(checkboxMenu, checkboxBindItem);
             BindMenuToItem(scrollerMenu, scrollerBindItem);
+
+            // visual options
+            {
+                Action<Action<UIMenu>> applyToEachMenu = f =>
+                {
+                    foreach (UIMenu m in Plugin.Pool)
+                    {
+                        f(m);
+                    }
+                };
+
+                var width = new UIMenuNumericScrollerItem<float>(nameof(Width), $"Modifies the ~b~{nameof(UIMenu)}.{nameof(Width)}~s~ property.", 0.0f, 1.0f, 0.001f);
+                width.Formatter = v => v.ToString("0.000");
+                width.Value = Width;
+                width.IndexChanged += (s, o, n) => applyToEachMenu(m => m.Width = width.Value);
+
+                var offsetX = new UIMenuNumericScrollerItem<int>("Offset X", $"Modifies the X-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1);
+                offsetX.Value = Offset.X;
+                offsetX.IndexChanged += (s, o, n) => applyToEachMenu(m => m.Offset = new Point(offsetX.Value, m.Offset.Y));
+
+                var offsetY = new UIMenuNumericScrollerItem<int>("Offset Y", $"Modifies the Y-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1);
+                offsetY.Value = Offset.Y;
+                offsetY.IndexChanged += (s, o, n) => applyToEachMenu(m => m.Offset = new Point(m.Offset.X, offsetY.Value));
+
+                const string BannerTypeText = "Banner Type (Current)", BannerTypeUnsetText = "Banner Type";
+                var bannerType = new UIMenuListScrollerItem<string>(BannerTypeText, "", new[] { "No Banner", "Sprite", "Color", "Custom Texture"});
+                int currBannerType = bannerType.Index = 1;
+                bannerType.IndexChanged += (s, o, n) => bannerType.Text = n == currBannerType ? BannerTypeText : BannerTypeUnsetText;
+                bannerType.Activated += (m, s) =>
+                {
+                    currBannerType = bannerType.Index;
+                    bannerType.Text = BannerTypeText;
+                    applyToEachMenu(currBannerType switch
+                    {
+                        0 => m => m.RemoveBanner(),
+                        1 => m => m.SetBannerType(new Sprite("commonmenu", "interaction_bgd", Point.Empty, Size.Empty)),
+                        2 => m => m.SetBannerType(new ResRectangle(Point.Empty, Size.Empty, HudColor.Red.GetColor())),
+                        3 => m => m.SetBannerType(Game.CreateTextureFromFile("cursor_32_2.png")),
+                        _ => throw new InvalidOperationException("Invalid banner type")
+                    });
+                };
+                
+                var title = NewTextEditingItem(nameof(Title), $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(Title)}~s~ property.",
+                                               () => Title,
+                                               s => applyToEachMenu(m => m.Title = s));
+
+                var titleColor = NewColorsItem("Title Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(TitleStyle)}~s~ property.");
+                titleColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = titleColor.SelectedItem.GetColor();
+                    applyToEachMenu(m => m.TitleStyle = m.TitleStyle.With(color: c));
+                };
+
+                var subtitleColor = NewColorsItem("Subtitle Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(SubtitleStyle)}~s~ property.");
+                subtitleColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = subtitleColor.SelectedItem.GetColor();
+                    applyToEachMenu(m => m.SubtitleStyle = m.SubtitleStyle.With(color: c));
+                };
+
+                var descriptionOverride = NewTextEditingItem("Description Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(DescriptionOverride)}~s~ property.",
+                                               () => DescriptionOverride ?? string.Empty,
+                                               s => applyToEachMenu(m => m.DescriptionOverride = s.Length == 0 ? null : s));
+
+                var descriptionColor = NewColorsItem("Description Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(DescriptionStyle)}~s~ property.");
+                descriptionColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = descriptionColor.SelectedItem.GetColor();
+                    applyToEachMenu(m => m.DescriptionStyle = m.DescriptionStyle.With(color: c));
+                };
+
+                var descriptionSeparatorColor = NewColorsItem("Description Separator", $"Modifies the ~b~{nameof(UIMenu)}.{nameof(DescriptionSeparatorColor)}~s~ property.");
+                descriptionSeparatorColor.SelectedItem = HudColor.Black;
+                descriptionSeparatorColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = descriptionSeparatorColor.SelectedItem.GetColor();
+                    applyToEachMenu(m => m.DescriptionSeparatorColor = c);
+                };
+
+                var counterOverride = NewTextEditingItem("Counter Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(CounterOverride)}~s~ property.",
+                                               () => CounterOverride ?? string.Empty,
+                                               s => applyToEachMenu(m => m.CounterOverride = s.Length == 0 ? null : s));
+
+                var counterColor = NewColorsItem("Counter Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(CounterStyle)}~s~ property.");
+                counterColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = counterColor.SelectedItem.GetColor();
+                    applyToEachMenu(m => m.CounterStyle = m.CounterStyle.With(color: c));
+                };
+
+                var scaleWithSafezone = new UIMenuCheckboxItem("Scale with Safe-Zone", ScaleWithSafezone, $"Modifies the ~b~{nameof(UIMenu)}.{nameof(ScaleWithSafezone)}~s~ property.");
+                scaleWithSafezone.Checked = ScaleWithSafezone;
+                scaleWithSafezone.CheckboxEvent += (s, v) =>
+                {
+                    applyToEachMenu(m => m.ScaleWithSafezone = v);
+                };
+
+                visualOptionsMenu.AddItem(width);
+                visualOptionsMenu.AddItem(offsetX);
+                visualOptionsMenu.AddItem(offsetY);
+                visualOptionsMenu.AddItem(bannerType);
+                visualOptionsMenu.AddItem(title);
+                visualOptionsMenu.AddItem(titleColor);
+                visualOptionsMenu.AddItem(subtitleColor);
+                visualOptionsMenu.AddItem(descriptionOverride);
+                visualOptionsMenu.AddItem(descriptionColor);
+                visualOptionsMenu.AddItem(descriptionSeparatorColor);
+                visualOptionsMenu.AddItem(counterOverride);
+                visualOptionsMenu.AddItem(counterColor);
+                visualOptionsMenu.AddItem(scaleWithSafezone);
+            }
 
             // checkbox
             {

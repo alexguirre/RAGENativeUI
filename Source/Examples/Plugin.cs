@@ -18,7 +18,7 @@
             Pool.Add(MainMenu);
 
             {
-                UIMenuItem item = new UIMenuItem("Menu Items", "Showcases the available menu items");
+                UIMenuItem item = new UIMenuItem("Menus", $"Showcases the ~b~{nameof(UIMenu)}~s~ class");
 
                 MainMenu.AddItem(item);
                 MainMenu.BindMenuToItem(new MenuItems(), item);
@@ -30,6 +30,8 @@
                 MainMenu.AddItem(item);
                 MainMenu.BindMenuToItem(new TimerBars(), item);
             }
+
+            Game.RawFrameRender += (s, e) => Pool.DrawBanners(e.Graphics);
 
             while (true)
             {
