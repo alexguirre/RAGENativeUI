@@ -31,6 +31,13 @@
                 MainMenu.BindMenuToItem(new TimerBars(), item);
             }
 
+            {
+                UIMenuItem item = new UIMenuItem("Big Messages", $"Showcases the ~b~{nameof(BigMessageThread)}~s~ and ~b~{nameof(BigMessageHandler)}~s~ classes.");
+
+                MainMenu.AddItem(item);
+                MainMenu.BindMenuToItem(new BigMessages(), item);
+            }
+
             Game.RawFrameRender += (s, e) => Pool.DrawBanners(e.Graphics);
 
             while (true)
