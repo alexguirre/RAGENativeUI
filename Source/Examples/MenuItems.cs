@@ -41,26 +41,26 @@
 
             // visual options
             {
-                Action<Action<UIMenu>> applyToEachMenu = f =>
+                static void ApplyToEachMenu(Action<UIMenu> f)
                 {
                     foreach (UIMenu m in Plugin.Pool)
                     {
                         f(m);
                     }
-                };
+                }
 
                 var width = new UIMenuNumericScrollerItem<float>(nameof(Width), $"Modifies the ~b~{nameof(UIMenu)}.{nameof(Width)}~s~ property.", 0.0f, 1.0f, 0.001f);
                 width.Formatter = v => v.ToString("0.000");
                 width.Value = Width;
-                width.IndexChanged += (s, o, n) => applyToEachMenu(m => m.Width = width.Value);
+                width.IndexChanged += (s, o, n) => ApplyToEachMenu(m => m.Width = width.Value);
 
                 var offsetX = new UIMenuNumericScrollerItem<int>("Offset X", $"Modifies the X-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1);
                 offsetX.Value = Offset.X;
-                offsetX.IndexChanged += (s, o, n) => applyToEachMenu(m => m.Offset = new Point(offsetX.Value, m.Offset.Y));
+                offsetX.IndexChanged += (s, o, n) => ApplyToEachMenu(m => m.Offset = new Point(offsetX.Value, m.Offset.Y));
 
                 var offsetY = new UIMenuNumericScrollerItem<int>("Offset Y", $"Modifies the Y-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1);
                 offsetY.Value = Offset.Y;
-                offsetY.IndexChanged += (s, o, n) => applyToEachMenu(m => m.Offset = new Point(m.Offset.X, offsetY.Value));
+                offsetY.IndexChanged += (s, o, n) => ApplyToEachMenu(m => m.Offset = new Point(m.Offset.X, offsetY.Value));
 
                 const string BannerTypeText = "Banner Type (Current)", BannerTypeUnsetText = "Banner Type";
                 var bannerType = new UIMenuListScrollerItem<string>(BannerTypeText, "", new[] { "No Banner", "Sprite", "Color", "Custom Texture"});
@@ -70,7 +70,7 @@
                 {
                     currBannerType = bannerType.Index;
                     bannerType.Text = BannerTypeText;
-                    applyToEachMenu(currBannerType switch
+                    ApplyToEachMenu(currBannerType switch
                     {
                         0 => m => m.RemoveBanner(),
                         1 => m => m.SetBannerType(new Sprite("commonmenu", "interaction_bgd", Point.Empty, Size.Empty)),
@@ -82,31 +82,31 @@
                 
                 var title = NewTextEditingItem(nameof(Title), $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(Title)}~s~ property.",
                                                () => Title,
-                                               s => applyToEachMenu(m => m.Title = s));
+                                               s => ApplyToEachMenu(m => m.Title = s));
 
                 var titleColor = NewColorsItem("Title Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(TitleStyle)}~s~ property.");
                 titleColor.IndexChanged += (s, o, n) =>
                 {
                     Color c = titleColor.SelectedItem.GetColor();
-                    applyToEachMenu(m => m.TitleStyle = m.TitleStyle.With(color: c));
+                    ApplyToEachMenu(m => m.TitleStyle = m.TitleStyle.With(color: c));
                 };
 
                 var subtitleColor = NewColorsItem("Subtitle Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(SubtitleStyle)}~s~ property.");
                 subtitleColor.IndexChanged += (s, o, n) =>
                 {
                     Color c = subtitleColor.SelectedItem.GetColor();
-                    applyToEachMenu(m => m.SubtitleStyle = m.SubtitleStyle.With(color: c));
+                    ApplyToEachMenu(m => m.SubtitleStyle = m.SubtitleStyle.With(color: c));
                 };
 
                 var descriptionOverride = NewTextEditingItem("Description Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(DescriptionOverride)}~s~ property.",
                                                () => DescriptionOverride ?? string.Empty,
-                                               s => applyToEachMenu(m => m.DescriptionOverride = s.Length == 0 ? null : s));
+                                               s => ApplyToEachMenu(m => m.DescriptionOverride = s.Length == 0 ? null : s));
 
                 var descriptionColor = NewColorsItem("Description Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(DescriptionStyle)}~s~ property.");
                 descriptionColor.IndexChanged += (s, o, n) =>
                 {
                     Color c = descriptionColor.SelectedItem.GetColor();
-                    applyToEachMenu(m => m.DescriptionStyle = m.DescriptionStyle.With(color: c));
+                    ApplyToEachMenu(m => m.DescriptionStyle = m.DescriptionStyle.With(color: c));
                 };
 
                 var descriptionSeparatorColor = NewColorsItem("Description Separator", $"Modifies the ~b~{nameof(UIMenu)}.{nameof(DescriptionSeparatorColor)}~s~ property.");
@@ -114,26 +114,23 @@
                 descriptionSeparatorColor.IndexChanged += (s, o, n) =>
                 {
                     Color c = descriptionSeparatorColor.SelectedItem.GetColor();
-                    applyToEachMenu(m => m.DescriptionSeparatorColor = c);
+                    ApplyToEachMenu(m => m.DescriptionSeparatorColor = c);
                 };
 
                 var counterOverride = NewTextEditingItem("Counter Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(CounterOverride)}~s~ property.",
                                                () => CounterOverride ?? string.Empty,
-                                               s => applyToEachMenu(m => m.CounterOverride = s.Length == 0 ? null : s));
+                                               s => ApplyToEachMenu(m => m.CounterOverride = s.Length == 0 ? null : s));
 
                 var counterColor = NewColorsItem("Counter Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(CounterStyle)}~s~ property.");
                 counterColor.IndexChanged += (s, o, n) =>
                 {
                     Color c = counterColor.SelectedItem.GetColor();
-                    applyToEachMenu(m => m.CounterStyle = m.CounterStyle.With(color: c));
+                    ApplyToEachMenu(m => m.CounterStyle = m.CounterStyle.With(color: c));
                 };
 
                 var scaleWithSafezone = new UIMenuCheckboxItem("Scale with Safe-Zone", ScaleWithSafezone, $"Modifies the ~b~{nameof(UIMenu)}.{nameof(ScaleWithSafezone)}~s~ property.");
                 scaleWithSafezone.Checked = ScaleWithSafezone;
-                scaleWithSafezone.CheckboxEvent += (s, v) =>
-                {
-                    applyToEachMenu(m => m.ScaleWithSafezone = v);
-                };
+                scaleWithSafezone.CheckboxEvent += (s, v) => ApplyToEachMenu(m => m.ScaleWithSafezone = v);
 
                 visualOptionsMenu.AddItem(width);
                 visualOptionsMenu.AddItem(offsetX);
