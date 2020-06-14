@@ -9,15 +9,25 @@
 
     internal static class Util
     {
+        /// <summary>
+        /// Creates a new menu item which displays the current string in the <see cref="UIMenuItem.RightLabel"/> which can be edited by selecting the item.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="description"></param>
+        /// <param name="getter"></param>
+        /// <param name="setter"></param>
+        /// <returns></returns>
         public static UIMenuItem NewTextEditingItem(string text, string description, Func<string> getter, Action<string> setter)
         {
+            const int MaxStringLength = 16;
+
             var item = new UIMenuItem(text, description);
             item.RightLabel = getter();
             item.Activated += (m, s) =>
             {
                 Plugin.Pool.Draw();
 
-                NativeFunction.Natives.DISPLAY_ONSCREEN_KEYBOARD(6, "", "", getter(), "", "", "", 16);
+                NativeFunction.Natives.DISPLAY_ONSCREEN_KEYBOARD(6, "", "", getter(), "", "", "", MaxStringLength);
                 int state;
                 while ((state = NativeFunction.Natives.UPDATE_ONSCREEN_KEYBOARD<int>()) == 0)
                 {
@@ -37,6 +47,12 @@
             return item;
         }
 
+        /// <summary>
+        /// Create new list menu item containing all the <see cref="HudColor"/>s which can be selected by the user.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
         public static UIMenuListScrollerItem<HudColor> NewColorsItem(string text, string description)
             => new UIMenuListScrollerItem<HudColor>(text, description, (HudColor[])Enum.GetValues(typeof(HudColor)))
             {

@@ -1,4 +1,4 @@
-﻿namespace RNUIExamples
+﻿namespace RNUIExamples.Showcase
 {
     using System;
     using System.Drawing;
@@ -9,7 +9,7 @@
 
     using static Util;
 
-    internal class TimerBars : UIMenu
+    internal sealed class TimerBars : UIMenu
     {
         private TimerBarPool tbPool;
         private TextTimerBar text;

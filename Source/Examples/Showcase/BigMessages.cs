@@ -1,10 +1,10 @@
-﻿namespace RNUIExamples
+﻿namespace RNUIExamples.Showcase
 {
     using RAGENativeUI;
     using RAGENativeUI.Elements;
     using Rage;
 
-    internal class BigMessages : UIMenu
+    internal sealed class BigMessages : UIMenu
     {
         private readonly BigMessageThread bigMessageThread;
         private readonly BigMessageHandler bigMessage;

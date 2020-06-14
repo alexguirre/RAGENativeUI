@@ -1,4 +1,4 @@
-﻿namespace RNUIExamples
+﻿namespace RNUIExamples.Showcase
 {
     using System;
     using System.Drawing;
@@ -8,9 +8,9 @@
 
     using static Util;
 
-    internal class MenuItems : UIMenu
+    internal sealed class Menus : UIMenu
     {
-        public MenuItems() : base(Plugin.MenuTitle, "MENUS")
+        public Menus() : base(Plugin.MenuTitle, "MENUS")
         {
             Plugin.Pool.Add(this);
 
