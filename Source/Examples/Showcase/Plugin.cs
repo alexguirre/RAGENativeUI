@@ -11,6 +11,8 @@ internal static class Plugin
 
     public static void Main()
     {
+        Game.Console.Print("Press F5 to open the showcase menu");
+
         ShowcaseMenu = new RNUIExamples.Showcase.MainMenu();
 
         // draw custom texture banners
