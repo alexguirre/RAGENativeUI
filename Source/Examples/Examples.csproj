@@ -45,10 +45,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MenuExample.cs" />
     <Compile Include="Showcase\BigMessages.cs" />
     <Compile Include="Showcase\MainMenu.cs" />
     <Compile Include="Showcase\Menus.cs" />
-    <Compile Include="Plugin.cs" />
+    <Compile Include="Showcase\Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Showcase\TimerBars.cs" />
     <Compile Include="Util.cs" />

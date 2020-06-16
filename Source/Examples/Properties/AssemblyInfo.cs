@@ -14,4 +14,4 @@ using Rage.Attributes;
 [assembly: Guid("fb83ecbc-e996-4314-8c65-e79211aea8bc")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: Plugin("RAGENativeUI Examples", Author = "alexguirre", PrefersSingleInstance = true, SupportUrl = "https://github.com/alexguirre/ragenativeui")]
+[assembly: Plugin("RAGENativeUI Examples", Author = "alexguirre", PrefersSingleInstance = true, SupportUrl = "https://github.com/alexguirre/ragenativeui", EntryPoint = "Plugin.Main")]
