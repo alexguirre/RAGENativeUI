@@ -100,11 +100,13 @@ namespace RAGENativeUI.Elements
             _timer = time;
         }
 
-        public void ShowMpMessageLarge(string msg, int time = 5000)
+        public void ShowMpMessageLarge(string msg, int time = 5000) => ShowMpMessageLarge(msg, string.Empty, time);
+
+        public void ShowMpMessageLarge(string msg, string subtitle, int time = 5000)
         {
             Load(true);
             _start = Game.GameTime;
-            _sc.CallFunction("SHOW_CENTERED_MP_MESSAGE_LARGE", msg, "test", 100, true, 100);
+            _sc.CallFunction("SHOW_CENTERED_MP_MESSAGE_LARGE", msg, subtitle, 100, true, 100);
             _sc.CallFunction("TRANSITION_IN");
             _timer = time;
         }
