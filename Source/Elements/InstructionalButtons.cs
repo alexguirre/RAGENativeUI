@@ -147,10 +147,7 @@ namespace RAGENativeUI.Elements
             return ButtonText == null ? (ButtonControl.HasValue ? GetButtonId(ButtonControl.Value) : GetButtonId("")) : GetButtonId(ButtonText);
         }
 
-        public static string GetButtonId(GameControl control)
-        {
-            return NativeFunction.Natives.GET_CONTROL_INSTRUCTIONAL_BUTTON<string>(2, (int)control, 0);
-        }
+        public static string GetButtonId(GameControl control) => N.GetControlInstructionalButton(2, control);
 
         public static string GetButtonId(string keyString)
             => keyString.Length switch
