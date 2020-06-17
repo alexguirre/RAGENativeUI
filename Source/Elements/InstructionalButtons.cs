@@ -153,9 +153,12 @@ namespace RAGENativeUI.Elements
         }
 
         public static string GetButtonId(string keyString)
-        {
-            return "t_" + keyString;
-        }
+            => keyString.Length switch
+            {
+                int n when n <= 2 => "t_",
+                int n when n <= 4 => "T_",
+                _ => "w_"
+            } + keyString;
     }
 }
 
