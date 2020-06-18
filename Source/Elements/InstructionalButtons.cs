@@ -50,14 +50,18 @@ namespace RAGENativeUI.Elements
             }
 
             Scaleform.CallFunction("CLEAR_ALL");
-            Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", 0);
+            Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", true);
 
             for (int i = 0, slot = 0; i < Buttons.Count; i++)
             {
                 IInstructionalButtonSlot b = Buttons[i];
                 if (b.CanBeDisplayed == null || b.CanBeDisplayed(b))
                 {
-                    Scaleform.CallFunction("SET_DATA_SLOT", slot++, b.GetButtonId() ?? string.Empty, b.Text ?? string.Empty);
+                    Scaleform.CallFunction("SET_DATA_SLOT", slot++,
+                                           b.GetButtonId() ?? string.Empty,
+                                           b.Text ?? string.Empty,
+                                           b.BindedControl.HasValue, // clickable?
+                                           b.BindedControl.HasValue ? (int)b.BindedControl.Value : - 1); // control binded to click
                 }
             }
 
@@ -99,6 +103,11 @@ namespace RAGENativeUI.Elements
         public Predicate<IInstructionalButtonSlot> CanBeDisplayed { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="GameControl"/> triggered when the button is clicked. If <c>null</c>, the button cannot be clicked.
+        /// </summary>
+        public GameControl? BindedControl { get; set; }
+
+        /// <summary>
         /// Gets a <see cref="string"/> that represents the contents of this <see cref="IInstructionalButtonSlot"/>.
         /// </summary>
         /// <returns>A <see cref="string"/> that represents the contents of this <see cref="IInstructionalButtonSlot"/>.</returns>
@@ -121,7 +130,10 @@ namespace RAGENativeUI.Elements
 
         /// <inheritdoc/>
         public Predicate<IInstructionalButtonSlot> CanBeDisplayed { get; set; }
-
+        
+        /// <inheritdoc/>
+        public GameControl? BindedControl { get; set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="InstructionalButton"/> class.
         /// </summary>
@@ -134,11 +146,11 @@ namespace RAGENativeUI.Elements
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InstructionalButton"/> class.
+        /// Initializes a new instance of the <see cref="InstructionalButton"/> class. This overload sets <see cref="BindedControl"/> to <paramref name="control"/>.
         /// </summary>
         /// <param name="control">The <see cref="GameControl"/> displayed inside the button, it changes depending on keybinds and whether the user is using the controller or the keyboard and mouse.</param>
         /// <param name="text">The text displayed next to the button.</param>
-        public InstructionalButton(GameControl control, string text) : this((InstructionalButtonId)control, text) { }
+        public InstructionalButton(GameControl control, string text) : this((InstructionalButtonId)control, text) { BindedControl = control; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstructionalButton"/> class.
@@ -171,6 +183,9 @@ namespace RAGENativeUI.Elements
 
         /// <inheritdoc/>
         public Predicate<IInstructionalButtonSlot> CanBeDisplayed { get; set; }
+
+        /// <inheritdoc/>
+        public GameControl? BindedControl { get; set; }
 
         /// <summary>
         /// Gets or sets the list containing the buttons of this group.
