@@ -7,10 +7,10 @@ namespace RAGENativeUI.Elements
 {
     public class Scaleform
     {
-        private int _handle;
-        private string _scaleformID;
+        public const int InvalidHandle = 0;
 
-        public int Handle { get { return _handle; } }
+        public int Handle { get; private set; } = InvalidHandle;
+        public bool IsLoaded => Handle != InvalidHandle && N.HasScaleformMovieLoaded(Handle);
 
         public Scaleform()
         {
@@ -18,26 +18,21 @@ namespace RAGENativeUI.Elements
 
         public Scaleform(int handle)
         {
-            this._handle = handle;
+            this.Handle = handle;
         }
 
         public bool Load(string scaleformID)
         {
-            int handle = NativeFunction.Natives.RequestScaleformMovie<int>(scaleformID);
+            Handle = N.RequestScaleformMovie(scaleformID);
 
-            if (handle == 0) return false;
-
-            this._handle = handle;
-            this._scaleformID = scaleformID;
-
-            return true;
+            return Handle != InvalidHandle;
         }
 
 
         public void Render2D()
         {
             const ulong DrawScaleformMovieDefault = 0x0df606929c105be1;         
-            NativeFunction.CallByHash<uint>(DrawScaleformMovieDefault, this.Handle, 255, 255, 255, 255);
+            NativeFunction.CallByHash<uint>(DrawScaleformMovieDefault, Handle, 255, 255, 255, 255);
         }
         public void Render2DScreenSpace(PointF location, PointF size)
         {
@@ -46,17 +41,17 @@ namespace RAGENativeUI.Elements
             float width = size.X / 1280.0f;
             float height = size.Y / 720.0f;
 
-            NativeFunction.Natives.DrawScaleformMovie(this._handle, x + (width / 2.0f), y + (height / 2.0f), width, height, 255, 255, 255, 255);
+            NativeFunction.Natives.DrawScaleformMovie(Handle, x + (width / 2.0f), y + (height / 2.0f), width, height, 255, 255, 255, 255);
         }
 
 
         public void Render3D(Vector3 position, Vector3 rotation, Vector3 scale)
         {
-		    NativeFunction.CallByHash<uint>(0x1ce592fdc749d6f5, this._handle, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, 2.0f, 2.0f, 1.0f, scale.X, scale.Y, scale.Z, 2);
+		    NativeFunction.CallByHash<uint>(0x1ce592fdc749d6f5, Handle, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, 2.0f, 2.0f, 1.0f, scale.X, scale.Y, scale.Z, 2);
         }
         public void Render3DAdditive(Vector3 position, Vector3 rotation, Vector3 scale)
         {
-            NativeFunction.CallByHash<uint>(0x87d51d72255d4e78, this._handle, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, 2.0f, 2.0f, 1.0f, scale.X, scale.Y, scale.Z, 2);
+            NativeFunction.CallByHash<uint>(0x87d51d72255d4e78, Handle, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, 2.0f, 2.0f, 1.0f, scale.X, scale.Y, scale.Z, 2);
         }
 
 
@@ -73,7 +68,7 @@ namespace RAGENativeUI.Elements
             const ulong PopScaleformMovieFunctionVoidHash = 0xc6796a8ffa375e53;
 
 
-            NativeFunction.CallByHash<uint>(PushScaleformMovieFunctionHash, this._handle, function);
+            NativeFunction.CallByHash<uint>(PushScaleformMovieFunctionHash, Handle, function);
 
             foreach (object obj in arguments)
             {
@@ -111,7 +106,7 @@ namespace RAGENativeUI.Elements
                 }
                 else
                 {
-                    Game.LogTrivial(String.Format("Unknown argument type {0} passed to scaleform with handle {1}.", obj.GetType().Name, this._handle));
+                    Game.LogTrivial(String.Format("Unknown argument type {0} passed to scaleform with handle {1}.", obj.GetType().Name, Handle));
                 }
             }
             

@@ -125,6 +125,7 @@
         public static void DisableAllControlActions(int index) => Natives.DisableAllControlActions(index);
         public static float GetControlNormal(int index, GameControl control) => Natives.GetControlNormal<float>(index, (int)control);
         public static void SetInputExclusive(int index, GameControl control) => Natives.xEDE476E5EE29EDB1(index, (int)control);
+        public static string GetControlInstructionalButton(int index, GameControl control) => Natives.x0499D7B09FC9B407<string>(index, (int)control, true);
 
         public static void SetMouseCursorActiveThisFrame() => Natives.xAAE7CE1D63167423();
         public static void SetMouseCursorSprite(int spriteId) => Natives.x8DB8CFFD58B62552(spriteId);
@@ -133,6 +134,7 @@
         public static void SetGameplayCamRelativeHeading(float heading) => Natives.SetGameplayCamRelativeHeading(heading);
 
         public static bool IsInputDisabled(int index) => Natives.xA571D46727E2B718<bool>(index);
+        public static bool HasInputJustChanged(int index) => Natives.x6CD79468A1E595C6<bool>(index);
 
         /// <summary>
         /// If true, in multiple-screens setups, limits the range of GameControl.CursorX to only the main screen.
@@ -140,6 +142,9 @@
         public static void x5B73C77D9EB66E24(bool value) => Natives.x5B73C77D9EB66E24(value);
 
         public static int GetNumberOfReferencesOfScript(uint nameHash) => Natives.x2C83A9DA6BFFC4F9<int>(nameHash);
+
+        public static bool HasScaleformMovieLoaded(int handle) => Natives.x85F01B8D5B90570E<bool>(handle);
+        public static int RequestScaleformMovie(string name) => Natives.x11FE353CF9733E6F<int>(name);
     }
 }
 

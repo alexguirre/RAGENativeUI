@@ -669,7 +669,15 @@ namespace RAGENativeUI
                 EnableCameraMovement();
 
             if (InstructionalButtonsEnabled)
+            {
+                if (N.HasInputJustChanged(2))
+                {
+                    // update to display the correct keys or controller buttons when the user switches between keyboard and controller
+                    InstructionalButtons.Update();
+                }
+
                 InstructionalButtons.Draw();
+            }
 
             UpdateScreenVars();
 
@@ -1320,7 +1328,6 @@ namespace RAGENativeUI
                         CurrentSelection = hoveredItem;
                         Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                         IndexChange(CurrentSelection);
-                        InstructionalButtons.Update();
                     }
                 }
                 else if (hoveredItem == -1)
@@ -1337,7 +1344,6 @@ namespace RAGENativeUI
                         {
                             GoDown();
                         }
-                        InstructionalButtons.Update();
                     }
 
                     if (MouseEdgeEnabled)
