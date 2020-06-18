@@ -8,7 +8,11 @@ namespace RAGENativeUI.Elements
 
     public class InstructionalButtons
     {
+        private const string ScaleformName = "instructional_buttons";
+
         public static readonly Color DefaultBackgroundColor = Color.FromArgb(80, 0, 0, 0);
+
+        private bool needsUpdate = true;
 
         public Scaleform Scaleform { get; }
         public InstructionalButtonsCollection Buttons { get; }
@@ -16,8 +20,7 @@ namespace RAGENativeUI.Elements
 
         public InstructionalButtons()
         {
-            Scaleform = new Scaleform(0);
-            Scaleform.Load("instructional_buttons");
+            Scaleform = new Scaleform();
 
             Buttons = new InstructionalButtonsCollection();
             Buttons.ItemAdded += (c, i) => Update();
@@ -28,11 +31,24 @@ namespace RAGENativeUI.Elements
 
         public void Draw()
         {
+            if (needsUpdate)
+            {
+                DoUpdate();
+            }
+
             Scaleform.Render2D();
         }
 
-        public void Update()
+        public void Update() => needsUpdate = true;
+
+        private void DoUpdate()
         {
+            if (!Scaleform.IsLoaded)
+            {
+                Scaleform.Load(ScaleformName);
+                return;
+            }
+
             Scaleform.CallFunction("CLEAR_ALL");
             Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", 0);
 
@@ -47,8 +63,9 @@ namespace RAGENativeUI.Elements
 
             Scaleform.CallFunction("SET_BACKGROUND_COLOUR", (int)BackgroundColor.R, (int)BackgroundColor.G, (int)BackgroundColor.B, (int)BackgroundColor.A);
             Scaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
-        }
 
+            needsUpdate = false;
+        }
 
         public class InstructionalButtonsCollection : BaseCollection<IInstructionalButtonSlot>
         {

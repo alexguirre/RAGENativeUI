@@ -142,6 +142,9 @@
         public static void x5B73C77D9EB66E24(bool value) => Natives.x5B73C77D9EB66E24(value);
 
         public static int GetNumberOfReferencesOfScript(uint nameHash) => Natives.x2C83A9DA6BFFC4F9<int>(nameHash);
+
+        public static bool HasScaleformMovieLoaded(int handle) => Natives.x85F01B8D5B90570E<bool>(handle);
+        public static int RequestScaleformMovie(string name) => Natives.x11FE353CF9733E6F<int>(name);
     }
 }
 
