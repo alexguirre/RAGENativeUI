@@ -89,7 +89,7 @@ namespace RAGENativeUI.Elements
                     int index = InstructionalButtons.Buttons.IndexOf(continueControlInstructionalButton);
                     if (index != -1)
                     {
-                        InstructionalButtons.Buttons[index].ButtonControl = continueControl;
+                        continueControlInstructionalButton.Button = continueControl;
                     }
                     InstructionalButtons.Update();
                 }
