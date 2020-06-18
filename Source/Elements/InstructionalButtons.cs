@@ -4,11 +4,15 @@ namespace RAGENativeUI.Elements
     using System.Linq;
     using System.Collections.Generic;
     using Rage;
+    using System.Drawing;
 
     public class InstructionalButtons
     {
+        public static readonly Color DefaultBackgroundColor = Color.FromArgb(80, 0, 0, 0);
+
         public Scaleform Scaleform { get; }
         public InstructionalButtonsCollection Buttons { get; }
+        public Color BackgroundColor { get; set; } = DefaultBackgroundColor;
 
         public InstructionalButtons()
         {
@@ -31,17 +35,17 @@ namespace RAGENativeUI.Elements
         {
             Scaleform.CallFunction("CLEAR_ALL");
             Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", 0);
-            Scaleform.CallFunction("CREATE_CONTAINER");
 
-            int dateSlotIndex = 0;
-            for (int i = 0; i < Buttons.Count; i++)
+            for (int i = 0, slot = 0; i < Buttons.Count; i++)
             {
                 IInstructionalButtonSlot b = Buttons[i];
-                if (b.CanBeDisplayed == null || b.CanBeDisplayed.Invoke(b))
+                if (b.CanBeDisplayed == null || b.CanBeDisplayed(b))
                 {
-                    Scaleform.CallFunction("SET_DATA_SLOT", dateSlotIndex++, b.GetButtonId(), b.Text ?? "");
+                    Scaleform.CallFunction("SET_DATA_SLOT", slot++, b.GetButtonId(), b.Text ?? "");
                 }
             }
+
+            Scaleform.CallFunction("SET_BACKGROUND_COLOUR", (int)BackgroundColor.R, (int)BackgroundColor.G, (int)BackgroundColor.B, (int)BackgroundColor.A);
             Scaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
         }
 
