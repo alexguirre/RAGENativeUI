@@ -106,9 +106,6 @@ namespace RAGENativeUI.Elements
         /// </value>
         public Predicate<InstructionalButton> CanBeDisplayed { get; set; }
 
-        [Obsolete("ItemBind is obsolete. Check BindToItem(UIMenuItem) for details.")]
-        public UIMenuItem ItemBind { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InstructionalButton"/> class.
         /// </summary>
@@ -129,17 +126,6 @@ namespace RAGENativeUI.Elements
         {
             Text = text;
             ButtonText = buttonText;
-        }
-
-        /// <summary>
-        /// Bind this button to an item, so it's only shown when that item is selected.
-        /// </summary>
-        /// <param name="item">Item to bind to.</param>
-        [Obsolete("BindToItem(UIMenuItem) is obsolete. Use CanBeDisplayed predicate instead, checking for UIMenuItem.Selected.")]
-        public void BindToItem(UIMenuItem item)
-        {
-            ItemBind = item;
-            CanBeDisplayed = (i) => item.Selected;
         }
         
         public string GetButtonId()
