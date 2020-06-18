@@ -57,7 +57,7 @@ namespace RAGENativeUI.Elements
                 IInstructionalButtonSlot b = Buttons[i];
                 if (b.CanBeDisplayed == null || b.CanBeDisplayed(b))
                 {
-                    Scaleform.CallFunction("SET_DATA_SLOT", slot++, b.GetButtonId(), b.Text ?? "");
+                    Scaleform.CallFunction("SET_DATA_SLOT", slot++, b.GetButtonId() ?? string.Empty, b.Text ?? string.Empty);
                 }
             }
 
@@ -112,6 +112,10 @@ namespace RAGENativeUI.Elements
 
         /// <summary>
         /// Gets or sets the contents of the button.
+        /// <para>
+        /// If this <see cref="InstructionalButton"/> is contained in a <see cref="InstructionalButtons"/> scaleform, 
+        /// <see cref="InstructionalButtons.Update"/> needs to be called to reflect the changes made.
+        /// </para>
         /// </summary>
         public InstructionalButtonId Button { get; set; }
 
@@ -168,29 +172,59 @@ namespace RAGENativeUI.Elements
         /// <inheritdoc/>
         public Predicate<IInstructionalButtonSlot> CanBeDisplayed { get; set; }
 
+        /// <summary>
+        /// Gets or sets the list containing the buttons of this group.
+        /// <para>
+        /// If this <see cref="InstructionalButtonGroup"/> is contained in a <see cref="InstructionalButtons"/> scaleform, 
+        /// <see cref="InstructionalButtons.Update"/> needs to be called to reflect the changes made.
+        /// </para>
+        /// </summary>
+        /// <exception cref="ArgumentNullException">
+        /// <c>value</c> is null.
+        /// </exception>
         public IList<InstructionalButtonId> Buttons
         {
             get => buttons;
             set => buttons = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
+        /// </summary>
+        /// <param name="buttons">The buttons to be displayed.</param>
+        /// <param name="text">The text displayed next to the buttons.</param>
         public InstructionalButtonGroup(IEnumerable<InstructionalButtonId> buttons, string text)
         {
             Text = text;
             Buttons = new List<InstructionalButtonId>(buttons);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
+        /// </summary>
+        /// <param name="controls">The <see cref="GameControl"/>s contained in the group, they change depending on keybinds and whether the user is using the controller or the keyboard and mouse.</param>
+        /// <param name="text">The text displayed next to the buttons.</param>
         public InstructionalButtonGroup(IEnumerable<GameControl> controls, string text) : this(controls.Select(x => (InstructionalButtonId)x), text) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
+        /// </summary>
+        /// <param name="buttonTexts">The text displayed inside the buttons in the group, mainly for displaying custom keyboard bindings, like "I", or "O", or "F5".</param>
+        /// <param name="text">The text displayed next to the buttons.</param>
         public InstructionalButtonGroup(IEnumerable<string> buttonTexts, string text) : this(buttonTexts.Select(x => (InstructionalButtonId)x), text) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
+        /// </summary>
+        /// <param name="rawIds">The raw identifiers of the symbols to be displayed in the group.</param>
+        /// <param name="text">The text displayed next to the buttons.</param>
         public InstructionalButtonGroup(IEnumerable<uint> rawIds, string text) : this(rawIds.Select(x => (InstructionalButtonId)x), text) { }
 
         /// <inheritdoc/>
         public string GetButtonId() => GetButtonId(Buttons);
 
         public static string GetButtonId(IEnumerable<InstructionalButtonId> buttons)
-            => buttons.Reverse().Aggregate("", (acc, btn) => acc + (acc.Length == 0 ? "" : "%") + btn.Id);
+            => buttons.Reverse().Aggregate(string.Empty, (acc, btn) => acc + (acc.Length == 0 ? string.Empty : "%") + btn.Id);
     }
 
     public readonly struct InstructionalButtonId
@@ -206,7 +240,7 @@ namespace RAGENativeUI.Elements
         private readonly string id;
 
         /// <summary>
-        /// Gets the string that represents the button contents.
+        /// Gets the <see cref="string"/> that represents the button contents.
         /// </summary>
         public string Id => id ?? (control.HasValue ? N.GetControlInstructionalButton(2, control.Value)  : EmptyButtonId);
 
