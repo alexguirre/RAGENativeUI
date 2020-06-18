@@ -29,6 +29,13 @@
                 AddItem(item);
                 BindMenuToItem(new BigMessages(), item);
             }
+
+            {
+                UIMenuItem item = new UIMenuItem("Instructional Buttons", $"Showcases the ~b~{nameof(RAGENativeUI.Elements.InstructionalButtons)}~s~ class.");
+
+                AddItem(item);
+                BindMenuToItem(new InstructionalButtons(), item);
+            }
         }
     }
 }

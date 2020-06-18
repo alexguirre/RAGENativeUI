@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="MenuExample.cs" />
     <Compile Include="Showcase\BigMessages.cs" />
+    <Compile Include="Showcase\InstructionalButtons.cs" />
     <Compile Include="Showcase\MainMenu.cs" />
     <Compile Include="Showcase\Menus.cs" />
     <Compile Include="Showcase\Plugin.cs" />
