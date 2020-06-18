@@ -105,6 +105,9 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Gets or sets the <see cref="GameControl"/> triggered when the button is clicked. If <c>null</c>, the button cannot be clicked.
         /// </summary>
+        /// <remarks>
+        /// When the user clicks the button, the specified control will be pressed for one frame so it can be checked with methods such as <see cref="Game.IsControlJustPressed(int, GameControl)"/>.
+        /// </remarks>
         public GameControl? BindedControl { get; set; }
 
         /// <summary>
