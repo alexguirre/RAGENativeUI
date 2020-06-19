@@ -145,6 +145,9 @@
 
         public static bool HasScaleformMovieLoaded(int handle) => Natives.x85F01B8D5B90570E<bool>(handle);
         public static int RequestScaleformMovie(string name) => Natives.x11FE353CF9733E6F<int>(name);
+        public static int EndScaleformMovieMethodReturnValue() => Natives.xC50AA39A577AF886<int>();
+        public static bool IsScaleformMovieMethodReturnValueReady(int returnValueId) => Natives.x768FF8961BA904D6<bool>(returnValueId);
+        public static int GetScaleformMovieMethodReturnValueInt(int returnValueId) => Natives.x2DE7EFA66B906036<int>(returnValueId);
     }
 }
 

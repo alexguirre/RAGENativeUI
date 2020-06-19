@@ -39,10 +39,9 @@
                 if (newFrame)
                 {
                     Shared.TimerBarsLastFrame = frame;
-                    Shared.TimerBarsNumInstructionalButtonsRows = GetInstructionalButtonsRows();
                     if (ScriptGlobals.TimersBarsTotalHeightAvailable)
                     {
-                        Shared.TimerBarsIngamehudScriptExecuting = N.GetNumberOfReferencesOfScript(0xC45650F0 /* ingamehud */) > 0;
+                        Shared.IngamehudScriptExecuting = N.GetNumberOfReferencesOfScript(0xC45650F0 /* ingamehud */) > 0;
                     }
 
                     N.HideHudComponentThisFrame(6); // VehicleName
@@ -51,7 +50,7 @@
                     N.HideHudComponentThisFrame(9); // StreetName
                 }
 
-                float x = TB.InitialX, y = TB.InitialY - (TB.LoadingPromptYOffset * Shared.TimerBarsNumInstructionalButtonsRows);
+                float x = TB.InitialX, y = TB.InitialY - (TB.LoadingPromptYOffset * InstructionalButtons.NumberOfRows);
 
                 ref float totalHeight = ref x; // dummy assignment
                 bool hasTotalHeight = true;
@@ -60,7 +59,7 @@
                     y = lastY;
                     hasTotalHeight = false;
                 }
-                else if (ScriptGlobals.TimersBarsTotalHeightAvailable && Shared.TimerBarsIngamehudScriptExecuting)
+                else if (ScriptGlobals.TimersBarsTotalHeightAvailable && Shared.IngamehudScriptExecuting)
                 {
                     ref float timerBarsTotalHeight = ref ScriptGlobals.TimerBarsTotalHeight;
                     ref float timerBarsPrevTotalHeight = ref ScriptGlobals.TimerBarsPrevTotalHeight;
@@ -106,30 +105,6 @@
 
                 N.ResetScriptGfxAlign();
             }
-        }
-
-        private static unsafe int GetInstructionalButtonsRows()
-        {
-            if (CBusySpinner.Available && CScaleformMgr.Available)
-            {
-                foreach (int sf in CBusySpinner.InstructionalButtons)
-                {
-                    if (CScaleformMgr.IsMovieRendering(sf))
-                    {
-                        CScaleformMgr.LockMovie(sf);
-                        GFxMovieView* v = CScaleformMgr.GetRawMovieView(sf);
-                        if (v != null)
-                        {
-                            int val = (int)v->GetVariableDouble("TIMELINE.backgrounds.length");
-                            CScaleformMgr.UnlockMovie(sf);
-                            return val;
-                        }
-                        CScaleformMgr.UnlockMovie(sf);
-                    }
-                }
-            }
-
-            return N.BusySpinnerIsOn() ? 1 : 0;
         }
     }
 }

@@ -14,15 +14,14 @@
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
         public static readonly IntPtr CTextStyle_ScriptStyle;
         public static readonly IntPtr CScaleformMgr_IsMovieRendering;
-        public static readonly IntPtr CScaleformMgr_GetRawMovieView;
-        public static readonly IntPtr CScaleformMgr_LockMovie;
-        public static readonly IntPtr CScaleformMgr_UnlockMovie;
+        public static readonly IntPtr CScaleformMgr_BeginMethod;
         public static readonly IntPtr CBusySpinner_InstructionalButtons;
         public static readonly IntPtr scrProgramRegistry_sm_Instance;
         public static readonly IntPtr scrProgramRegistry_Find;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
+        public static readonly int TimershudSharedInstructionalButtonsNumRowsOffset = -1;
 
         static Memory()
         {
@@ -54,35 +53,7 @@
                 return addr;
             });
 
-            CScaleformMgr_GetRawMovieView = FindAddress(() =>
-            {
-                IntPtr addr = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 3B D8 7D 78");
-                if (addr != IntPtr.Zero)
-                {
-                    addr -= 0x10;
-                }
-                return addr;
-            });
-
-            CScaleformMgr_LockMovie = FindAddress(() =>
-            {
-                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 48 8D 77 40 48 8D 9F ?? ?? ?? ?? BD");
-                if (addr != IntPtr.Zero)
-                {
-                    addr += *(int*)(addr + 1) + 5;
-                }
-                return addr;
-            });
-
-            CScaleformMgr_UnlockMovie = FindAddress(() =>
-            {
-                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 8B 4D D8 8B C1 25");
-                if (addr != IntPtr.Zero)
-                {
-                    addr += *(int*)(addr + 1) + 5;
-                }
-                return addr;
-            });
+            CScaleformMgr_BeginMethod = FindAddress(() => Game.FindPattern("48 83 EC 38 41 83 C9 FF 44 89 4C 24 ?? E8"));
 
             CBusySpinner_InstructionalButtons = FindAddress(() =>
             {
@@ -118,6 +89,21 @@
                 TimerbarsPrevTotalHeightGlobalId = Shared.MemoryInts[0];
                 TimershudSharedGlobalId = Shared.MemoryInts[1];
                 TimershudSharedTimerbarsTotalHeightOffset = Shared.MemoryInts[2];
+            }
+
+            if (Shared.MemoryInts[3] == 0)
+            {
+                IntPtr ingamehudAddr = FindPatternInScript("ingamehud",
+                                                        new byte[] { 0x47, 0x00, 0x00, 0x22, 0x10, 0x0E, 0x39, },
+                                                        new byte[] { 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, });
+                if (ingamehudAddr != IntPtr.Zero)
+                {
+                    Shared.MemoryInts[3] = TimershudSharedInstructionalButtonsNumRowsOffset = *(short*)(ingamehudAddr + 1);
+                }
+            }
+            else
+            {
+                TimershudSharedInstructionalButtonsNumRowsOffset = Shared.MemoryInts[3];
             }
         }
 
@@ -199,6 +185,10 @@
 
         public static ref float TimerBarsTotalHeight => ref AsRef<float>(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedTimerbarsTotalHeightOffset * 8);
         public static ref float TimerBarsPrevTotalHeight => ref AsRef<float>(Game.GetScriptGlobalVariableAddress(Memory.TimerbarsPrevTotalHeightGlobalId));
+
+        public static readonly bool TimerBarsInstructionButtonsNumRowsAvailable = Memory.TimershudSharedGlobalId != -1 && Memory.TimershudSharedInstructionalButtonsNumRowsOffset != -1;
+
+        public static ref int TimerBarsInstructionButtonsNumRows => ref AsRef<int>(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedInstructionalButtonsNumRowsOffset * 8);
 
 #if false // not needed for now
         public static readonly bool MenuIdsAvailable = true;
@@ -295,7 +285,15 @@
 
     internal static class CScaleformMgr
     {
-        public static unsafe GFxMovieView* GetRawMovieView(int index) => (GFxMovieView*)InvokeRetPointer(Memory.CScaleformMgr_GetRawMovieView, index);
+        public static bool BeginMethod(int index, int baseClass, string methodName)
+        {
+            // set thread type to 1 so CScaleformMgr::BeginMethod adds the method call to the same queue as if it was done using natives
+            long v = UsingTls.Get(0xB4);
+            UsingTls.Set(0xB4, 1);
+            bool b = InvokeRetBool(Memory.CScaleformMgr_BeginMethod, index, baseClass, methodName);
+            UsingTls.Set(0xB4, v);
+            return b;
+        }
 
         public static bool IsMovieRendering(int index)
         {
@@ -309,71 +307,7 @@
             return b;
         }
 
-        public static void LockMovie(int index)
-        {
-            long v = UsingTls.Get(0xB4);
-            UsingTls.Set(0xB4, 1);
-            Invoke(Memory.CScaleformMgr_LockMovie, index);
-            UsingTls.Set(0xB4, v);
-        }
-
-        public static void UnlockMovie(int index)
-        {
-            long v = UsingTls.Get(0xB4);
-            UsingTls.Set(0xB4, 1);
-            Invoke(Memory.CScaleformMgr_UnlockMovie, index);
-            UsingTls.Set(0xB4, v);
-        }
-
-        public static readonly bool Available = Memory.CScaleformMgr_GetRawMovieView != IntPtr.Zero && Memory.CScaleformMgr_IsMovieRendering != IntPtr.Zero &&
-                                                Memory.CScaleformMgr_LockMovie != IntPtr.Zero && Memory.CScaleformMgr_UnlockMovie != IntPtr.Zero;
-    }
-
-    [StructLayout(LayoutKind.Explicit, Size = 0x18)]
-    internal struct GFxValue
-    {
-        [FieldOffset(0x00)] public IntPtr ObjectInterface;
-        [FieldOffset(0x08)] public uint Type;
-        [FieldOffset(0x10)] public double Value_NValue;
-        [FieldOffset(0x10), MarshalAs(UnmanagedType.I1)] public bool Value_BValue;
-
-        public GFxValue(uint type) : this()
-        {
-            ObjectInterface = IntPtr.Zero;
-            Type = type;
-        }
-
-        public new uint GetType() => Type & VTC_TypeMask;
-        public double GetNumber() => Value_NValue;
-
-        public const uint VTC_ConvertBit = 0x80;
-        public const uint VTC_TypeMask = VTC_ConvertBit | 0x0F;
-
-        public const uint VT_Number = 0x03;
-
-        public const uint VT_ConvertNumber = VTC_ConvertBit | VT_Number;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct GFxMovieView
-    {
-        [FieldOffset(0x00)] public IntPtr* VTable;
-
-        public bool GetVariable(ref GFxValue val, string pathToVar)
-            => InvokeRetBool(VTable[17], AsPointer(ref this), AsPointer(ref val), pathToVar);
-
-        public double GetVariableDouble(string pathToVar)
-        {
-            GFxValue v = new GFxValue(GFxValue.VT_ConvertNumber);
-            GetVariable(ref v, pathToVar);
-
-            if (v.GetType() == GFxValue.VT_Number)
-            {
-                return v.GetNumber();
-            }
-
-            return 0.0;
-        }
+        public static readonly bool Available = Memory.CScaleformMgr_IsMovieRendering != IntPtr.Zero && Memory.CScaleformMgr_BeginMethod != IntPtr.Zero;
     }
 
     internal static class CBusySpinner

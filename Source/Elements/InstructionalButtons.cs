@@ -5,6 +5,7 @@ namespace RAGENativeUI.Elements
     using System.Collections.Generic;
     using Rage;
     using System.Drawing;
+    using RAGENativeUI.Internals;
 
     public class InstructionalButtons
     {
@@ -34,6 +35,11 @@ namespace RAGENativeUI.Elements
             if (needsUpdate)
             {
                 DoUpdate();
+            }
+
+            if (ScriptGlobals.TimerBarsInstructionButtonsNumRowsAvailable)
+            {
+                ScriptGlobals.TimerBarsInstructionButtonsNumRows = NumberOfRows;
             }
 
             Scaleform.Render2D();
@@ -69,6 +75,63 @@ namespace RAGENativeUI.Elements
             Scaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
 
             needsUpdate = false;
+        }
+
+        private static int numberOfRowsReturnValueId = 0;
+        private static uint numberOfRowsReturnValueFrame = 0;
+        internal static int NumberOfRows // TODO: make NumberOfRows public?
+        {
+            get
+            {
+                static unsafe int GetInstructionalButtonsRows(uint frame)
+                {
+                    if (CBusySpinner.Available && CScaleformMgr.Available)
+                    {
+                        if (numberOfRowsReturnValueId != 0)
+                        {
+                            if (N.IsScaleformMovieMethodReturnValueReady(numberOfRowsReturnValueId))
+                            {
+                                int rows = N.GetScaleformMovieMethodReturnValueInt(numberOfRowsReturnValueId);
+                                numberOfRowsReturnValueId = 0;
+                                return rows;
+                            }
+
+                            if ((frame - numberOfRowsReturnValueFrame) >= 2) // if the return value is not ready after 2 frames, call the method again
+                            {
+                                numberOfRowsReturnValueId = 0;
+                            }
+
+                            return Shared.NumInstructionalButtonsRows; // return the previous number of rows until the return value is ready
+                        }
+                        else
+                        {
+                            foreach (int sf in CBusySpinner.InstructionalButtons)
+                            {
+                                if (CScaleformMgr.IsMovieRendering(sf))
+                                {
+                                    if (CScaleformMgr.BeginMethod(sf, 1, "GET_NUMBER_OF_ROWS")) // not using the native because we don't have scaleform script handle
+                                    {
+                                        numberOfRowsReturnValueId = N.EndScaleformMovieMethodReturnValue();
+                                        numberOfRowsReturnValueFrame = frame;
+                                        return Shared.NumInstructionalButtonsRows; // return the previous number of rows until the return value is ready
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return N.BusySpinnerIsOn() ? 1 : 0;
+                }
+
+                uint frame = Game.FrameCount;
+                if (Shared.NumInstructionalButtonsRowsLastFrame != frame)
+                {
+                    Shared.NumInstructionalButtonsRowsLastFrame = frame;
+                    Shared.NumInstructionalButtonsRows = GetInstructionalButtonsRows(frame);
+                }
+
+                return Shared.NumInstructionalButtonsRows;
+            }
         }
 
         public class InstructionalButtonsCollection : BaseCollection<IInstructionalButtonSlot>

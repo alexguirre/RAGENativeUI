@@ -17,8 +17,9 @@
 
         public static ref uint TimerBarsLastFrame => ref data->TimerBarsLastFrame;
         public static ref float TimerBarsTotalHeight => ref data->TimerBarsTotalHeight;
-        public static ref int TimerBarsNumInstructionalButtonsRows => ref data->TimerBarsNumInstructionalButtonsRows;
-        public static ref bool TimerBarsIngamehudScriptExecuting => ref data->TimerBarsIngamehudScriptExecuting;
+        public static ref uint NumInstructionalButtonsRowsLastFrame => ref data->NumInstructionalButtonsRowsLastFrame;
+        public static ref int NumInstructionalButtonsRows => ref data->NumInstructionalButtonsRows;
+        public static ref bool IngamehudScriptExecuting => ref data->IngamehudScriptExecuting;
 
         public static ref uint ScreenLastFrame => ref data->ScreenLastFrame;
         public static ref SizeF ActualScreenResolution => ref data->ActualScreenResolution;
@@ -73,14 +74,15 @@
         {
             public uint TimerBarsLastFrame;
             public float TimerBarsTotalHeight;
-            public int TimerBarsNumInstructionalButtonsRows;
-            public bool TimerBarsIngamehudScriptExecuting;
+            public uint NumInstructionalButtonsRowsLastFrame;
+            public int NumInstructionalButtonsRows;
+            public bool IngamehudScriptExecuting;
             public uint ScreenLastFrame;
             public SizeF ActualScreenResolution;
             public float AspectRatio;
             public uint NumberOfVisibleMenus;
-            public fixed long MemoryAddresses[9];
-            public fixed int MemoryInts[3];
+            public fixed long MemoryAddresses[7];
+            public fixed int MemoryInts[4];
         }
     }
 }
