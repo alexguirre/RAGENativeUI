@@ -18,6 +18,7 @@ namespace RAGENativeUI.Elements
         public Scaleform Scaleform { get; }
         public InstructionalButtonsCollection Buttons { get; }
         public Color BackgroundColor { get; set; } = DefaultBackgroundColor;
+        public float MaxWidth { get; set; } = 1.0f;
 
         public InstructionalButtons()
         {
@@ -57,6 +58,7 @@ namespace RAGENativeUI.Elements
 
             Scaleform.CallFunction("CLEAR_ALL");
             Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", true);
+            Scaleform.CallFunction("SET_MAX_WIDTH", MaxWidth);
 
             for (int i = 0, slot = 0; i < Buttons.Count; i++)
             {
@@ -72,7 +74,7 @@ namespace RAGENativeUI.Elements
             }
 
             Scaleform.CallFunction("SET_BACKGROUND_COLOUR", (int)BackgroundColor.R, (int)BackgroundColor.G, (int)BackgroundColor.B, (int)BackgroundColor.A);
-            Scaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
+            Scaleform.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", 0);
 
             needsUpdate = false;
         }
