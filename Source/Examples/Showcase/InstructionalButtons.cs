@@ -33,11 +33,31 @@
                 }
             };
 
+            var maxWidth = new UIMenuNumericScrollerItem<float>("Max Width", $"Modifies the ~b~{nameof(RAGENativeUI.Elements.InstructionalButtons)}.{nameof(RAGENativeUI.Elements.InstructionalButtons.MaxWidth)}~s~ property.",
+                                0.0f, 1.0f, 0.01f)
+            {
+                Formatter = v => v.ToString("0.00"),
+            };
+            maxWidth.Value = InstructionalButtons.MaxWidth;
+            maxWidth.IndexChanged += (s, o, n) =>
+            {
+                float v = maxWidth.Value;
+                InstructionalButtons.MaxWidth = v;
+                InstructionalButtons.Update();
+                foreach (UIMenu child in Children.Values)
+                {
+                    child.InstructionalButtons.MaxWidth = v;
+                    child.InstructionalButtons.Update();
+                }
+            };
+
             var addButton = new UIMenuItem("Add Button");
             addButton.Activated += (m, s) =>
             {
                 var button = new InstructionalButton("A", "Slot #" + slotId++);
                 var buttonMenu = new ButtonMenu(button);
+                buttonMenu.InstructionalButtons.BackgroundColor = bg.SelectedItem.GetColor();
+                buttonMenu.InstructionalButtons.MaxWidth = maxWidth.Value;
                 buttonMenu.InstructionalButtons.Buttons.Clear();
                 foreach (IInstructionalButtonSlot slot in InstructionalButtons.Buttons)
                 {
@@ -56,6 +76,7 @@
             };
 
             AddItem(bg);
+            AddItem(maxWidth);
             AddItem(addButton);
         }
 
