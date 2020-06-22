@@ -369,72 +369,53 @@ namespace RAGENativeUI
             if (enable)
             {
                 N.EnableAllControlActions(0);
-                return;
             }
             else
             {
-                N.DisableAllControlActions(0);
-            }
-
-            //Controls we want
-            // -Frontend
-            // -Mouse
-            // -Walk/Move
-            // -
-
-            for (int i = 0; i < menuNavigationNeededControls.Length; i++)
-            {
-                N.EnableControlAction(0, menuNavigationNeededControls[i]);
-            }
-
-            if (IsUsingController)
-            {
-                for (int i = 0; i < menuNavigationControllerNeededControls.Length; i++)
+                for (int i = 0; i < ControlsToDisable.Length; i++)
                 {
-                    N.EnableControlAction(0, menuNavigationControllerNeededControls[i]);
+                    N.DisableControlAction(0, ControlsToDisable[i]);
                 }
             }
         }
 
-        private static readonly GameControl[] menuNavigationNeededControls =
+        // controls taken from the game scripts
+        private static readonly GameControl[] ControlsToDisable = new[]
         {
-            GameControl.FrontendAccept,
-            GameControl.FrontendAxisX,
-            GameControl.FrontendAxisY,
-            GameControl.FrontendDown,
-            GameControl.FrontendUp,
-            GameControl.FrontendLeft,
-            GameControl.FrontendRight,
-            GameControl.FrontendCancel,
-            GameControl.FrontendSelect,
-            GameControl.CursorScrollDown,
-            GameControl.CursorScrollUp,
-            GameControl.CursorX,
-            GameControl.CursorY,
-            GameControl.CursorAccept,
-            GameControl.CursorCancel,
-            GameControl.MoveUpDown,
-            GameControl.MoveLeftRight,
+            GameControl.SelectWeapon,
+            GameControl.SelectWeaponUnarmed,
+            GameControl.SelectWeaponMelee,
+            GameControl.SelectWeaponHandgun,
+            GameControl.SelectWeaponShotgun,
+            GameControl.SelectWeaponSmg,
+            GameControl.SelectWeaponAutoRifle,
+            GameControl.SelectWeaponSniper,
+            GameControl.SelectWeaponHeavy,
+            GameControl.SelectWeaponSpecial,
+            GameControl.WeaponWheelNext,
+            GameControl.WeaponWheelPrev,
+            GameControl.WeaponSpecial,
+            GameControl.WeaponSpecialTwo,
+            GameControl.MeleeAttackLight,
+            GameControl.MeleeAttackHeavy,
+            GameControl.MeleeBlock,
+            GameControl.Detonate,
+            GameControl.Context,
+            GameControl.Reload,
+            GameControl.Dive,
             GameControl.Sprint,
-            GameControl.Jump,
-            GameControl.Enter,
-            GameControl.VehicleExit,
-            GameControl.VehicleAccelerate,
-            GameControl.VehicleBrake,
-            GameControl.VehicleMoveLeftRight,
-            GameControl.VehicleFlyYawLeft,
-            GameControl.ScriptedFlyLeftRight,
-            GameControl.ScriptedFlyUpDown,
-            GameControl.VehicleFlyYawRight,
-            GameControl.VehicleHandbrake,
-        };
-
-        private static readonly GameControl[] menuNavigationControllerNeededControls =
-        {
-            GameControl.LookUpDown,
-            GameControl.LookLeftRight,
-            GameControl.Aim,
-            GameControl.Attack,
+            GameControl.VehicleDuck,
+            GameControl.VehicleHeadlight,
+            GameControl.VehicleRadioWheel,
+            GameControl.NextCamera,
+            GameControl.VehicleCinCam,
+            GameControl.VehiclePushbikeSprint,
+            GameControl.VehiclePushbikePedal,
+            GameControl.SelectCharacterMichael,
+            GameControl.SelectCharacterFranklin,
+            GameControl.SelectCharacterTrevor,
+            GameControl.SelectCharacterMultiplayer,
+            GameControl.CharacterWheel,
         };
 
         /// <summary>
