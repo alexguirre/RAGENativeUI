@@ -42,13 +42,7 @@
             UIMenuItem messageLarge = new UIMenuItem("Message Large", $"Calls the ~b~{nameof(BigMessageHandler)}.{nameof(BigMessageHandler.ShowMpMessageLarge)}~s~ method.");
             messageLarge.Activated += (m, s) => bigMessage.ShowMpMessageLarge("Message");
 
-            AddItem(simple);
-            AddItem(old);
-            AddItem(rankup);
-            AddItem(missionPassed);
-            AddItem(colored);
-            AddItem(weaponPurchased);
-            AddItem(messageLarge);
+            AddItems(simple, old, rankup, missionPassed, colored, weaponPurchased, messageLarge);
         }
     }
 }

@@ -59,10 +59,7 @@
                 buttonMenu.InstructionalButtons.BackgroundColor = bg.SelectedItem.GetColor();
                 buttonMenu.InstructionalButtons.MaxWidth = maxWidth.Value;
                 buttonMenu.InstructionalButtons.Buttons.Clear();
-                foreach (IInstructionalButtonSlot slot in InstructionalButtons.Buttons)
-                {
-                    buttonMenu.InstructionalButtons.Buttons.Add(slot);
-                }
+                buttonMenu.InstructionalButtons.Buttons.AddRange(InstructionalButtons.Buttons);
 
                 var bindItem = new UIMenuItem(button.Text);
                 AddItem(bindItem);
@@ -75,9 +72,7 @@
                 }
             };
 
-            AddItem(bg);
-            AddItem(maxWidth);
-            AddItem(addButton);
+            AddItems(bg, maxWidth, addButton);
         }
 
 
@@ -169,11 +164,7 @@
                     }
                 };
 
-                AddItem(type);
-                AddItem(text);
-                AddItem(control);
-                AddItem(rawId);
-                AddItem(remove);
+                AddItems(type, text, control, rawId, remove);
             }
         }
     }

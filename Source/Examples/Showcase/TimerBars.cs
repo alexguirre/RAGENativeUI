@@ -45,10 +45,7 @@
                 {
                     if (v)
                     {
-                        tbPool.Add(text);
-                        tbPool.Add(progressBar);
-                        tbPool.Add(checkpoints);
-                        tbPool.Add(icons);
+                        tbPool.Add(text, progressBar, checkpoints, icons);
                     }
                     else
                     {
@@ -69,15 +66,9 @@
             UIMenu checkpointsMenu = new UIMenu(Title, Subtitle + ": CHECKPOINTS");
             UIMenu iconsMenu = new UIMenu(Title, Subtitle + ": ICONS");
 
-            Plugin.Pool.Add(textMenu);
-            Plugin.Pool.Add(progressBarMenu);
-            Plugin.Pool.Add(checkpointsMenu);
-            Plugin.Pool.Add(iconsMenu);
+            Plugin.Pool.Add(textMenu, progressBarMenu, checkpointsMenu, iconsMenu);
 
-            AddItem(textBindItem);
-            AddItem(progressBarBindItem);
-            AddItem(checkpointsBindItem);
-            AddItem(iconsBindItem);
+            AddItems(textBindItem, progressBarBindItem, checkpointsBindItem, iconsBindItem);
 
             BindMenuToItem(textMenu, textBindItem);
             BindMenuToItem(progressBarMenu, progressBarBindItem);
@@ -132,10 +123,7 @@
                     }
                 };
 
-                progressBarMenu.AddItem(percentage);
-                progressBarMenu.AddItem(foreground);
-                progressBarMenu.AddItem(background);
-                progressBarMenu.AddItem(markers);
+                progressBarMenu.AddItems(percentage, foreground, background, markers);
                 AddCommonMenuItems(progressBarMenu, progressBar);
             }
 
@@ -191,10 +179,7 @@
                     }
                 };
 
-                checkpointsMenu.AddItem(num);
-                checkpointsMenu.AddItem(state);
-                checkpointsMenu.AddItem(crossedOut);
-                checkpointsMenu.AddItem(color);
+                checkpointsMenu.AddItems(num, state, crossedOut, color);
                 AddCommonMenuItems(checkpointsMenu, checkpoints);
             }
 
@@ -246,9 +231,7 @@
                 type.IndexChanged += (s, o, n) => updateIcons();
                 num.Value = 1;
 
-                iconsMenu.AddItem(num);
-                iconsMenu.AddItem(type);
-                iconsMenu.AddItem(color);
+                iconsMenu.AddItems(num, type, color);
                 AddCommonMenuItems(iconsMenu, icons);
             }
         }
@@ -283,9 +266,7 @@
                 tb.Highlight = highlight.SelectedItem.GetColor();
             };
 
-            menu.AddItem(label);
-            menu.AddItem(accent);
-            menu.AddItem(highlight);
+            menu.AddItems(label, accent, highlight);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace RNUIExamples
 {
     using System;
+    using System.Linq;
     using Rage;
     using Rage.Attributes;
     using Rage.Native;
@@ -17,9 +18,8 @@
             // create the pool that handles drawing and processing the menus
             pool = new MenuPool();
 
-            // create the main menu and add it to the pool
+            // create the main menu
             mainMenu = new UIMenu("RAGENativeUI", "EXAMPLE");
-            pool.Add(mainMenu);
 
             // create the menu items
             {
@@ -95,16 +95,11 @@
                 };
 
                 // add the items to the menu
-                mainMenu.AddItem(cb);
-                mainMenu.AddItem(spawnCar);
-                mainMenu.AddItem(numbers);
-                mainMenu.AddItem(strings);
-                mainMenu.AddItem(cash);
+                mainMenu.AddItems(cb, spawnCar, numbers, strings, cash);
             }
 
             // create a child menu
             UIMenu childMenu = new UIMenu("RAGENativeUI", "CHILD MENU");
-            pool.Add(childMenu);
 
             // create a new item in the main menu and bind the child menu to it
             {
@@ -119,10 +114,10 @@
             }
 
             // create the child menu items
-            for (int i = 1; i <= 50; i++)
-            {
-                childMenu.AddItem(new UIMenuItem($"Item #{i}"));
-            }
+            childMenu.AddItems(Enumerable.Range(1, 50).Select(i => new UIMenuItem($"Item #{i}")));
+
+            // add all the menus to the pool
+            pool.Add(mainMenu, childMenu);
 
             // start the fiber which will handle drawing and processing the menus
             GameFiber.StartNew(ProcessMenus);
