@@ -283,8 +283,8 @@ namespace RAGENativeUI
             Children = new Dictionary<UIMenuItem, UIMenu>();
 
             InstructionalButtons = new InstructionalButtons();
-            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendAccept, "Select"));
-            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendCancel, "Back"));
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendAccept, "Select"),
+                                             new InstructionalButton(GameControl.FrontendCancel, "Back"));
 
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
             Title = title;
@@ -489,6 +489,18 @@ namespace RAGENativeUI
 
             RefreshCurrentSelection();
         }
+
+        public void AddItems(IEnumerable<UIMenuItem> items)
+        {
+            foreach (UIMenuItem i in items)
+            {
+                i.Parent = this;
+                MenuItems.Add(i);
+            }
+            RefreshCurrentSelection();
+        }
+
+        public void AddItems(params UIMenuItem[] items) => AddItems((IEnumerable<UIMenuItem>)items);
 
         /// <summary>
         /// Remove an item at index n.
@@ -1607,7 +1619,7 @@ namespace RAGENativeUI
         /// </summary>
         private void RefreshCurrentSelection()
         {
-            CurrentSelection = CurrentSelection;
+            CurrentSelection = CurrentSelection == -1 ? 0 : CurrentSelection;
         }
 
         /// <summary>

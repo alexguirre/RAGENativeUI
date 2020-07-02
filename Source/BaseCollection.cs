@@ -102,6 +102,20 @@ namespace RAGENativeUI
             ItemAdded?.Invoke(this, item);
         }
 
+        public virtual void Add(params T[] items) => AddRange((IEnumerable<T>)items);
+
+        public virtual void AddRange(IEnumerable<T> items)
+        {
+            InternalList.AddRange(items);
+            if (ItemAdded != null)
+            {
+                foreach (T i in items)
+                {
+                    ItemAdded.Invoke(this, i);
+                }
+            }
+        }
+
         /// <summary>
         /// Removes the item at the specified index from this <see cref="BaseCollection{T}"/>.
         /// </summary>
