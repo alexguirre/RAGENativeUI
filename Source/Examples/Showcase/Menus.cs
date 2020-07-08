@@ -151,8 +151,33 @@
                     new UIMenuCheckboxItem("#13", false, "With custom background color.") { BackColor = Color.FromArgb(140, HudColor.RedDark.GetColor()), HighlightedBackColor = Color.FromArgb(230, HudColor.TechRed.GetColor()) },
                     new UIMenuCheckboxItem("#14", true, "With custom background color.") { BackColor = Color.FromArgb(140, HudColor.RedDark.GetColor()), HighlightedBackColor = Color.FromArgb(230, HudColor.TechRed.GetColor()) },
                     new UIMenuCheckboxItem("#14", false, "With custom badge.") { RightBadgeInfo = new UIMenuItem.BadgeInfo("commonmenu", "mp_alerttriangle", HudColor.Red.GetColor()) },
-                    new UIMenuCheckboxItem("#15", true, "With custom badge.") { RightBadgeInfo = new UIMenuItem.BadgeInfo("commonmenu", "mp_alerttriangle", HudColor.Red.GetColor()) }
+                    new UIMenuCheckboxItem("#15", true, "With custom badge.") { RightBadgeInfo = new UIMenuItem.BadgeInfo("commonmenu", "mp_alerttriangle", HudColor.Red.GetColor()) },
+                    new UIMenuCheckboxItem("#16", true, "With cross instead of tick.") { Style = UIMenuCheckboxStyle.Cross },
+                    CreateTriStateCheckbox("#17", "Checkbox with three states: unchecked, checked with tick and checked with cross.")
                 );
+
+                static UIMenuCheckboxItem CreateTriStateCheckbox(string name, string description)
+                {
+                    var cb = new UIMenuCheckboxItem(name, false, description);
+
+                    cb.Activated += (s, i) =>
+                    {
+                        if (cb.Checked)
+                        {
+                            if (cb.Style == UIMenuCheckboxStyle.Tick)
+                            {
+                                cb.Style = UIMenuCheckboxStyle.Cross;
+                                cb.Checked = !cb.Checked; // make the item checked
+                            }
+                            else
+                            {
+                                cb.Style = UIMenuCheckboxStyle.Tick;
+                            }
+                        }
+                    };
+
+                    return cb;
+                }
             }
 
             // scroller
