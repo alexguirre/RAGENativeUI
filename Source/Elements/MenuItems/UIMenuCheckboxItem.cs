@@ -3,12 +3,25 @@ using System.Drawing;
 
 namespace RAGENativeUI.Elements
 {
+    public enum UIMenuCheckboxStyle
+    {
+        Tick,
+        Cross,
+    }
+
     public class UIMenuCheckboxItem : UIMenuItem
     {        
         /// <summary>
         /// Triggered when the checkbox state is changed.
         /// </summary>
         public event ItemCheckboxEvent CheckboxEvent;
+
+        /// <summary>
+        /// Change or get whether the checkbox is checked.
+        /// </summary>
+        public bool Checked { get; set; }
+
+        public UIMenuCheckboxStyle Style { get; set; } = UIMenuCheckboxStyle.Tick;
 
         /// <summary>
         /// Checkbox item with a toggleable checkbox.
@@ -32,12 +45,6 @@ namespace RAGENativeUI.Elements
             Checked = check;
         }
 
-
-        /// <summary>
-        /// Change or get whether the checkbox is checked.
-        /// </summary>
-        public bool Checked { get; set; }
-
         /// <summary>
         /// Draw item.
         /// </summary>
@@ -45,25 +52,15 @@ namespace RAGENativeUI.Elements
         {
             base.Draw(x, y, menuWidth, itemHeight);
 
-            string cbName;
-            bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
-            if (Selected && Enabled && isDefaultHightlitedForeColor)
-            {
-                cbName = Checked ? UIMenu.CheckboxTickSelectedTextureName : UIMenu.CheckboxBlankSelectedTextureName;
-            }
-            else
-            {
-                cbName = Checked ? UIMenu.CheckboxTickTextureName : UIMenu.CheckboxBlankTextureName;
-            }
+            var (name, color) = GetCheckboxTexture();
 
-            UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, cbName, out float w, out float h);
+            UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, name, out float w, out float h);
 
             GetBadgeOffsets(out _, out float badgeOffset);
             float spriteX = x + menuWidth - (w * 0.5f) - badgeOffset;
             float spriteY = y + (h * 0.5f) - (0.00138888f * 4.0f);
 
-            Color c = Enabled ? (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor : DisabledForeColor;
-            UIMenu.DrawSprite(UIMenu.CommonTxd, cbName, spriteX, spriteY, w, h, c);
+            UIMenu.DrawSprite(UIMenu.CommonTxd, name, spriteX, spriteY, w, h, color);
         }
 
         protected internal override bool OnInput(UIMenu menu, Common.MenuControls control)
@@ -94,5 +91,42 @@ namespace RAGENativeUI.Elements
         }
 
         public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuCheckboxItem)} cannot have a right label."); }
+
+        private (string Name, Color Color) GetCheckboxTexture()
+        {
+            static string GetSelected(UIMenuCheckboxStyle style) => style switch
+            {
+                UIMenuCheckboxStyle.Tick => UIMenu.CheckboxTickSelectedTextureName,
+                UIMenuCheckboxStyle.Cross => UIMenu.CheckboxCrossSelectedTextureName,
+                _ => throw new ArgumentException(),
+            };
+
+            static string GetUnselected(UIMenuCheckboxStyle style) => style switch
+            {
+                UIMenuCheckboxStyle.Tick => UIMenu.CheckboxTickTextureName,
+                UIMenuCheckboxStyle.Cross => UIMenu.CheckboxCrossTextureName,
+                _ => throw new ArgumentException(),
+            };
+
+
+            bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
+            
+            string name;
+            if (Selected && Enabled && isDefaultHightlitedForeColor)
+            {
+                name = Checked ? GetSelected(Style) : UIMenu.CheckboxBlankSelectedTextureName;
+            
+            }
+            else
+            {
+                name = Checked ? GetUnselected(Style) : UIMenu.CheckboxBlankTextureName;
+            }
+
+            Color color = Enabled ?
+                        (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor :
+                        DisabledForeColor;
+
+            return (name, color);
+        }
     }
 }

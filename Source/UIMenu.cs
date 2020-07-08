@@ -106,8 +106,10 @@ namespace RAGENativeUI
         internal const string ArrowLeftTextureName = "arrowleft";
         internal const string ArrowRightTextureName = "arrowright";
         internal const string CheckboxTickTextureName = "shop_box_tick";
+        internal const string CheckboxCrossTextureName = "shop_box_cross";
         internal const string CheckboxBlankTextureName = "shop_box_blank";
         internal const string CheckboxTickSelectedTextureName = "shop_box_tickb";
+        internal const string CheckboxCrossSelectedTextureName = "shop_box_crossb";
         internal const string CheckboxBlankSelectedTextureName = "shop_box_blankb";
         internal const string DefaultBannerTextureName = "interaction_bgd";
 
