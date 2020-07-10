@@ -153,8 +153,8 @@ namespace RAGENativeUI
 
         private int currentItem;
         private RectangleF currentItemBounds = RectangleF.Empty;
-        private int minItem;
-        private int maxItem;
+        internal int minItem; // TODO: expose these via properties
+        internal int maxItem;
         private int hoveredItem = -1;
         private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
@@ -621,7 +621,7 @@ namespace RAGENativeUI
             }
         }
 
-        private void UpdateScreenVars()
+        internal static void UpdateScreenVars()
         {
             uint frame = Game.FrameCount;
             if (frame != Shared.ScreenLastFrame)

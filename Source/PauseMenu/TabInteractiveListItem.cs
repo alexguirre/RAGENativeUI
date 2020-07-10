@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Rage;
@@ -8,68 +7,37 @@ namespace RAGENativeUI.PauseMenu
 {
     public class TabInteractiveListItem : TabItem
     {
+        protected const int MaxItemsPerView = 15;
+        
+        /// <summary>
+        /// Hidden menu that holds the items and handles the input logic.
+        /// </summary>
+        private readonly UIMenu backingMenu;
+        private int lastItemCount = 0;
+
+        public List<UIMenuItem> Items { get => backingMenu.MenuItems; set => backingMenu.MenuItems = value; }
+        public bool IsInList { get; set; }
+        public int Index { get => backingMenu.CurrentSelection; set => backingMenu.CurrentSelection = value; }
+
         public TabInteractiveListItem(string name, IEnumerable<UIMenuItem> items) : base(name)
         {
             DrawBg = false;
             CanBeFocused = true;
-            Items = new List<UIMenuItem>(items);
+            backingMenu = new UIMenu("", "")
+            {
+                MenuItems = new List<UIMenuItem>(items),
+                MaxItemsOnScreen = MaxItemsPerView,
+            };
             IsInList = true;
-            minItem = 0;
-            maxItem = MaxItemsPerView;
         }
 
-        public List<UIMenuItem> Items { get; set; }
-        public int Index { get; set; }
-        public bool IsInList { get; set; }
-        protected const int MaxItemsPerView = 15;
-        protected int minItem;
-        protected int maxItem;
-        private bool focused;
-
-        public void MoveDown()
-        {
-            Index = (1000 - (1000 % Items.Count) + Index + 1) % Items.Count;
-
-            if (Items.Count <= MaxItemsPerView) return;
-
-            if (Index >= maxItem)
-            {
-                maxItem++;
-                minItem++;
-            }
-
-            if (Index == 0)
-            {
-                minItem = 0;
-                maxItem = MaxItemsPerView;
-            }
-        }
-
-        public void MoveUp()
-        {
-            Index = (1000 - (1000 % Items.Count) + Index - 1) % Items.Count;
-
-            if (Items.Count <= MaxItemsPerView) return;
-
-            if (Index < maxItem)
-            {
-                maxItem--;
-                minItem--;
-            }
-
-            if (Index == Items.Count - 1)
-            {
-                minItem = Items.Count - MaxItemsPerView;
-                maxItem = Items.Count;
-            }
-        }
-
+        public void MoveDown() => backingMenu.GoDown();
+        public void MoveUp() => backingMenu.GoUp();
 
         public void RefreshIndex()
         {
-            Index = 0;
-            minItem = 0;
-            maxItem = MaxItemsPerView;
+            backingMenu.RefreshIndex();
+            lastItemCount = Items.Count;
         }
 
         public override void ProcessControls()
@@ -88,47 +56,38 @@ namespace RAGENativeUI.PauseMenu
             if (Items.Count == 0)
                 return;
 
-
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendAccept) && Focused && Items[Index] is UIMenuCheckboxItem)
+            if (lastItemCount != Items.Count)
             {
-                Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                UIMenuCheckboxItem cb = (UIMenuCheckboxItem)Items[Index];
-                cb.Checked = !cb.Checked;
-                cb.CheckboxEventTrigger();
-            }
-            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendAccept) && Focused)
-            {
-                Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                Items[Index].ItemActivate(null);
+                // Previous versions didn't really require calling RefreshIndex.
+                // Now that we're using UIMenu, it is required since we expose the items List and don't use UIMenu.Add/RemoveItem,
+                // so refresh here if the item count is different to avoid breaking old code
+                RefreshIndex();
             }
 
-
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendLeft) && Focused && Items[Index] is UIMenuListItem)
+            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendAccept) && Focused)
             {
-                var it = (UIMenuListItem)Items[Index];
-                it.Index--;
-                Common.PlaySound("NAV_LEFT_RIGHT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                it.ListChangedTrigger(it.Index);
+                backingMenu.SelectItem();
             }
 
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendRight) && Focused && Items[Index] is UIMenuListItem)
+            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendLeft) && Focused)
             {
-                var it = (UIMenuListItem)Items[Index];
-                it.Index++;
-                Common.PlaySound("NAV_LEFT_RIGHT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-                it.ListChangedTrigger(it.Index);
+                backingMenu.GoLeft();
             }
 
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp))
+            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendRight) && Focused)
             {
-                Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                backingMenu.GoRight();
+            }
+
+
+            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp))
+            {
                 MoveUp();
             }
-            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown))
+            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown))
             {
-                Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
                 MoveDown();
             }
         }
@@ -140,130 +99,52 @@ namespace RAGENativeUI.PauseMenu
 
             base.Draw();
 
+            if (Items.Count == 0)
+            {
+                return;
+            }
+
+            UIMenu.UpdateScreenVars();
+
             int blackAlpha = Focused ? 200 : 100;
             int fullAlpha = Focused ? 255 : 150;
 
             int subMenuWidth = (BottomRight.X - TopLeft.X);
             Size itemSize = new Size(subMenuWidth, 40);
 
+            // taken from ResRectangle.Draw
+            int screenw = Game.Resolution.Width;
+            int screenh = Game.Resolution.Height;
+            const float height = 1080f;
+            float ratio = (float)screenw / screenh;
+            var width = height * ratio;
+
             int i = 0;
-            for (int c = minItem; c < Math.Min(Items.Count, maxItem); c++)
+            for (int c = backingMenu.minItem; c <= backingMenu.maxItem; c++)
             {
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                bool hasLeftBadge = Items[c].LeftBadgeInfo != null;
-                bool hasRightBadge = Items[c].RightBadgeInfo != null;
+                Point pos = SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i));
+                
+                // draw item background
+                ResRectangle.Draw(pos, itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : /*Focused && hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.FromArgb(blackAlpha, Color.Black));
 
-                bool hasBothBadges = hasRightBadge && hasLeftBadge;
-                bool hasAnyBadge = hasRightBadge || hasLeftBadge;
+                // taken from ResRectangle.Draw
+                float w = itemSize.Width / width;
+                float h = itemSize.Height / height;
+                float x = pos.X / width;
+                float y = pos.Y / height;
 
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : /*Focused && hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.FromArgb(blackAlpha, Color.Black));
-                ResText.Draw(Items[c].Text, SafeSize.AddPoints(new Point((hasBothBadges ? 60 : hasAnyBadge ? 30 : 6), 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
+                var item = Items[c];
 
-                bool selected = (Index == c && Focused);
-                if (hasLeftBadge && !hasRightBadge && !Items[c].LeftBadgeInfo.IsBlank &&
-                    BadgeToSprite(Items[c].LeftBadgeInfo, selected, out string badgeTxd, out string badgeTex))
-                {
-                    Sprite.Draw(badgeTxd, badgeTex,
-                                SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                                BadgeToColor(Items[c].LeftBadgeInfo, selected));
-                }
+                // workaround to not draw the navigation bar when not focused
+                // TODO: some other way to avoid drawing the nav bar as Selected may be overriden and could be an expensive operation
+                bool selected = item.Selected;
+                item.Selected = selected && Focused;
 
-                if (!hasLeftBadge && hasRightBadge && !Items[c].RightBadgeInfo.IsBlank &&
-                    BadgeToSprite(Items[c].RightBadgeInfo, selected, out badgeTxd, out badgeTex))
-                {
-                    Sprite.Draw(badgeTxd, badgeTex,
-                                SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                                BadgeToColor(Items[c].RightBadgeInfo, selected));
-                }
+                item.Draw(x, y, w, h);
 
-                if (hasLeftBadge && hasRightBadge)
-                {
-                    if (!Items[c].LeftBadgeInfo.IsBlank && BadgeToSprite(Items[c].LeftBadgeInfo, selected, out badgeTxd, out badgeTex))
-                    {
-                        Sprite.Draw(badgeTxd, badgeTex,
-                                    SafeSize.AddPoints(new Point(-2, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                                    BadgeToColor(Items[c].LeftBadgeInfo, selected));
-                    }
-
-                    if (!Items[c].RightBadgeInfo.IsBlank && BadgeToSprite(Items[c].RightBadgeInfo, selected, out badgeTxd, out badgeTex))
-                    {
-                        Sprite.Draw(badgeTxd, badgeTex,
-                                    SafeSize.AddPoints(new Point(25, 1 + (itemSize.Height + 3) * i)), new Size(40, 40), 0f,
-                                    BadgeToColor(Items[c].RightBadgeInfo, selected));
-                    }
-                }
-
-                if (!String.IsNullOrEmpty(Items[c].RightLabel))
-                {
-                    ResText.Draw(Items[c].RightLabel,
-                                SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 5, 5 + (itemSize.Height + 3) * i)),
-                                0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White),
-                                Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
-                }
-
-                if (Items[c] is UIMenuCheckboxItem)
-                {
-                    string textureName;
-                    if (c == Index && Focused)
-                    {
-                        textureName = ((UIMenuCheckboxItem)Items[c]).Checked ? "shop_box_tickb" : "shop_box_blankb";
-                    }
-                    else
-                    {
-                        textureName = ((UIMenuCheckboxItem)Items[c]).Checked ? "shop_box_tick" : "shop_box_blank";
-                    }
-                    Sprite.Draw("commonmenu", textureName, SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 60, -5 + (itemSize.Height + 3) * i)), new Size(50, 50), 0f, Color.White);
-                }
-                else if (Items[c] is UIMenuListItem)
-                {
-                    var convItem = (UIMenuListItem)Items[c];
-
-                    var yoffset = 5;
-                    var basePos =
-                        SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 30, yoffset + (itemSize.Height + 3) * i));
-
-                    var arrowLeft = new Sprite("commonmenu", "arrowleft", basePos, new Size(30, 30));
-                    var arrowRight = new Sprite("commonmenu", "arrowright", basePos, new Size(30, 30));
-                    var itemText = new ResText("", basePos, 0.35f, Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Right);
-
-                    string caption = (convItem.Collection == null ? convItem.IndexToItem(convItem.Index) : convItem.Collection[convItem.Index]).ToString();
-                    {
-                        // prepare text style for TextCommands.GetWidth
-                        int screenw = Game.Resolution.Width;
-                        int screenh = Game.Resolution.Height;
-                        const float height = 1080f;
-                        float ratio = (float)screenw / screenh;
-                        var width = height * ratio;
-                        float x = (itemText.Position.X) / width;
-                        N.SetTextFont((int)itemText.FontEnum);
-                        N.SetTextScale(0.0f, itemText.Scale);
-                        N.SetTextRightJustify(true);
-                        N.SetTextWrap(0.0f, x);
-                    }
-                    int offset = (int)(TextCommands.GetWidth(caption) * Game.Resolution.Width);
-
-                    itemText.Color = convItem.Enabled ? selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
-
-                    itemText.Caption = caption;
-
-                    arrowLeft.Color = convItem.Enabled ? selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
-                    arrowRight.Color = convItem.Enabled ? selected ? Color.Black : Color.WhiteSmoke : Color.FromArgb(163, 159, 148);
-
-                    arrowLeft.Position = SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 60 - offset, yoffset + (itemSize.Height + 3) * i));
-                    if (selected)
-                    {
-                        arrowLeft.Draw();
-                        arrowRight.Draw();
-                        itemText.Position = SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 30, yoffset + (itemSize.Height + 3) * i));
-                    }
-                    else
-                    {
-                        itemText.Position = SafeSize.AddPoints(new Point(BottomRight.X - SafeSize.X - 5, yoffset + (itemSize.Height + 3) * i));
-                    }
-
-                    itemText.Draw();
-                }
+                item.Selected = selected;
 
                 //if (Focused && hovering && (Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) || Game.IsControlJustPressed(0, GameControl.CursorAccept)))
                 //{
@@ -290,33 +171,6 @@ namespace RAGENativeUI.PauseMenu
 
                 i++;
             }
-        }
-
-        private static Color BadgeToColor(UIMenuItem.BadgeInfo badge, bool selected)
-        {
-            if (badge.Color == null)
-            {
-                return selected ? Color.FromArgb(255, 0, 0, 0) : Color.FromArgb(255, 255, 255, 255);
-            }
-            else
-            {
-                return badge.Color.Value;
-            }
-        }
-
-        private static bool BadgeToSprite(UIMenuItem.BadgeInfo badge, bool selected, out string txd, out string tex)
-        {
-            badge.GetTexture(selected, out txd, out tex);
-            if (badge.Style == UIMenuItem.BadgeStyle.Custom)
-            {
-                N.RequestStreamedTextureDict(txd);
-                if (!N.HasStreamedTextureDictLoaded(txd))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }
