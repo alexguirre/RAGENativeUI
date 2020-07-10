@@ -27,6 +27,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 MenuItems = new List<UIMenuItem>(items),
                 MaxItemsOnScreen = MaxItemsPerView,
+                Visible = true, // true to allow us to use UIMenu.ProcessControl
             };
             IsInList = true;
         }
@@ -64,32 +65,7 @@ namespace RAGENativeUI.PauseMenu
                 RefreshIndex();
             }
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendAccept) && Focused)
-            {
-                backingMenu.SelectItem();
-            }
-
-
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendLeft) && Focused)
-            {
-                backingMenu.GoLeft();
-            }
-
-
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendRight) && Focused)
-            {
-                backingMenu.GoRight();
-            }
-
-
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp))
-            {
-                MoveUp();
-            }
-            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown))
-            {
-                MoveDown();
-            }
+            backingMenu.ProcessControl();
         }
 
         public override void Draw()
