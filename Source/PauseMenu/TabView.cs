@@ -20,6 +20,11 @@ namespace RAGENativeUI.PauseMenu
             CanLeave = true;
 
             MoneySubtitle = "";
+
+            InstructionalButtons = new InstructionalButtons();
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendAccept, "Select"));
+            InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
+            InstructionalButtons.Buttons.Add(new InstructionalButtonGroup(new[] { GameControl.FrontendLb, GameControl.FrontendRb }, "Browse"));
         }
 
         public string Title { get; set; }
@@ -58,37 +63,23 @@ namespace RAGENativeUI.PauseMenu
         public int Index;
         private bool _visible;
 
+        public InstructionalButtons InstructionalButtons { get; }
+
         public void AddTab(TabItem item)
         {
             Tabs.Add(item);
             item.Parent = this;
         }
 
-        private Scaleform _sc;
         public void ShowInstructionalButtons()
         {
-            if (_sc == null)
-            {
-                _sc = new Scaleform(0);
-                _sc.Load("instructional_buttons");
-            }
-
-            _sc.CallFunction("CLEAR_ALL");
-            _sc.CallFunction("TOGGLE_MOUSE_BUTTONS", 0);
-            _sc.CallFunction("CREATE_CONTAINER");
-
-
-            _sc.CallFunction("SET_DATA_SLOT", 0, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)GameControl.CellphoneSelect, 0), "Select");
-            _sc.CallFunction("SET_DATA_SLOT", 1, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)GameControl.CellphoneCancel, 0), "Back");
-
-            _sc.CallFunction("SET_DATA_SLOT", 2, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)GameControl.FrontendRb, 0), "");
-            _sc.CallFunction("SET_DATA_SLOT", 3, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)GameControl.FrontendLb, 0), "Browse");
+            InstructionalButtons.Draw();
 
         }
 
         public void DrawInstructionalButton(int slot, GameControl control, string text)
         {
-            _sc.CallFunction("SET_DATA_SLOT", slot, (string)NativeFunction.CallByHash(0x0499d7b09fc9b407, typeof(string), 2, (int)control, 0), text);
+            InstructionalButtons.Buttons.Add(new InstructionalButton(control, text));
         }
 
         public void ProcessControls()
@@ -289,10 +280,6 @@ namespace RAGENativeUI.PauseMenu
             }
 
             Tabs[Index].Draw();
-
-            _sc.CallFunction("DRAW_INSTRUCTIONAL_BUTTONS", -1);
-
-            _sc.Render2D();
         }
 
         public void DrawTextures(Rage.Graphics g)
