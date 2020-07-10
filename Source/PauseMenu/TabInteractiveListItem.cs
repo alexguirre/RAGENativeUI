@@ -120,7 +120,7 @@ namespace RAGENativeUI.PauseMenu
             var width = height * ratio;
 
             int i = 0;
-            for (int c = backingMenu.minItem; c <= backingMenu.maxItem; c++)
+            for (int c = backingMenu.FirstItemOnScreen; c <= backingMenu.LastItemOnScreen; c++)
             {
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 

@@ -153,8 +153,8 @@ namespace RAGENativeUI
 
         private int currentItem;
         private RectangleF currentItemBounds = RectangleF.Empty;
-        internal int minItem; // TODO: expose these via properties
-        internal int maxItem;
+        private int minItem;
+        private int maxItem;
         private int hoveredItem = -1;
         private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
@@ -1722,6 +1722,16 @@ namespace RAGENativeUI
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the index of the first visible item.
+        /// </summary>
+        public int FirstItemOnScreen => minItem;
+
+        /// <summary>
+        /// Gets the index of the last visible item.
+        /// </summary>
+        public int LastItemOnScreen => maxItem;
 
         /// <summary>
         /// Returns false if last input was made with mouse and keyboard, true if it was made with a controller.
