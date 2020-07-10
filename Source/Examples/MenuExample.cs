@@ -123,6 +123,7 @@
             GameFiber.StartNew(ProcessMenus);
 
             // continue with the plugin...
+            Game.Console.Print("Press F6 to open the menu.");
         }
 
         private static void ProcessMenus()
