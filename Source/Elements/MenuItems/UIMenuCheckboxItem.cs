@@ -94,32 +94,26 @@ namespace RAGENativeUI.Elements
 
         private (string Name, Color Color) GetCheckboxTexture()
         {
-            static string GetSelected(UIMenuCheckboxStyle style) => style switch
+            static string GetChecked(UIMenuCheckboxStyle style, bool selected) => (style, selected) switch
             {
-                UIMenuCheckboxStyle.Tick => UIMenu.CheckboxTickSelectedTextureName,
-                UIMenuCheckboxStyle.Cross => UIMenu.CheckboxCrossSelectedTextureName,
-                _ => throw new ArgumentException(),
-            };
-
-            static string GetUnselected(UIMenuCheckboxStyle style) => style switch
-            {
-                UIMenuCheckboxStyle.Tick => UIMenu.CheckboxTickTextureName,
-                UIMenuCheckboxStyle.Cross => UIMenu.CheckboxCrossTextureName,
+                (UIMenuCheckboxStyle.Tick, false) => UIMenu.CheckboxTickTextureName,
+                (UIMenuCheckboxStyle.Cross, false) => UIMenu.CheckboxCrossTextureName,
+                (UIMenuCheckboxStyle.Tick, true) => UIMenu.CheckboxTickSelectedTextureName,
+                (UIMenuCheckboxStyle.Cross, true) => UIMenu.CheckboxCrossSelectedTextureName,
                 _ => throw new ArgumentException(),
             };
 
 
             bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
-            
+
             string name;
             if (Selected && Enabled && isDefaultHightlitedForeColor)
             {
-                name = Checked ? GetSelected(Style) : UIMenu.CheckboxBlankSelectedTextureName;
-            
+                name = Checked ? GetChecked(Style, true) : UIMenu.CheckboxBlankSelectedTextureName;
             }
             else
             {
-                name = Checked ? GetUnselected(Style) : UIMenu.CheckboxBlankTextureName;
+                name = Checked ? GetChecked(Style, false) : UIMenu.CheckboxBlankTextureName;
             }
 
             Color color = Enabled ?
