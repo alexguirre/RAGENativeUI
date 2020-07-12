@@ -298,10 +298,9 @@ namespace RAGENativeUI.PauseMenu
             Tabs[Index].DrawTextures(g);
         }
 
-        private static int numVisibleViews = 0;
         private static readonly StaticFinalizer cleanUpFinalizer = new StaticFinalizer(() =>
         {
-            if (numVisibleViews > 0)
+            if (NumberOfVisiblePauseMenus > 0)
             {
                 CleanUp();
             }
