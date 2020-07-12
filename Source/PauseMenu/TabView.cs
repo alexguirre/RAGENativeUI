@@ -4,11 +4,23 @@ using System.Drawing;
 using Rage;
 using Rage.Native;
 using RAGENativeUI.Elements;
+using RAGENativeUI.Internals;
 
 namespace RAGENativeUI.PauseMenu
 {
     public class TabView
     {
+        /// <summary>
+        /// Keeps track of the number of visible pause menus from the executing plugin.
+        /// Used to keep <see cref="Shared.NumberOfVisiblePauseMenus"/> consistent when unloading the plugin with some menu open.
+        /// </summary>
+        internal static uint NumberOfVisiblePauseMenus { get; set; }
+
+        /// <summary>
+        /// Gets whether any pause menu is currently visible. Includes pause menus from the executing plugin and from other plugins.
+        /// </summary>
+        public static bool IsAnyPauseMenuVisible => Shared.NumberOfVisiblePauseMenus > 0;
+
         public TabView(string title)
         {
             Title = title;
@@ -49,14 +61,16 @@ namespace RAGENativeUI.PauseMenu
 
                 if (value)
                 {
-                    numVisibleViews++;
+                    Shared.NumberOfVisiblePauseMenus++;
+                    NumberOfVisiblePauseMenus++;
                     N.SetPlayerControl(Game.LocalPlayer, false, 0);
                     N.AnimPostFxPlay("MinigameTransitionIn", 0, true);
                 }
                 else
                 {
                     CleanUp();
-                    numVisibleViews--;
+                    Shared.NumberOfVisiblePauseMenus--;
+                    NumberOfVisiblePauseMenus--;
                 }
             }
         }

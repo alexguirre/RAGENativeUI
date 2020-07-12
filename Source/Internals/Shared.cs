@@ -4,6 +4,7 @@
     using System.IO.MemoryMappedFiles;
     using System.Runtime.InteropServices;
     using Rage;
+    using RAGENativeUI.PauseMenu;
 
     internal static unsafe class Shared
     {
@@ -26,6 +27,7 @@
         public static ref float AspectRatio => ref data->AspectRatio;
 
         public static ref uint NumberOfVisibleMenus => ref data->NumberOfVisibleMenus;
+        public static ref uint NumberOfVisiblePauseMenus => ref data->NumberOfVisiblePauseMenus;
 
         public static long* MemoryAddresses => data->MemoryAddresses;
         public static int* MemoryInts => data->MemoryInts;
@@ -50,7 +52,8 @@
             // cleanup
             {
                 // in case there is any visible menus when unloading the plugin
-                NumberOfVisibleMenus -= UIMenu.NumberOfVisibleMenus; 
+                NumberOfVisibleMenus -= UIMenu.NumberOfVisibleMenus;
+                NumberOfVisiblePauseMenus -= TabView.NumberOfVisiblePauseMenus;
             }
 
             // dispose mapped file
@@ -81,6 +84,7 @@
             public SizeF ActualScreenResolution;
             public float AspectRatio;
             public uint NumberOfVisibleMenus;
+            public uint NumberOfVisiblePauseMenus;
             public fixed long MemoryAddresses[7];
             public fixed int MemoryInts[4];
         }
