@@ -49,12 +49,14 @@ namespace RAGENativeUI.PauseMenu
 
                 if (value)
                 {
-                    NativeFunction.CallByHash<uint>(0x2206bf9a37b7f724, "MinigameTransitionIn", 0, true); //_START_SCREEN_EFFECT
-
+                    numVisibleViews++;
+                    N.SetPlayerControl(Game.LocalPlayer, false, 0);
+                    N.AnimPostFxPlay("MinigameTransitionIn", 0, true);
                 }
                 else
                 {
-                    NativeFunction.CallByHash<uint>(0x068e835a1d0dc0e3, "MinigameTransitionIn"); //_STOP_SCREEN_EFFECT
+                    CleanUp();
+                    numVisibleViews--;
                 }
             }
         }
@@ -74,18 +76,11 @@ namespace RAGENativeUI.PauseMenu
         public void ShowInstructionalButtons()
         {
             InstructionalButtons.Draw();
-
-        }
-
-        public void DrawInstructionalButton(int slot, GameControl control, string text)
-        {
-            InstructionalButtons.Buttons.Add(new InstructionalButton(control, text));
         }
 
         public void ProcessControls()
         {
             if (!Visible || TemporarilyHidden) return;
-            NativeFunction.Natives.DisableAllControlActions(0);
 
             if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneLeft) && FocusLevel == 0)
             {
@@ -287,6 +282,21 @@ namespace RAGENativeUI.PauseMenu
             if (!Visible) return;
 
             Tabs[Index].DrawTextures(g);
+        }
+
+        private static int numVisibleViews = 0;
+        private static readonly StaticFinalizer cleanUpFinalizer = new StaticFinalizer(() =>
+        {
+            if (numVisibleViews > 0)
+            {
+                CleanUp();
+            }
+        });
+
+        private static void CleanUp()
+        {
+            N.SetPlayerControl(Game.LocalPlayer, true, 0);
+            N.AnimPostFxStop("MinigameTransitionIn");
         }
     }
 }

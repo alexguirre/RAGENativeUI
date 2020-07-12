@@ -148,6 +148,11 @@
         public static int EndScaleformMovieMethodReturnValue() => Natives.xC50AA39A577AF886<int>();
         public static bool IsScaleformMovieMethodReturnValueReady(int returnValueId) => Natives.x768FF8961BA904D6<bool>(returnValueId);
         public static int GetScaleformMovieMethodReturnValueInt(int returnValueId) => Natives.x2DE7EFA66B906036<int>(returnValueId);
+
+        public static void SetPlayerControl(Player player, bool hasControl, uint flags) => Natives.x8D32347D6D4C40A2(player, hasControl, flags);
+
+        public static void AnimPostFxPlay(string effectName, int duration, bool looped) => Natives.x2206bf9a37b7f724(effectName, duration, looped);
+        public static void AnimPostFxStop(string effectName) => Natives.x068E835A1D0DC0E3(effectName);
     }
 }
 
