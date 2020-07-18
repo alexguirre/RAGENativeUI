@@ -1266,18 +1266,19 @@ namespace RAGENativeUI
         {
             if (!Visible || justOpenedProcessMouse || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
-                N.EnableControlAction(0, GameControl.LookUpDown);
-                N.EnableControlAction(0, GameControl.LookLeftRight);
-                N.EnableControlAction(0, GameControl.Aim);
-                N.EnableControlAction(0, GameControl.Attack);
                 if (hoveredItem != -1)
                 {
                     MenuItems[hoveredItem].Hovered = false;
                     hoveredItem = -1;
                 }
                 hoveredUpDown = 0;
-
                 justOpenedProcessMouse = false;
+                return;
+            }
+
+            if (Game.Console.IsOpen)
+            {
+                justOpenedProcessMouse = true;
                 return;
             }
 
@@ -1488,7 +1489,7 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void ProcessControl()
         {
-            if (!Visible)
+            if (!Visible || Game.Console.IsOpen)
             {
                 return;
             }

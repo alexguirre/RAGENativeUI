@@ -94,7 +94,10 @@ namespace RAGENativeUI.PauseMenu
 
         public void ProcessControls()
         {
-            if (!Visible || TemporarilyHidden) return;
+            if (!Visible || TemporarilyHidden || Game.Console.IsOpen)
+            {
+                return;
+            }
 
             if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneLeft) && FocusLevel == 0)
             {
