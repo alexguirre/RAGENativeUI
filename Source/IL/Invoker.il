@@ -78,4 +78,65 @@
         calli   unmanaged cdecl void(int32)
         ret
     }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, int32 arg1, int32 arg2, bool marshal(int8) arg3) cil managed aggressiveinlining
+    {
+        .maxstack 4
+
+        ldarg.1
+        ldarg.2
+        ldarg.3
+        ldarg.0
+        calli   unmanaged cdecl void(int32, int32, int8)
+        ret
+    }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, native int arg1) cil managed aggressiveinlining
+    {
+        .maxstack 2
+
+        ldarg.1
+        ldarg.0
+        calli   unmanaged cdecl void(native int)
+        ret
+    }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, float32 arg1, float32 arg2, float32 arg3, float32 arg4, int32 arg5, int32 arg6, int32 arg7, int32 arg8, bool marshal(int8) arg9) cil managed aggressiveinlining
+    {
+        .maxstack 10
+
+        ldarg.1
+        ldarg.2
+        ldarg.3
+        ldarg.s arg4
+        ldarg.s arg5
+        ldarg.s arg6
+        ldarg.s arg7
+        ldarg.s arg8
+        ldarg.s arg9
+        ldarg.0
+        calli   unmanaged cdecl void(float32, float32, float32, float32, int32, int32, int32, int32, int8)
+        ret
+    }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, string marshal(lpstr) arg1, string marshal(lpstr) arg2, float32 arg3, float32 arg4, float32 arg5, float32 arg6, float32 arg7, int32 arg8, int32 arg9, int32 arg10, int32 arg11, bool marshal(int8) arg12) cil managed aggressiveinlining
+    {
+        .maxstack 13
+
+        ldarg.1
+        ldarg.2
+        ldarg.3
+        ldarg.s arg4
+        ldarg.s arg5
+        ldarg.s arg6
+        ldarg.s arg7
+        ldarg.s arg8
+        ldarg.s arg9
+        ldarg.s arg10
+        ldarg.s arg11
+        ldarg.s arg12
+        ldarg.0
+        calli   unmanaged cdecl void(string, string, float32, float32, float32, float32, float32, int32, int32, int32, int32, int8)
+        ret
+    }
 }

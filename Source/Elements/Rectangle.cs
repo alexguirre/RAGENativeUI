@@ -52,7 +52,7 @@ namespace RAGENativeUI.Elements
             float x = (position.X / 1280.0f) + w * 0.5f;
             float y = (position.Y / 720.0f) + h * 0.5f;
 
-            NativeFunction.Natives.DrawRect(x, y, w, h, color.R, color.G, color.B, color.A);
+            N.DrawRect(x, y, w, h, color.R, color.G, color.B, color.A);
         }
     }
 }

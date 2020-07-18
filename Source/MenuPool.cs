@@ -1,13 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using System.ComponentModel;
-using RAGENativeUI.Elements;
-using Rage;
+//#define MEASURE_MENUPOOL
 
 namespace RAGENativeUI
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.ComponentModel;
+    using RAGENativeUI.Elements;
+    using Rage;
+    using System.Diagnostics;
+
     /// <summary>
     /// Helper class that handles all of your Menus. After instatiating it, you will have to add your menu by using the Add method.
     /// </summary>
@@ -129,11 +131,22 @@ namespace RAGENativeUI
         }
 
 
+#if MEASURE_MENUPOOL
+        private const int NumSamples = 1000;
+        private readonly long[] timeSamplesMs = new long[NumSamples];
+        private readonly long[] timeSamplesTicks = new long[NumSamples];
+        private int index = 0;
+        private readonly Stopwatch sw = new Stopwatch();
+#endif
+
         /// <summary>
         /// Process all of your menus' functions. Call this in a tick event.
         /// </summary>
         public void ProcessMenus()
         {
+#if MEASURE_MENUPOOL
+            sw.Restart();
+#endif
             for (int i = 0; i < InternalList.Count; i++)
             {
                 UIMenu menu = InternalList[i];
@@ -152,6 +165,21 @@ namespace RAGENativeUI
                     menu.Draw();
                 }
             }
+
+#if MEASURE_MENUPOOL
+            sw.Stop();
+
+            timeSamplesMs[index] = sw.ElapsedMilliseconds;
+            timeSamplesTicks[index] = sw.ElapsedTicks;
+            index = (index + 1) % timeSamplesMs.Length;
+
+            if (index == 0)
+            {
+                var avgMs = timeSamplesMs.Average();
+                var avgTicks = timeSamplesTicks.Average();
+                Game.LogTrivial($"Average time: {avgMs} ms    {avgTicks} ticks");
+            }
+#endif
         }
 
         /// <summary>

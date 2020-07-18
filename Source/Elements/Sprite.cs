@@ -129,7 +129,7 @@ namespace RAGENativeUI.Elements
             float x = (position.X / width) + w * 0.5f;
             float y = (position.Y / height) + h * 0.5f;
 
-            NativeFunction.Natives.DrawSprite(textureDictionary, textureName, x, y, w, h, heading, color.R, color.G, color.B, color.A);
+            N.DrawSprite(textureDictionary, textureName, x, y, w, h, heading, color.R, color.G, color.B, color.A);
         }
 
         /// <summary>

@@ -85,8 +85,8 @@
             public float AspectRatio;
             public uint NumberOfVisibleMenus;
             public uint NumberOfVisiblePauseMenus;
-            public fixed long MemoryAddresses[7];
-            public fixed int MemoryInts[4];
+            public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];
+            public fixed int MemoryInts[Memory.MaxInts];
         }
     }
 }

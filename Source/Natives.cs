@@ -2,6 +2,7 @@
 {
     using static Rage.Native.NativeFunction;
     using Rage;
+    using RAGENativeUI.Internals;
 
     internal static class N
     {
@@ -9,9 +10,28 @@
         public static void ReplaceHudColourWithRgba(int colorId, int r, int g, int b, int a) => Natives.xF314CF4F0211894E(colorId, r, g, b, a);
 
         public static void DrawSprite(string textureDict, string textureName, float x, float y, float width, float height, float rotation, int r, int g, int b, int a)
-            => Natives.xE7FFAE5EBF23D890(textureDict, textureName, x, y, width, height, rotation, r, g, b, a);
+        {
+            if (DirectNatives.DrawSpriteAvailable)
+            {
+                DirectNatives.DrawSprite(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, false);
+            }
+            else
+            {
+                Natives.xE7FFAE5EBF23D890(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, false);
+            }
+        }
 
-        public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a) => Natives.x3A618A217E5154F0(x, y, width, height, r, g, b, a);
+        public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a)
+        {
+            if (DirectNatives.DrawRectAvailable)
+            {
+                DirectNatives.DrawRect(x, y, width, height, r, g, b, a, false);
+            }
+            else
+            {
+                Natives.x3A618A217E5154F0(x, y, width, height, r, g, b, a, false);
+            }
+        }
 
         public static void SetTextFont(int font) => Natives.x66E0276CC5F6B9DA(font);
         public static void SetTextScale(float scale, float size) => Natives.x07C837F9A01C34C9(scale, size);
@@ -120,7 +140,17 @@
         public static bool BusySpinnerIsOn() => Natives.xD422FCC5F239A915<bool>();
 
         public static void EnableControlAction(int index, GameControl control) => Natives.EnableControlAction(index, (int)control, true);
-        public static void DisableControlAction(int index, GameControl control) => Natives.DisableControlAction(index, (int)control, true);
+        public static void DisableControlAction(int index, GameControl control)
+        {
+            if (DirectNatives.DisableControlActionAvailable)
+            {
+                DirectNatives.DisableControlAction(index, (int)control, true);
+            }
+            else
+            {
+                Natives.DisableControlAction(index, (int)control, true);
+            }
+        }
         public static void EnableAllControlActions(int index) => Natives.EnableAllControlActions(index);
         public static void DisableAllControlActions(int index) => Natives.DisableAllControlActions(index);
         public static float GetControlNormal(int index, GameControl control) => Natives.GetControlNormal<float>(index, (int)control);

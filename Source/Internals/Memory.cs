@@ -11,6 +11,9 @@
 
     internal static unsafe class Memory
     {
+        public const int MaxMemoryAddresses = 11;
+        public const int MaxInts = 4;
+
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
         public static readonly IntPtr CTextStyle_ScriptStyle;
         public static readonly IntPtr CScaleformMgr_IsMovieRendering;
@@ -18,6 +21,9 @@
         public static readonly IntPtr CBusySpinner_InstructionalButtons;
         public static readonly IntPtr scrProgramRegistry_sm_Instance;
         public static readonly IntPtr scrProgramRegistry_Find;
+        public static readonly IntPtr Native_DisableControlAction;
+        public static readonly IntPtr Native_DrawSprite;
+        public static readonly IntPtr Native_DrawRect;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -72,6 +78,36 @@
                 scrProgramRegistry_Find = scrProgramRegistryAddr + *(int*)(scrProgramRegistryAddr + 19) + 23;
             }
 
+            Native_DisableControlAction = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("81 FA ?? ?? ?? ?? 77 48 E8 ?? ?? ?? ?? 45 33 C9");
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x20;
+                }
+                return addr;
+            });
+
+            Native_DrawSprite = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8B D9 0F 28 FA 0F 28 F3 E8 ?? ?? ?? ?? 80 BC 24");
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x22;
+                }
+                return addr;
+            });
+
+            Native_DrawRect = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("44 0F 29 40 ?? 44 0F 29 48 ?? 44 0F 28 C3 48 69 C9");
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x1B;
+                }
+                return addr;
+            });
+
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
                 IntPtr ingamehudAddr = FindPatternInScript("ingamehud",
@@ -111,6 +147,12 @@
         private static IntPtr FindAddress(Func<IntPtr> find)
         {
             int key = findAddressKey++;
+
+            if (key >= MaxMemoryAddresses)
+            {
+                throw new InvalidOperationException($"{nameof(Shared.MemoryAddresses)} array is full");
+            }
+
             if (Shared.MemoryAddresses[key] == 0)
             {
                 IntPtr addr = find();
@@ -260,6 +302,26 @@
                     return Game.Resolution; // not the same since this the resolution of all screens combined, but good enough as a fallback
                 }
             }
+        }
+    }
+
+    internal static class DirectNatives
+    {
+        public static readonly bool DisableControlActionAvailable = Memory.Native_DisableControlAction != IntPtr.Zero;
+        public static void DisableControlAction(int index, int control, bool b) => Invoke(Memory.Native_DisableControlAction, index, control, b);
+
+        public static readonly bool DrawSpriteAvailable = Memory.Native_DrawSprite != IntPtr.Zero;
+        public static void DrawSprite(string textureDict, string textureName, float x, float y, float width, float height, float rotation, int r, int g, int b, int a, bool unk)
+        {
+            using var tls = UsingTls.Scope();
+            Invoke(Memory.Native_DrawSprite, textureDict, textureName, x, y, width, height, rotation, r, g, b, a, unk);
+        }
+
+        public static readonly bool DrawRectAvailable = Memory.Native_DrawRect != IntPtr.Zero;
+        public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a, bool unk)
+        {
+            using var tls = UsingTls.Scope();
+            Invoke(Memory.Native_DrawRect, x, y, width, height, r, g, b, a, unk);
         }
     }
 
