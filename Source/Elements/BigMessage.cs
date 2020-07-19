@@ -64,7 +64,7 @@ namespace RAGENativeUI.Elements
         {
             Load(true);
             _start = Game.GameTime;
-            _sc.CallFunction("SHOW_SHARD_CENTERED_MP_MESSAGE", msg, desc, (int)bgColor, (int)textColor);
+            _sc.CallFunction("SHOW_SHARD_CENTERED_MP_MESSAGE", msg, desc, (int)textColor, (int)bgColor);
             _timer = time;
         }
 
