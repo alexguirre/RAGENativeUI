@@ -54,6 +54,7 @@
     <Compile Include="Showcase\Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Showcase\TimerBars.cs" />
+    <Compile Include="SwitchMenusExample.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
