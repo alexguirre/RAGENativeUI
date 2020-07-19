@@ -76,7 +76,7 @@
             GameFiber.StartNew(ProcessMenus);
 
             // continue with the plugin...
-            Game.Console.Print("Press F7 to toggle the pause menu.");
+            Game.Console.Print("  Press F7 to toggle the pause menu.");
         }
 
         private static void ProcessMenus()

@@ -54,6 +54,12 @@
             GameFiber.StartNew(ProcessTimerBars);
 
             // continue with the plugin...
+            Game.Console.Print($"  {healthTB.Label}: shows the player health.");
+            Game.Console.Print($"  {speedTB.Label}: shows the player speed in kilometers per hour");
+            Game.Console.Print($"  {clockTB.Label}: shows the current time of day");
+            Game.Console.Print($"  {weaponTB.Label}: shows the type of the weapon currently equipped");
+            Game.Console.Print($"  {wantedLevelTB.Label}: shows the player wanted level.");
+
             float lastHealth = 0.0f;
             float healthDamage = 0.0f;
             const float HealthDamageIndicatorDuration = 2.0f; // seconds

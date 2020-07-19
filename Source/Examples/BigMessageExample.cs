@@ -19,6 +19,8 @@
             BigMessageHandler bigMessage = bigMessageThread.MessageInstance;
 
             // continue with the plugin...
+            Game.Console.Print("  When your wanted level raises, a big message is shown.");
+
             int lastWantedLevel = 0;
             while (true)
             {

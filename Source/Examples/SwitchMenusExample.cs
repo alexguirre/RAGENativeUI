@@ -57,7 +57,7 @@
             GameFiber.StartNew(ProcessMenus);
 
             // continue with the plugin...
-            Game.Console.Print("Press F8 to open the menu.");
+            Game.Console.Print("  Press F8 to open the menu.");
         }
 
         private static void ProcessMenus()
