@@ -25,7 +25,10 @@
             // timer bar that shows the player speed
             TextTimerBar speedTB = new TextTimerBar("SPEED", "0 km/h");
 
-            TextTimerBar clockTB = new TextTimerBar("CLOCK", "00:00.00");
+            // timer bar that shows the time of day
+            TextTimerBar clockTB = new TextTimerBar("CLOCK", "00:00:00");
+            // use monospace font for the time text
+            clockTB.TextStyle = clockTB.TextStyle.With(font: TextFont.ChaletLondonFixedWidthNumbers);
 
             // timer bar that shows the player equipped weapon as an icon
             IconsTimerBar weaponTB = new IconsTimerBar("WEAPON");
