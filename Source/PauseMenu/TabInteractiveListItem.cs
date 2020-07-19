@@ -27,6 +27,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 MenuItems = new List<UIMenuItem>(items),
                 MaxItemsOnScreen = MaxItemsPerView,
+                IgnoreVisibility = true,
                 Visible = true, // true to allow us to use UIMenu.ProcessControl
             };
             IsInList = true;

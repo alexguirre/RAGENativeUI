@@ -1652,14 +1652,20 @@ namespace RAGENativeUI
                     justOpenedProcessMouse = value;
                     if (visible)
                     {
-                        Shared.NumberOfVisibleMenus++;
-                        NumberOfVisibleMenus++;
+                        if (!IgnoreVisibility)
+                        {
+                            Shared.NumberOfVisibleMenus++;
+                            NumberOfVisibleMenus++;
+                        }
                         MenuOpenEv();
                     }
                     else
                     {
-                        Shared.NumberOfVisibleMenus--;
-                        NumberOfVisibleMenus--;
+                        if (!IgnoreVisibility)
+                        {
+                            Shared.NumberOfVisibleMenus--;
+                            NumberOfVisibleMenus--;
+                        }
                     }
 
                     InstructionalButtons.Update();
@@ -1679,6 +1685,12 @@ namespace RAGENativeUI
                 }
             }
         }
+
+        /// <summary>
+        /// If <c>true</c>, this menu is not included in <see cref="NumberOfVisibleMenus"/>.
+        /// Needed by <see cref="PauseMenu.TabInteractiveListItem"/>, which uses a hidden menu for managing the menu items.
+        /// </summary>
+        internal bool IgnoreVisibility { get; set; }
 
         /// <summary>
         /// Gets or sets the current selected item's index. When setting it, the specified value will be wrap around between 0 and the number of items.
