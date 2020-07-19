@@ -45,6 +45,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigMessageExample.cs" />
     <Compile Include="PauseMenuExample.cs" />
     <Compile Include="MenuExample.cs" />
     <Compile Include="Showcase\BigMessages.cs" />
