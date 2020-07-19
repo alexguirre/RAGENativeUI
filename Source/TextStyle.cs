@@ -3,13 +3,16 @@
     using System;
     using System.Drawing;
 
-    // TODO: decide if we keep Common.EFont or we make it obsolete and replace it with this enum
     public enum TextFont
     {
         ChaletLondon = 0,
         HouseScript = 1,
         Monospace = 2,
         ChaletComprimeCologne = 4,
+        /// <summary>
+        /// Monospaced version of <see cref="ChaletLondon"/>. Only numbers and some symbols are available.
+        /// </summary>
+        ChaletLondonFixedWidthNumbers = 5,
         Pricedown = 7
     }
 
