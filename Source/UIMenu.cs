@@ -1287,6 +1287,10 @@ namespace RAGENativeUI
 
             N.x5B73C77D9EB66E24(true);
 
+            // make mouse exclusive to CursorX/Y controls to avoid moving the camera when interacting with the menu
+            N.SetInputExclusive(2, GameControl.CursorX);
+            N.SetInputExclusive(2, GameControl.CursorY);
+
             float mouseX = N.GetControlNormal(2, GameControl.CursorX);
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
 
