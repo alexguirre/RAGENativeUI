@@ -486,6 +486,13 @@ namespace RAGENativeUI
         /// <param name="index"></param>
         public void AddItem(UIMenuItem item, int index)
         {
+            if (index >= 0 && index < MenuItems.Count && MenuItems[index].Selected)
+            {
+                // if the item at the specified position is selected, unselect it and select the new item
+                MenuItems[index].Selected = false;
+                item.Selected = true;
+            }
+
             item.Parent = this;
             MenuItems.Insert(index, item);
 
@@ -1498,13 +1505,14 @@ namespace RAGENativeUI
                 return;
             }
 
-            controls.Update();
-
             if (justOpenedProcessInput)
             {
+                controls.ResetState();
                 justOpenedProcessInput = false;
                 return;
             }
+
+            controls.Update();
 
             if (controls[Common.MenuControls.Back].IsJustReleased)
             {
@@ -1875,6 +1883,15 @@ namespace RAGENativeUI
                 CursorAccept.NativeControls.Add((2, GameControl.CursorAccept));
             }
 
+            public void ResetState()
+            {
+                for (int i = 0; i < controls.Length; i++)
+                {
+                    controls[i].ResetState();
+                }
+                CursorAccept.ResetState();
+            }
+
             public void Update()
             {
                 uint gameTime = Game.GameTime;
@@ -1904,6 +1921,18 @@ namespace RAGENativeUI
             {
                 NativeControls.Clear();
                 RepeatAcceleration = DefaultRepeatAcceleration;
+            }
+
+            public void ResetState()
+            {
+                pressedStartTime = 0;
+                nextRepeatTime = 0;
+                repeatAccelerationIndex = 0;
+                IsJustReleased = false;
+                IsJustPressed = false;
+                IsReleased = false;
+                IsPressed = false;
+                IsJustPressedRepeated = false;
             }
 
             public void Update(uint gameTime)
