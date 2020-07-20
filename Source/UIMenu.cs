@@ -2034,5 +2034,19 @@ namespace RAGENativeUI
             new AccelerationStep(2000, 110),
             new AccelerationStep(6000, 50),
         };
+
+        #region Obsolete Stuff
+
+        [Obsolete("Use UIMenu.SetKeyAcceleration(Common.MenuControls, AccelerationStep[]) instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public uint HoldTimeBeforeScroll = 200;
+
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
+        public bool HasControlJustBeenPressed(Common.MenuControls control, Keys key = Keys.None) => controls[control].IsJustPressed;
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
+        public bool HasControlJustBeenReleaseed(Common.MenuControls control, Keys key = Keys.None) => controls[control].IsJustReleased;
+        [Obsolete, EditorBrowsable(EditorBrowsableState.Never)]
+        public bool IsControlBeingPressed(Common.MenuControls control, Keys key = Keys.None) => controls[control].IsJustPressedRepeated;
+
+        #endregion
     }
 }
