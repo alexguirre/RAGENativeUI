@@ -284,7 +284,7 @@ namespace RAGENativeUI
             Offset = offset;
             Children = new Dictionary<UIMenuItem, UIMenu>();
 
-            InstructionalButtons = new InstructionalButtons();
+            InstructionalButtons = new InstructionalButtons { MouseButtonsEnabled = true };
             InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendAccept, "Select"),
                                              new InstructionalButton(GameControl.FrontendCancel, "Back"));
 
@@ -672,12 +672,6 @@ namespace RAGENativeUI
 
             if (InstructionalButtonsEnabled)
             {
-                if (N.HasInputJustChanged(2))
-                {
-                    // update to display the correct keys or controller buttons when the user switches between keyboard and controller
-                    InstructionalButtons.Update();
-                }
-
                 InstructionalButtons.Draw();
             }
 

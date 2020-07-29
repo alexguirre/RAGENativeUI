@@ -20,6 +20,7 @@ namespace RAGENativeUI.Elements
         public InstructionalButtonsCollection Buttons { get; }
         public Color BackgroundColor { get; set; } = DefaultBackgroundColor;
         public float MaxWidth { get; set; } = 1.0f;
+        public bool MouseButtonsEnabled { get; set; }
 
         public InstructionalButtons()
         {
@@ -34,7 +35,8 @@ namespace RAGENativeUI.Elements
 
         public void Draw()
         {
-            if (needsUpdate)
+            if (needsUpdate ||
+                N.HasInputJustChanged(2)) // check so the correct keys or controller buttons are displayed when the user switches between keyboard and controller
             {
                 DoUpdate();
             }
@@ -58,7 +60,7 @@ namespace RAGENativeUI.Elements
             }
 
             Scaleform.CallFunction("CLEAR_ALL");
-            Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", true);
+            Scaleform.CallFunction("TOGGLE_MOUSE_BUTTONS", MouseButtonsEnabled);
             Scaleform.CallFunction("SET_MAX_WIDTH", MaxWidth);
 
             for (int i = 0, slot = 0; i < Buttons.Count; i++)
@@ -66,11 +68,20 @@ namespace RAGENativeUI.Elements
                 IInstructionalButtonSlot b = Buttons[i];
                 if (b.CanBeDisplayed == null || b.CanBeDisplayed(b))
                 {
-                    Scaleform.CallFunction("SET_DATA_SLOT", slot++,
-                                           b.GetButtonId() ?? string.Empty,
-                                           b.Text ?? string.Empty,
-                                           b.BindedControl.HasValue, // clickable?
-                                           b.BindedControl.HasValue ? (int)b.BindedControl.Value : - 1); // control binded to click
+                    if (MouseButtonsEnabled)
+                    {
+                        Scaleform.CallFunction("SET_DATA_SLOT", slot++,
+                                               b.GetButtonId() ?? string.Empty,
+                                               b.Text ?? string.Empty,
+                                               b.BindedControl.HasValue, // clickable?
+                                               b.BindedControl.HasValue ? (int)b.BindedControl.Value : -1); // control binded to click
+                    }
+                    else
+                    {
+                        Scaleform.CallFunction("SET_DATA_SLOT", slot++,
+                                               b.GetButtonId() ?? string.Empty,
+                                               b.Text ?? string.Empty);
+                    }
                 }
             }
 
