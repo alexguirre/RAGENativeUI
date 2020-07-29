@@ -1540,15 +1540,10 @@ namespace RAGENativeUI
             }
         }
 
-        public void AddInstructionalButton(InstructionalButton button)
-        {
-            InstructionalButtons.Buttons.Add(button);
-        }
-
-        public void RemoveInstructionalButton(InstructionalButton button)
-        {
-            InstructionalButtons.Buttons.Remove(button);
-        }
+        public void AddInstructionalButton(InstructionalButton button) => InstructionalButtons.Buttons.Add(button);
+        public void AddInstructionalButton(IInstructionalButtonSlot button) => InstructionalButtons.Buttons.Add(button);
+        public void RemoveInstructionalButton(InstructionalButton button) => InstructionalButtons.Buttons.Remove(button);
+        public void RemoveInstructionalButton(IInstructionalButtonSlot button) => InstructionalButtons.Buttons.Remove(button);
 
         /// <summary>
         /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
