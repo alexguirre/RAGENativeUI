@@ -36,7 +36,7 @@ namespace RAGENativeUI.PauseMenu
             InstructionalButtons = new InstructionalButtons();
             InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.FrontendAccept, "Select"));
             InstructionalButtons.Buttons.Add(new InstructionalButton(GameControl.CellphoneCancel, "Back"));
-            InstructionalButtons.Buttons.Add(new InstructionalButtonGroup(new[] { GameControl.FrontendLb, GameControl.FrontendRb }, "Browse"));
+            InstructionalButtons.Buttons.Add(new InstructionalButtonGroup("Browse", GameControl.FrontendLb, GameControl.FrontendRb));
         }
 
         public string Title { get; set; }

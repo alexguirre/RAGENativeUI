@@ -294,9 +294,9 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
         /// </summary>
-        /// <param name="buttons">The buttons to be displayed.</param>
         /// <param name="text">The text displayed next to the buttons.</param>
-        public InstructionalButtonGroup(IEnumerable<InstructionalButtonId> buttons, string text)
+        /// <param name="buttons">The buttons to be displayed.</param>
+        public InstructionalButtonGroup(string text, IEnumerable<InstructionalButtonId> buttons)
         {
             Text = text;
             Buttons = new List<InstructionalButtonId>(buttons);
@@ -305,29 +305,15 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
         /// </summary>
-        /// <param name="controls">The <see cref="GameControl"/>s contained in the group, they change depending on keybinds and whether the user is using the controller or the keyboard and mouse.</param>
         /// <param name="text">The text displayed next to the buttons.</param>
-        public InstructionalButtonGroup(IEnumerable<GameControl> controls, string text) : this(controls.Select(x => (InstructionalButtonId)x), text) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
-        /// </summary>
-        /// <param name="buttonTexts">The text displayed inside the buttons in the group, mainly for displaying custom keyboard bindings, like "I", or "O", or "F5".</param>
-        /// <param name="text">The text displayed next to the buttons.</param>
-        public InstructionalButtonGroup(IEnumerable<string> buttonTexts, string text) : this(buttonTexts.Select(x => (InstructionalButtonId)x), text) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InstructionalButtonGroup"/> class.
-        /// </summary>
-        /// <param name="rawIds">The raw identifiers of the symbols to be displayed in the group.</param>
-        /// <param name="text">The text displayed next to the buttons.</param>
-        public InstructionalButtonGroup(IEnumerable<uint> rawIds, string text) : this(rawIds.Select(x => (InstructionalButtonId)x), text) { }
+        /// <param name="buttons">The buttons to be displayed.</param>
+        public InstructionalButtonGroup(string text, params InstructionalButtonId[] buttons) : this(text, (IEnumerable<InstructionalButtonId>)buttons) { }
 
         /// <inheritdoc/>
         public string GetButtonId() => GetButtonId(Buttons);
 
         public static string GetButtonId(IEnumerable<InstructionalButtonId> buttons)
-            => buttons.Reverse().Aggregate(string.Empty, (acc, btn) => acc + (acc.Length == 0 ? string.Empty : "%") + btn.Id);
+            => string.Join("%", buttons.Reverse().Select(btn => btn.Id));
     }
 
     public readonly struct InstructionalButtonId
