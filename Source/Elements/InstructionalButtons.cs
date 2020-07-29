@@ -6,6 +6,7 @@ namespace RAGENativeUI.Elements
     using Rage;
     using System.Drawing;
     using RAGENativeUI.Internals;
+    using System.ComponentModel;
 
     public class InstructionalButtons
     {
@@ -136,8 +137,16 @@ namespace RAGENativeUI.Elements
             }
         }
 
-        public class InstructionalButtonsCollection : BaseCollection<IInstructionalButtonSlot>
+        public class InstructionalButtonsCollection : BaseCollection<IInstructionalButtonSlot>, IEnumerable<InstructionalButton>
         {
+            #region Backwards Compatibility
+            // Implement IEnumerable<InstructionalButton> for backwards compatibilty (mainly when using Linq, broken when BaseCollection<InstructionalButton> was changed to BaseCollection<IInstructionalButtonSlot>)
+            // Other methods like Add or Remove still work because InstructionalButton implements IInstructionalButtonSlot and the runtime can still find them
+            // This doesn't make it fully backwards compatible (like BaseCollection events are still incompatible), but improves the situation a bit
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            IEnumerator<InstructionalButton> IEnumerable<InstructionalButton>.GetEnumerator()
+                => InternalList.Where(slot => slot is InstructionalButton).Cast<InstructionalButton>().GetEnumerator();
+            #endregion
         }
     }
 

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using System.ComponentModel;
 
 namespace RAGENativeUI.Elements
 {
@@ -372,6 +373,13 @@ namespace RAGENativeUI.Elements
         }
 
         public override string RightLabel { get => base.RightLabel; set => throw new Exception($"{nameof(UIMenuListItem)} cannot have a right label."); }
+
+        #region Obsolete Stuff
+
+        [Obsolete("Use UIMenu.SetKeyAcceleration(Common.MenuControls, AccelerationStep[]) instead."), EditorBrowsable(EditorBrowsableState.Never)]
+        public uint HoldTimeBeforeScroll = 200;
+
+        #endregion
     }
 }
 
