@@ -95,9 +95,29 @@ namespace RAGENativeUI
                                                                     scale: 0.35f);
 
         /// <summary>
-        /// Represets the default value of <see cref="DescriptionSeparatorColor"/>
+        /// Represets the default value of <see cref="DescriptionSeparatorColor"/>.
         /// </summary>
         public static readonly Color DefaultDescriptionSeparatorColor = Color.Black;
+
+        /// <summary>
+        /// Represets the default value of <see cref="SubtitleBackgroundColor"/>.
+        /// </summary>
+        public static readonly Color DefaultSubtitleBackgroundColor = Color.Black;
+
+        /// <summary>
+        /// Represets the default value of <see cref="UpDownArrowsBackgroundColor"/>.
+        /// </summary>
+        public static readonly Color DefaultUpDownArrowsBackgroundColor = Color.FromArgb(204, 0, 0, 0);
+
+        /// <summary>
+        /// Represets the default value of <see cref="UpDownArrowsHighlightColor"/>.
+        /// </summary>
+        public static readonly Color DefaultUpDownArrowsHighlightColor = Color.FromArgb(25, 255, 255, 255);
+
+        /// <summary>
+        /// Represets the default value of <see cref="UpDownArrowsForegroundColor"/>.
+        /// </summary>
+        public static readonly Color DefaultUpDownArrowsForegroundColor = Color.White;
 
         internal const string CommonTxd = "commonmenu";
         internal const string BackgroundTextureName = "gradient_bgd";
@@ -772,7 +792,7 @@ namespace RAGENativeUI
             float subtitleWidth = menuWidth;
             float subtitleHeight = itemHeight;
 
-            DrawRect(x + subtitleWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, Color.Black);
+            DrawRect(x + subtitleWidth * 0.5f, y + subtitleHeight * 0.5f, subtitleWidth, subtitleHeight, SubtitleBackgroundColor);
 
             DrawSubtitleText(x, y);
 
@@ -891,24 +911,18 @@ namespace RAGENativeUI
                 upDownX = x;
                 upDownY = y;
 
-                Color backColor = Color.FromArgb(204, 0, 0, 0);
-                DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, backColor);
+                DrawRect(x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownRectWidth, upDownRectHeight, UpDownArrowsBackgroundColor);
 
                 if (hoveredUpDown != 0)
                 {
-                    Color hoveredColor = Color.FromArgb(25, 255, 255, 255);
                     float hoverRectH = upDownRectHeight * 0.5f;
-                    DrawRect(x + upDownRectWidth * 0.5f, y + (hoverRectH * (hoveredUpDown - 0.5f)), upDownRectWidth, hoverRectH, hoveredColor);
+                    DrawRect(x + upDownRectWidth * 0.5f, y + (hoverRectH * (hoveredUpDown - 0.5f)), upDownRectWidth, hoverRectH, UpDownArrowsHighlightColor);
                 }
 
-                float fVar61 = 1.0f; // TODO: this may need to be calculated based on current resolution
                 Vector3 upDownSize = N.GetTextureResolution(CommonTxd, UpAndDownTextureName);
-                float upDownWidth = upDownSize.X * (0.5f / fVar61);
-                float upDownHeight = upDownSize.Y * (0.5f / fVar61);
-                upDownWidth = upDownWidth / 1280.0f * fVar61;
-                upDownHeight = upDownHeight / 720f * fVar61;
-                Color foreColor = Color.White;
-                DrawSprite(CommonTxd, UpAndDownTextureName, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, foreColor);
+                float upDownWidth = (upDownSize.X * 0.5f) / 1280.0f;
+                float upDownHeight = (upDownSize.Y * 0.5f) / 720.0f;
+                DrawSprite(CommonTxd, UpAndDownTextureName, x + upDownRectWidth * 0.5f, y + upDownRectHeight * 0.5f, upDownWidth, upDownHeight, UpDownArrowsForegroundColor);
 
                 y += itemHeight;
             }
@@ -1775,6 +1789,12 @@ namespace RAGENativeUI
         public TextStyle SubtitleStyle { get; set; } = DefaultSubtitleStyle;
 
         /// <summary>
+        /// Gets or sets the color of the subtitle background rectangle.
+        /// </summary>
+        /// <seealso cref="DefaultSubtitleBackgroundColor"/>
+        public Color SubtitleBackgroundColor { get; set; } = DefaultSubtitleBackgroundColor;
+
+        /// <summary>
         /// String to pre-attach to the counter string. Useful for color codes.
         /// </summary>
         public string CounterPretext { get; set; }
@@ -1814,6 +1834,24 @@ namespace RAGENativeUI
         /// </summary>
         /// <seealso cref="DefaultDescriptionSeparatorColor"/>
         public Color DescriptionSeparatorColor { get; set; } = DefaultDescriptionSeparatorColor;
+
+        /// <summary>
+        /// Gets or sets the color of the up-down arrows background rectangle.
+        /// </summary>
+        /// <seealso cref="DefaultUpDownArrowsBackgroundColor"/>
+        public Color UpDownArrowsBackgroundColor { get; set; } = DefaultUpDownArrowsBackgroundColor;
+
+        /// <summary>
+        /// Gets or sets the color used to highlight the up-down arrow selected with the mouse.
+        /// </summary>
+        /// <seealso cref="DefaultUpDownArrowsHighlightColor"/>
+        public Color UpDownArrowsHighlightColor { get; set; } = DefaultUpDownArrowsHighlightColor;
+
+        /// <summary>
+        /// Gets or sets the color of the up-down arrows.
+        /// </summary>
+        /// <seealso cref="DefaultUpDownArrowsForegroundColor"/>
+        public Color UpDownArrowsForegroundColor { get; set; } = DefaultUpDownArrowsForegroundColor;
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.

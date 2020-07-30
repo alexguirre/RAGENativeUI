@@ -61,11 +61,32 @@
                 const string BannerTypeText = "Banner Type (Current)", BannerTypeUnsetText = "Banner Type";
                 var bannerType = new UIMenuListScrollerItem<string>(BannerTypeText, "", new[] { "No Banner", "Sprite", "Color", "Custom Texture"});
                 int currBannerType = bannerType.Index = 1;
-                bannerType.IndexChanged += (s, o, n) => bannerType.Text = n == currBannerType ? BannerTypeText : BannerTypeUnsetText;
+                bannerType.IndexChanged += (s, o, n) =>
+                {
+                    if (n == currBannerType)
+                    {
+                        bannerType.Text = BannerTypeText;
+                        bannerType.Description = null;
+                    }
+                    else
+                    {
+                        bannerType.Text = BannerTypeUnsetText;
+                        string method = n switch
+                        {
+                            0 => $"{nameof(UIMenu)}.{nameof(UIMenu.RemoveBanner)}()",
+                            1 => $"{nameof(UIMenu)}.{nameof(UIMenu.SetBannerType)}(Sprite)",
+                            2 => $"{nameof(UIMenu)}.{nameof(UIMenu.SetBannerType)}(ResRectangle)",
+                            3 => $"{nameof(UIMenu)}.{nameof(UIMenu.SetBannerType)}(Rage.Texture)",
+                            _ => throw new InvalidOperationException("Invalid banner type")
+                        };
+                        bannerType.Description = $"Select to change the banner with ~b~{method}~s~";
+                    }
+                };
                 bannerType.Activated += (m, s) =>
                 {
                     currBannerType = bannerType.Index;
                     bannerType.Text = BannerTypeText;
+                    bannerType.Description = null;
                     ApplyToEachMenu(currBannerType switch
                     {
                         0 => m => m.RemoveBanner(),
@@ -92,6 +113,13 @@
                 {
                     Color c = subtitleColor.SelectedItem.GetColor();
                     ApplyToEachMenu(m => m.SubtitleStyle = m.SubtitleStyle.With(color: c));
+                };
+
+                var subtitleBackgroundColor = NewColorsItem("Subtitle Background Color", $"Modifies the ~b~{nameof(UIMenu)}.{nameof(SubtitleBackgroundColor)}~s~ property.");
+                subtitleBackgroundColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = subtitleBackgroundColor.SelectedItem.GetColor();
+                    ApplyToEachMenu(m => m.SubtitleBackgroundColor = c);
                 };
 
                 var descriptionOverride = NewTextEditingItem("Description Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(DescriptionOverride)}~s~ property.",
@@ -124,13 +152,36 @@
                     ApplyToEachMenu(m => m.CounterStyle = m.CounterStyle.With(color: c));
                 };
 
+                var upDownBackgroundColor = NewColorsItem("Up-Down Background Color", $"Modifies the ~b~{nameof(UIMenu)}.{nameof(UpDownArrowsBackgroundColor)}~s~ property.");
+                upDownBackgroundColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = upDownBackgroundColor.SelectedItem.GetColor();
+                    ApplyToEachMenu(m => m.UpDownArrowsBackgroundColor = c);
+                };
+
+                var upDownHighlightColor = NewColorsItem("Up-Down Highlight Color", $"Modifies the ~b~{nameof(UIMenu)}.{nameof(UpDownArrowsHighlightColor)}~s~ property.");
+                upDownHighlightColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = upDownHighlightColor.SelectedItem.GetColor();
+                    ApplyToEachMenu(m => m.UpDownArrowsHighlightColor = c);
+                };
+
+                var upDownForegroundColor = NewColorsItem("Up-Down Foreground Color", $"Modifies the ~b~{nameof(UIMenu)}.{nameof(UpDownArrowsForegroundColor)}~s~ property.");
+                upDownForegroundColor.IndexChanged += (s, o, n) =>
+                {
+                    Color c = upDownForegroundColor.SelectedItem.GetColor();
+                    ApplyToEachMenu(m => m.UpDownArrowsForegroundColor = c);
+                };
+
                 var scaleWithSafezone = new UIMenuCheckboxItem("Scale with Safe-Zone", ScaleWithSafezone, $"Modifies the ~b~{nameof(UIMenu)}.{nameof(ScaleWithSafezone)}~s~ property.");
                 scaleWithSafezone.Checked = ScaleWithSafezone;
                 scaleWithSafezone.CheckboxEvent += (s, v) => ApplyToEachMenu(m => m.ScaleWithSafezone = v);
 
-                visualOptionsMenu.AddItems(width, offsetX, offsetY, bannerType, title, titleColor, subtitleColor,
+                visualOptionsMenu.AddItems(width, offsetX, offsetY, bannerType, title, titleColor, subtitleColor, subtitleBackgroundColor,
                                            descriptionOverride, descriptionColor, descriptionSeparatorColor,
-                                           counterOverride, counterColor, scaleWithSafezone);
+                                           counterOverride, counterColor,
+                                           upDownBackgroundColor, upDownHighlightColor, upDownForegroundColor,
+                                           scaleWithSafezone);
             }
 
             // checkbox
