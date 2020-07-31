@@ -228,14 +228,16 @@ namespace RAGENativeUI.PauseMenu
             {
                 ResText.Draw(Title, new Point(safe.X, safe.Y - 80), 1f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Left, true, false, Size.Empty);
 
+                var photoPos = new Point((int)res.Width - safe.X - 64, safe.Y - 80);
+                var photoSize = new Size(64, 64);
                 if (Photo == null)
                 {
-                    Sprite.Draw("char_multiplayer", "char_multiplayer", new Point((int)res.Width - safe.X - 64, safe.Y - 80), new Size(64, 64), 0f, Color.White);
+                    Sprite.Draw("char_multiplayer", "char_multiplayer", photoPos, photoSize, 0f, Color.White);
                 }
                 else
                 {
-                    Photo.Position = new Point((int)res.Width - safe.X - 100, safe.Y - 80);
-                    Photo.Size = new Size(64, 64);
+                    Photo.Position = photoPos;
+                    Photo.Size = photoSize;
                     Photo.Draw();
                 }
 
