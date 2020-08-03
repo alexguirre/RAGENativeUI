@@ -30,6 +30,7 @@ namespace RAGENativeUI.PauseMenu
             Name = Game.LocalPlayer.Name;
             TemporarilyHidden = false;
             CanLeave = true;
+            PauseGame = false;
 
             MoneySubtitle = "";
 
@@ -48,6 +49,7 @@ namespace RAGENativeUI.PauseMenu
         public int FocusLevel { get; set; }
         public bool TemporarilyHidden { get; set; }
         public bool CanLeave { get; set; }
+        public bool PauseGame { get; set; }
         public bool HideTabs { get; set; }
 
         public event EventHandler OnMenuClose;
@@ -65,12 +67,16 @@ namespace RAGENativeUI.PauseMenu
                     NumberOfVisiblePauseMenus++;
                     N.SetPlayerControl(Game.LocalPlayer, false, 0);
                     N.AnimPostFxPlay("MinigameTransitionIn", 0, true);
+                    if (PauseGame)
+                        Game.IsPaused = true;
                 }
                 else
                 {
                     CleanUp();
                     Shared.NumberOfVisiblePauseMenus--;
                     NumberOfVisiblePauseMenus--;
+                    if (PauseGame)
+                        Game.IsPaused = false;
                 }
             }
         }
