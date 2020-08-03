@@ -734,7 +734,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            GetBannerDrawSize(CommonTxd, DefaultBannerTextureName, out float bannerWidth, out float bannerHeight);
+            GetBannerDrawSize(out float bannerWidth, out float bannerHeight);
             if (_bannerSprite != null)
             {
                 DrawSprite(_bannerSprite.TextureDictionary, _bannerSprite.TextureName, x + menuWidth * 0.5f, y + bannerHeight * 0.5f, bannerWidth, bannerHeight, Color.White);
@@ -991,39 +991,17 @@ namespace RAGENativeUI
             }
         }
 
-        private void GetBannerDrawSize(string txd, string texName, out float width, out float height)
+        private void GetBannerDrawSize(out float width, out float height)
         {
-            N.GetActiveScreenResolution(out int screenWidth, out int screenHeight);
-            float aspectRatio = Shared.AspectRatio;
-            if (IsUltraWideScreen)
-            {
-                screenWidth = (int)Math.Round(screenHeight * aspectRatio);
-            }
-            float screenRatio = (float)screenWidth / screenHeight;
-            float v = screenRatio / aspectRatio;
-            if (IsUltraWideScreen)
-            {
-                v = 1f;
-            }
+            const float TexWidth = 512.0f; // resolution of banner texture ('commonmenu', 'interaction_bgd')
+            const float TexHeight = 128.0f;
+            const float TexRatio = TexWidth / TexHeight;
 
-            screenWidth = (int)Math.Round(screenWidth / v);
-            screenHeight = (int)Math.Round(screenHeight / v);
+            var res = Shared.ActualScreenResolution;
+            var ratio = res.Width / res.Height;
 
-            Vector3 texSize = N.GetTextureResolution(txd, texName);
-
-            width = texSize.X / screenWidth * (screenWidth / screenHeight);
-            height = texSize.Y / screenHeight / (texSize.X / screenWidth) * width;
-
-            if (!IsWideScreen)
-            {
-                width *= 1.33f;
-            }
-
-            if (width > DefaultWidth)
-            {
-                height *= DefaultWidth / width;
-                width = menuWidth;
-            }
+            width = menuWidth;
+            height = DefaultWidth / TexRatio * ratio;
         }
 
         /// <summary>

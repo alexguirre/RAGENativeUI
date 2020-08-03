@@ -33,6 +33,17 @@ namespace RAGENativeUI.Internals
         }
 
         [ConsoleCommand]
+        private static void PrintResolutions()
+        {
+            Game.LogTrivial($"Game.Resolution: {Game.Resolution.Width}x{Game.Resolution.Height}");
+            N.GetActiveScreenResolution(out int w, out int h);
+            Game.LogTrivial($"GetActiveScreenResolution: {w}x{h}");
+            N.GetScreenResolution(out w, out h);
+            Game.LogTrivial($"GetScreenResolution: {w}x{h}");
+            Game.LogTrivial($"ActualScreenResolution: {Screen.ActualResolution.Width}x{Screen.ActualResolution.Height}");
+        }
+
+        [ConsoleCommand]
         private static void DumpScript(string name)
         {
             if (!scrProgramRegistry.Available)
