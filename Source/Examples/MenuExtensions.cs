@@ -49,7 +49,7 @@
         }
 
         /// <summary>
-        /// Allows to edit the a string by selecting the item. The current string is displayed in the item's <see cref="UIMenuItem.RightLabel"/>.
+        /// Allows to edit a string by selecting the item. The current string is displayed in the item's <see cref="UIMenuItem.RightLabel"/>.
         /// </summary>
         /// <param name="getter">Gets the string to display to the user.</param>
         /// <param name="setter">Takes the string edited by the user.</param>
