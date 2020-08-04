@@ -761,7 +761,7 @@ namespace RAGENativeUI
 
         private void DrawTitle(float x, float y, float bannerHeight)
         {
-            if (Title == null)
+            if (string.IsNullOrEmpty(Title))
             {
                 return;
             }
@@ -784,7 +784,7 @@ namespace RAGENativeUI
         /// </param>
         protected virtual void DrawSubtitle(float x, ref float y)
         {
-            if (Subtitle == null)
+            if (string.IsNullOrEmpty(Subtitle))
             {
                 return;
             }
