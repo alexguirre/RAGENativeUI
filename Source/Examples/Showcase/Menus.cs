@@ -45,16 +45,19 @@
                     }
                 }
 
-                var width = new UIMenuNumericScrollerItem<float>(nameof(Width), $"Modifies the ~b~{nameof(UIMenu)}.{nameof(Width)}~s~ property.", 0.0f, 1.0f, 0.001f);
+                var width = new UIMenuNumericScrollerItem<float>(nameof(Width), $"Modifies the ~b~{nameof(UIMenu)}.{nameof(Width)}~s~ property.", 0.0f, 1.0f, 0.001f)
+                                .WithTextEditing();
                 width.Formatter = v => v.ToString("0.000");
                 width.Value = Width;
                 width.IndexChanged += (s, o, n) => ApplyToEachMenu(m => m.Width = width.Value);
 
-                var offsetX = new UIMenuNumericScrollerItem<int>("Offset X", $"Modifies the X-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1);
+                var offsetX = new UIMenuNumericScrollerItem<int>("Offset X", $"Modifies the X-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1)
+                                .WithTextEditing();
                 offsetX.Value = Offset.X;
                 offsetX.IndexChanged += (s, o, n) => ApplyToEachMenu(m => m.Offset = new Point(offsetX.Value, m.Offset.Y));
 
-                var offsetY = new UIMenuNumericScrollerItem<int>("Offset Y", $"Modifies the Y-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1);
+                var offsetY = new UIMenuNumericScrollerItem<int>("Offset Y", $"Modifies the Y-coord of the ~b~{nameof(UIMenu)}.{nameof(Offset)}~s~ property.", -1000, 1000, 1)
+                                .WithTextEditing();
                 offsetY.Value = Offset.Y;
                 offsetY.IndexChanged += (s, o, n) => ApplyToEachMenu(m => m.Offset = new Point(m.Offset.X, offsetY.Value));
 
@@ -97,9 +100,9 @@
                     });
                 };
                 
-                var title = NewTextEditingItem(nameof(Title), $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(Title)}~s~ property.",
-                                               () => Title,
-                                               s => ApplyToEachMenu(m => m.Title = s));
+                var title = new UIMenuItem(nameof(Title), $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(Title)}~s~ property.")
+                                .WithTextEditing(() => Title,
+                                                 s => ApplyToEachMenu(m => m.Title = s));
 
                 var titleColor = NewColorsItem("Title Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(TitleStyle)}~s~ property.");
                 titleColor.IndexChanged += (s, o, n) =>
@@ -122,9 +125,10 @@
                     ApplyToEachMenu(m => m.SubtitleBackgroundColor = c);
                 };
 
-                var descriptionOverride = NewTextEditingItem("Description Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(DescriptionOverride)}~s~ property.",
-                                               () => DescriptionOverride ?? string.Empty,
-                                               s => ApplyToEachMenu(m => m.DescriptionOverride = s.Length == 0 ? null : s));
+                var descriptionOverride = new UIMenuItem("Description Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(DescriptionOverride)}~s~ property.")
+                                            .WithTextEditing(() => DescriptionOverride ?? string.Empty,
+                                                             s => ApplyToEachMenu(m => m.DescriptionOverride = s.Length == 0 ? null : s),
+                                                             maxLength: 256);
 
                 var descriptionColor = NewColorsItem("Description Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(DescriptionStyle)}~s~ property.");
                 descriptionColor.IndexChanged += (s, o, n) =>
@@ -141,9 +145,9 @@
                     ApplyToEachMenu(m => m.DescriptionSeparatorColor = c);
                 };
 
-                var counterOverride = NewTextEditingItem("Counter Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(CounterOverride)}~s~ property.",
-                                               () => CounterOverride ?? string.Empty,
-                                               s => ApplyToEachMenu(m => m.CounterOverride = s.Length == 0 ? null : s));
+                var counterOverride = new UIMenuItem("Counter Override", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(CounterOverride)}~s~ property.")
+                                        .WithTextEditing(() => CounterOverride ?? string.Empty,
+                                                         s => ApplyToEachMenu(m => m.CounterOverride = s.Length == 0 ? null : s));
 
                 var counterColor = NewColorsItem("Counter Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(CounterStyle)}~s~ property.");
                 counterColor.IndexChanged += (s, o, n) =>
@@ -182,6 +186,8 @@
                                            counterOverride, counterColor,
                                            upDownBackgroundColor, upDownHighlightColor, upDownForegroundColor,
                                            scaleWithSafezone);
+
+                visualOptionsMenu.WithFastScrollingOn(width, offsetX, offsetY);
             }
 
             // checkbox
