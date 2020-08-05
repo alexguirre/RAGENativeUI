@@ -60,6 +60,12 @@ namespace RAGENativeUI.Elements
                     _currentMenu.Visible = false;
                     _currentMenu = newMenu;
                     _currentMenu.Visible = true;
+                    
+                    // HACKY: menu controls wait until any inputs are released when opening the menu, but that blocks the scrolling through the menus.
+                    // This disables that check, but ideally it should be done some other way without using internal fields,
+                    // the user should be able to recreate any item with the public API.
+                    _currentMenu.controls.SetJustOpened(false);
+                    _currentMenu.controls.ResetState();
 
                     _currentMenu.CurrentSelection = _currentMenu.MenuItems.IndexOf(this);
                 }

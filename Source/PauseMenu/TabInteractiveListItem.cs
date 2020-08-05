@@ -28,7 +28,6 @@ namespace RAGENativeUI.PauseMenu
                 MenuItems = new List<UIMenuItem>(items),
                 MaxItemsOnScreen = MaxItemsPerView,
                 IgnoreVisibility = true,
-                Visible = true, // true to allow us to use UIMenu.ProcessControl
             };
             IsInList = true;
         }
@@ -46,6 +45,7 @@ namespace RAGENativeUI.PauseMenu
         {
             if (!Visible)
                 return;
+
             if (JustOpened)
             {
                 JustOpened = false;
@@ -53,7 +53,13 @@ namespace RAGENativeUI.PauseMenu
             }
 
             if (!Focused)
+            {
+                if (backingMenu.Visible)
+                {
+                    backingMenu.Close(openParentMenu: false);
+                }
                 return;
+            }
 
             if (Items.Count == 0)
                 return;
@@ -66,7 +72,14 @@ namespace RAGENativeUI.PauseMenu
                 RefreshIndex();
             }
 
-            backingMenu.ProcessControl();
+            if (backingMenu.Visible)
+            {
+                backingMenu.ProcessControl();
+            }
+            else
+            {
+                backingMenu.Visible = true;
+            }
         }
 
         public override void Draw()

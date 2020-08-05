@@ -58,14 +58,15 @@
             List<TabItem> items = new List<TabItem>();
             for (int i = 0; i < 10; i++)
             {
-                TabTextItem tItem = new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i);
+                TabItem tItem = i < 5 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
+                                        (TabItem)new TabInteractiveListItem("Item #" + i, CreateMenuItems());
 
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
                 items.Add(tItem);
             }
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
 
-            List<UIMenuItem> menuItems = CreateMenuItems();
+            UIMenuItem[] menuItems = CreateMenuItems();
             menuItems[0].Activated += (m, s) => Game.DisplaySubtitle("Activated first item!");
             TabInteractiveListItem interactiveListItem = new TabInteractiveListItem("An Interactive List", menuItems);
             tabView.AddTab(interactiveListItem);
@@ -82,7 +83,7 @@
         private static void ProcessMenus()
         {
             // draw the textures (only needed Rage.Texture are used)
-            // Game.RawFrameRender += (s, e) => tabView.DrawTextures(e.Graphics);;
+            Game.RawFrameRender += (s, e) => tabView.DrawTextures(e.Graphics); ;
 
             while (true)
             {
@@ -97,10 +98,10 @@
             }
         }
 
-        private static List<UIMenuItem> CreateMenuItems()
+        private static UIMenuItem[] CreateMenuItems()
         {
             var values = new[] { "Hello", "World", "Foo", "Bar" };
-            return new List<UIMenuItem>()
+            return new[]
             {
                 new UIMenuItem("Simple item", ""),
                 new UIMenuListScrollerItem<string>("List #1", "", values),
