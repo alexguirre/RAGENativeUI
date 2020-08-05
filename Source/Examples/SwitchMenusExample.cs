@@ -1,12 +1,11 @@
 ﻿namespace RNUIExamples
 {
-    using System;
     using System.Linq;
     using Rage;
     using Rage.Attributes;
-    using Rage.Native;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
+    using RAGENativeUI.PauseMenu;
 
     internal static class SwitchMenusExample
     {
@@ -71,7 +70,7 @@
 
                 pool.ProcessMenus();
 
-                if (Game.IsKeyDown(System.Windows.Forms.Keys.F8) && !UIMenu.IsAnyMenuVisible)
+                if (Game.IsKeyDown(System.Windows.Forms.Keys.F8) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
                 {
                     menuSwitcher.CurrentMenu.Visible = true;
                 }

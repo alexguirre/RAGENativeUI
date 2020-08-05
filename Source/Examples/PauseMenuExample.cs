@@ -95,7 +95,7 @@
 
                 tabView.Update();
 
-                if (Game.IsKeyDown(System.Windows.Forms.Keys.F7))
+                if (Game.IsKeyDown(System.Windows.Forms.Keys.F7) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
                 {
                     tabView.Visible = !tabView.Visible;
                 }
