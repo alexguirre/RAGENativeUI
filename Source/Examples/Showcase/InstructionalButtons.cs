@@ -37,7 +37,7 @@
                                 0.0f, 1.0f, 0.01f)
             {
                 Formatter = v => v.ToString("0.00"),
-            };
+            }.WithTextEditing();
             maxWidth.Value = InstructionalButtons.MaxWidth;
             maxWidth.IndexChanged += (s, o, n) =>
             {
@@ -73,6 +73,7 @@
             };
 
             AddItems(bg, maxWidth, addButton);
+            this.WithFastScrollingOn(maxWidth);
         }
 
 
@@ -89,15 +90,14 @@
 
                 this.button = button;
 
-                var text = Util.NewTextEditingItem("Text", "",
-                                () => buttonText,
-                                s =>
-                                {
-                                    buttonText = s;
-                                    this.button.Button = s;
-                                    InstructionalButtons.Update();
-                                });
-                text.Enabled = true;
+                var text = new UIMenuItem("Text", "") { Enabled = true }
+                            .WithTextEditing(() => buttonText,
+                                             s =>
+                                             {
+                                                 buttonText = s;
+                                                 this.button.Button = s;
+                                                 InstructionalButtons.Update();
+                                             });
 
                 var control = new UIMenuListScrollerItem<GameControl>("Control", "", (GameControl[])System.Enum.GetValues(typeof(GameControl)))
                 {
@@ -115,7 +115,7 @@
                 {
                     Enabled = false,
                     Value = buttonRawId
-                };
+                }.WithTextEditing();
                 rawId.IndexChanged += (s, o, n) =>
                 {
                     buttonRawId = rawId.Value;

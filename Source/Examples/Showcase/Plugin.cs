@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Linq;
 using Rage;
 using RAGENativeUI;
+using RAGENativeUI.PauseMenu;
 
 internal static class Plugin
 {
@@ -33,7 +34,7 @@ internal static class Plugin
         {
             GameFiber.Yield();
 
-            if (Game.IsKeyDown(Keys.F5) && !UIMenu.IsAnyMenuVisible)
+            if (Game.IsKeyDown(Keys.F5) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
             {
                 ShowcaseMenu.Visible = true;
             }

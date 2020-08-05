@@ -183,6 +183,8 @@
 
         public static void AnimPostFxPlay(string effectName, int duration, bool looped) => Natives.x2206bf9a37b7f724(effectName, duration, looped);
         public static void AnimPostFxStop(string effectName) => Natives.x068E835A1D0DC0E3(effectName);
+
+        public static bool IsControlReleased(int index, GameControl control) => Natives.x648EE3E7F38877DD<bool>(index, (int)control);
     }
 }
 

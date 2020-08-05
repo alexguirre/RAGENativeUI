@@ -179,6 +179,7 @@ namespace RAGENativeUI
         private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
         private bool visible;
+        private bool justOpenedProcessInputFirstTick = true;
         private bool justOpenedProcessInput = true;
         private bool justOpenedProcessMouse = true;
 
@@ -245,7 +246,8 @@ namespace RAGENativeUI
         /// </summary>
         public event MenuChangeEvent OnMenuChange;
 
-        private readonly Controls controls = new Controls();
+        // internal, needed by UIMenuSwitchMenusItem
+        internal readonly Controls controls = new Controls();
 
         //Tree structure
         public Dictionary<UIMenuItem, UIMenu> Children { get; private set; }
@@ -309,8 +311,8 @@ namespace RAGENativeUI
                                              new InstructionalButton(GameControl.FrontendCancel, "Back"));
 
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
-            Title = title;
-            Subtitle = subtitle;
+            TitleText = title;
+            SubtitleText = subtitle;
 
             if (subtitle != null && subtitle.StartsWith("~"))
             {
@@ -761,7 +763,7 @@ namespace RAGENativeUI
 
         private void DrawTitle(float x, float y, float bannerHeight)
         {
-            if (Title == null)
+            if (string.IsNullOrEmpty(TitleText))
             {
                 return;
             }
@@ -771,7 +773,7 @@ namespace RAGENativeUI
 
             TextStyle s = TitleStyle;
             s.Wrap = (x, x + menuWidth);
-            TextCommands.Display(Title, s, titleX, titleY);
+            TextCommands.Display(TitleText, s, titleX, titleY);
         }
 
         /// <summary>
@@ -784,7 +786,7 @@ namespace RAGENativeUI
         /// </param>
         protected virtual void DrawSubtitle(float x, ref float y)
         {
-            if (Subtitle == null)
+            if (string.IsNullOrEmpty(SubtitleText))
             {
                 return;
             }
@@ -808,7 +810,7 @@ namespace RAGENativeUI
 
             TextStyle s = SubtitleStyle;
             s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
-            TextCommands.Display(Subtitle, s, subTextX, subTextY);
+            TextCommands.Display(SubtitleText, s, subTextX, subTextY);
         }
 
         private void DrawSubtitleCounter(float x, float y)
@@ -1491,14 +1493,29 @@ namespace RAGENativeUI
                 return;
             }
 
-            if (justOpenedProcessInput)
+            // Ignore the first tick because RPH Game.IsControllerButton* methods return true a tick earlier than the natives we use.
+            // So, for example:
+            //  - A menu is opened with DPadRight and a list item is currently selected,
+            //  - In the first tick `controls.AllReleasedSinceOpening()` would return true (since the natives consider it released)
+            //  - In the next tick `controls.Update()` would set `controls[Common.MenuControls.Right].IsJustPressedRepeated` to true
+            //    (since now the natives consider it pressed), causing the list item to scroll to the next value
+            if (justOpenedProcessInputFirstTick)
             {
-                controls.ResetState();
-                justOpenedProcessInput = false;
+                justOpenedProcessInputFirstTick = false;
                 return;
             }
 
             controls.Update();
+
+            if (justOpenedProcessInput)
+            {
+                // wait until the controls are released, in case any was used to open the menu
+                if (controls.AllReleasedSinceOpening())
+                {
+                    justOpenedProcessInput = false;
+                }
+                return;
+            }
 
             if (controls[Common.MenuControls.Back].IsJustReleased)
             {
@@ -1629,8 +1646,11 @@ namespace RAGENativeUI
                 if (visible != value)
                 {
                     visible = value;
+                    justOpenedProcessInputFirstTick = value;
                     justOpenedProcessInput = value;
                     justOpenedProcessMouse = value;
+                    controls.SetJustOpened(value);
+
                     if (visible)
                     {
                         if (!IgnoreVisibility)
@@ -1747,7 +1767,19 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets or sets the title text.
         /// </summary>
-        public string Title { get; set; }
+        [Obsolete("Use UIMenu.TitleText instead. The only functional property of the returned ResText is ResText.Caption"), EditorBrowsable(EditorBrowsableState.Never)]
+        public ResText Title { get; set; } = new ResText(null, Point.Empty, 0.0f);
+
+        /// <summary>
+        /// Gets or sets the title text.
+        /// </summary>
+        public string TitleText
+        {
+#pragma warning disable CS0612, CS0618 // Type or member is obsolete
+            get => Title.Caption;
+            set => Title.Caption = value;
+#pragma warning restore CS0612, CS0618 // Type or member is obsolete
+        }
 
         /// <summary>
         /// Gets or sets the title text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
@@ -1758,7 +1790,19 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets or sets the subtitle text.
         /// </summary>
-        public string Subtitle { get; set; }
+        [Obsolete("Use UIMenu.SubtitleText instead. The only functional property of the returned ResText is ResText.Caption"), EditorBrowsable(EditorBrowsableState.Never)]
+        public ResText Subtitle { get; set; } = new ResText(null, Point.Empty, 0.0f);
+
+        /// <summary>
+        /// Gets or sets the subtitle text.
+        /// </summary>
+        public string SubtitleText
+        {
+#pragma warning disable CS0612, CS0618 // Type or member is obsolete
+            get => Subtitle.Caption;
+            set => Subtitle.Caption = value;
+#pragma warning restore CS0612, CS0618 // Type or member is obsolete
+        }
 
         /// <summary>
         /// Gets or sets the subtitle text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
@@ -1881,7 +1925,7 @@ namespace RAGENativeUI
             OnMenuChange?.Invoke(this, newmenu, forward);
         }
 
-        private sealed class Controls
+        internal sealed class Controls
         {
             private static readonly int NumControls = Enum.GetValues(typeof(Common.MenuControls)).Length;
 
@@ -1918,9 +1962,31 @@ namespace RAGENativeUI
                 }
                 CursorAccept.Update(gameTime);
             }
+
+            public void SetJustOpened(bool value)
+            {
+                for (int i = 0; i < controls.Length; i++)
+                {
+                    controls[i].JustOpened = value;
+                }
+                CursorAccept.JustOpened = value;
+            }
+
+            public bool AllReleasedSinceOpening()
+            {
+                for (int i = 0; i < controls.Length; i++)
+                {
+                    if (controls[i].JustOpened)
+                    {
+                        return false;
+                    }
+                }
+
+                return !CursorAccept.JustOpened;
+            }
         }
 
-        private sealed class Control
+        internal sealed class Control
         {
             private uint pressedStartTime;
             private uint nextRepeatTime;
@@ -1933,6 +1999,8 @@ namespace RAGENativeUI
             public bool IsReleased { get; private set; }
             public bool IsPressed { get; private set; }
             public bool IsJustPressedRepeated { get; private set; }
+
+            public bool JustOpened { get; set; }
 
             public void Reset()
             {
@@ -1959,9 +2027,19 @@ namespace RAGENativeUI
                     N.SetInputExclusive(c.Index, c.Control);
                 }
 
+                if (JustOpened)
+                {
+                    ResetState();
+                    if (AllReleased())
+                    {
+                        JustOpened = false;
+                    }
+                    return;
+                }
+
                 bool prevPressed = IsPressed;
-                IsJustPressed = NativeControls.Any(c => Game.IsControlJustPressed(c.Index, c.Control));
-                IsPressed = IsJustPressed || NativeControls.Any(c => Game.IsControlPressed(c.Index, c.Control));
+                IsJustPressed = AnyJustPressed();
+                IsPressed = IsJustPressed || AnyPressed();
                 IsReleased = !IsPressed;
                 IsJustPressedRepeated = IsJustPressed;
 
@@ -1982,7 +2060,7 @@ namespace RAGENativeUI
                 }
                 else
                 {
-                    IsJustReleased = NativeControls.Any(c => Game.IsControlJustReleased(c.Index, c.Control));
+                    IsJustReleased = AnyJustReleased();
                 }
             }
 
@@ -2002,6 +2080,62 @@ namespace RAGENativeUI
                 }
 
                 return gameTime + acc[repeatAccelerationIndex].TimeBetweenRepeats;
+            }
+
+            private bool AnyJustReleased()
+            {
+                for (int i = 0; i < NativeControls.Count; i++)
+                {
+                    var c = NativeControls[i];
+                    if (Game.IsControlJustReleased(c.Index, c.Control))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            private bool AnyJustPressed()
+            {
+                for (int i = 0; i < NativeControls.Count; i++)
+                {
+                    var c = NativeControls[i];
+                    if (Game.IsControlJustPressed(c.Index, c.Control))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            private bool AnyPressed()
+            {
+                for (int i = 0; i < NativeControls.Count; i++)
+                {
+                    var c = NativeControls[i];
+                    if (Game.IsControlPressed(c.Index, c.Control))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            private bool AllReleased()
+            {
+                for (int i = 0; i < NativeControls.Count; i++)
+                {
+                    var c = NativeControls[i];
+                    if (!N.IsControlReleased(c.Index, c.Control))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         }
 

@@ -2,9 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
     using Rage;
     using Rage.Attributes;
-    using Rage.Native;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
     using RAGENativeUI.PauseMenu;
@@ -58,16 +59,20 @@
             List<TabItem> items = new List<TabItem>();
             for (int i = 0; i < 10; i++)
             {
-                TabTextItem tItem = new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i);
+                TabItem tItem = i < 5 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
+                                        (TabItem)new TabInteractiveListItem("Item #" + i, CreateMenuItems());
 
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
                 items.Add(tItem);
             }
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
 
-            List<UIMenuItem> menuItems = CreateMenuItems();
+            UIMenuItem[] menuItems = CreateMenuItems();
             menuItems[0].Activated += (m, s) => Game.DisplaySubtitle("Activated first item!");
             TabInteractiveListItem interactiveListItem = new TabInteractiveListItem("An Interactive List", menuItems);
+            // set fast scrolling on scroller item with a slider bar (see MenuExtensions.cs)
+            interactiveListItem.BackingMenu.WithFastScrollingOn(menuItems.Where(i => i is UIMenuScrollerItem s && s.SliderBar != null));
+            interactiveListItem.BackingMenu.OnIndexChange += (m, i) => Game.DisplaySubtitle("Selected #" + i);
             tabView.AddTab(interactiveListItem);
 
             tabView.RefreshIndex();
@@ -82,7 +87,7 @@
         private static void ProcessMenus()
         {
             // draw the textures (only needed Rage.Texture are used)
-            // Game.RawFrameRender += (s, e) => tabView.DrawTextures(e.Graphics);;
+            Game.RawFrameRender += (s, e) => tabView.DrawTextures(e.Graphics); ;
 
             while (true)
             {
@@ -90,17 +95,17 @@
 
                 tabView.Update();
 
-                if (Game.IsKeyDown(System.Windows.Forms.Keys.F7))
+                if (Game.IsKeyDown(System.Windows.Forms.Keys.F7) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
                 {
                     tabView.Visible = !tabView.Visible;
                 }
             }
         }
 
-        private static List<UIMenuItem> CreateMenuItems()
+        private static UIMenuItem[] CreateMenuItems()
         {
             var values = new[] { "Hello", "World", "Foo", "Bar" };
-            return new List<UIMenuItem>()
+            return new[]
             {
                 new UIMenuItem("Simple item", ""),
                 new UIMenuListScrollerItem<string>("List #1", "", values),

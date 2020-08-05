@@ -61,10 +61,10 @@
             UIMenuItem checkpointsBindItem = new UIMenuItem("Checkpoints", $"Demonstrates the ~b~{nameof(CheckpointsTimerBar)}~s~ class.");
             UIMenuItem iconsBindItem = new UIMenuItem("Icons", $"Demonstrates the ~b~{nameof(IconsTimerBar)}~s~ class.");
 
-            UIMenu textMenu = new UIMenu(Title, Subtitle + ": TEXT");
-            UIMenu progressBarMenu = new UIMenu(Title, Subtitle + ": PROGRESS BAR");
-            UIMenu checkpointsMenu = new UIMenu(Title, Subtitle + ": CHECKPOINTS");
-            UIMenu iconsMenu = new UIMenu(Title, Subtitle + ": ICONS");
+            UIMenu textMenu = new UIMenu(TitleText, SubtitleText + ": TEXT");
+            UIMenu progressBarMenu = new UIMenu(TitleText, SubtitleText + ": PROGRESS BAR");
+            UIMenu checkpointsMenu = new UIMenu(TitleText, SubtitleText + ": CHECKPOINTS");
+            UIMenu iconsMenu = new UIMenu(TitleText, SubtitleText + ": ICONS");
 
             Plugin.Pool.Add(textMenu, progressBarMenu, checkpointsMenu, iconsMenu);
 
@@ -77,9 +77,9 @@
 
             // text
             {
-                var textItem = NewTextEditingItem(nameof(TextTimerBar.Text), "Select to edit the timer bar text.",
-                                               () => text.Text,
-                                               s => text.Text = s);
+                var textItem = new UIMenuItem(nameof(TextTimerBar.Text), "Select to edit the timer bar text.")
+                                    .WithTextEditing(() => text.Text,
+                                                     s => text.Text = s);
 
                 textMenu.AddItem(textItem);
                 AddCommonMenuItems(textMenu, text);
@@ -87,7 +87,8 @@
 
             // progressBar
             {
-                var percentage = new UIMenuNumericScrollerItem<float>(nameof(BarTimerBar.Percentage), "", 0.0f, 1.0f, 0.05f);
+                var percentage = new UIMenuNumericScrollerItem<float>(nameof(BarTimerBar.Percentage), "", 0.0f, 1.0f, 0.01f)
+                                        .WithTextEditing();
                 percentage.Value = progressBar.Percentage;
                 percentage.IndexChanged += (s, o, n) =>
                 {
@@ -124,6 +125,7 @@
                 };
 
                 progressBarMenu.AddItems(percentage, foreground, background, markers);
+                progressBarMenu.WithFastScrollingOn(percentage);
                 AddCommonMenuItems(progressBarMenu, progressBar);
             }
 
@@ -157,7 +159,8 @@
                     }
                 };
 
-                var num = new UIMenuNumericScrollerItem<int>("Number of Checkpoints", "", 0, 16, 1);
+                var num = new UIMenuNumericScrollerItem<int>("Number of Checkpoints", "", 0, 16, 1)
+                            .WithTextEditing();
                 num.Value = checkpoints.Checkpoints.Count;
                 num.IndexChanged += (s, o, n) =>
                 {
@@ -185,7 +188,7 @@
 
             // icons
             {
-                var num = new UIMenuNumericScrollerItem<int>("Number of Icons", "", 0, 8, 1);
+                var num = new UIMenuNumericScrollerItem<int>("Number of Icons", "", 0, 8, 1).WithTextEditing();
                 var type = new UIMenuListScrollerItem<(string Name, Func<TimerBarIcon> Creator)>("Type", "", new (string, Func<TimerBarIcon>)[]
                 {
                     ("Rocket", () => TimerBarIcon.Rocket),
@@ -238,9 +241,9 @@
 
         private void AddCommonMenuItems(UIMenu menu, TimerBarBase tb)
         {
-            var label = NewTextEditingItem(nameof(TimerBarBase.Label), "Select to edit the timer bar label.",
-                                           () => tb.Label,
-                                           s => tb.Label = s);
+            var label = new UIMenuItem(nameof(TimerBarBase.Label), "Select to edit the timer bar label.")
+                            .WithTextEditing(() => tb.Label,
+                                             s => tb.Label = s);
 
             var accent = NewColorsItem(nameof(TimerBarBase.Accent), "Select to toggle the timer bar accent.");
             accent.ScrollingEnabled = false;
