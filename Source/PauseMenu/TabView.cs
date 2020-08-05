@@ -172,6 +172,8 @@ namespace RAGENativeUI.PauseMenu
                     Tabs[Index].Active = false;
                     Tabs[Index].Focused = false;
                     Tabs[Index].Visible = false;
+                    if (Tabs[Index] is TabSubmenuItem submenuItem)
+                        submenuItem.RefreshIndex();
                     Index = (1000 - (1000 % Tabs.Count) + Index - 1) % Tabs.Count;
                     Tabs[Index].Active = true;
                     Tabs[Index].Focused = false;
@@ -187,6 +189,8 @@ namespace RAGENativeUI.PauseMenu
                     Tabs[Index].Active = false;
                     Tabs[Index].Focused = false;
                     Tabs[Index].Visible = false;
+                    if (Tabs[Index] is TabSubmenuItem submenuItem)
+                        submenuItem.RefreshIndex();
                     Index = (1000 - (1000 % Tabs.Count) + Index + 1) % Tabs.Count;
                     Tabs[Index].Active = true;
                     Tabs[Index].Focused = false;
@@ -324,4 +328,3 @@ namespace RAGENativeUI.PauseMenu
         }
     }
 }
-
