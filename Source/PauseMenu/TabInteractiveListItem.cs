@@ -8,36 +8,39 @@ namespace RAGENativeUI.PauseMenu
     public class TabInteractiveListItem : TabItem
     {
         protected const int MaxItemsPerView = 15;
-        
-        /// <summary>
-        /// Hidden menu that holds the items and handles the input logic.
-        /// </summary>
-        private readonly UIMenu backingMenu;
         private int lastItemCount = 0;
 
-        public List<UIMenuItem> Items { get => backingMenu.MenuItems; set => backingMenu.MenuItems = value; }
+        public List<UIMenuItem> Items { get => BackingMenu.MenuItems; set => BackingMenu.MenuItems = value; }
         public bool IsInList { get; set; }
-        public int Index { get => backingMenu.CurrentSelection; set => backingMenu.CurrentSelection = value; }
+        public int Index { get => BackingMenu.CurrentSelection; set => BackingMenu.CurrentSelection = value; }
+        /// <summary>
+        /// Gets the hidden menu that holds the items and handles the input logic.
+        /// </summary>
+        /// <remarks>
+        /// This <see cref="UIMenu"/> does not require a <see cref="MenuPool"/>, it is fully managed by the <see cref="TabInteractiveListItem"/>.
+        /// </remarks>
+        public UIMenu BackingMenu { get; }
 
         public TabInteractiveListItem(string name, IEnumerable<UIMenuItem> items) : base(name)
         {
             DrawBg = false;
             CanBeFocused = true;
-            backingMenu = new UIMenu("", "")
+            BackingMenu = new UIMenu(nameof(TabInteractiveListItem), nameof(BackingMenu))
             {
                 MenuItems = new List<UIMenuItem>(items),
                 MaxItemsOnScreen = MaxItemsPerView,
                 IgnoreVisibility = true,
             };
+            RefreshIndex();
             IsInList = true;
         }
 
-        public void MoveDown() => backingMenu.GoDown();
-        public void MoveUp() => backingMenu.GoUp();
+        public void MoveDown() => BackingMenu.GoDown();
+        public void MoveUp() => BackingMenu.GoUp();
 
         public void RefreshIndex()
         {
-            backingMenu.RefreshIndex();
+            BackingMenu.RefreshIndex();
             lastItemCount = Items.Count;
         }
 
@@ -54,9 +57,9 @@ namespace RAGENativeUI.PauseMenu
 
             if (!Focused)
             {
-                if (backingMenu.Visible)
+                if (BackingMenu.Visible)
                 {
-                    backingMenu.Close(openParentMenu: false);
+                    BackingMenu.Close(openParentMenu: false);
                 }
                 return;
             }
@@ -72,13 +75,13 @@ namespace RAGENativeUI.PauseMenu
                 RefreshIndex();
             }
 
-            if (backingMenu.Visible)
+            if (BackingMenu.Visible)
             {
-                backingMenu.ProcessControl();
+                BackingMenu.ProcessControl();
             }
             else
             {
-                backingMenu.Visible = true;
+                BackingMenu.Visible = true;
             }
         }
 
@@ -110,7 +113,7 @@ namespace RAGENativeUI.PauseMenu
             var width = height * ratio;
 
             int i = 0;
-            for (int c = backingMenu.FirstItemOnScreen; c <= backingMenu.LastItemOnScreen; c++)
+            for (int c = BackingMenu.FirstItemOnScreen; c <= BackingMenu.LastItemOnScreen; c++)
             {
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 

@@ -2,9 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+
     using Rage;
     using Rage.Attributes;
-    using Rage.Native;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
     using RAGENativeUI.PauseMenu;
@@ -69,6 +70,9 @@
             UIMenuItem[] menuItems = CreateMenuItems();
             menuItems[0].Activated += (m, s) => Game.DisplaySubtitle("Activated first item!");
             TabInteractiveListItem interactiveListItem = new TabInteractiveListItem("An Interactive List", menuItems);
+            // set fast scrolling on scroller item with a slider bar (see MenuExtensions.cs)
+            interactiveListItem.BackingMenu.WithFastScrollingOn(menuItems.Where(i => i is UIMenuScrollerItem s && s.SliderBar != null));
+            interactiveListItem.BackingMenu.OnIndexChange += (m, i) => Game.DisplaySubtitle("Selected #" + i);
             tabView.AddTab(interactiveListItem);
 
             tabView.RefreshIndex();
