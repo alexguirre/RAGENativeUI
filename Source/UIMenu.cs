@@ -311,8 +311,8 @@ namespace RAGENativeUI
                                              new InstructionalButton(GameControl.FrontendCancel, "Back"));
 
             _bannerSprite = new Sprite(spriteLibrary, spriteName, Point.Empty, Size.Empty);
-            Title = title;
-            Subtitle = subtitle;
+            TitleText = title;
+            SubtitleText = subtitle;
 
             if (subtitle != null && subtitle.StartsWith("~"))
             {
@@ -763,7 +763,7 @@ namespace RAGENativeUI
 
         private void DrawTitle(float x, float y, float bannerHeight)
         {
-            if (string.IsNullOrEmpty(Title))
+            if (string.IsNullOrEmpty(TitleText))
             {
                 return;
             }
@@ -773,7 +773,7 @@ namespace RAGENativeUI
 
             TextStyle s = TitleStyle;
             s.Wrap = (x, x + menuWidth);
-            TextCommands.Display(Title, s, titleX, titleY);
+            TextCommands.Display(TitleText, s, titleX, titleY);
         }
 
         /// <summary>
@@ -786,7 +786,7 @@ namespace RAGENativeUI
         /// </param>
         protected virtual void DrawSubtitle(float x, ref float y)
         {
-            if (string.IsNullOrEmpty(Subtitle))
+            if (string.IsNullOrEmpty(SubtitleText))
             {
                 return;
             }
@@ -810,7 +810,7 @@ namespace RAGENativeUI
 
             TextStyle s = SubtitleStyle;
             s.Wrap = (x + 0.0046875f, x + menuWidth - 0.0046875f);
-            TextCommands.Display(Subtitle, s, subTextX, subTextY);
+            TextCommands.Display(SubtitleText, s, subTextX, subTextY);
         }
 
         private void DrawSubtitleCounter(float x, float y)
@@ -1767,7 +1767,19 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets or sets the title text.
         /// </summary>
-        public string Title { get; set; }
+        [Obsolete("Use UIMenu.TitleText instead. The only functional property of the returned ResText is ResText.Caption"), EditorBrowsable(EditorBrowsableState.Never)]
+        public ResText Title { get; set; } = new ResText(null, Point.Empty, 0.0f);
+
+        /// <summary>
+        /// Gets or sets the title text.
+        /// </summary>
+        public string TitleText
+        {
+#pragma warning disable CS0612, CS0618 // Type or member is obsolete
+            get => Title.Caption;
+            set => Title.Caption = value;
+#pragma warning restore CS0612, CS0618 // Type or member is obsolete
+        }
 
         /// <summary>
         /// Gets or sets the title text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.
@@ -1778,7 +1790,19 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets or sets the subtitle text.
         /// </summary>
-        public string Subtitle { get; set; }
+        [Obsolete("Use UIMenu.SubtitleText instead. The only functional property of the returned ResText is ResText.Caption"), EditorBrowsable(EditorBrowsableState.Never)]
+        public ResText Subtitle { get; set; } = new ResText(null, Point.Empty, 0.0f);
+
+        /// <summary>
+        /// Gets or sets the subtitle text.
+        /// </summary>
+        public string SubtitleText
+        {
+#pragma warning disable CS0612, CS0618 // Type or member is obsolete
+            get => Subtitle.Caption;
+            set => Subtitle.Caption = value;
+#pragma warning restore CS0612, CS0618 // Type or member is obsolete
+        }
 
         /// <summary>
         /// Gets or sets the subtitle text style. Note, <see cref="TextStyle.Wrap"/> is ignored and instead calculated based on the current menu width.

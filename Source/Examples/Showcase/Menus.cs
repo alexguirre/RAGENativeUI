@@ -23,9 +23,9 @@
             UIMenuItem checkboxBindItem = new UIMenuItem("Checkbox", $"Demonstrates the ~b~{nameof(UIMenuCheckboxItem)}~s~ class.");
             UIMenuItem scrollerBindItem = new UIMenuItem("Scroller", $"Demonstrates the ~b~{nameof(UIMenuListScrollerItem<int>)}~s~ and ~b~{nameof(UIMenuNumericScrollerItem<int>)}~s~ classes.");
 
-            UIMenu visualOptionsMenu = new UIMenu(Title, Subtitle + ": VISUAL OPTIONS");
-            UIMenu checkboxMenu = new UIMenu(Title, Subtitle + ": CHECKBOX");
-            UIMenu scrollerMenu = new UIMenu(Title, Subtitle + ": SCROLLER");
+            UIMenu visualOptionsMenu = new UIMenu(TitleText, SubtitleText + ": VISUAL OPTIONS");
+            UIMenu checkboxMenu = new UIMenu(TitleText, SubtitleText + ": CHECKBOX");
+            UIMenu scrollerMenu = new UIMenu(TitleText, SubtitleText + ": SCROLLER");
 
             Plugin.Pool.Add(visualOptionsMenu, checkboxMenu, scrollerMenu);
 
@@ -100,9 +100,9 @@
                     });
                 };
                 
-                var title = new UIMenuItem(nameof(Title), $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(Title)}~s~ property.")
-                                .WithTextEditing(() => Title,
-                                                 s => ApplyToEachMenu(m => m.Title = s));
+                var title = new UIMenuItem("Title", $"Select to modify the ~b~{nameof(UIMenu)}.{nameof(TitleText)}~s~ property.")
+                                .WithTextEditing(() => TitleText,
+                                                 s => ApplyToEachMenu(m => m.TitleText = s));
 
                 var titleColor = NewColorsItem("Title Color", $"Modifies the color of the ~b~{nameof(UIMenu)}.{nameof(TitleStyle)}~s~ property.");
                 titleColor.IndexChanged += (s, o, n) =>

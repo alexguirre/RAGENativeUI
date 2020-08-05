@@ -61,10 +61,10 @@
             UIMenuItem checkpointsBindItem = new UIMenuItem("Checkpoints", $"Demonstrates the ~b~{nameof(CheckpointsTimerBar)}~s~ class.");
             UIMenuItem iconsBindItem = new UIMenuItem("Icons", $"Demonstrates the ~b~{nameof(IconsTimerBar)}~s~ class.");
 
-            UIMenu textMenu = new UIMenu(Title, Subtitle + ": TEXT");
-            UIMenu progressBarMenu = new UIMenu(Title, Subtitle + ": PROGRESS BAR");
-            UIMenu checkpointsMenu = new UIMenu(Title, Subtitle + ": CHECKPOINTS");
-            UIMenu iconsMenu = new UIMenu(Title, Subtitle + ": ICONS");
+            UIMenu textMenu = new UIMenu(TitleText, SubtitleText + ": TEXT");
+            UIMenu progressBarMenu = new UIMenu(TitleText, SubtitleText + ": PROGRESS BAR");
+            UIMenu checkpointsMenu = new UIMenu(TitleText, SubtitleText + ": CHECKPOINTS");
+            UIMenu iconsMenu = new UIMenu(TitleText, SubtitleText + ": ICONS");
 
             Plugin.Pool.Add(textMenu, progressBarMenu, checkpointsMenu, iconsMenu);
 

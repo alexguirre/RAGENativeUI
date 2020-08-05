@@ -81,7 +81,7 @@ namespace RAGENativeUI.Elements
         /// <param name="index">Index in the list. If unsure user 0.</param>
         [Obsolete("This constructor overload will be removed soon, use one of the other overloads.")]
         public UIMenuSwitchMenusItem(string text, List<UIMenu> menus, int index)
-            : this(text, menus, new List<string>(menus.Select(m => m.Title)), index, "")
+            : this(text, menus, new List<string>(menus.Select(m => m.TitleText)), index, "")
         {
         }
 
@@ -95,7 +95,7 @@ namespace RAGENativeUI.Elements
         /// <param name="description">Description for this item.</param>
         [Obsolete("This constructor overload will be removed soon, use one of the other overloads.")]
         public UIMenuSwitchMenusItem(string text, List<UIMenu> menus, int index, string description) 
-            : this(text, menus, new List<string>(menus.Select(m => m.Title)), index, description)
+            : this(text, menus, new List<string>(menus.Select(m => m.TitleText)), index, description)
         {
         }
 
@@ -177,7 +177,7 @@ namespace RAGENativeUI.Elements
         /// <param name="description">The description for this item.</param>
         /// <param name="menus">The collection of <see cref="UIMenu"/>s.</param>
         public UIMenuSwitchMenusItem(string text, string description, IEnumerable<UIMenu> menus)
-            : this(text, description, menus.Select(m => new DisplayItem(m, m.Title)))
+            : this(text, description, menus.Select(m => new DisplayItem(m, m.TitleText)))
         {
         }
 
