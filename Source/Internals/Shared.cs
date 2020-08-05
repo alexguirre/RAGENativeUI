@@ -32,6 +32,8 @@
         public static long* MemoryAddresses => data->MemoryAddresses;
         public static int* MemoryInts => data->MemoryInts;
 
+        public static ref uint TokenParserHookRefs => ref data->TokenParserHookRefs;
+
         static Shared()
         {
             Game.LogTrivialDebug($"[RAGENativeUI::Shared] Init from '{System.AppDomain.CurrentDomain.FriendlyName}'");
@@ -54,6 +56,7 @@
                 // in case there is any visible menus when unloading the plugin
                 NumberOfVisibleMenus -= UIMenu.NumberOfVisibleMenus;
                 NumberOfVisiblePauseMenus -= TabView.NumberOfVisiblePauseMenus;
+                TokenParserHook.Shutdown();
             }
 
             // dispose mapped file
@@ -87,6 +90,7 @@
             public uint NumberOfVisiblePauseMenus;
             public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];
             public fixed int MemoryInts[Memory.MaxInts];
+            public uint TokenParserHookRefs;
         }
     }
 }
