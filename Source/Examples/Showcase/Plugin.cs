@@ -4,6 +4,8 @@ using System.Linq;
 using Rage;
 using RAGENativeUI;
 using RAGENativeUI.PauseMenu;
+using Rage.Attributes;
+using RAGENativeUI.Elements;
 
 internal static class Plugin
 {
@@ -42,5 +44,20 @@ internal static class Plugin
             // process input and draw the visible menus
             Pool.ProcessMenus();
         }
+    }
+
+    [ConsoleCommand]
+    private static void InstructionalKeysTest()
+    {
+        string unknown = InstructionalKey.Unknown.GetId();
+        string oem5 = InstructionalKey.Oem5.GetId();
+        string oem102 = InstructionalKey.Oem102.GetId();
+
+
+        Game.Console.Print(unknown);
+        Game.Console.Print(oem5);
+        Game.Console.Print(oem102);
+
+        Game.DisplayHelp($"a ~{unknown}~ a ~{oem5}~ a ~{oem102}~ a");
     }
 }

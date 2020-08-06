@@ -60,6 +60,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Elements\BigMessage.cs" />
     <Compile Include="Elements\Container.cs" />
+    <Compile Include="Elements\InstructionalKey.cs" />
     <Compile Include="Elements\MenuItems\UIMenuListScrollerItem.cs" />
     <Compile Include="Elements\MissionPassedScreen.cs" />
     <Compile Include="Elements\Rectangle.cs" />

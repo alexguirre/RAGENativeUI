@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Runtime.InteropServices;
+    using System.Text;
 
     using Rage;
 
@@ -228,11 +229,12 @@
             0xE9, 0x00, 0x00, 0x00, 0x00,                                   // jmp  success
         };
 
-        private static bool TokenParser(string token, ref sIcon icon)
+        private static bool TokenParser(byte* token, ref sIcon icon)
         {
-            Log($"TokenParser({token}, {((IntPtr)Unsafe.AsPointer(ref icon)).ToString("X16")})");
+            int tokenLength = StrLen(token);
+            Log($"TokenParser({Encoding.UTF8.GetString(token, tokenLength)}, {((IntPtr)Unsafe.AsPointer(ref icon)).ToString("X16")})");
 
-            if (token.Length <= 2)
+            if (tokenLength <= 2)
             {
                 Log($" > failed: token too short");
                 return false;
@@ -242,20 +244,20 @@
 
             int iconIndex = 0;
             int state = 0;
-            for (int i = 0; i < token.Length; i++)
+            for (int i = 0; i < tokenLength; i++)
             {
-                char c = token[i];
+                byte c = token[i];
 
                 switch (state)
                 {
                     case 0: // prefix
                         if (c != 't' && c != 'T' && c != 'b')
                         {
-                            Log($" > failed: expected underscore 't', 'T' or 'b', got '{c}'");
+                            Log($" > failed: expected 't', 'T' or 'b', got '{c}'");
                             return false;
                         }
 
-                        icon.iconTypeList[iconIndex] = (byte)c;
+                        icon.iconTypeList[iconIndex] = c;
                         state = 1;
                         break;
                     case 1: // underscore separator
@@ -270,9 +272,10 @@
                         if (icon.iconTypeList[iconIndex] == 'b')
                         {
                             // parse the number
-                            int end = token.IndexOf(Separator, i);
-                            end = end == -1 ? token.Length : end;
-                            var numStr = token.Substring(i, end - i);
+                            string tokenStr = Encoding.UTF8.GetString(token, tokenLength); // TODO: don't allocate a new string here
+                            int end = tokenStr.IndexOf(Separator, i);
+                            end = end == -1 ? tokenLength : end;
+                            var numStr = tokenStr.Substring(i, end - i);
                             if (!uint.TryParse(numStr, out var num))
                             {
                                 Log($" > failed: invalid uint '{numStr}'");
@@ -286,15 +289,31 @@
                         {
                             //icon.iconList[iconIndex] = (byte)c;
 
-                            byte b = (byte)c;
                             bool found = false;
                             for (int key = 0; key < KeyboardLayoutSize; key++)
                             {
-                                if (keyboardLayout[key].Icon <= 1 && keyboardLayout[key].Text[0] == b)
+                                ref var layoutKey = ref keyboardLayout[key];
+                                if (layoutKey.Icon <= 1)
                                 {
-                                    icon.iconList[iconIndex] = (uint)key;
-                                    found = true;
-                                    break;
+                                    bool match = true;
+
+                                    int len = 0;
+                                    for (; len < CControlKeyboardLayoutKey.MaxTextLength && layoutKey.Text[len] != 0; len++)
+                                    {
+                                        if (layoutKey.Text[len] != token[i + len])
+                                        {
+                                            match = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (match)
+                                    {
+                                        i += len - 1;
+                                        icon.iconList[iconIndex] = (uint)key;
+                                        found = true;
+                                        break;
+                                    }
                                 }
                             }
 
@@ -326,10 +345,17 @@
             Log($" > success");
             icon.useIdAsMovieName = 0;
             return true;
+
+            static int StrLen(byte* str)
+            {
+                int len = 0;
+                while (str[len] != 0) { len++; }
+                return len;
+            }
         }
 
         [return: MarshalAs(UnmanagedType.I1)]
-        private delegate bool ParseTokenDelegate([MarshalAs(UnmanagedType.LPStr)] string token, ref sIcon icon);
+        private delegate bool ParseTokenDelegate(byte* token, ref sIcon icon);
 
         [StructLayout(LayoutKind.Sequential, Size = 0x68)]
         private struct sIcon
@@ -352,8 +378,10 @@
         [StructLayout(LayoutKind.Sequential, Size = 0x10)]
         private struct CControlKeyboardLayoutKey
         {
+            public const int MaxTextLength = 10;
+
             public int Icon;
-            public fixed byte Text[10];
+            public fixed byte Text[MaxTextLength];
         }
 
 
