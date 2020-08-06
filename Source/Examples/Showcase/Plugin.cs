@@ -115,6 +115,22 @@ internal static class Plugin
                 InstructionalKey.MouseAxisYUp,
                 InstructionalKey.MouseAxisYDown,
             };
+
+            yield return new InstructionalKey[]
+            {
+                InstructionalKey.ControllerAxisLX,
+                InstructionalKey.ControllerAxisLY,
+                InstructionalKey.ControllerAxisLYUp,
+                InstructionalKey.ControllerAxisLYDown,
+                InstructionalKey.ControllerAxisLXLeft,
+                InstructionalKey.ControllerAxisLXRight,
+                InstructionalKey.ControllerAxisRX,
+                InstructionalKey.ControllerAxisRY,
+                InstructionalKey.ControllerAxisRYUp,
+                InstructionalKey.ControllerAxisRYDown,
+                InstructionalKey.ControllerAxisRXLeft,
+                InstructionalKey.ControllerAxisRXRight,
+            };
         }
     }
 }

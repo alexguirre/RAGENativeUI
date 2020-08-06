@@ -21,11 +21,13 @@
                        IOMS_MOUSE_ABSOLUTEAXIS = 1,
                        IOMS_MOUSE_WHEEL = 6,
                        IOMS_MOUSE_BUTTON = 7,
-                       IOMS_PAD_DIGITALBUTTON = 9;
+                       IOMS_PAD_DIGITALBUTTON = 9,
+                       IOMS_PAD_AXIS = 12;
 
             const uint MouseAxisMask = 0x200,
                        MouseWheelMask = 0x400,
                        MouseButtonMask = 0x800,
+                       ControllerAxisMask = 0x1000,
                        ControllerButtonMask = 0x2000;
 
             atFixedArray_sIconData_4 icons = default;
@@ -33,6 +35,7 @@
             uint source = (parameter & MouseAxisMask) != 0 ? IOMS_MOUSE_ABSOLUTEAXIS :
                           (parameter & MouseWheelMask) != 0 ? IOMS_MOUSE_WHEEL : 
                           (parameter & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON :
+                          (parameter & ControllerAxisMask) != 0 ? IOMS_PAD_AXIS :
                           (parameter & ControllerButtonMask) != 0 ? IOMS_PAD_DIGITALBUTTON :
                                                                     IOMS_KEYBOARD;
 
@@ -357,19 +360,19 @@
 
         MouseAxisX = 0x200, // IOM_AXIS_X
         MouseAxisY = 0x201, // IOM_AXIS_Y
-        //IOM_IAXIS_X = 0x202, // same symbol as IOM_AXIS_*
+        //IOM_IAXIS_X = 0x202, // same icon as IOM_AXIS_*
         //IOM_IAXIS_Y = 0x203,
-        //BASIC_MOUSE_AXIS_MAX = 0x204, // not a symbol
+        //BASIC_MOUSE_AXIS_MAX = 0x204, // not an icon
         MouseAxisXLeft = 0x205, // IOM_AXIS_X_LEFT
         MouseAxisXRight = 0x206, // IOM_AXIS_X_RIGHT
         MouseAxisYUp = 0x207, // IOM_AXIS_Y_UP
         MouseAxisYDown = 0x208, // IOM_AXIS_Y_DOWN
-        //MOUSE_AXIS_MAX = 0x209, // not a symbol
+        //MOUSE_AXIS_MAX = 0x209, // not an icon
 
         MouseWheelUp = 0x400, // IOM_WHEEL_UP
         MouseWheelDown = 0x401, // IOM_WHEEL_DOWN
         MouseWheel = 0x402, // IOM_AXIS_WHEEL_DELTA
-        // these have the same symbol as IOM_AXIS_WHEEL_DELTA
+        // these have the same icon as IOM_AXIS_WHEEL_DELTA
         //IOM_IAXIS_WHEEL_DELTA = 0x403,
         //IOM_AXIS_WHEEL = 0x404,
         //IOM_IAXIS_WHEEL = 0x405,
@@ -384,6 +387,37 @@
         MouseExtra3 = 0x820,
         MouseExtra4 = 0x840,
         MouseExtra5 = 0x880,
+
+        ControllerAxisLX = 0x1000, // IOM_AXIS_LX
+        ControllerAxisLY = 0x1001, // IOM_AXIS_LY
+        ControllerAxisRX = 0x1002, // IOM_AXIS_RX
+        ControllerAxisRY = 0x1003, // IOM_AXIS_RY
+        // IOM_AXIS_LUP = 0x1004, // these don't have icons
+        // IOM_AXIS_LDOWN = 0x1005,
+        // IOM_AXIS_LLEFT = 0x1006,
+        // IOM_AXIS_LRIGHT = 0x1007,
+        // IOM_AXIS_LUR = 0x1008,
+        // IOM_AXIS_LUL = 0x1009,
+        // IOM_AXIS_LDR = 0x100A,
+        // IOM_AXIS_LDL = 0x100B,
+        // IOM_AXIS_RUP = 0x100C,
+        // IOM_AXIS_RDOWN = 0x100D,
+        // IOM_AXIS_RLEFT = 0x100E,
+        // IOM_AXIS_RRIGHT = 0x100F,
+        // IOM_AXIS_RUR = 0x1010,
+        // IOM_AXIS_RUL = 0x1011,
+        // IOM_AXIS_RDR = 0x1012,
+        // IOM_AXIS_RDL = 0x1013,
+        // IOM_AXIS_DPADX = 0x1014,
+        // IOM_AXIS_DPADY = 0x1015,
+        ControllerAxisLYUp = 0x1016, // IOM_AXIS_LY_UP
+        ControllerAxisLYDown = 0x1017, // IOM_AXIS_LY_DOWN
+        ControllerAxisLXLeft = 0x1018, // IOM_AXIS_LX_LEFT
+        ControllerAxisLXRight = 0x1019, // IOM_AXIS_LX_RIGHT
+        ControllerAxisRYUp = 0x101A, // IOM_AXIS_RY_UP
+        ControllerAxisRYDown = 0x101B, // IOM_AXIS_RY_DOWN
+        ControllerAxisRXLeft = 0x101C, // IOM_AXIS_RX_LEFT
+        ControllerAxisRXRight = 0x101D, // IOM_AXIS_RX_RIGHT
 
         ControllerLTrigger = 0x2000, // L2_INDEX
         ControllerRTrigger = 0x2001, // R2_INDEX
