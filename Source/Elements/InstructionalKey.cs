@@ -3,6 +3,8 @@
     using System.Text;
     using System.Windows.Forms;
 
+    using Rage;
+
     using RAGENativeUI.Internals;
 
     public static class InstructionalKeyExtensions
@@ -17,11 +19,23 @@
             // from rage::ioMapperSource enum
             const uint IOMS_KEYBOARD = 0;
             const uint IOMS_MOUSE_BUTTON = 7;
+            const uint IOMS_PAD_DIGITALBUTTON = 9;
 
             const uint MouseButtonMask = 0x800;
+            const uint ControllerButtonMask = 0x2000;
 
             atFixedArray_sIconData_4 icons = default;
-            CTextFormat.GetInputSourceIcons(((uint)key & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON : IOMS_KEYBOARD, (uint)key, ref icons);
+            uint source = ((uint)key & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON :
+                          ((uint)key & ControllerButtonMask) != 0 ? IOMS_PAD_DIGITALBUTTON :
+                                                                    IOMS_KEYBOARD;
+            uint parameter = (uint)key;
+
+            if (source == IOMS_PAD_DIGITALBUTTON)
+            {
+                parameter = 1u << (int)(parameter & 0xFFu);
+            }
+
+            CTextFormat.GetInputSourceIcons(source, parameter, ref icons);
 
             const int BufferSize = 64;
             byte* buffer = stackalloc byte[BufferSize];
@@ -167,6 +181,30 @@
                 Keys.Oem7 => InstructionalKey.Oem7,
                 Keys.Oem102 => InstructionalKey.Oem102,
                 _ => InstructionalKey.Unknown
+            };
+
+
+
+        public static string GetInstructionalId(this ControllerButtons button) => button.GetInstructionalKey().GetId();
+
+        public static InstructionalKey GetInstructionalKey(this ControllerButtons button)
+            => button switch
+            {
+                ControllerButtons.DPadUp => InstructionalKey.ControllerDPadUp,
+                ControllerButtons.DPadDown => InstructionalKey.ControllerDPadDown,
+                ControllerButtons.DPadLeft => InstructionalKey.ControllerDPadLeft,
+                ControllerButtons.DPadRight => InstructionalKey.ControllerDPadRight,
+                ControllerButtons.Start => InstructionalKey.ControllerStart,
+                ControllerButtons.Back => InstructionalKey.ControllerBack,
+                ControllerButtons.LeftThumb => InstructionalKey.ControllerLThumb,
+                ControllerButtons.RightThumb => InstructionalKey.ControllerRThumb,
+                ControllerButtons.LeftShoulder => InstructionalKey.ControllerLShoulder,
+                ControllerButtons.RightShoulder => InstructionalKey.ControllerRShoulder,
+                ControllerButtons.A => InstructionalKey.ControllerA,
+                ControllerButtons.B => InstructionalKey.ControllerB,
+                ControllerButtons.X => InstructionalKey.ControllerX,
+                ControllerButtons.Y => InstructionalKey.ControllerY,
+                _ => InstructionalKey.Unknown,
             };
     }
 
@@ -319,5 +357,33 @@
         MouseExtra3 = 0x820,
         MouseExtra4 = 0x840,
         MouseExtra5 = 0x880,
+
+        ControllerLTrigger = 0x2000, // L2_INDEX
+        ControllerRTrigger = 0x2001, // R2_INDEX
+        ControllerLShoulder = 0x2002, // L1_INDEX
+        ControllerRShoulder = 0x2003, // R1_INDEX
+        ControllerRUp = 0x2004, // RUP_INDEX
+        ControllerRRight = 0x2005, // RRIGHT_INDEX
+        ControllerRDown = 0x2006, // RDOWN_INDEX
+        ControllerRLeft = 0x2007, // RLEFT_INDEX
+        ControllerSelect = 0x2008, // SELECT_INDEX
+        ControllerLThumb = 0x2009, // L3_INDEX
+        ControllerRThumb = 0x200A, // R3_INDEX
+        ControllerStart = 0x200B, // START_INDEX
+        ControllerLUp = 0x200C, // LUP_INDEX
+        ControllerLRight = 0x200D, // LRIGHT_INDEX
+        ControllerLDown = 0x200E, // LDOWN_INDEX
+        ControllerLLeft = 0x200F, // LLEFT_INDEX
+
+        // aliases to have the same names as RPH's ControllerButtons enum
+        ControllerBack = ControllerSelect,
+        ControllerDPadDown = ControllerLDown,
+        ControllerDPadRight = ControllerLRight,
+        ControllerDPadLeft = ControllerLLeft,
+        ControllerDPadUp = ControllerLUp,
+        ControllerA = ControllerRDown,
+        ControllerB = ControllerRRight,
+        ControllerX = ControllerRLeft,
+        ControllerY = ControllerRUp,
     }
 }

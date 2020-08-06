@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Windows.Forms;
 using System.Linq;
+using System.Collections.Generic;
 using Rage;
 using RAGENativeUI;
 using RAGENativeUI.PauseMenu;
@@ -45,19 +46,58 @@ internal static class Plugin
             Pool.ProcessMenus();
         }
     }
+    [ConsoleCommand]
+    private static void InstructionalKeysSimpleTest()
+    {
+        Game.DisplayHelp($"Press ~{Keys.Space.GetInstructionalId()}~ ~{Keys.MButton.GetInstructionalId()}~ ~{ControllerButtons.A.GetInstructionalId()}~");
+    }
 
     [ConsoleCommand]
     private static void InstructionalKeysTest()
     {
-        string unknown = InstructionalKey.Unknown.GetId();
-        string oem5 = InstructionalKey.Oem5.GetId();
-        string oem102 = InstructionalKey.Oem102.GetId();
+        GameFiber.StartNew(() =>
+        {
+            foreach (var keys in GetKeys())
+            {
+                string str = string.Join("~n~", keys.Select(k => $"~{k.GetId()}~"));
+                Game.DisplayHelp(str);
+                GameFiber.Sleep(5000);
+            }
+        });
 
+        static IEnumerable<InstructionalKey[]> GetKeys()
+        {
+            yield return new InstructionalKey[]
+            {
+                ControllerButtons.DPadUp.GetInstructionalKey(),
+                ControllerButtons.DPadDown.GetInstructionalKey(),
+                ControllerButtons.DPadLeft.GetInstructionalKey(),
+                ControllerButtons.DPadRight.GetInstructionalKey(),
+                ControllerButtons.Start.GetInstructionalKey(),
+                ControllerButtons.Back.GetInstructionalKey(),
+                ControllerButtons.LeftThumb.GetInstructionalKey(),
+                ControllerButtons.RightThumb.GetInstructionalKey(),
+                ControllerButtons.LeftShoulder.GetInstructionalKey(),
+                ControllerButtons.RightShoulder.GetInstructionalKey(),
+                InstructionalKey.ControllerLTrigger,
+                InstructionalKey.ControllerRTrigger,
+                ControllerButtons.A.GetInstructionalKey(),
+                ControllerButtons.B.GetInstructionalKey(),
+                ControllerButtons.X.GetInstructionalKey(),
+                ControllerButtons.Y.GetInstructionalKey(),
+            };
 
-        Game.Console.Print(unknown);
-        Game.Console.Print(oem5);
-        Game.Console.Print(oem102);
-
-        Game.DisplayHelp($"a ~{unknown}~ a ~{oem5}~ a ~{oem102}~ a");
+            yield return new InstructionalKey[]
+            {
+                InstructionalKey.MouseLeft,
+                InstructionalKey.MouseRight,
+                InstructionalKey.MouseMiddle,
+                InstructionalKey.MouseExtra1,
+                InstructionalKey.MouseExtra2,
+                InstructionalKey.MouseExtra3,
+                InstructionalKey.MouseExtra4,
+                InstructionalKey.MouseExtra5,
+            };
+        }
     }
 }
