@@ -17,16 +17,22 @@
             }
 
             // from rage::ioMapperSource enum
-            const uint IOMS_KEYBOARD = 0;
-            const uint IOMS_MOUSE_BUTTON = 7;
-            const uint IOMS_PAD_DIGITALBUTTON = 9;
+            const uint IOMS_KEYBOARD = 0,
+                       IOMS_MOUSE_ABSOLUTEAXIS = 1,
+                       IOMS_MOUSE_WHEEL = 6,
+                       IOMS_MOUSE_BUTTON = 7,
+                       IOMS_PAD_DIGITALBUTTON = 9;
 
-            const uint MouseButtonMask = 0x800;
-            const uint ControllerButtonMask = 0x2000;
+            const uint MouseAxisMask = 0x200,
+                       MouseWheelMask = 0x400,
+                       MouseButtonMask = 0x800,
+                       ControllerButtonMask = 0x2000;
 
             atFixedArray_sIconData_4 icons = default;
             uint parameter = (uint)key;
-            uint source = (parameter & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON :
+            uint source = (parameter & MouseAxisMask) != 0 ? IOMS_MOUSE_ABSOLUTEAXIS :
+                          (parameter & MouseWheelMask) != 0 ? IOMS_MOUSE_WHEEL : 
+                          (parameter & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON :
                           (parameter & ControllerButtonMask) != 0 ? IOMS_PAD_DIGITALBUTTON :
                                                                     IOMS_KEYBOARD;
 
@@ -348,6 +354,27 @@
         NumPadEnter = 0xFD, // KEY_NUMPADENTER
         // KEY_CHATPAD_GREEN_SHIFT = 0xFE,
         // KEY_CHATPAD_ORANGE_SHIFT = 0xFF,
+
+        MouseAxisX = 0x200, // IOM_AXIS_X
+        MouseAxisY = 0x201, // IOM_AXIS_Y
+        //IOM_IAXIS_X = 0x202, // same symbol as IOM_AXIS_*
+        //IOM_IAXIS_Y = 0x203,
+        //BASIC_MOUSE_AXIS_MAX = 0x204, // not a symbol
+        MouseAxisXLeft = 0x205, // IOM_AXIS_X_LEFT
+        MouseAxisXRight = 0x206, // IOM_AXIS_X_RIGHT
+        MouseAxisYUp = 0x207, // IOM_AXIS_Y_UP
+        MouseAxisYDown = 0x208, // IOM_AXIS_Y_DOWN
+        //MOUSE_AXIS_MAX = 0x209, // not a symbol
+
+        MouseWheelUp = 0x400, // IOM_WHEEL_UP
+        MouseWheelDown = 0x401, // IOM_WHEEL_DOWN
+        MouseWheel = 0x402, // IOM_AXIS_WHEEL_DELTA
+        // these have the same symbol as IOM_AXIS_WHEEL_DELTA
+        //IOM_IAXIS_WHEEL_DELTA = 0x403,
+        //IOM_AXIS_WHEEL = 0x404,
+        //IOM_IAXIS_WHEEL = 0x405,
+        //IOM_AXIS_WHEEL_RELATIVE = 0x406,
+        //IOM_IAXIS_WHEEL_RELATIVE = 0x407,
 
         MouseLeft = 0x801,
         MouseRight = 0x802,

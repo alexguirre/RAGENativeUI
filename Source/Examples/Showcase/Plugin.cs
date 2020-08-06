@@ -98,6 +98,23 @@ internal static class Plugin
                 InstructionalKey.MouseExtra4,
                 InstructionalKey.MouseExtra5,
             };
+
+            yield return new InstructionalKey[]
+            {
+                InstructionalKey.MouseWheelUp,
+                InstructionalKey.MouseWheelDown,
+                InstructionalKey.MouseWheel,
+            };
+
+            yield return new InstructionalKey[]
+            {
+                InstructionalKey.MouseAxisX,
+                InstructionalKey.MouseAxisXLeft,
+                InstructionalKey.MouseAxisXRight,
+                InstructionalKey.MouseAxisY,
+                InstructionalKey.MouseAxisYUp,
+                InstructionalKey.MouseAxisYDown,
+            };
         }
     }
 }

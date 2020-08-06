@@ -263,7 +263,7 @@
                     case 0: // prefix
                         if (c != 't' && c != 'T' && c != 'b')
                         {
-                            Log($" > failed: expected 't', 'T' or 'b', got '{c}'");
+                            Log($" > failed: expected 't', 'T' or 'b', got '{(char)c}'");
                             return false;
                         }
 
@@ -273,7 +273,7 @@
                     case 1: // underscore separator
                         if (c != '_')
                         {
-                            Log($" > failed: expected underscore '_', got '{c}'");
+                            Log($" > failed: expected underscore '_', got '{(char)c}'");
                             return false;
                         }
                         state = 2;
@@ -329,7 +329,7 @@
 
                             if (!found)
                             {
-                                Log($" > failed: no matching key in keyboard layout for '{c}'");
+                                Log($" > failed: no matching key in keyboard layout for '{(char)c}'");
                                 return false;
                             }
                         }
@@ -338,7 +338,7 @@
                     case 3: // group separator
                         if (c != Separator)
                         {
-                            Log($" > failed: expected group separator '{Separator}', got '{c}'");
+                            Log($" > failed: expected group separator '{Separator}', got '{(char)c}'");
                             return false;
                         }
                         iconIndex++;
