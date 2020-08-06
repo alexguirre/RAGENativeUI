@@ -25,10 +25,10 @@
             const uint ControllerButtonMask = 0x2000;
 
             atFixedArray_sIconData_4 icons = default;
-            uint source = ((uint)key & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON :
-                          ((uint)key & ControllerButtonMask) != 0 ? IOMS_PAD_DIGITALBUTTON :
-                                                                    IOMS_KEYBOARD;
             uint parameter = (uint)key;
+            uint source = (parameter & MouseButtonMask) != 0 ? IOMS_MOUSE_BUTTON :
+                          (parameter & ControllerButtonMask) != 0 ? IOMS_PAD_DIGITALBUTTON :
+                                                                    IOMS_KEYBOARD;
 
             if (source == IOMS_PAD_DIGITALBUTTON)
             {

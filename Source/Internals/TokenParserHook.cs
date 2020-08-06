@@ -234,6 +234,16 @@
             int tokenLength = StrLen(token);
             Log($"TokenParser({Encoding.UTF8.GetString(token, tokenLength)}, {((IntPtr)Unsafe.AsPointer(ref icon)).ToString("X16")})");
 
+            if (tokenLength == 1 && token[0] == '+')
+            {
+                // alias for 'b_998' (plus symbol)
+                icon.iconTypeList[0] = (byte)'b';
+                icon.iconList[0] = 998;
+                icon.useIdAsMovieName = 0;
+                Log($" > success: '+' alias");
+                return true;
+            }
+
             if (tokenLength <= 2)
             {
                 Log($" > failed: token too short");

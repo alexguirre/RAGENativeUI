@@ -49,7 +49,7 @@ internal static class Plugin
     [ConsoleCommand]
     private static void InstructionalKeysSimpleTest()
     {
-        Game.DisplayHelp($"Press ~{Keys.Space.GetInstructionalId()}~ ~{Keys.MButton.GetInstructionalId()}~ ~{ControllerButtons.A.GetInstructionalId()}~");
+        Game.DisplayHelp($"Press ~{Keys.Space.GetInstructionalId()}~ ~+~ ~{Keys.MButton.GetInstructionalId()}~ ~+~ ~{ControllerButtons.A.GetInstructionalId()}~");
     }
 
     [ConsoleCommand]
