@@ -4,6 +4,7 @@
     using RAGENativeUI.Elements;
     using Rage;
     using System.Drawing;
+    using System.Linq;
 
     internal sealed class InstructionalButtons : UIMenu
     {
@@ -83,6 +84,7 @@
             private string buttonText = "A";
             private GameControl buttonControl = GameControl.Context;
             private uint buttonRawId = 0;
+            private InstructionalKey buttonInstructionalKey = InstructionalKey.Unknown;
 
             public ButtonMenu(InstructionalButton button) : base(Plugin.MenuTitle, "INSTRUCTIONAL BUTTONS: " + button.Text.ToUpper())
             {
@@ -123,20 +125,34 @@
                     InstructionalButtons.Update();
                 };
 
-                var type = new UIMenuListScrollerItem<string>("Type", "", new[] { "Text", "Control", "Raw ID" });
+                var instructionalKey = new UIMenuListScrollerItem<InstructionalKey>("Instructional Key", "", ((InstructionalKey[])System.Enum.GetValues(typeof(InstructionalKey))).Distinct())
+                {
+                    Enabled = false,
+                    SelectedItem = buttonInstructionalKey
+                };
+                instructionalKey.IndexChanged += (s, o, n) =>
+                {
+                    buttonInstructionalKey = instructionalKey.SelectedItem;
+                    this.button.Button = instructionalKey.SelectedItem;
+                    InstructionalButtons.Update();
+                };
+
+                var type = new UIMenuListScrollerItem<string>("Type", "", new[] { "Text", "Control", "Raw ID", "Instructional Key" });
                 type.IndexChanged += (s, o, n) =>
                 {
-                    const int TextIdx = 0, ControlIdx = 1, RawIdIdx = 2;
+                    const int TextIdx = 0, ControlIdx = 1, RawIdIdx = 2, InstructionalKeyIdx = 3;
 
                     text.Enabled = n == TextIdx;
                     control.Enabled = n == ControlIdx;
                     rawId.Enabled = n == RawIdIdx;
+                    instructionalKey.Enabled = n == InstructionalKeyIdx;
 
                     this.button.Button = n switch
                     {
                         TextIdx => buttonText,
                         ControlIdx => buttonControl,
                         RawIdIdx => buttonRawId,
+                        InstructionalKeyIdx => buttonInstructionalKey,
                         _ => buttonText
                     };
                     InstructionalButtons.Update();
@@ -164,7 +180,7 @@
                     }
                 };
 
-                AddItems(type, text, control, rawId, remove);
+                AddItems(type, text, control, rawId, instructionalKey, remove);
             }
         }
     }

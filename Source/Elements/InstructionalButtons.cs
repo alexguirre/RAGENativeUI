@@ -254,12 +254,20 @@ namespace RAGENativeUI.Elements
         /// <param name="text">The text displayed next to the button.</param>
         public InstructionalButton(uint rawId, string text) : this((InstructionalButtonId)rawId, text) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButton"/> class.
+        /// </summary>
+        /// <param name="key">The symbol to be displayed.</param>
+        /// <param name="text">The text displayed next to the button.</param>
+        public InstructionalButton(InstructionalKey key, string text) : this((InstructionalButtonId)key, text) { }
+
         /// <inheritdoc/>
         public string GetButtonId() => Button.Id;
 
         public static string GetButtonId(GameControl control) => new InstructionalButtonId(control).Id;
         public static string GetButtonId(string keyString) => new InstructionalButtonId(keyString).Id;
         public static string GetButtonId(uint rawId) => new InstructionalButtonId(rawId).Id;
+        public static string GetButtonId(InstructionalKey key) => new InstructionalButtonId(key).Id;
     }
 
     public class InstructionalButtonGroup : IInstructionalButtonSlot
@@ -357,8 +365,15 @@ namespace RAGENativeUI.Elements
         /// <param name="rawId">The raw identifier of the symbol to be displayed.</param>
         public InstructionalButtonId(uint rawId) : this() => id = "b_" + rawId;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonId"/> structure.
+        /// </summary>
+        /// <param name="key">The symbol to be displayed.</param>
+        public InstructionalButtonId(InstructionalKey key) : this() => id = key.GetId();
+
         public static implicit operator InstructionalButtonId(GameControl control) => new InstructionalButtonId(control);
         public static implicit operator InstructionalButtonId(string str) => new InstructionalButtonId(str);
         public static implicit operator InstructionalButtonId(uint rawId) => new InstructionalButtonId(rawId);
+        public static implicit operator InstructionalButtonId(InstructionalKey key) => new InstructionalButtonId(key);
     }
 }
