@@ -6,7 +6,6 @@ using Rage;
 using RAGENativeUI;
 using RAGENativeUI.PauseMenu;
 using Rage.Attributes;
-using RAGENativeUI.Elements;
 
 internal static class Plugin
 {
