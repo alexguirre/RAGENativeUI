@@ -60,6 +60,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="Elements\BigMessage.cs" />
     <Compile Include="Elements\Container.cs" />
+    <Compile Include="InstructionalKey.cs" />
     <Compile Include="Elements\MenuItems\UIMenuListScrollerItem.cs" />
     <Compile Include="Elements\MissionPassedScreen.cs" />
     <Compile Include="Elements\Rectangle.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="HudColor.cs" />
     <Compile Include="Internals\atArray.cs" />
     <Compile Include="Internals\DebugCommands.cs" />
+    <Compile Include="Internals\TokenParserHook.cs" />
     <Compile Include="Internals\Memory.cs" />
     <Compile Include="Internals\ModuleInitializer.cs" />
     <Compile Include="Internals\Shared.cs" />

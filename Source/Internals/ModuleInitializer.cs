@@ -34,6 +34,9 @@
             Game.LogTrivialDebug("[RAGENativeUI] > Registering debug commands");
             Game.AddConsoleCommands(new[] { typeof(DebugCommands) });
 #endif
+
+            Game.LogTrivialDebug("[RAGENativeUI] > Hooking token parser");
+            TokenParserHook.Init();
         }
     }
 }

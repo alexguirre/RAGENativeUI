@@ -11,7 +11,7 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 11;
+        public const int MaxMemoryAddresses = 15;
         public const int MaxInts = 4;
 
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
@@ -24,6 +24,9 @@
         public static readonly IntPtr Native_DisableControlAction;
         public static readonly IntPtr Native_DrawSprite;
         public static readonly IntPtr Native_DrawRect;
+        public static readonly IntPtr CTextFormat_GetInputSourceIcons;
+        public static readonly IntPtr CTextFormat_GetIconListFormatString;
+        public static readonly IntPtr CControlMgr_sm_MappingMgr_KeyboardLayout;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -104,6 +107,26 @@
                 if (addr != IntPtr.Zero)
                 {
                     addr -= 0x1B;
+                }
+                return addr;
+            });
+
+            {
+                IntPtr addr = FindAddress(() => Game.FindPattern("E8 ?? ?? ?? ?? 83 7C 24 ?? ?? 7E 3A 48 8D 4C 24"));
+                if (addr != IntPtr.Zero)
+                {
+                    CTextFormat_GetInputSourceIcons = addr + *(int*)(addr + 1) + 5;
+                    addr += 0x27;
+                    CTextFormat_GetIconListFormatString = addr + *(int*)(addr + 1) + 5;
+                }
+            }
+
+            CControlMgr_sm_MappingMgr_KeyboardLayout = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8D 05 ?? ?? ?? ?? 41 B8 ?? ?? ?? ?? 48 C1 E3 04 48 03 D8 44 39 03");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7;
                 }
                 return addr;
             });
@@ -419,5 +442,57 @@
         [FieldOffset(0x0)] public IntPtr Val;
         [FieldOffset(0x0)] public float AsFloat;
         [FieldOffset(0x0)] public int AsInt;
+    }
+
+    internal static unsafe class CTextFormat
+    {
+        public static readonly bool Available = Memory.CTextFormat_GetInputSourceIcons != IntPtr.Zero &&
+                                                Memory.CTextFormat_GetIconListFormatString != IntPtr.Zero;
+
+        public static void GetInputSourceIcons(uint mapperSource, uint mapperParameter, ref atFixedArray_sIconData_4 icons)
+            => getInputSourceIcons(mapperSource, mapperParameter, ref icons);
+
+        public static void GetIconListFormatString(ref atFixedArray_sIconData_4 icons, byte* buffer, uint bufferSize)
+            => getIconListFormatString(ref icons, buffer, bufferSize, IntPtr.Zero);
+
+        private delegate void GetInputSourceIcons_Delegate(uint mapperSource, uint mapperParameter, ref atFixedArray_sIconData_4 icons);
+        private delegate void GetIconListFormatString_Delegate(ref atFixedArray_sIconData_4 icons, byte* buffer, uint bufferSize, /* sIconParams* */IntPtr iconParamsUnused);
+
+        private static readonly GetInputSourceIcons_Delegate getInputSourceIcons =
+            Available ? Marshal.GetDelegateForFunctionPointer<GetInputSourceIcons_Delegate>(Memory.CTextFormat_GetInputSourceIcons) : null;
+
+        private static readonly GetIconListFormatString_Delegate getIconListFormatString =
+            Available ? Marshal.GetDelegateForFunctionPointer<GetIconListFormatString_Delegate>(Memory.CTextFormat_GetIconListFormatString) : null;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 0x8)]
+    internal struct sIconData
+    {
+        public int rawIdOrIndex;
+        public int type;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 0x24)]
+    internal struct atFixedArray_sIconData_4
+    {
+        public sIconData Item0;
+        public sIconData Item1;
+        public sIconData Item2;
+        public sIconData Item3;
+        public int Count;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+    internal unsafe struct CControlKeyboardLayoutKey
+    {
+        public const int MaxTextLength = 10;
+
+        public int Icon;
+        public fixed byte Text[MaxTextLength];
+
+
+        public static readonly bool Available = Memory.CControlMgr_sm_MappingMgr_KeyboardLayout != IntPtr.Zero;
+        public static CControlKeyboardLayoutKey* KeyboardLayout = (CControlKeyboardLayoutKey*)Memory.CControlMgr_sm_MappingMgr_KeyboardLayout;
+        public const int KeyboardLayoutSize = 255;
     }
 }
