@@ -11,7 +11,7 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 13;
+        public const int MaxMemoryAddresses = 15;
         public const int MaxInts = 4;
 
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
@@ -26,6 +26,7 @@
         public static readonly IntPtr Native_DrawRect;
         public static readonly IntPtr CTextFormat_GetInputSourceIcons;
         public static readonly IntPtr CTextFormat_GetIconListFormatString;
+        public static readonly IntPtr CControlMgr_sm_MappingMgr_KeyboardLayout;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -119,6 +120,16 @@
                     CTextFormat_GetIconListFormatString = addr + *(int*)(addr + 1) + 5;
                 }
             }
+
+            CControlMgr_sm_MappingMgr_KeyboardLayout = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8D 05 ?? ?? ?? ?? 41 B8 ?? ?? ?? ?? 48 C1 E3 04 48 03 D8 44 39 03");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
 
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
@@ -469,5 +480,19 @@
         public sIconData Item2;
         public sIconData Item3;
         public int Count;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+    internal unsafe struct CControlKeyboardLayoutKey
+    {
+        public const int MaxTextLength = 10;
+
+        public int Icon;
+        public fixed byte Text[MaxTextLength];
+
+
+        public static readonly bool Available = Memory.CControlMgr_sm_MappingMgr_KeyboardLayout != IntPtr.Zero;
+        public static CControlKeyboardLayoutKey* KeyboardLayout = (CControlKeyboardLayoutKey*)Memory.CControlMgr_sm_MappingMgr_KeyboardLayout;
+        public const int KeyboardLayoutSize = 255;
     }
 }

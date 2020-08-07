@@ -9,28 +9,126 @@
 
     using RAGENativeUI.IL;
 
+    internal unsafe struct TokenParserHookData
+    {
+        public uint Refs;
+        public fixed byte OrigCode[TokenParserHook.OrigCodeLength];
+        public IntPtr HookAddr;
+        public IntPtr StubAddr;
+        public TokenParserEntryList Parsers;
+    }
+
+    internal struct TokenParserEntry
+    {
+        public int Id;
+        public bool Active;
+        public IntPtr Addr; // function pointer of the TokenParser of a plugin
+
+        public TokenParserEntry(int id, IntPtr parserAddr)
+            => (Id, Active, Addr) = (id, false, parserAddr);
+    }
+
+    internal unsafe struct TokenParserEntryList
+    {
+        public TokenParserEntry* Items;
+        public int Count;
+        public int Capacity;
+
+        public void Free()
+        {
+            if (Items != null)
+            {
+                Marshal.FreeHGlobal((IntPtr)Items);
+            }
+            Count = 0;
+            Capacity = 0;
+        }
+
+        public void Add(int id, IntPtr parserAddr)
+        {
+            EnsureCapacity(Count + 1);
+            Items[Count] = new TokenParserEntry(id, parserAddr);
+            Count++;
+        }
+
+        public int IndexOf(int id)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (Items[i].Id == id)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public void Remove(int id)
+        {
+            int i = IndexOf(id);
+            if (i == -1)
+            {
+                return;
+            }
+
+            Items[i] = Items[Count - 1];
+            Count--;
+        }
+
+        public bool IsActive(int id)
+        {
+            int i = IndexOf(id);
+            if (i == -1)
+            {
+                return false;
+            }
+
+            return Items[i].Active;
+        }
+
+        private void EnsureCapacity(int minCapacity)
+        {
+            if (Capacity >= minCapacity)
+            {
+                return;
+            }
+
+            int newCapacity = Math.Max(Capacity + 16, minCapacity);
+
+            TokenParserEntry* newItems = (TokenParserEntry*)Marshal.AllocHGlobal(newCapacity * sizeof(TokenParserEntry));
+            if (Items != null)
+            {
+                Buffer.MemoryCopy(Items, newItems, newCapacity * sizeof(TokenParserEntry), Count * sizeof(TokenParserEntry));
+                Marshal.FreeHGlobal((IntPtr)Items);
+            }
+            Items = newItems;
+        }
+    }
+
     internal static unsafe class TokenParserHook
     {
-        private static IntPtr hookAddr;
-        private static byte[] origCode;
-        private static IntPtr failedJumpAddr;
-        private static IntPtr successJumpAddr;
-        private static IntPtr stubAddr;
+        public const int OrigCodeLength = 8;
 
         private static ParseTokenDelegate tokenParser;
         private static IntPtr tokenParserAddr;
-
-        private static CControlKeyboardLayoutKey* keyboardLayout;
-        private const int KeyboardLayoutSize = 255;
 
         [Conditional("DEBUG")]
         private static void Log(string str) => Game.LogTrivialDebug($"[RAGENativeUI::{nameof(TokenParserHook)}] {str}");
 
         public static void Init()
         {
-            Shared.TokenParserHookRefs++;
-            Log($"Init (refs: {Shared.TokenParserHookRefs})");
-            if (Shared.TokenParserHookRefs > 1)
+            ref var data = ref Shared.TokenParserHookData;
+
+            tokenParser = TokenParser;
+            tokenParserAddr = Marshal.GetFunctionPointerForDelegate(tokenParser);
+            Log($"tokenParserAddr = {tokenParserAddr.ToString("X16")}");
+
+            data.Parsers.Add(AppDomain.CurrentDomain.Id, tokenParserAddr);
+
+            data.Refs++;
+            Log($"Init (refs: {data.Refs})");
+            if (data.Refs > 1)
             {
                 return;
             }
@@ -42,30 +140,16 @@
                 return;
             }
 
-            hookAddr = addr + 5; // skip call
-            failedJumpAddr = hookAddr + *(int*)(hookAddr + 4) + 8;
-            successJumpAddr = hookAddr + 8;
+            IntPtr hookAddr = addr + 5; // skip call
+            IntPtr failedJumpAddr = hookAddr + *(int*)(hookAddr + 4) + 8;
+            IntPtr successJumpAddr = hookAddr + 8;
 
-            IntPtr keyboardLayoutPtr = Game.FindPattern("48 8D 05 ?? ?? ?? ?? 41 B8 ?? ?? ?? ?? 48 C1 E3 04 48 03 D8 44 39 03");
-            if (keyboardLayoutPtr == IntPtr.Zero)
-            {
-                Log($"keyboardLayoutPtr pattern not found");
-                return;
-            }
-            keyboardLayout = (CControlKeyboardLayoutKey*)(keyboardLayoutPtr + *(int*)(keyboardLayoutPtr + 3) + 7);
-
-            stubAddr = AllocateStub();
-
-            // TODO: this will crash when the plugin that owns this delegate gets unloaded but there is still other RNUI instances
-            tokenParser = TokenParser;
-            tokenParserAddr = Marshal.GetFunctionPointerForDelegate(tokenParser);
+            IntPtr stubAddr = AllocateStub();
 
             Log($"hookAddr = {hookAddr.ToString("X16")}");
             Log($"failedJumpAddr = {failedJumpAddr.ToString("X16")}");
             Log($"successJumpAddr = {successJumpAddr.ToString("X16")}");
             Log($"stubAddr = {stubAddr.ToString("X16")}");
-            Log($"tokenParserAddr = {tokenParserAddr.ToString("X16")}");
-            Log($"keyboardLayout = {((IntPtr)keyboardLayout).ToString("X16")}");
 
             if (stubAddr == IntPtr.Zero)
             {
@@ -74,34 +158,57 @@
             }
 
             // prepare our stub
-            Marshal.Copy(stubCode, 0, stubAddr, stubCode.Length);
+            Marshal.Copy(StubCode, 0, stubAddr, StubCode.Length);
             SetJnz(stubAddr + 2, successJumpAddr);
-            SetMov(stubAddr + (stubCode.Length - 5 - 6 - 2 - 2 - 10), tokenParserAddr);
-            SetJz(stubAddr + (stubCode.Length - 5 - 6), failedJumpAddr);
-            Jmp(stubAddr + (stubCode.Length - 5), successJumpAddr);
+            SetTokenParser(stubAddr);
+            SetJz(stubAddr + (StubCode.Length - 5 - 6), failedJumpAddr);
+            Jmp(stubAddr + (StubCode.Length - 5), successJumpAddr);
 
             // prepare the hook in the original function
-            origCode = Nop(hookAddr, 8);
+            Nop(hookAddr);
             Jmp(hookAddr, stubAddr);
+
+            data.StubAddr = stubAddr;
+            data.HookAddr = hookAddr;
         }
 
         public static void Shutdown()
         {
-            Shared.TokenParserHookRefs--;
-            Log($"Shutdown (refs: {Shared.TokenParserHookRefs})");
-            if (Shared.TokenParserHookRefs != 0)
+            ref var data = ref Shared.TokenParserHookData;
+            data.Refs--;
+            Log($"Shutdown (refs: {data.Refs})");
+            if (data.Refs != 0)
+            {
+                int id = AppDomain.CurrentDomain.Id;
+
+                bool needsNewParser = data.Parsers.IsActive(id);
+                data.Parsers.Remove(id);
+                if (needsNewParser)
+                {
+                    // change the token parser function pointer if the current plugin owns the active parser
+                    SetTokenParser(data.StubAddr);
+                }
+
+                return;
+            }
+
+            data.Parsers.Free();
+            if (data.StubAddr == IntPtr.Zero)
             {
                 return;
             }
 
-            if (stubAddr == IntPtr.Zero)
-            {
-                return;
-            }
+            RestoreNop();
+            VirtualFree(data.StubAddr, 0, MEM_RELEASE);
+        }
 
-            Marshal.Copy(origCode, 0, hookAddr, origCode.Length);
-
-            VirtualFree(stubAddr, 0, MEM_RELEASE);
+        // sets the current token parser function pointer to the first entry in the parsers list
+        private static void SetTokenParser(IntPtr stubAddr)
+        {
+            ref var data = ref Shared.TokenParserHookData;
+            ref var parser = ref data.Parsers.Items[0];
+            parser.Active = true;
+            SetMov(stubAddr + (StubCode.Length - 5 - 6 - 2 - 2 - 10), parser.Addr);
         }
 
         private static void SetCall(IntPtr callInst, IntPtr funcAddr)
@@ -137,16 +244,27 @@
             *(IntPtr*)(movInst + 2) = value;
         }
 
-        private static byte[] Nop(IntPtr addr, int size)
+        private static void Nop(IntPtr addr)
         {
-            byte[] orig = new byte[size];
-            for (int i = 0; i< size; i++)
+            ref var data = ref Shared.TokenParserHookData;
+            data.HookAddr = addr;
+            for (int i = 0; i < OrigCodeLength; i++)
             {
                 byte* b = (byte*)(addr + i);
-                orig[i] = *b;
+                data.OrigCode[i] = *b;
                 *b = 0x90;
             }
-            return orig;
+        }
+
+        private static void RestoreNop()
+        {
+            ref var data = ref Shared.TokenParserHookData;
+            IntPtr addr = data.HookAddr;
+            for (int i = 0; i < OrigCodeLength; i++)
+            {
+                byte* b = (byte*)(addr + i);
+                *b = data.OrigCode[i];
+            }
         }
 
         private static void Jmp(IntPtr addr, IntPtr jumpAddr)
@@ -171,9 +289,9 @@
             const long MaxMemoryRange = 0x40000000;
             const int PageSize = 0x1000;
 
-            if (stubCode.Length > PageSize)
+            if (StubCode.Length > PageSize)
             {
-                Log($"AllocateStub: stubCode length greater than allocated page size => {stubCode.Length.ToString("X8")}");
+                Log($"AllocateStub: stubCode length greater than allocated page size => {StubCode.Length.ToString("X8")}");
                 return IntPtr.Zero;
             }
 
@@ -216,7 +334,7 @@
             return IntPtr.Zero;
         }
 
-        static readonly byte[] stubCode = new byte[]
+        static readonly byte[] StubCode = new byte[]
         {
             0x84, 0xC0,                                                     // test al, al
             0x0F, 0x85, 0x00, 0x00, 0x00, 0x00,                             // jnz  success
@@ -297,40 +415,46 @@
                         }
                         else
                         {
-                            //icon.iconList[iconIndex] = (byte)c;
-
-                            bool found = false;
-                            for (int key = 0; key < KeyboardLayoutSize; key++)
+                            if (CControlKeyboardLayoutKey.Available)
                             {
-                                ref var layoutKey = ref keyboardLayout[key];
-                                if (layoutKey.Icon <= 1)
+                                bool found = false;
+                                for (int key = 0; key < CControlKeyboardLayoutKey.KeyboardLayoutSize; key++)
                                 {
-                                    bool match = true;
-
-                                    int len = 0;
-                                    for (; len < CControlKeyboardLayoutKey.MaxTextLength && layoutKey.Text[len] != 0; len++)
+                                    ref var layoutKey = ref CControlKeyboardLayoutKey.KeyboardLayout[key];
+                                    if (layoutKey.Icon <= 1)
                                     {
-                                        if (layoutKey.Text[len] != token[i + len])
+                                        bool match = true;
+
+                                        int len = 0;
+                                        for (; len < CControlKeyboardLayoutKey.MaxTextLength && layoutKey.Text[len] != 0; len++)
                                         {
-                                            match = false;
+                                            if (layoutKey.Text[len] != token[i + len])
+                                            {
+                                                match = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (match)
+                                        {
+                                            i += len - 1;
+                                            icon.iconList[iconIndex] = (uint)key;
+                                            found = true;
                                             break;
                                         }
                                     }
+                                }
 
-                                    if (match)
-                                    {
-                                        i += len - 1;
-                                        icon.iconList[iconIndex] = (uint)key;
-                                        found = true;
-                                        break;
-                                    }
+                                if (!found)
+                                {
+                                    Log($" > failed: no matching key in keyboard layout for '{(char)c}'");
+                                    return false;
                                 }
                             }
-
-                            if (!found)
+                            else
                             {
-                                Log($" > failed: no matching key in keyboard layout for '{(char)c}'");
-                                return false;
+                                // fallback, only valid for alphanumeric keys
+                                icon.iconList[iconIndex] = c;
                             }
                         }
                         state = 3;
@@ -384,17 +508,6 @@
             public byte field_66;
             public byte field_67;
         }
-
-        [StructLayout(LayoutKind.Sequential, Size = 0x10)]
-        private struct CControlKeyboardLayoutKey
-        {
-            public const int MaxTextLength = 10;
-
-            public int Icon;
-            public fixed byte Text[MaxTextLength];
-        }
-
-
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
         static extern IntPtr VirtualAlloc(IntPtr lpAddress, int dwSize, uint flAllocationType, uint flProtect);

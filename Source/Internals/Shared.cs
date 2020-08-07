@@ -32,7 +32,7 @@
         public static long* MemoryAddresses => data->MemoryAddresses;
         public static int* MemoryInts => data->MemoryInts;
 
-        public static ref uint TokenParserHookRefs => ref data->TokenParserHookRefs;
+        public static ref TokenParserHookData TokenParserHookData => ref data->TokenParserHookData;
 
         static Shared()
         {
@@ -90,7 +90,7 @@
             public uint NumberOfVisiblePauseMenus;
             public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];
             public fixed int MemoryInts[Memory.MaxInts];
-            public uint TokenParserHookRefs;
+            public TokenParserHookData TokenParserHookData;
         }
     }
 }
