@@ -131,6 +131,24 @@ internal static class Plugin
                 InstructionalKey.ControllerAxisRXLeft,
                 InstructionalKey.ControllerAxisRXRight,
             };
+
+            yield return new InstructionalKey[]
+            {
+                InstructionalKey.ControllerDPadAll,
+                InstructionalKey.ControllerDPadUpDown,
+                InstructionalKey.ControllerDPadLeftRight,
+                InstructionalKey.ControllerLStickRotate,
+                InstructionalKey.ControllerRStickRotate,
+                InstructionalKey.SymbolBusySpinner,
+                InstructionalKey.SymbolPlus,
+                InstructionalKey.SymbolArrowUp,
+                InstructionalKey.SymbolArrowDown,
+                InstructionalKey.SymbolArrowLeft,
+                InstructionalKey.SymbolArrowRight,
+                InstructionalKey.SymbolArrowUpDown,
+                InstructionalKey.SymbolArrowLeftRight,
+                InstructionalKey.SymbolArrowAll,
+            };
         }
     }
 }

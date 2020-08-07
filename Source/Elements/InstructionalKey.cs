@@ -11,6 +11,26 @@
     {
         public static unsafe string GetId(this InstructionalKey key)
         {
+            // special cases
+            switch (key)
+            {
+                case InstructionalKey.ControllerDPadNone: return "b_8";
+                case InstructionalKey.ControllerDPadAll: return "b_9";
+                case InstructionalKey.ControllerDPadUpDown: return "b_10";
+                case InstructionalKey.ControllerDPadLeftRight: return "b_11";
+                case InstructionalKey.ControllerLStickRotate: return "b_20";
+                case InstructionalKey.ControllerRStickRotate: return "b_29";
+                case InstructionalKey.SymbolBusySpinner: return "b_44";
+                case InstructionalKey.SymbolPlus: return "b_998";
+                case InstructionalKey.SymbolArrowUp: return "b_0";
+                case InstructionalKey.SymbolArrowDown: return "b_1";
+                case InstructionalKey.SymbolArrowLeft: return "b_2";
+                case InstructionalKey.SymbolArrowRight: return "b_3";
+                case InstructionalKey.SymbolArrowUpDown: return "b_45";
+                case InstructionalKey.SymbolArrowLeftRight: return "b_46";
+                case InstructionalKey.SymbolArrowAll: return "b_47";
+            }
+
             if (!CTextFormat.Available)
             {
                 return "b_995"; // button with "???" in red
@@ -429,7 +449,9 @@
         ControllerRLeft = 0x2007, // RLEFT_INDEX
         ControllerSelect = 0x2008, // SELECT_INDEX
         ControllerLThumb = 0x2009, // L3_INDEX
+        ControllerLStick = ControllerLThumb,
         ControllerRThumb = 0x200A, // R3_INDEX
+        ControllerRStick = ControllerRThumb,
         ControllerStart = 0x200B, // START_INDEX
         ControllerLUp = 0x200C, // LUP_INDEX
         ControllerLRight = 0x200D, // LRIGHT_INDEX
@@ -446,5 +468,24 @@
         ControllerB = ControllerRRight,
         ControllerX = ControllerRLeft,
         ControllerY = ControllerRUp,
+
+        // special cases, these don't belong to the original enum
+        ControllerDPadNone = 0x40000,
+        ControllerDPadAll = 0x40001,
+        ControllerDPadUpDown = 0x40002,
+        ControllerDPadLeftRight = 0x40003,
+        ControllerLThumbRotate = 0x40004,
+        ControllerLStickRotate = ControllerLThumbRotate,
+        ControllerRThumbRotate = 0x40005,
+        ControllerRStickRotate = ControllerRThumbRotate,
+        SymbolBusySpinner = 0x40006,
+        SymbolPlus = 0x40007,
+        SymbolArrowUp = 0x40008,
+        SymbolArrowDown = 0x40009,
+        SymbolArrowLeft = 0x4000A,
+        SymbolArrowRight = 0x4000B,
+        SymbolArrowUpDown = 0x4000C,
+        SymbolArrowLeftRight = 0x4000D,
+        SymbolArrowAll = 0x4000E,
     }
 }
