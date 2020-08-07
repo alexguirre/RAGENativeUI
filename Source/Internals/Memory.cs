@@ -450,19 +450,10 @@
                                                 Memory.CTextFormat_GetIconListFormatString != IntPtr.Zero;
 
         public static void GetInputSourceIcons(uint mapperSource, uint mapperParameter, ref atFixedArray_sIconData_4 icons)
-            => getInputSourceIcons(mapperSource, mapperParameter, ref icons);
+            => Invoke(Memory.CTextFormat_GetInputSourceIcons, mapperSource, mapperParameter, AsPointer(ref icons));
 
         public static void GetIconListFormatString(ref atFixedArray_sIconData_4 icons, byte* buffer, uint bufferSize)
-            => getIconListFormatString(ref icons, buffer, bufferSize, IntPtr.Zero);
-
-        private delegate void GetInputSourceIcons_Delegate(uint mapperSource, uint mapperParameter, ref atFixedArray_sIconData_4 icons);
-        private delegate void GetIconListFormatString_Delegate(ref atFixedArray_sIconData_4 icons, byte* buffer, uint bufferSize, /* sIconParams* */IntPtr iconParamsUnused);
-
-        private static readonly GetInputSourceIcons_Delegate getInputSourceIcons =
-            Available ? Marshal.GetDelegateForFunctionPointer<GetInputSourceIcons_Delegate>(Memory.CTextFormat_GetInputSourceIcons) : null;
-
-        private static readonly GetIconListFormatString_Delegate getIconListFormatString =
-            Available ? Marshal.GetDelegateForFunctionPointer<GetIconListFormatString_Delegate>(Memory.CTextFormat_GetIconListFormatString) : null;
+            => Invoke(Memory.CTextFormat_GetIconListFormatString, AsPointer(ref icons), buffer, bufferSize, null);
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 0x8)]

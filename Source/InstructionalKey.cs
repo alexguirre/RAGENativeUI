@@ -212,8 +212,6 @@
                 _ => InstructionalKey.Unknown
             };
 
-
-
         public static string GetInstructionalId(this ControllerButtons button) => button.GetInstructionalKey().GetId();
 
         public static InstructionalKey GetInstructionalKey(this ControllerButtons button)

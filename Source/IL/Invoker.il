@@ -58,7 +58,7 @@
         ret
     }
     
-    .method public hidebysig static void* InvokeRetPointer(native int fnPtr, void* arg1, uint32 arg1) cil managed aggressiveinlining
+    .method public hidebysig static void* InvokeRetPointer(native int fnPtr, void* arg1, uint32 arg2) cil managed aggressiveinlining
     {
         .maxstack 3
 
@@ -137,6 +137,31 @@
         ldarg.s arg12
         ldarg.0
         calli   unmanaged cdecl void(string, string, float32, float32, float32, float32, float32, int32, int32, int32, int32, int8)
+        ret
+    }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, void* arg1, void* arg2, uint32 arg3, void* arg4) cil managed aggressiveinlining
+    {
+        .maxstack 4
+
+        ldarg.1
+        ldarg.2
+        ldarg.3
+        ldarg.s arg4
+        ldarg.0
+        calli   unmanaged cdecl void(void*, void*, uint32, void*)
+        ret
+    }
+    
+    .method public hidebysig static void Invoke(native int fnPtr, uint32 arg1, uint32 arg2, void* arg3) cil managed aggressiveinlining
+    {
+        .maxstack 4
+
+        ldarg.1
+        ldarg.2
+        ldarg.3
+        ldarg.0
+        calli   unmanaged cdecl void(uint32, uint32, void*)
         ret
     }
 }
