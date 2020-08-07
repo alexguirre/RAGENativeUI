@@ -142,7 +142,7 @@
     
     .method public hidebysig static void Invoke(native int fnPtr, void* arg1, void* arg2, uint32 arg3, void* arg4) cil managed aggressiveinlining
     {
-        .maxstack 4
+        .maxstack 5
 
         ldarg.1
         ldarg.2
