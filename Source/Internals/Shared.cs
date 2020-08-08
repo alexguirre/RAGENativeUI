@@ -22,10 +22,6 @@
         public static ref int NumInstructionalButtonsRows => ref data->NumInstructionalButtonsRows;
         public static ref bool IngamehudScriptExecuting => ref data->IngamehudScriptExecuting;
 
-        public static ref uint ScreenLastFrame => ref data->ScreenLastFrame;
-        public static ref SizeF ActualScreenResolution => ref data->ActualScreenResolution;
-        public static ref float AspectRatio => ref data->AspectRatio;
-
         public static ref uint NumberOfVisibleMenus => ref data->NumberOfVisibleMenus;
         public static ref uint NumberOfVisiblePauseMenus => ref data->NumberOfVisiblePauseMenus;
 
@@ -83,9 +79,6 @@
             public uint NumInstructionalButtonsRowsLastFrame;
             public int NumInstructionalButtonsRows;
             public bool IngamehudScriptExecuting;
-            public uint ScreenLastFrame;
-            public SizeF ActualScreenResolution;
-            public float AspectRatio;
             public uint NumberOfVisibleMenus;
             public uint NumberOfVisiblePauseMenus;
             public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];

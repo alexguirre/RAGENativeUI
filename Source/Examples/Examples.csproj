@@ -46,10 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigMessageExample.cs" />
+    <Compile Include="InstructionalKeysExample.cs" />
     <Compile Include="MenuExtensions.cs" />
     <Compile Include="PauseMenuExample.cs" />
     <Compile Include="MenuExample.cs" />
     <Compile Include="Showcase\BigMessages.cs" />
+    <Compile Include="Showcase\Elements.cs" />
     <Compile Include="Showcase\InstructionalButtons.cs" />
     <Compile Include="Showcase\MainMenu.cs" />
     <Compile Include="Showcase\Menus.cs" />

@@ -97,8 +97,6 @@ namespace RAGENativeUI.PauseMenu
                 return;
             }
 
-            UIMenu.UpdateScreenVars();
-
             int blackAlpha = Focused ? 200 : 100;
             int fullAlpha = Focused ? 255 : 150;
 

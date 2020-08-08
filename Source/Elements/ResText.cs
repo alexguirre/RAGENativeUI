@@ -1,7 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using Rage;
 using Rage.Native;
+
+using RAGENativeUI.Internals;
 
 namespace RAGENativeUI.Elements
 {
@@ -53,11 +56,10 @@ namespace RAGENativeUI.Elements
 
         public new static void Draw(string caption, Point position, float scale, Color color, Common.EFont font, bool centered)
         {
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Screen.ActualResolution;
 
             const float height = 1080f;
-            float ratio = (float)screenw / screenh;
+            float ratio = res.Width / res.Height;
             var width = height * ratio;
 
             float x = (position.X) / width;
@@ -79,11 +81,10 @@ namespace RAGENativeUI.Elements
 
         public static void Draw(string caption, Point position, float scale, Color color, Common.EFont font, Alignment textAlignment, bool dropShadow, bool outline, Size wordWrap)
         {
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Screen.ActualResolution;
 
             const float height = 1080f;
-            float ratio = (float)screenw / screenh;
+            float ratio = res.Width / res.Height;
             var width = height * ratio;
 
             float x = (position.X) / width;
@@ -128,10 +129,9 @@ namespace RAGENativeUI.Elements
 
         public static float MeasureStringWidth(string str, Common.EFont font, float scale)
         {
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Screen.ActualResolution;
             const float height = 1080f;
-            float ratio = (float)screenw / screenh;
+            float ratio = res.Width / res.Height;
             float width = height * ratio;
             return MeasureStringWidthNoConvert(str, font, scale) * width;
         }

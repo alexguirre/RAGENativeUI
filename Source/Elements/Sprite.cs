@@ -5,6 +5,8 @@ using System.Reflection;
 using Rage;
 using Rage.Native;
 
+using RAGENativeUI.Internals;
+
 namespace RAGENativeUI.Elements
 {
     public class Sprite
@@ -117,10 +119,9 @@ namespace RAGENativeUI.Elements
                 }
             }
 
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Screen.ActualResolution;
             const float height = 1080f;
-            float ratio = (float)screenw / screenh;
+            float ratio = res.Width / res.Height;
             var width = height * ratio;
 
 

@@ -355,15 +355,17 @@ namespace RAGENativeUI
         {
             get
             {
-                UpdateScreenVars();
-
+                float aspectRatio = AspectRatio;
                 float adjusted = Width;
-                if (Shared.AspectRatio < 1.77777f) // less than 16:9
+                if (aspectRatio < 1.77777f) // less than 16:9
                 {
-                    adjusted *= 16f / 9f / Shared.AspectRatio;
+                    adjusted *= 16f / 9f / aspectRatio;
                 }
 
-                adjusted += WidthOffset / Shared.ActualScreenResolution.Width;
+                if (WidthOffset != 0)
+                {
+                    adjusted += WidthOffset / ActualResolution.Width;
+                }
 
                 return adjusted;
             }
@@ -611,7 +613,7 @@ namespace RAGENativeUI
             }
 
             Size res = Game.Resolution;
-            SizeF primaryRes = Shared.ActualScreenResolution;
+            SizeF primaryRes = ActualResolution;
             PointF middle = new PointF(res.Width * 0.5f, res.Height * 0.5f);
 
             g.DrawTexture(_customBanner,
@@ -629,8 +631,10 @@ namespace RAGENativeUI
         private float customBannerX, customBannerY,
                       customBannerW, customBannerH;
 
-        private static bool IsWideScreen => Shared.AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
-        private static bool IsUltraWideScreen => Shared.AspectRatio > 3.5f; // > 32:9
+        private static SizeF ActualResolution => Internals.Screen.ActualResolution;
+        private static float AspectRatio => N.GetAspectRatio(false);
+        private static bool IsWideScreen => AspectRatio > 1.5f; // equivalent to GET_IS_WIDESCREEN
+        private static bool IsUltraWideScreen => AspectRatio > 3.5f; // > 32:9
 
         internal static void DrawSprite(string txd, string texName, float x, float y, float w, float h, Color c)
             => N.DrawSprite(txd, texName, x, y, w, h, 0.0f, c.R, c.G, c.B, c.A);
@@ -659,17 +663,6 @@ namespace RAGENativeUI
             if (ScaleWithSafezone)
             {
                 N.ResetScriptGfxAlign();
-            }
-        }
-
-        internal static void UpdateScreenVars()
-        {
-            uint frame = Game.FrameCount;
-            if (frame != Shared.ScreenLastFrame)
-            {
-                Shared.ScreenLastFrame = frame;
-                Shared.ActualScreenResolution = Internals.Screen.ActualResolution;
-                Shared.AspectRatio = N.GetAspectRatio(false);
             }
         }
 
@@ -709,14 +702,13 @@ namespace RAGENativeUI
                 InstructionalButtons.Draw();
             }
 
-            UpdateScreenVars();
-
             menuWidth = AdjustedWidth; // save to a field to avoid calculating AdjustedWidth multiple times each tick
 
             BeginDraw();
 
-            float x = 0.05f + Offset.X / Shared.ActualScreenResolution.Width;
-            float y = 0.05f + Offset.Y / Shared.ActualScreenResolution.Height;
+            var res = ActualResolution;
+            float x = 0.05f + Offset.X / res.Width;
+            float y = 0.05f + Offset.Y / res.Height;
 
             DrawBanner(x, ref y);
 
@@ -1011,7 +1003,7 @@ namespace RAGENativeUI
             const float TexHeight = 128.0f;
             const float TexRatio = TexWidth / TexHeight;
 
-            var res = Shared.ActualScreenResolution;
+            var res = ActualResolution;
             var ratio = res.Width / res.Height;
 
             width = menuWidth;

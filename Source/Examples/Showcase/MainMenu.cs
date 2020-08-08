@@ -36,6 +36,13 @@
                 AddItem(item);
                 BindMenuToItem(new InstructionalButtons(), item);
             }
+
+            {
+                UIMenuItem item = new UIMenuItem("Elements", $"Showcases the ~b~{nameof(ResRectangle)}~s~ and ~b~{nameof(ResText)}~s~ classes.");
+
+                AddItem(item);
+                BindMenuToItem(new Elements(), item);
+            }
         }
     }
 }

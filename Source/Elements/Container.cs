@@ -3,6 +3,8 @@ using System.Drawing;
 using Rage;
 using Rage.Native;
 
+using RAGENativeUI.Internals;
+
 namespace RAGENativeUI.Elements
 {
     public class Container : Rectangle
@@ -33,10 +35,9 @@ namespace RAGENativeUI.Elements
         {
             if (!this.Enabled) return;
 
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Screen.ActualResolution;
             const float height = 1080f;
-            float ratio = (float)screenw / screenh;
+            float ratio = res.Width / res.Height; ;
             var width = height * ratio;
 
             float w = Size.Width / width;
