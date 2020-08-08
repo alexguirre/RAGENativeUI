@@ -466,11 +466,23 @@ namespace RAGENativeUI
         ///  Set the banner to your own Rectangle.
         /// </summary>
         /// <param name="rectangle">UIResRectangle object. Position and size does not matter.</param>
+        [Obsolete("Use UIMenu.SetBannerType(Color) instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void SetBannerType(ResRectangle rectangle)
         {
             _bannerSprite = null;
             _customBanner = null;
             _bannerRectangle = rectangle;
+        }
+
+        /// <summary>
+        /// Sets the banner to a single color rectangle.
+        /// </summary>
+        /// <param name="color">The new color of the banner.</param>
+        public void SetBannerType(Color color)
+        {
+#pragma warning disable CS0612, CS0618 // Type or member is obsolete
+            SetBannerType(new ResRectangle(Point.Empty, Size.Empty, color));
+#pragma warning restore CS0612, CS0618 // Type or member is obsolete
         }
 
         /// <summary>
