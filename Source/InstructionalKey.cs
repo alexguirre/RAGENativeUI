@@ -29,6 +29,7 @@
                 case InstructionalKey.SymbolArrowUpDown: return "b_45";
                 case InstructionalKey.SymbolArrowLeftRight: return "b_46";
                 case InstructionalKey.SymbolArrowAll: return "b_47";
+                case InstructionalKey.Mouse: return "b_114";
             }
 
             if (!CTextFormat.Available)
@@ -485,5 +486,6 @@
         SymbolArrowUpDown = 0x4000C,
         SymbolArrowLeftRight = 0x4000D,
         SymbolArrowAll = 0x4000E,
+        Mouse = 0x4000F,
     }
 }

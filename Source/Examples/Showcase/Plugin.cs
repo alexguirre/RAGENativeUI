@@ -113,6 +113,7 @@ internal static class Plugin
                 InstructionalKey.MouseAxisY,
                 InstructionalKey.MouseAxisYUp,
                 InstructionalKey.MouseAxisYDown,
+                InstructionalKey.Mouse,
             };
 
             yield return new InstructionalKey[]
