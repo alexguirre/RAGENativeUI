@@ -30,13 +30,20 @@
             Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
 #endif
 
+            Game.LogTrivialDebug("[RAGENativeUI] > Hooking token parser");
+#if DEBUG
+            sw.Restart();
+#endif
+            TokenParserHook.Init();
+#if DEBUG
+            sw.Stop();
+            Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
+#endif
+
 #if DEBUG
             Game.LogTrivialDebug("[RAGENativeUI] > Registering debug commands");
             Game.AddConsoleCommands(new[] { typeof(DebugCommands) });
 #endif
-
-            Game.LogTrivialDebug("[RAGENativeUI] > Hooking token parser");
-            TokenParserHook.Init();
         }
     }
 }
