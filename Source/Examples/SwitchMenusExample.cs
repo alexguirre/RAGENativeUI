@@ -1,6 +1,8 @@
 ﻿namespace RNUIExamples
 {
     using System.Linq;
+    using System.Windows.Forms;
+
     using Rage;
     using Rage.Attributes;
     using RAGENativeUI;
@@ -11,6 +13,8 @@
     {
         private static MenuPool pool;
         private static UIMenuSwitchMenusItem menuSwitcher;
+
+        private static readonly Keys KeyBinding = Keys.F8;
 
         private static void Main()
         {
@@ -56,7 +60,8 @@
             GameFiber.StartNew(ProcessMenus);
 
             // continue with the plugin...
-            Game.Console.Print("  Press F8 to open the menu.");
+            Game.Console.Print($"  Press {KeyBinding} to open the menu.");
+            Game.DisplayHelp($"Press ~{KeyBinding.GetInstructionalId()}~ to open the menu.");
         }
 
         private static void ProcessMenus()

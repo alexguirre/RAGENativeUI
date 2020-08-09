@@ -4,8 +4,6 @@
     using System.Linq;
     using RAGENativeUI;
     using RAGENativeUI.Elements;
-    using Rage;
-    using Rage.Native;
 
     internal static class Util
     {

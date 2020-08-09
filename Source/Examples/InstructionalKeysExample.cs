@@ -27,18 +27,20 @@
             {
                 GameFiber.Yield();
 
-                bool spawn = false;
+                bool spawn;
+                string format;
                 if (IsUsingController)
                 {
-                    Game.DisplayHelp($"Press {SpawnCarButtonFormat} to spawn a car.");
                     spawn = (ModifierButton == ControllerButtons.None || Game.IsControllerButtonDownRightNow(ModifierButton)) && Game.IsControllerButtonDown(SpawnCarButton);
+                    format = SpawnCarButtonFormat;
                 }
                 else
                 {
-                    Game.DisplayHelp($"Press {SpawnCarKeyFormat} to spawn a car.");
                     spawn = (ModifierKey == Keys.None || Game.IsKeyDownRightNow(ModifierKey)) && Game.IsKeyDown(SpawnCarKey);
+                    format = SpawnCarKeyFormat;
                 }
-                
+
+                Game.DisplayHelp($"Press {format} to spawn a car.");
                 if (spawn)
                 {
                     GameFiber.StartNew(() => new Vehicle(m => m.IsCar, Game.LocalPlayer.Character.GetOffsetPositionFront(5.0f)).Dismiss());

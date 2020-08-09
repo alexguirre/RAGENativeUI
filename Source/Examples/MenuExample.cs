@@ -1,6 +1,7 @@
 ﻿namespace RNUIExamples
 {
     using System.Linq;
+    using System.Windows.Forms;
     using Rage;
     using Rage.Attributes;
     using Rage.Native;
@@ -12,6 +13,8 @@
     {
         private static MenuPool pool;
         private static UIMenu mainMenu;
+
+        private static readonly Keys KeyBinding = Keys.F6;
 
         private static void Main()
         {
@@ -123,7 +126,8 @@
             GameFiber.StartNew(ProcessMenus);
 
             // continue with the plugin...
-            Game.Console.Print("  Press F6 to open the menu.");
+            Game.Console.Print($"  Press {KeyBinding} to open the menu.");
+            Game.DisplayHelp($"Press ~{KeyBinding.GetInstructionalId()}~ to open the menu.");
         }
 
         private static void ProcessMenus()
@@ -137,7 +141,7 @@
 
                 pool.ProcessMenus();
 
-                if (Game.IsKeyDown(System.Windows.Forms.Keys.F6) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
+                if (Game.IsKeyDown(KeyBinding) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
                 {
                     mainMenu.Visible = true;
                 }

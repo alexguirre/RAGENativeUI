@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Forms;
 
     using Rage;
     using Rage.Attributes;
@@ -18,6 +19,8 @@
         private static TabMissionSelectItem missionSelectTab;
         private static TabTextItem textTab;
         private static TabSubmenuItem submenuTab;
+
+        private static readonly Keys KeyBinding = Keys.F7;
 
         private static void Main()
         {
@@ -81,7 +84,8 @@
             GameFiber.StartNew(ProcessMenus);
 
             // continue with the plugin...
-            Game.Console.Print("  Press F7 to toggle the pause menu.");
+            Game.Console.Print($"  Press {KeyBinding} to open the pause menu.");
+            Game.DisplayHelp($"Press ~{KeyBinding.GetInstructionalId()}~ to open the pause menu.");
         }
 
         private static void ProcessMenus()
@@ -95,7 +99,7 @@
 
                 tabView.Update();
 
-                if (Game.IsKeyDown(System.Windows.Forms.Keys.F7) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
+                if (Game.IsKeyDown(KeyBinding) && !UIMenu.IsAnyMenuVisible && !TabView.IsAnyPauseMenuVisible)
                 {
                     tabView.Visible = !tabView.Visible;
                 }
