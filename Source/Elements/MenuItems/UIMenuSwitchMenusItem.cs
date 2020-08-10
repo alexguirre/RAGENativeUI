@@ -129,6 +129,11 @@ namespace RAGENativeUI.Elements
             if (menus.Count != menusNames.Count)
                 throw new ArgumentException("The UIMenu list and the names strings list must have the same items count", "menus, menusNames");
 
+            foreach (var m in menus)
+            {
+                m.ResetCursorOnOpen = false;
+            }
+
             _menus = new List<UIMenu>(menus);
             _currentMenu = IndexToMenu(index);
         }
@@ -147,8 +152,17 @@ namespace RAGENativeUI.Elements
         public UIMenuSwitchMenusItem(string text, string description, IEnumerable<IDisplayItem> menusDisplayItems)
             : base(text, description, menusDisplayItems)
         {
-            if (menusDisplayItems.Any(i => !(i.Value is UIMenu)))
-                throw new ArgumentException($"All {nameof(IDisplayItem.Value)}s need to be {nameof(UIMenu)}s", nameof(menusDisplayItems));
+            foreach (var m in menusDisplayItems)
+            {
+                if (m.Value is UIMenu menu)
+                {
+                    menu.ResetCursorOnOpen = false;
+                }
+                else
+                {
+                    throw new ArgumentException($"All {nameof(IDisplayItem.Value)}s need to be {nameof(UIMenu)}s", nameof(menusDisplayItems));
+                }
+            }
 
             _currentMenu = IndexToMenu(0);
         }
