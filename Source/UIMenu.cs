@@ -1110,6 +1110,8 @@ namespace RAGENativeUI
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Up))
             {
                 CurrentSelection--;
+                while(MenuItems[CurrentSelection].Skipped)
+                    CurrentSelection--;
 
                 Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                 IndexChange(CurrentSelection);
@@ -1135,6 +1137,8 @@ namespace RAGENativeUI
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
             {
                 CurrentSelection++;
+                while (MenuItems[CurrentSelection].Skipped)
+                    CurrentSelection++;
 
                 Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                 IndexChange(CurrentSelection);

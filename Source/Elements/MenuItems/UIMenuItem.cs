@@ -84,6 +84,11 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public virtual bool Selected { get; set; }
 
+        /// <summary>
+        /// Whether this item is skipped.
+        /// </summary>
+        public virtual bool Skipped { get; set; } = false;
+
 
         /// <summary>
         /// Whether this item is currently being hovered on with a mouse.
