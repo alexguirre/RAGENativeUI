@@ -53,8 +53,8 @@
         {
             Thin = true;
 
-            BackgroundColor = HudColor.RedDark.GetColor();
             ForegroundColor = HudColor.Red.GetColor();
+            BackgroundColor = Color.FromArgb(120, ForegroundColor);
 
             Markers = new List<TimerBarMarker>();
         }
