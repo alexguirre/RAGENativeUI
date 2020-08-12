@@ -119,8 +119,12 @@
             // create the child menu items
             childMenu.AddItems(Enumerable.Range(1, 50).Select(i => new UIMenuItem($"Item #{i}")));
 
+            ConfirmationMenu exitMenu = new ConfirmationMenu(mainMenu.TitleText, "EXIT", "Are you sure you want to exit this example menu?");
+            exitMenu.Back += (s, e) => mainMenu.Visible = true;
+            mainMenu.OnMenuClose += s => exitMenu.Visible = true;
+
             // add all the menus to the pool
-            pool.Add(mainMenu, childMenu);
+            pool.Add(mainMenu, childMenu, exitMenu);
 
             // start the fiber which will handle drawing and processing the menus
             GameFiber.StartNew(ProcessMenus);
