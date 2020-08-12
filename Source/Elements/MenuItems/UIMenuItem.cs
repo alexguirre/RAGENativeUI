@@ -103,6 +103,12 @@ namespace RAGENativeUI.Elements
         public virtual bool Enabled { get; set; }
 
         /// <summary>
+        /// Gets or sets whether the navigation bar is drawn when selected.
+        /// For now, only needed internally by <see cref="PauseMenu.TabInteractiveListItem"/> to hide the navigation bar when not focused.
+        /// </summary>
+        internal bool CanDrawNavBar { get; set; } = true;
+
+        /// <summary>
         /// Activates this item.
         /// </summary>
         /// <param name="menu">The <see cref="UIMenu"/> that is calling this method, or <c>null</c> if no menu is involved.</param>
@@ -151,7 +157,7 @@ namespace RAGENativeUI.Elements
             float rectX = x + rectWidth * 0.5f;
             float rectY = y + rectHeight * 0.5f;
 
-            if (Selected)
+            if (Selected && CanDrawNavBar)
             {
                 UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.NavBarTextureName,
                                   rectX, rectY,

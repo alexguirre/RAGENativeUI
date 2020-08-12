@@ -128,14 +128,13 @@ namespace RAGENativeUI.PauseMenu
 
                 var item = Items[c];
 
-                // workaround to not draw the navigation bar when not focused
-                // TODO: some other way to avoid drawing the nav bar as Selected may be overriden and could be an expensive operation
-                bool selected = item.Selected;
-                item.Selected = selected && Focused;
+                // only draw the navigation bar if this tab is focused
+                bool canDrawNavBar = item.CanDrawNavBar;
+                item.CanDrawNavBar = canDrawNavBar && Focused;
 
                 item.Draw(x, y, w, h);
 
-                item.Selected = selected;
+                item.CanDrawNavBar = canDrawNavBar;
 
                 //if (Focused && hovering && (Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) || Game.IsControlJustPressed(0, GameControl.CursorAccept)))
                 //{
