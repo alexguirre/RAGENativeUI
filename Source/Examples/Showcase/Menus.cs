@@ -94,7 +94,7 @@
                     {
                         0 => m => m.RemoveBanner(),
                         1 => m => m.SetBannerType(new Sprite("commonmenu", "interaction_bgd", Point.Empty, Size.Empty)),
-                        2 => m => m.SetBannerType(new ResRectangle(Point.Empty, Size.Empty, HudColor.Red.GetColor())),
+                        2 => m => m.SetBannerType(HudColor.Red.GetColor()),
                         3 => m => m.SetBannerType(Game.CreateTextureFromFile("cursor_32_2.png")),
                         _ => throw new InvalidOperationException("Invalid banner type")
                     });
