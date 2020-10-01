@@ -197,10 +197,13 @@ namespace RAGENativeUI.Elements
                 rightBadgeOffset = 0.0f;
             }
 
-            SetTextCommandOptions();
-            TextCommands.Display(Text, x + 0.0046875f + leftBadgeOffset, y + 0.00277776f);
+            if (!string.IsNullOrEmpty(Text))
+            {
+                SetTextCommandOptions();
+                TextCommands.Display(Text, x + 0.0046875f + leftBadgeOffset, y + 0.00277776f);
+            }
 
-            if (!String.IsNullOrEmpty(RightLabel))
+            if (!string.IsNullOrEmpty(RightLabel))
             {
                 SetTextCommandOptions(false);
                 float labelWidth = TextCommands.GetWidth(RightLabel);
