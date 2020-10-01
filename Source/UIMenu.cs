@@ -1016,8 +1016,9 @@ namespace RAGENativeUI
         /// <returns></returns>
         public static SizeF GetScreenResolutionMantainRatio()
         {
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Internals.Screen.ActualResolution;
+            var screenw = res.Width;
+            var screenh = res.Height;
             const float height = 1080f;
             float ratio = (float)screenw / screenh;
             var width = height * ratio;
