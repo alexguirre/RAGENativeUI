@@ -41,7 +41,7 @@ namespace RAGENativeUI.Elements
             {
                 if (Enabled)
                 {
-                    if (Selected)
+                    if (Selected && CanDrawNavBar)
                     {
                         return HighlightedForeColor;
                     }
