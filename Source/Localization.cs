@@ -1,6 +1,7 @@
 ﻿namespace RAGENativeUI
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Text;
 
     using Rage;
@@ -53,6 +54,22 @@
 
             var ptr = CTextFile.Instance.GetStringByHash(labelIdHash);
             return ptr != IntPtr.Zero ? FromUtf8(ptr) : Fallback;
+        }
+
+        public static unsafe void SetText(uint labelIdHash, string value)
+        {
+            if (!CTextFile.Available)
+            {
+                return;
+            }
+
+            // TODO: do this properly...
+            ref var map = ref CTextFile.Instance.OverridesTextMap;
+            map.IsSorted = true;
+            map.Pairs.Count = 1;
+            map.Pairs.Size = 10;
+            map.Pairs.Items = (CTextFile.atBinaryMap.DataPair*)Marshal.AllocHGlobal(sizeof(CTextFile.atBinaryMap.DataPair) * 10);
+            map.Pairs[0] = new CTextFile.atBinaryMap.DataPair { Key = labelIdHash, Value = Marshal.StringToHGlobalAnsi(value) };
         }
 
         private static unsafe string FromUtf8(IntPtr ptr)

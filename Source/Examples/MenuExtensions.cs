@@ -139,7 +139,7 @@
             {
                 Plugin.Pool.Draw();
 
-                NativeFunction.Natives.DISPLAY_ONSCREEN_KEYBOARD(6, "", "", strGetter(), "", "", "", maxLength);
+                NativeFunction.Natives.DISPLAY_ONSCREEN_KEYBOARD(6, "RNUI_TEST_LABEL", "", strGetter(), "", "", "", maxLength);
                 int state;
                 while ((state = NativeFunction.Natives.UPDATE_ONSCREEN_KEYBOARD<int>()) == 0)
                 {

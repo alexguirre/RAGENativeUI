@@ -512,6 +512,24 @@
     [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct CTextFile
     {
+        [StructLayout(LayoutKind.Explicit, Size = 0x18)]
+        public struct atBinaryMap
+        {
+            [StructLayout(LayoutKind.Explicit, Size = 0x10)]
+            public struct DataPair
+            {
+                [FieldOffset(0x0)] public uint Key;
+                [FieldOffset(0x8)] public IntPtr Value;
+            }
+
+            [FieldOffset(0x00), MarshalAs(UnmanagedType.I1)] public bool IsSorted;
+            [FieldOffset(0x08)] public atArray<DataPair> Pairs;
+        }
+
+        // this is the first map checked when retrieving text labels and seems to be unused, it is always empty as far as I can tell
+        // Should be good enough to allow us to override/add text labels
+        [FieldOffset(0x258)] public atBinaryMap OverridesTextMap;
+
         public IntPtr GetStringByHash(uint hash) => (IntPtr)InvokeRetPointer(Memory.CTextFile_GetStringByHash, AsPointer(ref this), hash);
 
         public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);

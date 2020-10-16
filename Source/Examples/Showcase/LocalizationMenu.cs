@@ -1,5 +1,7 @@
 ﻿namespace RNUIExamples.Showcase
 {
+    using Rage;
+
     using RAGENativeUI;
     using RAGENativeUI.Elements;
 
@@ -13,6 +15,8 @@
             Plugin.Pool.Add(this);
 
             CreateMenuItems();
+
+            Localization.SetText(Game.GetHashKey("RNUI_TEST_LABEL"), "Hello, World! From RAGENativeUI");
         }
 
         private void CreateMenuItems()
