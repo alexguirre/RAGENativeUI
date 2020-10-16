@@ -3,6 +3,7 @@
     using static Rage.Native.NativeFunction;
     using Rage;
     using RAGENativeUI.Internals;
+    using System;
 
     internal static class N
     {
@@ -185,6 +186,11 @@
         public static void AnimPostFxStop(string effectName) => Natives.x068E835A1D0DC0E3(effectName);
 
         public static bool IsControlReleased(int index, GameControl control) => Natives.x648EE3E7F38877DD<bool>(index, (int)control);
+
+        public static bool DoesTextLabelExist(string str) => Natives.xAC09CA973C564252<bool>(str);
+        public static IntPtr GetLabelText(string str) => Natives.x7B5280EBA9840C72<IntPtr>(str);
+        public static int GetSystemLanguage() => Natives.x497420E022796B3F<int>();
+        public static int GetCurrentLanguage() => Natives.x2BDD44CC428A7EAE<int>();
     }
 }
 

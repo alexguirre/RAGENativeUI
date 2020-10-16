@@ -43,6 +43,13 @@
                 AddItem(item);
                 BindMenuToItem(new Elements(), item);
             }
+
+            {
+                UIMenuItem item = new UIMenuItem("Localization", $"Showcases the ~b~{nameof(Localization)}~s~ class.");
+
+                AddItem(item);
+                BindMenuToItem(new LocalizationMenu(), item);
+            }
         }
     }
 }

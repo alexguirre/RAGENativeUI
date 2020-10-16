@@ -86,6 +86,7 @@
     <Compile Include="Internals\ModuleInitializer.cs" />
     <Compile Include="Internals\Shared.cs" />
     <Compile Include="Internals\UsingTls.cs" />
+    <Compile Include="Localization.cs" />
     <Compile Include="MenuPool.cs" />
     <Compile Include="Natives.cs" />
     <Compile Include="PauseMenu\TabInteractiveListItem.cs" />

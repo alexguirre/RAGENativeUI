@@ -27,6 +27,8 @@
         public static readonly IntPtr CTextFormat_GetInputSourceIcons;
         public static readonly IntPtr CTextFormat_GetIconListFormatString;
         public static readonly IntPtr CControlMgr_sm_MappingMgr_KeyboardLayout;
+        public static readonly IntPtr CTextFile_sm_Instance;
+        public static readonly IntPtr CTextFile_GetStringByHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -127,6 +129,26 @@
                 if (addr != IntPtr.Zero)
                 {
                     addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
+
+            CTextFile_sm_Instance = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 48 8B D3 E8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8D 0D");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
+
+            CTextFile_GetStringByHash = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8B F2 E8 ?? ?? ?? ?? 83 8B");
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x19;
                 }
                 return addr;
             });
@@ -485,5 +507,15 @@
         public static readonly bool Available = Memory.CControlMgr_sm_MappingMgr_KeyboardLayout != IntPtr.Zero;
         public static CControlKeyboardLayoutKey* KeyboardLayout = (CControlKeyboardLayoutKey*)Memory.CControlMgr_sm_MappingMgr_KeyboardLayout;
         public const int KeyboardLayoutSize = 255;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    internal unsafe struct CTextFile
+    {
+        public IntPtr GetStringByHash(uint hash) => (IntPtr)InvokeRetPointer(Memory.CTextFile_GetStringByHash, AsPointer(ref this), hash);
+
+        public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);
+
+        public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero && Memory.CTextFile_GetStringByHash != IntPtr.Zero;
     }
 }
