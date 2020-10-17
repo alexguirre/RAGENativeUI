@@ -67,7 +67,10 @@
             }
 
             // NOTE: entries only get freed when exiting the game or by calling ClearTextOverride
+            CTextFile.CriticalSection.Enter();
             var oldValue = CTextFile.Instance.OverridesTextMap.AddOrSet(labelIdHash, ToUtf8(value));
+            CTextFile.CriticalSection.Leave();
+
             if (oldValue != IntPtr.Zero)
             {
                 unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }
@@ -84,7 +87,10 @@
                 return;
             }
 
+            CTextFile.CriticalSection.Enter();
             var oldValue = CTextFile.Instance.OverridesTextMap.Remove(labelIdHash);
+            CTextFile.CriticalSection.Leave();
+
             if (oldValue != IntPtr.Zero)
             {
                 unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }

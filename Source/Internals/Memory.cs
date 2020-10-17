@@ -28,6 +28,7 @@
         public static readonly IntPtr CTextFormat_GetIconListFormatString;
         public static readonly IntPtr CControlMgr_sm_MappingMgr_KeyboardLayout;
         public static readonly IntPtr CTextFile_sm_Instance;
+        public static readonly IntPtr CTextFile_sm_CriticalSection;
         public static readonly IntPtr CTextFile_GetStringByHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
@@ -143,15 +144,14 @@
                 return addr;
             });
 
-            CTextFile_GetStringByHash = FindAddress(() =>
             {
-                IntPtr addr = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8B F2 E8 ?? ?? ?? ?? 83 8B");
+                IntPtr addr = FindAddress(() => Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8B F2 E8 ?? ?? ?? ?? 83 8B"));
                 if (addr != IntPtr.Zero)
                 {
-                    addr -= 0x19;
+                    CTextFile_GetStringByHash = addr - 0x19;
+                    CTextFile_sm_CriticalSection = addr + *(int*)(addr + 3) + 7;
                 }
-                return addr;
-            });
+            }
 
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
@@ -579,8 +579,37 @@
         public IntPtr GetStringByHash(uint hash) => (IntPtr)InvokeRetPointer(Memory.CTextFile_GetStringByHash, AsPointer(ref this), hash);
 
         public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);
+        public static ref CRITICAL_SECTION CriticalSection => ref AsRef<CRITICAL_SECTION>(Memory.CTextFile_sm_CriticalSection);
 
-        public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero && Memory.CTextFile_GetStringByHash != IntPtr.Zero;
+        public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero && 
+                                                Memory.CTextFile_GetStringByHash != IntPtr.Zero &&
+                                                Memory.CTextFile_sm_CriticalSection != IntPtr.Zero;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 0x28)]
+    public struct CRITICAL_SECTION
+    {
+        public IntPtr DebugInfo;
+        // ...
+
+        public void Enter()
+        {
+            if (DebugInfo != IntPtr.Zero)
+            {
+                EnterCriticalSection(ref this);
+            }
+        }
+
+        public void Leave()
+        {
+            if (DebugInfo != IntPtr.Zero)
+            {
+                LeaveCriticalSection(ref this);
+            }
+        }
+
+        [DllImport("kernel32.dll")] static extern void EnterCriticalSection(ref CRITICAL_SECTION lpCriticalSection);
+        [DllImport("kernel32.dll")] static extern void LeaveCriticalSection(ref CRITICAL_SECTION lpCriticalSection);
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 8)]
