@@ -44,6 +44,23 @@
             return ref Items[Count++];
         }
 
+        public T RemoveAt(int index)
+        {
+            if (index < 0 || index >= Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"Out of Range (Count:{Count}, Size:{Size})");
+            }
+
+            var removed = Items[index];
+            // move forward all items after the removed one
+            for (int i = index; i < (Count - 1); i++)
+            {
+                Items[i] = Items[i + 1];
+            }
+            Count--;
+            return removed;
+        }
+
         public ref struct Enumerator
         {
             private readonly atArray<T>* array;

@@ -528,7 +528,7 @@
             // returns old value if the key already existed, IntPtr.Zero otherwise
             public IntPtr AddOrSet(uint key, IntPtr value)
             {
-                // TODO: AddOrSet uses linear search, it could use binary search
+                // TODO: AddOrSet/Remove use linear search, binary search could be used
                 // insert keeping the array sorted
                 DataPair pairToInsert = new DataPair { Key = key, Value = value };
                 foreach (ref var pair in Pairs)
@@ -554,6 +554,21 @@
                 // add the last pair
                 Pairs.Add() = pairToInsert;
                 return IntPtr.Zero;
+            }
+
+            public IntPtr Remove(uint key)
+            {
+                int index = -1;
+                for (int i = 0; i < Pairs.Count; i++)
+                {
+                    if (Pairs[i].Key == key)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                return index != -1 ? Pairs.RemoveAt(index).Value : IntPtr.Zero;
             }
         }
 

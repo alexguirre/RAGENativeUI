@@ -66,8 +66,25 @@
                 return;
             }
 
-            // NOTE: entries only get freed when exiting the game
+            // NOTE: entries only get freed when exiting the game or by calling ClearTextOverride
             var oldValue = CTextFile.Instance.OverridesTextMap.AddOrSet(labelIdHash, ToUtf8(value));
+            if (oldValue != IntPtr.Zero)
+            {
+                unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }
+            }
+        }
+
+        public static void ClearTextOverride(string labelId)
+            => ClearTextOverride(Game.GetHashKey(labelId ?? throw new ArgumentNullException(nameof(labelId))));
+
+        public static void ClearTextOverride(uint labelIdHash)
+        {
+            if (!CTextFile.Available)
+            {
+                return;
+            }
+
+            var oldValue = CTextFile.Instance.OverridesTextMap.Remove(labelIdHash);
             if (oldValue != IntPtr.Zero)
             {
                 unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }

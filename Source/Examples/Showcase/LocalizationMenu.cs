@@ -57,7 +57,23 @@
                                      resultString.RightLabel = str.Replace("~", "\\~"); // basic token escaping
                                  });
 
-            AddItems(language, systemLanguage, prefersMetricMeasurements, labelId, resultExists, resultString);
+            var overwriteTitle = new UIMenuCheckboxItem(
+                "Overwrite Pause Menu Title",
+                false,
+                $"Overwrite or reset the pause menu title text label, `PM_PAUSE_HDR`, using ~b~{nameof(Localization)}.{nameof(Localization.SetText)}~s~/~b~{nameof(Localization.ClearTextOverride)}~s~.");
+            overwriteTitle.CheckboxEvent += (s, isChecked) =>
+            {
+                if (isChecked)
+                {
+                    Localization.SetText("PM_PAUSE_HDR", "RAGENativeUI");
+                }
+                else
+                {
+                    Localization.ClearTextOverride("PM_PAUSE_HDR");
+                }
+            };
+
+            AddItems(language, systemLanguage, prefersMetricMeasurements, labelId, resultExists, resultString, overwriteTitle);
         }
 
         protected override void MenuOpenEv()
