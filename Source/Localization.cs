@@ -1,7 +1,6 @@
 ﻿namespace RAGENativeUI
 {
     using System;
-    using System.Runtime.InteropServices;
     using System.Text;
 
     using Rage;
@@ -56,20 +55,21 @@
             return ptr != IntPtr.Zero ? FromUtf8(ptr) : Fallback;
         }
 
-        public static unsafe void SetText(uint labelIdHash, string value)
+        public static void SetText(string labelId, string value)
+            => SetText(Game.GetHashKey(labelId ?? throw new ArgumentNullException(nameof(labelId))), value);
+
+        public static void SetText(uint labelIdHash, string value)
         {
             if (!CTextFile.Available)
             {
                 return;
             }
 
-            // TODO: do this properly...
-            ref var map = ref CTextFile.Instance.OverridesTextMap;
-            map.IsSorted = true;
-            map.Pairs.Count = 1;
-            map.Pairs.Size = 10;
-            map.Pairs.Items = (CTextFile.atBinaryMap.DataPair*)Marshal.AllocHGlobal(sizeof(CTextFile.atBinaryMap.DataPair) * 10);
-            map.Pairs[0] = new CTextFile.atBinaryMap.DataPair { Key = labelIdHash, Value = Marshal.StringToHGlobalAnsi(value) };
+            var oldValue = CTextFile.Instance.OverridesTextMap.AddOrSet(labelIdHash, ToUtf8(value));
+            if (oldValue != IntPtr.Zero)
+            {
+                unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }
+            }
         }
 
         private static unsafe string FromUtf8(IntPtr ptr)
@@ -85,6 +85,18 @@
                     len++;
                 }
                 return len;
+            }
+        }
+
+        private static unsafe IntPtr ToUtf8(string str)
+        {
+            fixed (char* chars = str)
+            {
+                var size = Encoding.UTF8.GetByteCount(chars, str.Length) + 1; // str + null terminator
+                var dest = (byte*)sysMemAllocator.TheAllocator.Allocate((ulong)size, 16, 0);
+                Encoding.UTF8.GetBytes(chars, str.Length, dest, size - 1);
+                dest[size - 1] = 0; // null terminator
+                return (IntPtr)dest;
             }
         }
     }

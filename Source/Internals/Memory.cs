@@ -524,6 +524,37 @@
 
             [FieldOffset(0x00), MarshalAs(UnmanagedType.I1)] public bool IsSorted;
             [FieldOffset(0x08)] public atArray<DataPair> Pairs;
+
+            // returns old value if the key already existed, IntPtr.Zero otherwise
+            public IntPtr AddOrSet(uint key, IntPtr value)
+            {
+                // TODO: AddOrSet uses linear search, it could use binary search
+                // insert keeping the array sorted
+                DataPair pairToInsert = new DataPair { Key = key, Value = value };
+                foreach (ref var pair in Pairs)
+                {
+                    if (pair.Key == pairToInsert.Key)
+                    {
+                        // key already exists, replace its value
+                        var tmp = pair.Value;
+                        pair.Value = pairToInsert.Value;
+                        return tmp;
+                    }
+
+                    // key does not exist, insert it in the middle, and move back the remaining pairs
+                    if (pair.Key > pairToInsert.Key)
+                    {
+                        // swap
+                        var tmp = pair;
+                        pair = pairToInsert;
+                        pairToInsert = tmp;
+                    }
+                }
+
+                // add the last pair
+                Pairs.Add() = pairToInsert;
+                return IntPtr.Zero;
+            }
         }
 
         // this is the first map checked when retrieving text labels and seems to be unused, it is always empty as far as I can tell
@@ -535,5 +566,16 @@
         public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);
 
         public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero && Memory.CTextFile_GetStringByHash != IntPtr.Zero;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 8)]
+    public unsafe struct sysMemAllocator
+    {
+        private readonly IntPtr* vtable;
+
+        public void* Allocate(ulong size, ulong align, int subAllocator) => InvokeRetPointer(vtable[2], AsPointer(ref this), size, align, subAllocator);
+        public void Free(void* ptr) => Invoke(vtable[4], AsPointer(ref this), ptr);
+
+        public static ref sysMemAllocator TheAllocator => ref AsRef<sysMemAllocator>((IntPtr)UsingTls.GetFromMain(0xC8));
     }
 }

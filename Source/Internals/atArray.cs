@@ -28,6 +28,22 @@
 
         public Enumerator GetEnumerator() => new Enumerator(ref this);
 
+        public ref T Add()
+        {
+            if (Count == Size)
+            {
+                var newSize = Size + 16;
+                var newByteSize = (ulong)(sizeof(T) * newSize);
+                var newItems = sysMemAllocator.TheAllocator.Allocate(newByteSize, 16, 0);
+                Buffer.MemoryCopy(Items, newItems, newByteSize, (ulong)(sizeof(T) * Size));
+                sysMemAllocator.TheAllocator.Free(Items);
+                Items = (T*)newItems;
+                Size = (ushort)newSize;
+            }
+
+            return ref Items[Count++];
+        }
+
         public ref struct Enumerator
         {
             private readonly atArray<T>* array;
