@@ -191,6 +191,7 @@
         public static IntPtr GetLabelText(string str) => Natives.x7B5280EBA9840C72<IntPtr>(str);
         public static int GetSystemLanguage() => Natives.x497420E022796B3F<int>();
         public static int GetCurrentLanguage() => Natives.x2BDD44CC428A7EAE<int>();
+        public static bool ShouldUseMetricMeasurements() => Natives.xD3D15555431AB793<bool>();
     }
 }
 

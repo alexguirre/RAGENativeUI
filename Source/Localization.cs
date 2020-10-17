@@ -27,6 +27,7 @@
     {
         public static Language SystemLanguage => (Language)N.GetSystemLanguage();
         public static Language Language => (Language)N.GetCurrentLanguage();
+        public static bool PrefersMetricMeasurements => N.ShouldUseMetricMeasurements();
 
         public static bool DoesTextExist(string labelId)
         {
@@ -65,6 +66,7 @@
                 return;
             }
 
+            // NOTE: entries only get freed when exiting the game
             var oldValue = CTextFile.Instance.OverridesTextMap.AddOrSet(labelIdHash, ToUtf8(value));
             if (oldValue != IntPtr.Zero)
             {

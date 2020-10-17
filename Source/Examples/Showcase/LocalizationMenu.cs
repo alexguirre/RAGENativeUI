@@ -1,13 +1,11 @@
 ﻿namespace RNUIExamples.Showcase
 {
-    using Rage;
-
     using RAGENativeUI;
     using RAGENativeUI.Elements;
 
     internal sealed class LocalizationMenu : UIMenu
     {
-        UIMenuItem language, systemLanguage;
+        UIMenuItem language, systemLanguage, prefersMetricMeasurements;
         string inputLabelId = "";
 
         public LocalizationMenu() : base(Plugin.MenuTitle, "LOCALIZATION")
@@ -29,6 +27,7 @@
         {
             language = new UIMenuItem("Language", $"Gets the ~b~{nameof(Localization)}.{nameof(Localization.Language)}~s~ property.");
             systemLanguage = new UIMenuItem("System Language", $"Gets the ~b~{nameof(Localization)}.{nameof(Localization.SystemLanguage)}~s~ property.");
+            prefersMetricMeasurements = new UIMenuItem("Prefers Metric Measurements", $"Gets the ~b~{nameof(Localization)}.{nameof(Localization.PrefersMetricMeasurements)}~s~ property.");
             var resultExists = new UIMenuItem(
                 "    Exists",
                 $"Whether the input label ID exists, using ~b~{nameof(Localization)}.{nameof(Localization.DoesTextExist)}~s~.");
@@ -58,13 +57,14 @@
                                      resultString.RightLabel = str.Replace("~", "\\~"); // basic token escaping
                                  });
 
-            AddItems(language, systemLanguage, labelId, resultExists, resultString);
+            AddItems(language, systemLanguage, prefersMetricMeasurements, labelId, resultExists, resultString);
         }
 
         protected override void MenuOpenEv()
         {
             language.RightLabel = Localization.Language.ToString();
             systemLanguage.RightLabel = Localization.SystemLanguage.ToString();
+            prefersMetricMeasurements.RightLabel = Localization.PrefersMetricMeasurements ? "Yes" : "No";
 
             base.MenuOpenEv();
         }
