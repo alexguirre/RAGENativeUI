@@ -95,7 +95,7 @@
         /// </summary>
         /// <param name="labelId">The text label ID.</param>
         /// <param name="value">The new <see cref="string"/>.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="labelId"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="labelId"/> or <paramref name="value"/> are <c>null</c>.</exception>
         public static void SetText(string labelId, string value)
             => SetText(Game.GetHashKey(labelId ?? throw new ArgumentNullException(nameof(labelId))), value);
 
@@ -106,8 +106,11 @@
         /// </summary>
         /// <param name="labelIdHash">The hash of the text label ID.</param>
         /// <param name="value">The new <see cref="string"/>.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <c>null</c>.</exception>
         public static void SetText(uint labelIdHash, string value)
         {
+            value = value ?? throw new ArgumentNullException(nameof(value));
+
             if (!CTextFile.Available)
             {
                 return;
