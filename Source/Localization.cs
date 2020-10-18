@@ -25,7 +25,22 @@
 
     public static class Localization
     {
+#if DEBUG
+        static unsafe Localization()
+        {
+            Game.LogTrivialDebug($"CTextFile => {((IntPtr)IL.Unsafe.AsPointer(ref CTextFile.Instance)).ToString("X16")}");
+        }
+#endif
+
+        /// <summary>
+        /// Gets the system language. This is the same as the Rockstar Games Launcher language setting.
+        /// </summary>
         public static Language SystemLanguage => (Language)N.GetSystemLanguage();
+
+        /// <summary>
+        /// Gets the user interface language.
+        /// This is normally the same as <see cref="SystemLanguage"/> unless the <c>-uilanguage</c> command line argument is used.
+        /// </summary>
         public static Language Language => (Language)N.GetCurrentLanguage();
 
         /// <summary>
@@ -123,7 +138,7 @@
 
             if (oldValue != IntPtr.Zero)
             {
-                unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }
+                FreeUtf8(oldValue);
             }
         }
 
@@ -156,10 +171,13 @@
 
             if (oldValue != IntPtr.Zero)
             {
-                unsafe { sysMemAllocator.TheAllocator.Free((void*)oldValue); }
+                FreeUtf8(oldValue);
             }
         }
 
+        /// <summary>
+        /// Converts a null-terminated UTF-8 string to a <see cref="string"/>.
+        /// </summary>
         private static unsafe string FromUtf8(IntPtr ptr)
         {
             var p = (byte*)ptr;
@@ -176,6 +194,9 @@
             }
         }
 
+        /// <summary>
+        /// Converts a <see cref="string"/> to an unmanaged null-terminated UTF-8 string, allocated using the game allocator.
+        /// </summary>
         private static unsafe IntPtr ToUtf8(string str)
         {
             fixed (char* chars = str)
@@ -187,5 +208,10 @@
                 return (IntPtr)dest;
             }
         }
+
+        /// <summary>
+        /// Frees a UTF-8 string previously allocated by <see cref="ToUtf8(string)"/>.
+        /// </summary>
+        private static unsafe void FreeUtf8(IntPtr ptr) => sysMemAllocator.TheAllocator.Free((void*)ptr);
     }
 }
