@@ -28,6 +28,39 @@
 
         public Enumerator GetEnumerator() => new Enumerator(ref this);
 
+        public ref T Add()
+        {
+            if (Count == Size)
+            {
+                var newSize = Size + 16;
+                var newByteSize = (ulong)(sizeof(T) * newSize);
+                var newItems = sysMemAllocator.TheAllocator.Allocate(newByteSize, 16, 0);
+                Buffer.MemoryCopy(Items, newItems, newByteSize, (ulong)(sizeof(T) * Size));
+                sysMemAllocator.TheAllocator.Free(Items);
+                Items = (T*)newItems;
+                Size = (ushort)newSize;
+            }
+
+            return ref Items[Count++];
+        }
+
+        public T RemoveAt(int index)
+        {
+            if (index < 0 || index >= Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"Out of Range (Count:{Count}, Size:{Size})");
+            }
+
+            var removed = Items[index];
+            // move forward all items after the removed one
+            for (int i = index; i < (Count - 1); i++)
+            {
+                Items[i] = Items[i + 1];
+            }
+            Count--;
+            return removed;
+        }
+
         public ref struct Enumerator
         {
             private readonly atArray<T>* array;

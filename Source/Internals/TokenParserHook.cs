@@ -349,7 +349,7 @@
 
         private static bool TokenParser(byte* token, ref sIcon icon)
         {
-            int tokenLength = StrLen(token);
+            int tokenLength = Memory.StrLen(token);
             Log($"TokenParser({Encoding.UTF8.GetString(token, tokenLength)}, {((IntPtr)Unsafe.AsPointer(ref icon)).ToString("X16")})");
 
             if (tokenLength == 1 && token[0] == '+')
@@ -479,13 +479,6 @@
             Log($" > success");
             icon.useIdAsMovieName = 0;
             return true;
-
-            static int StrLen(byte* str)
-            {
-                int len = 0;
-                while (str[len] != 0) { len++; }
-                return len;
-            }
         }
 
         [return: MarshalAs(UnmanagedType.I1)]

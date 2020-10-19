@@ -56,6 +56,13 @@
             *(long*)(*(byte**)thisThreadTls + offset) = value;
         }
 
+        public static unsafe long GetFromMain(int offset)
+        {
+            EnsureTlsPointers();
+
+            return *(long*)(*(byte**)mainThreadTls + offset);
+        }
+
         private static readonly int[] Offsets = { 0xC8 };
 
         private static IntPtr mainThreadTls;

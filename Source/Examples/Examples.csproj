@@ -55,6 +55,7 @@
     <Compile Include="Showcase\BigMessages.cs" />
     <Compile Include="Showcase\Elements.cs" />
     <Compile Include="Showcase\InstructionalButtons.cs" />
+    <Compile Include="Showcase\LocalizationMenu.cs" />
     <Compile Include="Showcase\MainMenu.cs" />
     <Compile Include="Showcase\Menus.cs" />
     <Compile Include="Showcase\Plugin.cs" />

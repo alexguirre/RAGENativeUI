@@ -27,6 +27,9 @@
         public static readonly IntPtr CTextFormat_GetInputSourceIcons;
         public static readonly IntPtr CTextFormat_GetIconListFormatString;
         public static readonly IntPtr CControlMgr_sm_MappingMgr_KeyboardLayout;
+        public static readonly IntPtr CTextFile_sm_Instance;
+        public static readonly IntPtr CTextFile_sm_CriticalSection;
+        public static readonly IntPtr CTextFile_GetStringByHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -130,6 +133,25 @@
                 }
                 return addr;
             });
+
+            CTextFile_sm_Instance = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8D 0D ?? ?? ?? ?? 48 8B D3 E8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8D 0D");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
+
+            {
+                IntPtr addr = FindAddress(() => Game.FindPattern("48 8D 0D ?? ?? ?? ?? 44 8B F2 E8 ?? ?? ?? ?? 83 8B"));
+                if (addr != IntPtr.Zero)
+                {
+                    CTextFile_GetStringByHash = addr - 0x19;
+                    CTextFile_sm_CriticalSection = addr + *(int*)(addr + 3) + 7;
+                }
+            }
 
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
@@ -241,6 +263,13 @@
             }
 
             return IntPtr.Zero;
+        }
+
+        public static int StrLen(byte* str)
+        {
+            int len = 0;
+            while (str[len] != 0) { len++; }
+            return len;
         }
     }
 
@@ -485,5 +514,119 @@
         public static readonly bool Available = Memory.CControlMgr_sm_MappingMgr_KeyboardLayout != IntPtr.Zero;
         public static CControlKeyboardLayoutKey* KeyboardLayout = (CControlKeyboardLayoutKey*)Memory.CControlMgr_sm_MappingMgr_KeyboardLayout;
         public const int KeyboardLayoutSize = 255;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    internal unsafe struct CTextFile
+    {
+        [StructLayout(LayoutKind.Explicit, Size = 0x18)]
+        public struct atBinaryMap
+        {
+            [StructLayout(LayoutKind.Explicit, Size = 0x10)]
+            public struct DataPair
+            {
+                [FieldOffset(0x0)] public uint Key;
+                [FieldOffset(0x8)] public IntPtr Value;
+            }
+
+            [FieldOffset(0x00), MarshalAs(UnmanagedType.I1)] public bool IsSorted;
+            [FieldOffset(0x08)] public atArray<DataPair> Pairs;
+
+            // returns old value if the key already existed, IntPtr.Zero otherwise
+            public IntPtr AddOrSet(uint key, IntPtr value)
+            {
+                // TODO: AddOrSet/Remove use linear search, binary search could be used
+                // insert keeping the array sorted
+                DataPair pairToInsert = new DataPair { Key = key, Value = value };
+                foreach (ref var pair in Pairs)
+                {
+                    if (pair.Key == pairToInsert.Key)
+                    {
+                        // key already exists, replace its value
+                        var tmp = pair.Value;
+                        pair.Value = pairToInsert.Value;
+                        return tmp;
+                    }
+
+                    // key does not exist, insert it in the middle, and move back the remaining pairs
+                    if (pair.Key > pairToInsert.Key)
+                    {
+                        // swap
+                        var tmp = pair;
+                        pair = pairToInsert;
+                        pairToInsert = tmp;
+                    }
+                }
+
+                // add the last pair
+                Pairs.Add() = pairToInsert;
+                return IntPtr.Zero;
+            }
+
+            public IntPtr Remove(uint key)
+            {
+                int index = -1;
+                for (int i = 0; i < Pairs.Count; i++)
+                {
+                    if (Pairs[i].Key == key)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                return index != -1 ? Pairs.RemoveAt(index).Value : IntPtr.Zero;
+            }
+        }
+
+        // this is the first map checked when retrieving text labels and seems to be unused, it is always empty as far as I can tell
+        // Should be good enough to allow us to override/add text labels
+        [FieldOffset(0x258)] public atBinaryMap OverridesTextMap;
+
+        public IntPtr GetStringByHash(uint hash) => (IntPtr)InvokeRetPointer(Memory.CTextFile_GetStringByHash, AsPointer(ref this), hash);
+
+        public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);
+        public static ref CRITICAL_SECTION CriticalSection => ref AsRef<CRITICAL_SECTION>(Memory.CTextFile_sm_CriticalSection);
+
+        public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero && 
+                                                Memory.CTextFile_GetStringByHash != IntPtr.Zero &&
+                                                Memory.CTextFile_sm_CriticalSection != IntPtr.Zero;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 0x28)]
+    public struct CRITICAL_SECTION
+    {
+        public IntPtr DebugInfo;
+        // ...
+
+        public void Enter()
+        {
+            if (DebugInfo != IntPtr.Zero)
+            {
+                EnterCriticalSection(ref this);
+            }
+        }
+
+        public void Leave()
+        {
+            if (DebugInfo != IntPtr.Zero)
+            {
+                LeaveCriticalSection(ref this);
+            }
+        }
+
+        [DllImport("kernel32.dll")] static extern void EnterCriticalSection(ref CRITICAL_SECTION lpCriticalSection);
+        [DllImport("kernel32.dll")] static extern void LeaveCriticalSection(ref CRITICAL_SECTION lpCriticalSection);
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 8)]
+    public unsafe struct sysMemAllocator
+    {
+        private readonly IntPtr* vtable;
+
+        public void* Allocate(ulong size, ulong align, int subAllocator) => InvokeRetPointer(vtable[2], AsPointer(ref this), size, align, subAllocator);
+        public void Free(void* ptr) => Invoke(vtable[4], AsPointer(ref this), ptr);
+
+        public static ref sysMemAllocator TheAllocator => ref AsRef<sysMemAllocator>((IntPtr)UsingTls.GetFromMain(0xC8));
     }
 }
