@@ -181,17 +181,7 @@
         private static unsafe string FromUtf8(IntPtr ptr)
         {
             var p = (byte*)ptr;
-            return Encoding.UTF8.GetString(p, StrLen(p));
-
-            static int StrLen(byte* str)
-            {
-                int len = 0;
-                while (str[len] != 0)
-                {
-                    len++;
-                }
-                return len;
-            }
+            return Encoding.UTF8.GetString(p, Memory.StrLen(p));
         }
 
         /// <summary>

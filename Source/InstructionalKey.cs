@@ -71,14 +71,7 @@
             byte* buffer = stackalloc byte[BufferSize];
             CTextFormat.GetIconListFormatString(ref icons, buffer, BufferSize);
 
-            return Encoding.UTF8.GetString(buffer, StrLen(buffer));
-
-            static int StrLen(byte* str)
-            {
-                int len = 0;
-                while (str[len] != 0) { len++; }
-                return len;
-            }
+            return Encoding.UTF8.GetString(buffer, Memory.StrLen(buffer));
         }
 
         public static string GetInstructionalId(this Keys key) => key.GetInstructionalKey().GetId();

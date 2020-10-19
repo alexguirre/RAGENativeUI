@@ -264,6 +264,13 @@
 
             return IntPtr.Zero;
         }
+
+        public static int StrLen(byte* str)
+        {
+            int len = 0;
+            while (str[len] != 0) { len++; }
+            return len;
+        }
     }
 
     internal static unsafe class ScriptGlobals
