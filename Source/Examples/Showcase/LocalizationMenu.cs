@@ -13,14 +13,6 @@
             Plugin.Pool.Add(this);
 
             CreateMenuItems();
-
-            Localization.SetText("RNUI_TEST_LABEL", "[RNUI_TEST_LABEL] Hello, World! From RAGENativeUI áéíóú äëïöü ç");
-            Localization.SetText("EXIT_SURE_2", "[EXIT_SURE_2] Replaced");
-            Localization.SetText("RNUI_TEST_LABEL_1", "[RNUI_TEST_LABEL_1] Hello, World! From RAGENativeUI áéíóú äëïöü ç");
-            Localization.SetText("RNUI_TEST_LABEL_2", "[RNUI_TEST_LABEL_2] Hello, World! From RAGENativeUI áéíóú äëïöü ç");
-            Localization.SetText("RNUI_TEST_LABEL_3", "[RNUI_TEST_LABEL_3] Hello, World! From RAGENativeUI áéíóú äëïöü ç");
-            Localization.SetText("RNUI_TEST_LABEL_4", "[RNUI_TEST_LABEL_4] Hello, World! From RAGENativeUI áéíóú äëïöü ç");
-            Localization.SetText("RNUI_TEST_LABEL", "[RNUI_TEST_LABEL] Overwritten");
         }
 
         private void CreateMenuItems()
