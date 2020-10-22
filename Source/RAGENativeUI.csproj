@@ -86,6 +86,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Stubs.resx</DependentUpon>
     </Compile>
+    <Compile Include="Internals\EmbeddedTexturesHook.cs" />
     <Compile Include="Internals\TokenParserHook.cs" />
     <Compile Include="Internals\Memory.cs" />
     <Compile Include="Internals\ModuleInitializer.cs" />
@@ -129,9 +130,12 @@
     <EmbeddedResource Include="Internals\Stubs.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Stubs.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Internals\Stubs\EmbeddedTextures" />
+    <None Include="Internals\Stubs\EmbeddedTextures.asm" />
     <None Include="Internals\Stubs\TokenParser" />
     <None Include="Internals\Stubs\TokenParser.asm" />
   </ItemGroup>

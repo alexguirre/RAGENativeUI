@@ -63,6 +63,16 @@ namespace RAGENativeUI.Internals {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] EmbeddedTextures {
+            get {
+                object obj = ResourceManager.GetObject("EmbeddedTextures", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] TokenParser {
             get {
                 object obj = ResourceManager.GetObject("TokenParser", resourceCulture);

@@ -29,6 +29,7 @@
         public static int* MemoryInts => data->MemoryInts;
 
         public static ref TokenParserHookData TokenParserHookData => ref data->TokenParserHookData;
+        public static ref EmbeddedTexturesHookData EmbeddedTexturesHookData => ref data->EmbeddedTexturesHookData;
 
         static Shared()
         {
@@ -84,6 +85,7 @@
             public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];
             public fixed int MemoryInts[Memory.MaxInts];
             public TokenParserHookData TokenParserHookData;
+            public EmbeddedTexturesHookData EmbeddedTexturesHookData;
         }
     }
 }

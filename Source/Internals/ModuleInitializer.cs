@@ -40,6 +40,16 @@
             Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
 #endif
 
+            Game.LogTrivialDebug("[RAGENativeUI] > Hooking embedded textures");
+#if DEBUG
+            sw.Restart();
+#endif
+            EmbeddedTexturesHook.Init();
+#if DEBUG
+            sw.Stop();
+            Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
+#endif
+
 #if DEBUG
             Game.LogTrivialDebug("[RAGENativeUI] > Registering debug commands");
             Game.AddConsoleCommands(new[] { typeof(DebugCommands) });
