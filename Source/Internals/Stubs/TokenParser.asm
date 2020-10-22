@@ -100,8 +100,6 @@ parser:
         jmp     .state_machine_continue
 
     .state_machine_icon:
-        ; mov     dword [rdx + sIcon.iconList + r9 * 4], 9
-
         cmp     byte [rdx + sIcon.iconTypeList + r9], 'b'
         jne     .state_machine_icon.t
     
