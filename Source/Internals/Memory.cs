@@ -528,20 +528,6 @@
         public int Count;
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
-    internal unsafe struct CControlKeyboardLayoutKey
-    {
-        public const int MaxTextLength = 10;
-
-        public int Icon;
-        public fixed byte Text[MaxTextLength];
-
-
-        public static readonly bool Available = Memory.CControlMgr_sm_MappingMgr_KeyboardLayout != IntPtr.Zero;
-        public static CControlKeyboardLayoutKey* KeyboardLayout = (CControlKeyboardLayoutKey*)Memory.CControlMgr_sm_MappingMgr_KeyboardLayout;
-        public const int KeyboardLayoutSize = 255;
-    }
-
     [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct CTextFile
     {
