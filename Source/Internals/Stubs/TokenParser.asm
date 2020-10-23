@@ -109,7 +109,7 @@ parser:
         test    cl, cl  ; success?
         jz      .return_failed      ; failed: invalid uint
 
-        lea     rbx, [rbx + rsi]    ; token += len
+        lea     rbx, [rbx + rsi - 1]    ; token += len
         mov     dword [rdx + sIcon.iconList + r9 * 4], eax ; iconList[r9] = value
 
         jmp     .state_machine_icon.end
