@@ -23,8 +23,20 @@
         [Conditional("DEBUG")]
         private static void Log(string str) => Game.LogTrivialDebug($"[RAGENativeUI::{nameof(EmbeddedTexturesHook)}] {str}");
 
+        //delegate void DebugDelegate(void* input);
+        //static DebugDelegate debug;
+        //static IntPtr debugPtr;
+
+        //static void DebugLog(void* input)
+        //{
+        //    Log($"Received {((IntPtr)input).ToString("X16")}");
+        //}
+
         public static void Init()
         {
+            //debug = DebugLog;
+            //debugPtr = Marshal.GetFunctionPointerForDelegate(debug);
+
             ref var data = ref Shared.EmbeddedTexturesHookData;
 
             data.Refs++;
@@ -77,6 +89,30 @@
                 *ptr = (ulong)failedJumpAddr;
                 Log("stub_failed set");
             }
+
+            // fragment_store
+            {
+                ulong* ptr = (ulong*)(stubAddr + 8 * 3).ToPointer();
+                Debug.Assert(*ptr == 0x3333333333333333, "possibly wrong fragment_store offset");
+                *ptr = (ulong)Memory.g_FragmentStore;
+                Log("fragment_store set");
+            }
+
+            // get_hash_key
+            {
+                ulong* ptr = (ulong*)(stubAddr + 8 * 4).ToPointer();
+                Debug.Assert(*ptr == 0x4444444444444444, "possibly wrong get_hash_key offset");
+                *ptr = (ulong)Memory.atStringHash;
+                Log("get_hash_key set");
+            }
+
+            // debug
+            //{
+            //    ulong* ptr = (ulong*)(stubAddr + 8 * 5).ToPointer();
+            //    Debug.Assert(*ptr == 0x5555555555555555, "possibly wrong debug offset");
+            //    *ptr = (ulong)debugPtr;
+            //    Log("debug set");
+            //}
 
             var stubOffset = *(int*)stubAddr;
             var stubStartAddr = stubAddr + stubOffset;

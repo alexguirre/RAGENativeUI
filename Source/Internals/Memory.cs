@@ -11,7 +11,7 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 15;
+        public const int MaxMemoryAddresses = 16;
         public const int MaxInts = 4;
 
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
@@ -32,6 +32,7 @@
         public static readonly IntPtr CTextFile_sm_CriticalSection;
         public static readonly IntPtr CTextFile_GetStringByHash;
         public static readonly IntPtr g_FragmentStore;
+        public static readonly IntPtr atStringHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -166,6 +167,16 @@
                 if (addr != IntPtr.Zero)
                 {
                     addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
+
+            atStringHash = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 44 8B 47 10 48 8B CB 8B D0 E8 ?? ?? ?? ?? 48 8D 4F 38 41 B0 01");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 1) + 5;
                 }
                 return addr;
             });

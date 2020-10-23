@@ -54,6 +54,7 @@
                 NumberOfVisibleMenus -= UIMenu.NumberOfVisibleMenus;
                 NumberOfVisiblePauseMenus -= TabView.NumberOfVisiblePauseMenus;
                 TokenParserHook.Shutdown();
+                EmbeddedTexturesHook.Shutdown();
             }
 
             // dispose mapped file
