@@ -98,18 +98,26 @@
                 Log("fragment_store set");
             }
 
-            // get_hash_key
+            // drawable_store
             {
                 ulong* ptr = (ulong*)(stubAddr + 8 * 4).ToPointer();
-                Debug.Assert(*ptr == 0x4444444444444444, "possibly wrong get_hash_key offset");
+                Debug.Assert(*ptr == 0x4444444444444444, "possibly wrong drawable_store offset");
+                *ptr = (ulong)Memory.g_DrawableStore;
+                Log("drawable_store set"); // "prop_acc_guitar_01", "prop_acousticguitar"
+            }
+
+            // get_hash_key
+            {
+                ulong* ptr = (ulong*)(stubAddr + 8 * 5).ToPointer();
+                Debug.Assert(*ptr == 0x5555555555555555, "possibly wrong get_hash_key offset");
                 *ptr = (ulong)Memory.atStringHash;
                 Log("get_hash_key set");
             }
 
             // debug
             //{
-            //    ulong* ptr = (ulong*)(stubAddr + 8 * 5).ToPointer();
-            //    Debug.Assert(*ptr == 0x5555555555555555, "possibly wrong debug offset");
+            //    ulong* ptr = (ulong*)(stubAddr + 8 * 6).ToPointer();
+            //    Debug.Assert(*ptr == 0x6666666666666666, "possibly wrong debug offset");
             //    *ptr = (ulong)debugPtr;
             //    Log("debug set");
             //}

@@ -32,6 +32,7 @@
         public static readonly IntPtr CTextFile_sm_CriticalSection;
         public static readonly IntPtr CTextFile_GetStringByHash;
         public static readonly IntPtr g_FragmentStore;
+        public static readonly IntPtr g_DrawableStore;
         public static readonly IntPtr atStringHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
@@ -161,15 +162,16 @@
                 }
             }
 
-            g_FragmentStore = FindAddress(() =>
             {
-                IntPtr addr = Game.FindPattern("48 8D 1D ?? ?? ?? ?? 4C 8D 45 DC 48 8D 55 D0 48 8B CB C7 45");
+                IntPtr addr = FindAddress(() => Game.FindPattern("48 8B 05 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? FF 90 ?? ?? ?? ?? 48 8B 0D"));
                 if (addr != IntPtr.Zero)
                 {
-                    addr += *(int*)(addr + 3) + 7;
+                    addr -= 0x30;
+                    g_FragmentStore = addr + *(int*)(addr + 3) + 7;
+                    addr -= 0x18;
+                    g_DrawableStore = addr + *(int*)(addr + 3) + 7;
                 }
-                return addr;
-            });
+            }
 
             atStringHash = FindAddress(() =>
             {

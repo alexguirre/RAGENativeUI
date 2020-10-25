@@ -6,8 +6,9 @@ stub_offset:  dq stub
 stub_success:       dq 0x1111111111111111   ; return address used when the embedded texture is found
 stub_failed:        dq 0x2222222222222222   ; return address to continue searching for the texture in fwTxdStore
 fragment_store:     dq 0x3333333333333333
-get_hash_key:       dq 0x4444444444444444   ; uint(*)(const char* str, uint startHash)
-; debug:              dq 0x5555555555555555
+drawable_store:     dq 0x4444444444444444
+get_hash_key:       dq 0x5555555555555555   ; uint(*)(const char* str, uint startHash)
+; debug:              dq 0x6666666666666666
 
 align 16
 stub:   ; rcx = texture dictionary
@@ -109,12 +110,16 @@ find_fragment_embedded_texture:
         mov     r8, qword [rsp + 0x30]                  ; texture_dictionary
         call    qword [rax + fwAssetStore_FindSlot]     ; FindSlot(fragment_store, &index, texture_dictionary)
 
+        xor     rax, rax
+        cmp     dword [rsp + 0x38], -1                  ; if (index == -1) return null;
+        je      .exit
+
         mov     rax, [rbx]                              ; get vtable
         mov     rcx, rbx                                ; fragment_store
         mov     edx, dword [rsp + 0x38]                 ; index
         call    qword [rax + fwAssetStore_GetPtr]       ; fragType* GetPtr(fragment_store, index)
         test    rax, rax
-        jz      .exit                   ; if (fragType == null) return null;
+        jz      .exit                                   ; if (fragType == null) return null;
 
         ; we found the fragType, search for the textures in its drawables
         mov     rbx, rax                ; rbx = fragType
@@ -141,8 +146,50 @@ find_fragment_embedded_texture:
 
 align 16
 find_drawable_embedded_texture:
-        ; TODO: find_drawable_embedded_texture
+        push    rbx
+        sub     rsp, 0x40
+        ; rsp + 0x38  = strLocalIndex
+        ; rsp + 0x30  = texture_dictionary
+        ; rsp + 0x28  = texture_name
+        mov     qword [rsp + 0x30], rcx
+        mov     qword [rsp + 0x28], rdx
+
         xor     rax, rax
+        mov     rbx, [drawable_store] ; rbx = fwAssetStore<rmcDrawable>
+        test    rbx, rbx
+        jz      .exit
+
+        mov     rax, [rbx]                              ; get vtable
+        mov     rcx, rbx                                ; drawable_store
+        lea     rdx, qword [rsp + 0x38]                 ; &index
+        mov     r8, qword [rsp + 0x30]                  ; texture_dictionary
+        call    qword [rax + fwAssetStore_FindSlot]     ; FindSlot(drawable_store, &index, texture_dictionary)
+
+        xor     rax, rax
+        cmp     dword [rsp + 0x38], -1                  ; if (index == -1) return null;
+        je      .exit
+
+        mov     rax, [rbx]                              ; get vtable
+        mov     rcx, rbx                                ; drawable_store
+        mov     edx, dword [rsp + 0x38]                 ; index
+        call    qword [rax + fwAssetStore_GetPtr]       ; rmcDrawable* GetPtr(drawable_store, index)
+        test    rax, rax
+        jz      .exit                                   ; if (drawable == null) return null;
+
+        ; we found the drawable, search it for the textures
+        mov     rbx, rax                ; rbx = rmcDrawable
+
+        mov     rcx, qword [rsp + 0x28] ; texture_name
+        xor     rdx, rdx                ; startHash = 0
+        call    qword [get_hash_key]
+
+        mov     rcx, rbx                        ; drawable
+        mov     edx, eax                        ; texture_name_hash
+        call    search_texture_in_drawable      ; search_texture_in_drawable(drawable, texture_name_hash)
+
+    .exit:
+        add     rsp, 0x40
+        pop     rbx
         ret
 
 
