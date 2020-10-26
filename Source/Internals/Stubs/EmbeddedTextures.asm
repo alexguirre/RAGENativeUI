@@ -8,7 +8,6 @@ stub_failed:        dq 0x2222222222222222   ; return address to continue searchi
 fragment_store:     dq 0x3333333333333333
 drawable_store:     dq 0x4444444444444444
 get_hash_key:       dq 0x5555555555555555   ; uint(*)(const char* str, uint startHash)
-; debug:              dq 0x6666666666666666
 
 align 16
 stub:   ; rcx = texture dictionary
@@ -131,13 +130,6 @@ find_fragment_embedded_texture:
         mov     rcx, qword [rbx + fragType_PrimaryDrawable]     ; drawable
         mov     edx, eax                                        ; texture_name_hash
         call    search_texture_in_drawable                      ; search_texture_in_drawable(drawable, texture_name_hash)
-
-        ; TODO: search in the other drawables that fragType may have?
-
-        ; mov     rbx, rax
-        ; mov     rcx, rax
-        ; call    qword [debug]
-        ; mov     rax, rbx
 
     .exit:
         add     rsp, 0x40

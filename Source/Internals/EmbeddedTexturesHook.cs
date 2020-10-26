@@ -23,20 +23,8 @@
         [Conditional("DEBUG")]
         private static void Log(string str) => Game.LogTrivialDebug($"[RAGENativeUI::{nameof(EmbeddedTexturesHook)}] {str}");
 
-        //delegate void DebugDelegate(void* input);
-        //static DebugDelegate debug;
-        //static IntPtr debugPtr;
-
-        //static void DebugLog(void* input)
-        //{
-        //    Log($"Received {((IntPtr)input).ToString("X16")}");
-        //}
-
         public static void Init()
         {
-            //debug = DebugLog;
-            //debugPtr = Marshal.GetFunctionPointerForDelegate(debug);
-
             ref var data = ref Shared.EmbeddedTexturesHookData;
 
             data.Refs++;
@@ -103,7 +91,7 @@
                 ulong* ptr = (ulong*)(stubAddr + 8 * 4).ToPointer();
                 Debug.Assert(*ptr == 0x4444444444444444, "possibly wrong drawable_store offset");
                 *ptr = (ulong)Memory.g_DrawableStore;
-                Log("drawable_store set"); // "prop_acc_guitar_01", "prop_acousticguitar"
+                Log("drawable_store set");
             }
 
             // get_hash_key
@@ -113,14 +101,6 @@
                 *ptr = (ulong)Memory.atStringHash;
                 Log("get_hash_key set");
             }
-
-            // debug
-            //{
-            //    ulong* ptr = (ulong*)(stubAddr + 8 * 6).ToPointer();
-            //    Debug.Assert(*ptr == 0x6666666666666666, "possibly wrong debug offset");
-            //    *ptr = (ulong)debugPtr;
-            //    Log("debug set");
-            //}
 
             var stubOffset = *(int*)stubAddr;
             var stubStartAddr = stubAddr + stubOffset;
