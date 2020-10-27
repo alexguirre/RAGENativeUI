@@ -44,65 +44,6 @@ namespace RAGENativeUI.Internals
         }
 
         [ConsoleCommand]
-        private static void TestFragmentStore()
-        {
-            if (!fwAssetStore.FragmentStoreAvailable)
-            {
-                Game.LogTrivial("Fragment store not available");
-                return;
-            }
-
-            const string Model = "pbus2_livery2";
-            ref var fragmentStore = ref fwAssetStore.FragmentStore;
-            var index = fragmentStore.FindSlot(Model);
-            Game.LogTrivial($"'{Model}' at {index.Value}");
-            var fragment = fragmentStore.GetPtr(index);
-            Game.LogTrivial($"    fragType = {((IntPtr)fragment).ToString("X16")}");
-            if (fragment != null)
-            {
-                grcTexture* texture = null;
-                Game.LogTrivial($"        PrimaryDrawable = {((IntPtr)fragment->PrimaryDrawable).ToString("X16")}");
-                PrintTextures("            ", fragment->PrimaryDrawable);
-                Game.LogTrivial($"        DrawableCount = {fragment->DrawableCount}");
-                for (int i = 0; i < fragment->DrawableCount; i++)
-                {
-                    var drawable = fragment->Drawables[i];
-                    var name = Marshal.PtrToStringAnsi(fragment->DrawablesNames[i]);
-                    Game.LogTrivial($"            Drawable #{i} '{name}' = {((IntPtr)drawable).ToString("X16")}");
-                    PrintTextures("                ", drawable);
-                }
-                Game.LogTrivial($"        ClothDrawable = {((IntPtr)fragment->ClothDrawable).ToString("X16")}");
-                PrintTextures("            ", fragment->ClothDrawable);
-
-
-                void PrintTextures(string indent, rmcDrawableBase* drawable)
-                {
-                    if (drawable == null)
-                    {
-                        return;
-                    }
-
-                    int k = 0;
-                    foreach (ref var texturePtr in drawable->ShaderGroup->Textures->Values)
-                    {
-                        Game.LogTrivial($"{indent}Texture #{k} = {texturePtr.ToString("X16")}");
-                        texture = (grcTexture*)texturePtr;
-                        k++;
-                    }
-                }
-
-                if (texture != null)
-                {
-                    GameFiber.ExecuteNewFor(() =>
-                    {
-                        DirectNatives.DrawSpriteInternal(texture, 0.5f, 0.5f, 0.25f, 0.25f * N.GetAspectRatio(false), 0.0f, 255, 255, 255, 255);
-                    }, 5000);
-                }
-            }
-            Game.LocalPlayer.Character.CurrentVehicle.Mods.InstallModKit();
-        }
-
-        [ConsoleCommand]
         private static void DumpScript(string name)
         {
             if (!scrProgramRegistry.Available)

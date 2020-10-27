@@ -23,7 +23,6 @@
         public static readonly IntPtr scrProgramRegistry_Find;
         public static readonly IntPtr Native_DisableControlAction;
         public static readonly IntPtr Native_DrawSprite;
-        public static readonly IntPtr Native_DrawSpriteInternal;
         public static readonly IntPtr Native_DrawRect;
         public static readonly IntPtr CTextFormat_GetInputSourceIcons;
         public static readonly IntPtr CTextFormat_GetIconListFormatString;
@@ -107,11 +106,6 @@
                 }
                 return addr;
             });
-            if (Native_DrawSprite != null)
-            {
-                Native_DrawSpriteInternal = Native_DrawSprite + 0x122;
-                Native_DrawSpriteInternal += *(int*)(Native_DrawSpriteInternal + 1) + 5; 
-            }
 
             Native_DrawRect = FindAddress(() =>
             {
@@ -399,15 +393,6 @@
             Invoke(Memory.Native_DrawSprite, textureDict, textureName, x, y, width, height, rotation, r, g, b, a, unk);
         }
 
-        public static readonly bool DrawSpriteInternalAvailable = Memory.Native_DrawSpriteInternal != IntPtr.Zero;
-        public static unsafe void DrawSpriteInternal(grcTexture* texture, float x, float y, float w, float h, float rot, int r, int g, int b, int a)
-        {
-            using var tls = UsingTls.Scope();
-            var v1 = stackalloc float[2] { 0.0f, 0.0f };
-            var v2 = stackalloc float[2] { 1.0f, 1.0f };
-            Invoke(Memory.Native_DrawSpriteInternal, texture, x, y, w, h, rot, r, g, b, a, 0, 4, v1, v2, 0, 0);
-        }
-
         public static readonly bool DrawRectAvailable = Memory.Native_DrawRect != IntPtr.Zero;
         public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a, bool unk)
         {
@@ -653,91 +638,5 @@
         public void Free(void* ptr) => Invoke(vtable[4], AsPointer(ref this), ptr);
 
         public static ref sysMemAllocator TheAllocator => ref AsRef<sysMemAllocator>((IntPtr)UsingTls.GetFromMain(0xC8));
-    }
-
-    [StructLayout(LayoutKind.Sequential, Size = 4)]
-    internal struct strLocalIndex
-    {
-        public uint Value;
-
-        public bool IsValid => Value != 0xFFFFFFFF;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    internal unsafe struct fwAssetStore<T> where T : unmanaged
-    {
-        private readonly IntPtr* vtable;
-
-        public strLocalIndex FindSlot(string name)
-        {
-            strLocalIndex result;
-            InvokeRetPointer(vtable[2], AsPointer(ref this), &result, name);
-            return result;
-        }
-
-        public T* GetPtr(strLocalIndex index)
-        {
-            return (T*)InvokeRetPointer(vtable[8], AsPointer(ref this), index.Value);
-        }
-    }
-
-    internal static class fwAssetStore
-    {
-        public static ref fwAssetStore<fragType> FragmentStore => ref AsRef<fwAssetStore<fragType>>(Memory.g_FragmentStore);
-
-        public static bool FragmentStoreAvailable => Memory.g_FragmentStore != IntPtr.Zero;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct fragType
-    {
-        [FieldOffset(0x30)] public rmcDrawableBase* PrimaryDrawable;
-        [FieldOffset(0x38)] public rmcDrawableBase** Drawables;
-        [FieldOffset(0x40)] public IntPtr* DrawablesNames;
-        [FieldOffset(0x48)] public uint DrawableCount;
-
-        [FieldOffset(0xF8)] public rmcDrawableBase* ClothDrawable;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct rmcDrawableBase
-    {
-        [FieldOffset(0x10)] public grmShaderGroup* ShaderGroup;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct grmShaderGroup
-    {
-        [FieldOffset(0x8)] public pgDictionary<grcTexture>* Textures;
-    }
-    
-    [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct grcTexture
-    {
-    }
-
-    [StructLayout(LayoutKind.Sequential, Size = 0x40)]
-    internal unsafe struct pgDictionary<T> where T : unmanaged
-    {
-        private fixed byte padding[0x20];
-        public atArray<uint> Keys;
-        public atArray<IntPtr> Values;
-
-        public T* this[uint key]
-        {
-            get
-            {
-                // TODO: pgDictionary could use binary search
-                for (int i = 0; i < Keys.Count; i++)
-                {
-                    if (Keys[i] == key)
-                    {
-                        return (T*)Values[i];
-                    }
-                }
-
-                return null;
-            }
-        }
     }
 }
