@@ -81,6 +81,13 @@
     <Compile Include="HudColor.cs" />
     <Compile Include="Internals\atArray.cs" />
     <Compile Include="Internals\DebugCommands.cs" />
+    <Compile Include="Internals\Hooks.cs" />
+    <Compile Include="Internals\Stubs.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Stubs.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Internals\EmbeddedTexturesHook.cs" />
     <Compile Include="Internals\TokenParserHook.cs" />
     <Compile Include="Internals\Memory.cs" />
     <Compile Include="Internals\ModuleInitializer.cs" />
@@ -119,6 +126,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Internals\Stubs.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Stubs.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Internals\Stubs\EmbeddedTextures" />
+    <None Include="Internals\Stubs\EmbeddedTextures.asm" />
+    <None Include="Internals\Stubs\TokenParser" />
+    <None Include="Internals\Stubs\TokenParser.asm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

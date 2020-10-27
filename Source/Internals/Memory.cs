@@ -11,7 +11,7 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 15;
+        public const int MaxMemoryAddresses = 16;
         public const int MaxInts = 4;
 
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
@@ -30,6 +30,9 @@
         public static readonly IntPtr CTextFile_sm_Instance;
         public static readonly IntPtr CTextFile_sm_CriticalSection;
         public static readonly IntPtr CTextFile_GetStringByHash;
+        public static readonly IntPtr g_FragmentStore;
+        public static readonly IntPtr g_DrawableStore;
+        public static readonly IntPtr atStringHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
@@ -80,7 +83,7 @@
             IntPtr scrProgramRegistryAddr = FindAddress(() => Game.FindPattern("48 8D 0D ?? ?? ?? ?? 8B D0 44 8B F0 89 85"));
             if (scrProgramRegistryAddr != IntPtr.Zero)
             {
-                scrProgramRegistry_sm_Instance = scrProgramRegistryAddr + * (int*)(scrProgramRegistryAddr + 3) + 7;
+                scrProgramRegistry_sm_Instance = scrProgramRegistryAddr + *(int*)(scrProgramRegistryAddr + 3) + 7;
                 scrProgramRegistry_Find = scrProgramRegistryAddr + *(int*)(scrProgramRegistryAddr + 19) + 23;
             }
 
@@ -152,6 +155,27 @@
                     CTextFile_sm_CriticalSection = addr + *(int*)(addr + 3) + 7;
                 }
             }
+
+            {
+                IntPtr addr = FindAddress(() => Game.FindPattern("48 8B 05 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? FF 90 ?? ?? ?? ?? 48 8B 0D"));
+                if (addr != IntPtr.Zero)
+                {
+                    addr -= 0x30;
+                    g_FragmentStore = addr + *(int*)(addr + 3) + 7;
+                    addr -= 0x18;
+                    g_DrawableStore = addr + *(int*)(addr + 3) + 7;
+                }
+            }
+
+            atStringHash = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 44 8B 47 10 48 8B CB 8B D0 E8 ?? ?? ?? ?? 48 8D 4F 38 41 B0 01");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 1) + 5;
+                }
+                return addr;
+            });
 
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
@@ -455,7 +479,7 @@
         [FieldOffset(0x30)] public scrValue* StaticsInitialValues;
         [FieldOffset(0x38)] public scrValue** GlobalsInitialValues;
         [FieldOffset(0x40)] public void** Natives;
-        
+
         [FieldOffset(0x58)] public uint NameHash;
         [FieldOffset(0x5C)] public uint NumRefs;
         [FieldOffset(0x60)] public IntPtr Name;
@@ -466,7 +490,7 @@
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 0x8)]
-    internal unsafe struct scrValue 
+    internal unsafe struct scrValue
     {
         [FieldOffset(0x0)] public IntPtr Val;
         [FieldOffset(0x0)] public float AsFloat;
@@ -500,20 +524,6 @@
         public sIconData Item2;
         public sIconData Item3;
         public int Count;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
-    internal unsafe struct CControlKeyboardLayoutKey
-    {
-        public const int MaxTextLength = 10;
-
-        public int Icon;
-        public fixed byte Text[MaxTextLength];
-
-
-        public static readonly bool Available = Memory.CControlMgr_sm_MappingMgr_KeyboardLayout != IntPtr.Zero;
-        public static CControlKeyboardLayoutKey* KeyboardLayout = (CControlKeyboardLayoutKey*)Memory.CControlMgr_sm_MappingMgr_KeyboardLayout;
-        public const int KeyboardLayoutSize = 255;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -588,7 +598,7 @@
         public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);
         public static ref CRITICAL_SECTION CriticalSection => ref AsRef<CRITICAL_SECTION>(Memory.CTextFile_sm_CriticalSection);
 
-        public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero && 
+        public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero &&
                                                 Memory.CTextFile_GetStringByHash != IntPtr.Zero &&
                                                 Memory.CTextFile_sm_CriticalSection != IntPtr.Zero;
     }

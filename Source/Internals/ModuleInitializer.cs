@@ -30,11 +30,11 @@
             Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
 #endif
 
-            Game.LogTrivialDebug("[RAGENativeUI] > Hooking token parser");
+            Game.LogTrivialDebug("[RAGENativeUI] > Applying hooks");
 #if DEBUG
             sw.Restart();
 #endif
-            TokenParserHook.Init();
+            Hooks.Init();
 #if DEBUG
             sw.Stop();
             Game.LogTrivialDebug($"[RAGENativeUI] >> Took {sw.ElapsedMilliseconds}ms");
