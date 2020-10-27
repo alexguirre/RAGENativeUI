@@ -604,7 +604,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 0x28)]
-    public struct CRITICAL_SECTION
+    internal struct CRITICAL_SECTION
     {
         public IntPtr DebugInfo;
         // ...
@@ -630,7 +630,7 @@
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 8)]
-    public unsafe struct sysMemAllocator
+    internal unsafe struct sysMemAllocator
     {
         private readonly IntPtr* vtable;
 
