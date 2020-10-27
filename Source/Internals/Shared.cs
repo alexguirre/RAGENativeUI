@@ -28,8 +28,7 @@
         public static long* MemoryAddresses => data->MemoryAddresses;
         public static int* MemoryInts => data->MemoryInts;
 
-        public static ref TokenParserHookData TokenParserHookData => ref data->TokenParserHookData;
-        public static ref EmbeddedTexturesHookData EmbeddedTexturesHookData => ref data->EmbeddedTexturesHookData;
+        public static ref HooksData HooksData => ref data->HooksData;
 
         static Shared()
         {
@@ -53,8 +52,7 @@
                 // in case there is any visible menus when unloading the plugin
                 NumberOfVisibleMenus -= UIMenu.NumberOfVisibleMenus;
                 NumberOfVisiblePauseMenus -= TabView.NumberOfVisiblePauseMenus;
-                TokenParserHook.Shutdown();
-                EmbeddedTexturesHook.Shutdown();
+                Hooks.Shutdown();
             }
 
             // dispose mapped file
@@ -73,7 +71,6 @@
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         private struct SharedData
         {
             public uint TimerBarsLastFrame;
@@ -85,8 +82,7 @@
             public uint NumberOfVisiblePauseMenus;
             public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];
             public fixed int MemoryInts[Memory.MaxInts];
-            public TokenParserHookData TokenParserHookData;
-            public EmbeddedTexturesHookData EmbeddedTexturesHookData;
+            public HooksData HooksData;
         }
     }
 }

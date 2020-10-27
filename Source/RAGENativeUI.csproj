@@ -81,6 +81,7 @@
     <Compile Include="HudColor.cs" />
     <Compile Include="Internals\atArray.cs" />
     <Compile Include="Internals\DebugCommands.cs" />
+    <Compile Include="Internals\Hooks.cs" />
     <Compile Include="Internals\Stubs.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
