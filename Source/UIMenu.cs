@@ -607,15 +607,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            Size res = Game.Resolution;
-            SizeF primaryRes = ActualResolution;
-            PointF middle = new PointF(res.Width * 0.5f, res.Height * 0.5f);
-
-            g.DrawTexture(_customBanner,
-                          (customBannerX - 0.5f) * primaryRes.Width + middle.X,
-                          (customBannerY - 0.5f) * primaryRes.Height + middle.Y,
-                          customBannerW * primaryRes.Width,
-                          customBannerH * primaryRes.Height);
+            g.DrawTexture(_customBanner, customBannerX, customBannerY, customBannerW, customBannerH);
         }
 
         // drawing variables
@@ -755,6 +747,12 @@ namespace RAGENativeUI
                 N.GetScriptGfxPosition(x + menuWidth, y + bannerHeight, out customBannerW, out customBannerH);
                 customBannerW -= customBannerX;
                 customBannerH -= customBannerY;
+
+                N.GetActiveScreenResolution(out int w, out int h);
+                customBannerX *= w;
+                customBannerY *= h;
+                customBannerW *= w;
+                customBannerH *= h;
             }
 
             y += bannerHeight;
