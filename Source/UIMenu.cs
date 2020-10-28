@@ -355,12 +355,7 @@ namespace RAGENativeUI
         {
             get
             {
-                float aspectRatio = AspectRatio;
-                float adjusted = Width;
-                if (aspectRatio < 1.77777f) // less than 16:9
-                {
-                    adjusted *= 16f / 9f / aspectRatio;
-                }
+                float adjusted = Width * (16f / 9f / AspectRatio);
 
                 if (WidthOffset != 0)
                 {
