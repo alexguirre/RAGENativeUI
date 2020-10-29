@@ -355,12 +355,7 @@ namespace RAGENativeUI
         {
             get
             {
-                float aspectRatio = AspectRatio;
-                float adjusted = Width;
-                if (aspectRatio < 1.77777f) // less than 16:9
-                {
-                    adjusted *= 16f / 9f / aspectRatio;
-                }
+                float adjusted = Width * (16f / 9f / AspectRatio);
 
                 if (WidthOffset != 0)
                 {
@@ -612,15 +607,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            Size res = Game.Resolution;
-            SizeF primaryRes = ActualResolution;
-            PointF middle = new PointF(res.Width * 0.5f, res.Height * 0.5f);
-
-            g.DrawTexture(_customBanner,
-                          (customBannerX - 0.5f) * primaryRes.Width + middle.X,
-                          (customBannerY - 0.5f) * primaryRes.Height + middle.Y,
-                          customBannerW * primaryRes.Width,
-                          customBannerH * primaryRes.Height);
+            g.DrawTexture(_customBanner, customBannerX, customBannerY, customBannerW, customBannerH);
         }
 
         // drawing variables
@@ -760,6 +747,12 @@ namespace RAGENativeUI
                 N.GetScriptGfxPosition(x + menuWidth, y + bannerHeight, out customBannerW, out customBannerH);
                 customBannerW -= customBannerX;
                 customBannerH -= customBannerY;
+
+                N.GetActiveScreenResolution(out int w, out int h);
+                customBannerX *= w;
+                customBannerY *= h;
+                customBannerW *= w;
+                customBannerH *= h;
             }
 
             y += bannerHeight;
@@ -1016,8 +1009,9 @@ namespace RAGENativeUI
         /// <returns></returns>
         public static SizeF GetScreenResolutionMantainRatio()
         {
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Internals.Screen.ActualResolution;
+            var screenw = res.Width;
+            var screenh = res.Height;
             const float height = 1080f;
             float ratio = (float)screenw / screenh;
             var width = height * ratio;

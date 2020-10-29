@@ -104,10 +104,9 @@ namespace RAGENativeUI.PauseMenu
             Size itemSize = new Size(subMenuWidth, 40);
 
             // taken from ResRectangle.Draw
-            int screenw = Game.Resolution.Width;
-            int screenh = Game.Resolution.Height;
+            var res = Internals.Screen.ActualResolution;
             const float height = 1080f;
-            float ratio = (float)screenw / screenh;
+            float ratio = res.Width / res.Height;
             var width = height * ratio;
 
             int i = 0;
