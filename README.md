@@ -9,7 +9,7 @@ RAGENativeUI is a library for [RAGEPluginHook](https://ragepluginhook.net/) that
 * [Menus](https://github.com/alexguirre/RAGENativeUI/wiki/Menus-Overview)
 * [Pause Menus](https://github.com/alexguirre/RAGENativeUI/wiki/Pause-Menu-Overview)
 * [Timer Bars](https://github.com/alexguirre/RAGENativeUI/wiki/Timer-Bars-Overview)
-* [Scaleforms](https://github.com/alexguirre/RAGENativeUI/wiki/Scaleforms-Overview))
+* [Scaleforms](https://github.com/alexguirre/RAGENativeUI/wiki/Scaleforms-Overview)
 * [Instructional Buttons](https://github.com/alexguirre/RAGENativeUI/wiki/Instructional-Buttons-Overview)
 * [Big Messages](https://github.com/alexguirre/RAGENativeUI/wiki/Big-Messages-Overview)
 
