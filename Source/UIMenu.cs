@@ -204,6 +204,10 @@ namespace RAGENativeUI
         public bool AllowCameraMovement = false;
         public bool ScaleWithSafezone = true;
 
+        // Whether the value of ResetCursorOnOpen should be respected,
+        // set to true while opening the parent menu to avoid resetting the cursor while navigating the menus
+        private bool IgnoreResetCursorOnOpen { get; set; }
+
         //Events
 
         /// <summary>
@@ -1209,17 +1213,16 @@ namespace RAGENativeUI
         /// <summary>
         /// Closes this menu.
         /// </summary>
-        /// <param name="openParentMenu">If <c>true</c> and <see cref="ParentMenu"/> is not <c>null</c>, the parent menu is open after closing this menu.</param>
+        /// <param name="openParentMenu">If <c>true</c> and <see cref="ParentMenu"/> is not <c>null</c>, the parent menu is opened after closing this menu.</param>
         public void Close(bool openParentMenu = true)
         {
             Visible = false;
             if (openParentMenu && ParentMenu != null)
             {
-                var tmp = Cursor.Position;
+                ParentMenu.IgnoreResetCursorOnOpen = true;
                 ParentMenu.Visible = true;
+                ParentMenu.IgnoreResetCursorOnOpen = false;
                 MenuChangeEv(ParentMenu, false);
-                if (ResetCursorOnOpen)
-                    Cursor.Position = tmp;
             }
             MenuCloseEv();
         }
@@ -1668,19 +1671,16 @@ namespace RAGENativeUI
                     }
 
                     InstructionalButtons.Update();
-                    if (ParentMenu != null || !value)
+                    if (ParentMenu != null || !visible)
                     {
                         return;
                     }
 
-                    if (!ResetCursorOnOpen)
+                    if (ResetCursorOnOpen && !IgnoreResetCursorOnOpen)
                     {
-                        return;
+                        N.SetMouseCursorLocation(0.5f, 0.5f);
+                        N.SetMouseCursorSprite(1);
                     }
-
-                    Cursor.Position = new Point(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / 2,
-                                                System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2);
-                    N.SetMouseCursorSprite(1);
                 }
             }
         }
