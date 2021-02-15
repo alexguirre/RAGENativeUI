@@ -713,6 +713,9 @@ namespace RAGENativeUI
 
             DrawDescription(x, ref y);
 
+            y += 0.00277776f;
+            Panel?.Draw(x, ref y, menuWidth);
+
             EndDraw();
         }
 
@@ -1872,6 +1875,8 @@ namespace RAGENativeUI
         /// </summary>
         /// <seealso cref="DefaultUpDownArrowsForegroundColor"/>
         public Color UpDownArrowsForegroundColor { get; set; } = DefaultUpDownArrowsForegroundColor;
+
+        public UIMenuPanel Panel { get; set; }
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.

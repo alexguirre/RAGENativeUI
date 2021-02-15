@@ -50,6 +50,8 @@
                 AddItem(item);
                 BindMenuToItem(new LocalizationMenu(), item);
             }
+
+            Panel = new UIMenuGridPanel();
         }
     }
 }
