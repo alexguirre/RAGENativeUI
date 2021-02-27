@@ -51,7 +51,22 @@
                 BindMenuToItem(new LocalizationMenu(), item);
             }
 
-            Panel = new UIMenuGridPanel();
+            AddItem(new UIMenuItem("Dummy1"));
+            AddItem(new UIMenuItem("Dummy2"));
+            AddItem(new UIMenuItem("Dummy3"));
+            AddItem(new UIMenuItem("Dummy4"));
+            AddItem(new UIMenuItem("Dummy5"));
+            AddItem(new UIMenuItem("Dummy6"));
+
+            Offset = new System.Drawing.Point(510, 0);
+            var p = new UIMenuStatsPanel();
+            int i = 0;
+            for (float perc = -0.6f; perc <= 4.0f; perc += 0.4f, i++)
+            {
+                var upgrade = new[] { -0.2f, 0.0f, 0.2f }[i % 3];
+                p.Stats.Add(new UIMenuStatsPanel.Stat("Stat"+ perc, perc, upgrade));
+            }
+            Panel = p;
         }
     }
 }

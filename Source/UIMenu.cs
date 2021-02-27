@@ -713,7 +713,7 @@ namespace RAGENativeUI
 
             DrawDescription(x, ref y);
 
-            y += 0.00277776f;
+            y += 0.00277776f * 2.25f;
             Panel?.Draw(x, ref y, menuWidth);
 
             EndDraw();
