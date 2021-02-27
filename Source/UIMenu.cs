@@ -1320,65 +1320,77 @@ namespace RAGENativeUI
                 input = UIMenuItem.MouseInput.Pressed;
             }
 
-            bool mouseInputConsumed = selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
-            if (!mouseInputConsumed)
+            if (selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input))
             {
-                UpdateHoveredItem(mouseX, mouseY);
+                return;
+            }
 
-                if (hoveredItem != -1)
+            if (Panels != null)
+            {
+                foreach (var panel in Panels)
                 {
-                    hoveredUpDown = 0;
-                    if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
+                    if (panel.ProcessMouse(mouseX, mouseY))
                     {
-                        CurrentSelection = hoveredItem;
-                        Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-                        IndexChange(CurrentSelection);
+                        return;
                     }
                 }
-                else if (hoveredItem == -1)
+            }
+
+            UpdateHoveredItem(mouseX, mouseY);
+
+            if (hoveredItem != -1)
+            {
+                hoveredUpDown = 0;
+                if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
                 {
-                    UpdateHoveredUpDown(mouseX, mouseY);
+                    CurrentSelection = hoveredItem;
+                    Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                    IndexChange(CurrentSelection);
+                }
+            }
+            else if (hoveredItem == -1)
+            {
+                UpdateHoveredUpDown(mouseX, mouseY);
 
-                    if (hoveredUpDown != 0 && controls.CursorAccept.IsJustPressedRepeated)
+                if (hoveredUpDown != 0 && controls.CursorAccept.IsJustPressedRepeated)
+                {
+                    if (hoveredUpDown == 1)
                     {
-                        if (hoveredUpDown == 1)
+                        GoUp();
+                    }
+                    else
+                    {
+                        GoDown();
+                    }
+                }
+
+                if (MouseEdgeEnabled)
+                {
+                    const int CursorLeftArrow = 6, CursorRightArrow = 7;
+
+                    if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                    {
+                        N.SetMouseCursorSprite(CursorRightArrow);
+                        float mult = 0.05f - (1f - mouseX);
+                        if (mult > 0.05f)
                         {
-                            GoUp();
+                            mult = 0.05f;
                         }
-                        else
+
+                        N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                    }
+                    else if (mouseX < (0.05f * 0.75f)) // left edge
+                    {
+                        N.SetMouseCursorSprite(CursorLeftArrow);
+                        float mult = 0.05f - mouseX;
+                        if (mult > 0.05f)
                         {
-                            GoDown();
+                            mult = 0.05f;
                         }
+
+                        N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
                     }
 
-                    if (MouseEdgeEnabled)
-                    {
-                        const int CursorLeftArrow = 6, CursorRightArrow = 7;
-
-                        if (mouseX > (1f - (0.05f * 0.75f))) // right edge
-                        {
-                            N.SetMouseCursorSprite(CursorRightArrow);
-                            float mult = 0.05f - (1f - mouseX);
-                            if (mult > 0.05f)
-                            {
-                                mult = 0.05f;
-                            }
-
-                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
-                        }
-                        else if (mouseX < (0.05f * 0.75f)) // left edge
-                        {
-                            N.SetMouseCursorSprite(CursorLeftArrow);
-                            float mult = 0.05f - mouseX;
-                            if (mult > 0.05f)
-                            {
-                                mult = 0.05f;
-                            }
-
-                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
-                        }
-
-                    }
                 }
             }
         }
@@ -1525,6 +1537,17 @@ namespace RAGENativeUI
                     justOpenedProcessInput = false;
                 }
                 return;
+            }
+
+            if (Panels != null)
+            {
+                foreach (var panel in Panels)
+                {
+                    if (panel.ProcessControl()) 
+                    {
+                        return;
+                    }
+                }
             }
 
             if (controls[Common.MenuControls.Back].IsJustReleased)

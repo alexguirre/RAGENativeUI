@@ -64,8 +64,16 @@
             p1.Stats.Add(new UIMenuStatsPanel.Stat("Stat2", 0.7f, -0.1f));
             var p2 = new UIMenuGridPanel();
             var p3 = new UIMenuStatsPanel();
-            p3.Stats.Add(new UIMenuStatsPanel.Stat("Stat3", 0.0f, 0.0f));
-            p3.Stats.Add(new UIMenuStatsPanel.Stat("Stat4", 1.0f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value X", p2.Value.X, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value Y", p2.Value.Y, 0.0f));
+
+            p2.ValueChanged += (s, newValue, oldValue) =>
+            {
+                p3.Stats[0].Percentage = newValue.X;
+                p3.Stats[0].Upgrade = oldValue.X - newValue.X;
+                p3.Stats[1].Percentage = newValue.Y;
+                p3.Stats[1].Upgrade = oldValue.Y - newValue.Y;
+            };
 
             Panels = new UIMenuPanel[] { p1, p2, p3 };
         }

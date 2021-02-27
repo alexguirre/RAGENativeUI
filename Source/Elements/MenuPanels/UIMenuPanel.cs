@@ -8,6 +8,12 @@ namespace RAGENativeUI.Elements
 
         public abstract void Draw(float x, ref float y, float menuWidth);
 
+        /// <returns>Whether any input was consumed.</returns>
+        public virtual bool ProcessControl() => false;
+
+        /// <returns>Whether any input was consumed.</returns>
+        public virtual bool ProcessMouse(float mouseX, float mouseY) => false;
+
         protected virtual void DrawBackground(float x, float y, float height, float width)
         {
             var color = BackgroundColor;
