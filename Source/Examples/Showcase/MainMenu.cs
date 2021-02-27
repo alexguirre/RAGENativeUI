@@ -51,22 +51,23 @@
                 BindMenuToItem(new LocalizationMenu(), item);
             }
 
-            AddItem(new UIMenuItem("Dummy1"));
-            AddItem(new UIMenuItem("Dummy2"));
-            AddItem(new UIMenuItem("Dummy3"));
-            AddItem(new UIMenuItem("Dummy4"));
-            AddItem(new UIMenuItem("Dummy5"));
-            AddItem(new UIMenuItem("Dummy6"));
+            //AddItem(new UIMenuItem("Dummy1"));
+            //AddItem(new UIMenuItem("Dummy2"));
+            //AddItem(new UIMenuItem("Dummy3"));
+            //AddItem(new UIMenuItem("Dummy4"));
+            //AddItem(new UIMenuItem("Dummy5"));
+            //AddItem(new UIMenuItem("Dummy6"));
 
             Offset = new System.Drawing.Point(510, 0);
-            var p = new UIMenuStatsPanel();
-            int i = 0;
-            for (float perc = -0.6f; perc <= 4.0f; perc += 0.4f, i++)
-            {
-                var upgrade = new[] { -0.2f, 0.0f, 0.2f }[i % 3];
-                p.Stats.Add(new UIMenuStatsPanel.Stat("Stat"+ perc, perc, upgrade));
-            }
-            Panel = p;
+            var p1 = new UIMenuStatsPanel();
+            p1.Stats.Add(new UIMenuStatsPanel.Stat("Stat1", 0.25f, 0.125f));
+            p1.Stats.Add(new UIMenuStatsPanel.Stat("Stat2", 0.7f, -0.1f));
+            var p2 = new UIMenuGridPanel();
+            var p3 = new UIMenuStatsPanel();
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Stat3", 0.0f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Stat4", 1.0f, 0.0f));
+
+            Panels = new UIMenuPanel[] { p1, p2, p3 };
         }
     }
 }

@@ -30,9 +30,10 @@ namespace RAGENativeUI.Elements
 
             DrawBackground(x, y, height, menuWidth);
 
+            float statY = y;
             foreach (var s in Stats)
             {
-                DrawStat(s, x, ref y, menuWidth);
+                DrawStat(s, x, ref statY, menuWidth);
             }
 
             y += height;
