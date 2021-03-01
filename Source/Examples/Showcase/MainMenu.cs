@@ -59,10 +59,8 @@
             //AddItem(new UIMenuItem("Dummy6"));
 
             Offset = new System.Drawing.Point(510, 0);
-            var p1 = new UIMenuStatsPanel();
-            p1.Stats.Add(new UIMenuStatsPanel.Stat("Stat1", 0.25f, 0.125f));
-            p1.Stats.Add(new UIMenuStatsPanel.Stat("Stat2", 0.7f, -0.1f));
-            var p2 = new UIMenuGridPanel();
+            var p1 = new UIMenuGridPanel { TopLabel = "Long Long Long Top Label", BottomLabel = "Long Long Long Bottom Label", LeftLabel = "Long Long Long Left Label", RightLabel = "Long Long Long Right Label"};
+            var p2 = new UIMenuGridPanel() { BackgroundColor = System.Drawing.Color.FromArgb(100, 200, 10, 10) };
             var p3 = new UIMenuStatsPanel();
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value X", p2.Value.X, 0.0f));
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value Y", p2.Value.Y, 0.0f));

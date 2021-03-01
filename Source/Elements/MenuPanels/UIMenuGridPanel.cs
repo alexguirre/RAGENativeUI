@@ -8,6 +8,7 @@ namespace RAGENativeUI.Elements
     {
         public delegate void ValueChangedEvent(UIMenuGridPanel sender, Vector2 oldValue, Vector2 newValue);
 
+        private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
         private const float Height = 0.034722f * 7 + (0.034722f * 0.25f);
 
         private Vector2 value = new Vector2(0.5f, 0.5f);
@@ -16,6 +17,14 @@ namespace RAGENativeUI.Elements
 
         public Color GridColor { get; set; } = Color.FromArgb(205, 105, 105, 102);
         public Color DotColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
+        public string TopLabel { get; set; } = "Top (-Y)";
+        public TextStyle TopLabelStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Center);
+        public string BottomLabel { get; set; } = "Bottom (+Y)";
+        public TextStyle BottomLabelStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Center);
+        public string LeftLabel { get; set; } = "Left (-X)";
+        public TextStyle LeftLabelStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Right);
+        public string RightLabel { get; set; } = "Right (+X)";
+        public TextStyle RightLabelStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Left);
 
         public Vector2 Value
         {
@@ -67,7 +76,7 @@ namespace RAGENativeUI.Elements
             if (!mousePressed)
             {
                 bool inBounds = gridBounds.Contains(mouseX, mouseY);
-                if (inBounds && Game.IsControlPressed(2, GameControl.CursorAccept))
+                if (inBounds && Game.IsControlJustPressed(2, GameControl.CursorAccept))
                 {
                     mousePressed = true;
                     return true;
@@ -131,6 +140,29 @@ namespace RAGENativeUI.Elements
                 N.GetScriptGfxPosition(x2, y2, out x2, out y2);
 
                 gridBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
+            }
+
+            // draw labels
+            {
+                const float Padding = 0.0046875f;
+                var leftCharHeight = LeftLabelStyle.CharacterHeight;
+                var rightCharHeight = RightLabelStyle.CharacterHeight;
+
+                var gridRight = gridX + gridWidth * 0.5f + Padding;
+                var gridLeft = gridX - gridWidth * 0.5f - Padding;
+                var gridBottom = gridY + gridHeight * 0.5f + Padding;
+                var centerX = x + menuWidth * 0.5f;
+                var centerY = y + Height * 0.5f;
+
+                var topStyle =       TopLabelStyle.With(wrap: (x,           x + menuWidth));
+                var bottomStyle = BottomLabelStyle.With(wrap: (x,           x + menuWidth));
+                var leftStyle =     LeftLabelStyle.With(wrap: (x,           gridLeft));
+                var rightStyle =   RightLabelStyle.With(wrap: (gridRight,   x + menuWidth));
+
+                TextCommands.Display(TopLabel,      topStyle,       centerX,    y + Padding);
+                TextCommands.Display(BottomLabel,   bottomStyle,    centerX,    gridBottom);
+                TextCommands.Display(LeftLabel,     leftStyle,      x,          centerY - leftCharHeight * 0.6f);
+                TextCommands.Display(RightLabel,    rightStyle,     gridRight,  centerY - rightCharHeight * 0.6f);
             }
         }
 
