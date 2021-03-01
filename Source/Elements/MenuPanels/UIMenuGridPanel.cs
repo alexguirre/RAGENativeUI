@@ -68,10 +68,10 @@ namespace RAGENativeUI.Elements
 
         public override bool ProcessMouse(float mouseX, float mouseY)
         {
-            N.DrawRect(gridBounds.X + gridBounds.Width * 0.5f, gridBounds.Y + gridBounds.Height * 0.5f,
-                       gridBounds.Width, gridBounds.Height,
-                       255, 0, 0, gridBounds.Contains(mouseX, mouseY) ? 220 : 100);
-            N.DrawRect(mouseX, mouseY, 0.005f, 0.005f * N.GetAspectRatio(false), 0, 255, 0, 200);
+            //N.DrawRect(gridBounds.X + gridBounds.Width * 0.5f, gridBounds.Y + gridBounds.Height * 0.5f,
+            //           gridBounds.Width, gridBounds.Height,
+            //           255, 0, 0, gridBounds.Contains(mouseX, mouseY) ? 220 : 100);
+            //N.DrawRect(mouseX, mouseY, 0.005f, 0.005f * N.GetAspectRatio(false), 0, 255, 0, 200);
 
             if (!mousePressed)
             {
@@ -154,10 +154,10 @@ namespace RAGENativeUI.Elements
                 var centerX = x + menuWidth * 0.5f;
                 var centerY = y + Height * 0.5f;
 
-                var topStyle =       TopLabelStyle.With(wrap: (x,           x + menuWidth));
-                var bottomStyle = BottomLabelStyle.With(wrap: (x,           x + menuWidth));
-                var leftStyle =     LeftLabelStyle.With(wrap: (x,           gridLeft));
-                var rightStyle =   RightLabelStyle.With(wrap: (gridRight,   x + menuWidth));
+                var topStyle =       TopLabelStyle.WithWrap(x,          x + menuWidth);
+                var bottomStyle = BottomLabelStyle.WithWrap(x,          x + menuWidth);
+                var leftStyle =     LeftLabelStyle.WithWrap(x,          gridLeft);
+                var rightStyle =   RightLabelStyle.WithWrap(gridRight,  x + menuWidth);
 
                 TextCommands.Display(TopLabel,      topStyle,       centerX,    y + Padding);
                 TextCommands.Display(BottomLabel,   bottomStyle,    centerX,    gridBottom);
