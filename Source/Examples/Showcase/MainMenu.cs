@@ -59,18 +59,27 @@
             //AddItem(new UIMenuItem("Dummy6"));
 
             Offset = new System.Drawing.Point(510, 0);
-            var p1 = new UIMenuGridPanel { TopLabel = "Long Long Long Top Label", BottomLabel = "Long Long Long Bottom Label", LeftLabel = "Long Long Long Left Label", RightLabel = "Long Long Long Right Label"};
-            var p2 = new UIMenuGridPanel() { BackgroundColor = System.Drawing.Color.FromArgb(100, 200, 10, 10) };
+            var p1 = new UIMenuSliderPanel() { Value = 0.5f, BackgroundColor = System.Drawing.Color.FromArgb(90, HudColor.Black.GetColor()) };
+            p1.Markers.Add(new UIMenuSliderPanel.Marker(0.25f, HudColor.Bronze.GetColor()));
+            p1.Markers.Add(new UIMenuSliderPanel.Marker(0.5f, HudColor.Silver.GetColor()));
+            p1.Markers.Add(new UIMenuSliderPanel.Marker(0.75f, HudColor.Gold.GetColor()));
+            var p2 = new UIMenuGridPanel();
             var p3 = new UIMenuStatsPanel();
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Slider Value", p1.Value, 0.0f));
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value X", p2.Value.X, 0.0f));
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value Y", p2.Value.Y, 0.0f));
 
+            p1.ValueChanged += (s, newValue, oldValue) =>
+            {
+                p3.Stats[0].Percentage = newValue;
+                p3.Stats[0].Upgrade = oldValue - newValue;
+            };
             p2.ValueChanged += (s, newValue, oldValue) =>
             {
-                p3.Stats[0].Percentage = newValue.X;
-                p3.Stats[0].Upgrade = oldValue.X - newValue.X;
-                p3.Stats[1].Percentage = newValue.Y;
-                p3.Stats[1].Upgrade = oldValue.Y - newValue.Y;
+                p3.Stats[1].Percentage = newValue.X;
+                p3.Stats[1].Upgrade = oldValue.X - newValue.X;
+                p3.Stats[2].Percentage = newValue.Y;
+                p3.Stats[2].Upgrade = oldValue.Y - newValue.Y;
             };
 
             Panels = new UIMenuPanel[] { p1, p2, p3 };
