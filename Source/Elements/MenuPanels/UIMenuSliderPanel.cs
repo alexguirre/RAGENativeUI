@@ -12,6 +12,7 @@ namespace RAGENativeUI.Elements
 
         private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
         private const float Height = 0.034722f * 2;
+        private const float BorderMargin = 0.0046875f;
 
         private float value = 0.0f;
         private RectangleF barBounds;
@@ -79,19 +80,18 @@ namespace RAGENativeUI.Elements
 
         private void DrawLabels(float x, float y, float menuWidth)
         {
-            const float Padding = 0.0046875f;
             var titleCharHeight = TitleStyle.CharacterHeight;
             var leftCharHeight = LeftLabelStyle.CharacterHeight;
             var rightCharHeight = RightLabelStyle.CharacterHeight;
 
             var centerX = x + menuWidth * 0.5f;
 
-            float wrapStart = x + Padding, wrapEnd = x + menuWidth - Padding;
+            float wrapStart = x + BorderMargin, wrapEnd = x + menuWidth - BorderMargin;
             var titleStyle = TitleStyle.WithWrap(wrapStart, wrapEnd);
             var leftStyle = LeftLabelStyle.WithWrap(wrapStart, wrapEnd);
             var rightStyle = RightLabelStyle.WithWrap(wrapStart, wrapEnd);
 
-            const float PaddingFromBar = Padding * 2.5f;
+            const float PaddingFromBar = BorderMargin * 2.5f;
             var r = barBounds;
             TextCommands.Display(Title, titleStyle, centerX, r.Y - PaddingFromBar - titleCharHeight);
             TextCommands.Display(LeftLabel, leftStyle, wrapStart, r.Y - PaddingFromBar - leftCharHeight);
@@ -159,12 +159,10 @@ namespace RAGENativeUI.Elements
 
         private RectangleF GetSliderBarBounds(float x, float y, float menuWidth)
         {
-            const float Margin = 0.00390625f;
-
-            float barWidth = (menuWidth - Margin * 2.0f);
+            float barWidth = (menuWidth - BorderMargin * 2.0f);
             float barHeight = 0.00675f;
-            float barX = x + Margin;
-            float barY = y + Height - Margin * 5.0f - barHeight;
+            float barX = x + BorderMargin;
+            float barY = y + Height - BorderMargin * 5.0f - barHeight;
 
             return new RectangleF(barX, barY, barWidth, barHeight);
         }
