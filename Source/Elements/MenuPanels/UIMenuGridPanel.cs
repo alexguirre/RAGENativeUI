@@ -1,5 +1,6 @@
 namespace RAGENativeUI.Elements
 {
+    using System.Collections.Generic;
     using System.Drawing;
 
     using Rage;
@@ -14,6 +15,16 @@ namespace RAGENativeUI.Elements
         private Vector2 value = new Vector2(0.5f, 0.5f);
         private RectangleF gridBounds;
         private bool mousePressed;
+
+        public override IEnumerable<IInstructionalButtonSlot> InstructionalButtons 
+        {
+            get
+            {
+                yield return ValueInstructionalButton;
+            }
+        }
+
+        public IInstructionalButtonSlot ValueInstructionalButton { get; } = new InstructionalButtonDynamic("Fine Tune", InstructionalKey.Mouse, InstructionalKey.ControllerRStick);
 
         public Color GridColor { get; set; } = Color.FromArgb(205, 105, 105, 102);
         public Color DotColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
@@ -55,15 +66,21 @@ namespace RAGENativeUI.Elements
 
         public override bool ProcessControl()
         {
-            // tmp controls
-            var controlX = N.GetControlNormal(2, GameControl.MoveLeftRight);
-            var controlY = N.GetControlNormal(2, GameControl.MoveUpDown);
-            var frameTime = Game.FrameTime;
-            var newValue = Value;
-            newValue.X += controlX * frameTime;
-            newValue.Y += controlY * frameTime;
-            Value = newValue;
-            return controlX != 0.0f || controlY != 0.0f;
+            if (UIMenu.IsUsingController)
+            {
+                N.SetInputExclusive(2, GameControl.ScriptRightAxisX);
+                N.SetInputExclusive(2, GameControl.ScriptRightAxisY);
+                var controlX = N.GetControlNormal(2, GameControl.ScriptRightAxisX);
+                var controlY = N.GetControlNormal(2, GameControl.ScriptRightAxisY);
+                var frameTime = Game.FrameTime;
+                var newValue = Value;
+                newValue.X += controlX * frameTime;
+                newValue.Y += controlY * frameTime;
+                Value = newValue;
+                return controlX != 0.0f || controlY != 0.0f;
+            }
+
+            return false;
         }
 
         public override bool ProcessMouse(float mouseX, float mouseY)

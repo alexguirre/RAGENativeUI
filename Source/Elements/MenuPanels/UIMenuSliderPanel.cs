@@ -18,6 +18,16 @@ namespace RAGENativeUI.Elements
         private RectangleF barBounds;
         private bool mousePressed;
 
+        public override IEnumerable<IInstructionalButtonSlot> InstructionalButtons
+        {
+            get
+            {
+                yield return ValueInstructionalButton;
+            }
+        }
+
+        public IInstructionalButtonSlot ValueInstructionalButton { get; } = new InstructionalButtonDynamic("Change Opacity", InstructionalKey.Mouse, InstructionalKey.ControllerRStick);
+
         /// <summary>
         /// Gets or sets the foreground color of the slider bar.
         /// </summary>
@@ -30,7 +40,7 @@ namespace RAGENativeUI.Elements
         /// Gets or sets the background color of the slider bar.
         /// </summary>
         /// <remarks>
-        /// The default value is the color of <see cref="HudColor.White"/>, with alpha 120.
+        /// The default value is the color of <see cref="HudColor.White"/>, with alpha 76.
         /// </remarks>
         public Color BarBackgroundColor { get; set; }
 
@@ -63,7 +73,7 @@ namespace RAGENativeUI.Elements
         public UIMenuSliderPanel()
         {
             BarForegroundColor = HudColor.White.GetColor();
-            BarBackgroundColor = Color.FromArgb(120, BarForegroundColor);
+            BarBackgroundColor = Color.FromArgb(76, BarForegroundColor);
             Markers = new List<Marker>();
         }
 
@@ -125,7 +135,18 @@ namespace RAGENativeUI.Elements
 
         public override bool ProcessControl()
         {
-            // TODO
+            if (UIMenu.IsUsingController)
+            {
+                N.SetInputExclusive(2, GameControl.ScriptRightAxisX);
+                N.SetInputExclusive(2, GameControl.ScriptRightAxisY);
+                var controlX = N.GetControlNormal(2, GameControl.ScriptRightAxisX);
+                var frameTime = Game.FrameTime;
+                var newValue = Value;
+                newValue += controlX * frameTime;
+                Value = newValue;
+                return controlX != 0.0f;
+            }
+
             return false;
         }
 

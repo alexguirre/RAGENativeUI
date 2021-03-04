@@ -1581,6 +1581,23 @@ namespace RAGENativeUI
         public void RemoveInstructionalButton(InstructionalButton button) => InstructionalButtons.Buttons.Remove(button);
         public void RemoveInstructionalButton(IInstructionalButtonSlot button) => InstructionalButtons.Buttons.Remove(button);
 
+        private void UpdateInstructionalButtons()
+        {
+            if (Panels != null)
+            {
+                // TODO: remove instructional buttons from panels no longer shown
+                foreach (var b in Panels.SelectMany(p => p.InstructionalButtons))
+                {
+                    if (!InstructionalButtons.Buttons.Contains(b))
+                    {
+                        InstructionalButtons.Buttons.Add(b);
+                    }
+                }
+            }
+
+            InstructionalButtons.Update();
+        }
+
         /// <summary>
         /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
         /// </summary>
@@ -1702,7 +1719,7 @@ namespace RAGENativeUI
                         }
                     }
 
-                    InstructionalButtons.Update();
+                    UpdateInstructionalButtons();
                     if (ParentMenu != null || !visible)
                     {
                         return;

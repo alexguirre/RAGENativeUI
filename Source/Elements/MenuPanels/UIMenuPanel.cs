@@ -1,10 +1,13 @@
 namespace RAGENativeUI.Elements
 {
+    using System.Collections.Generic;
     using System.Drawing;
+    using System.Linq;
 
     public abstract class UIMenuPanel
     {
         public Color BackgroundColor { get; set; } = HudColor.InGameBackground.GetColor();
+        public virtual IEnumerable<IInstructionalButtonSlot> InstructionalButtons => Enumerable.Empty<IInstructionalButtonSlot>();
 
         public abstract void Draw(float x, ref float y, float menuWidth);
 
