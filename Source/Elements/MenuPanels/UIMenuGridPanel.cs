@@ -5,8 +5,27 @@ namespace RAGENativeUI.Elements
 
     using Rage;
 
+    public enum UIMenuGridPanelStyle
+    {
+        /// <summary>
+        /// A 5x5 grid.
+        /// </summary>
+        Full,
+
+        /// <summary>
+        /// A single row with 5 cells. With this style, only the X component of <see cref="UIMenuGridPanel.Value"/> can be modified, the Y component is fixed to <c>0.5f</c>.
+        /// </summary>
+        SingleRow,
+
+        /// <summary>
+        /// A single column with 5 cells. With this style, only the Y component of <see cref="UIMenuGridPanel.Value"/> can be modified, the X component is fixed to <c>0.5f</c>.
+        /// </summary>
+        SingleColumn,
+    }
+
     public class UIMenuGridPanel : UIMenuPanel
     {
+
         public delegate void ValueChangedEvent(UIMenuGridPanel sender, Vector2 oldValue, Vector2 newValue);
 
         private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
@@ -28,6 +47,7 @@ namespace RAGENativeUI.Elements
 
         public Color GridColor { get; set; } = Color.FromArgb(205, 105, 105, 102);
         public Color DotColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
+        public UIMenuGridPanelStyle Style { get; set; }
         public string TopLabel { get; set; } = "Top (-Y)";
         public TextStyle TopLabelStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Center);
         public string BottomLabel { get; set; } = "Bottom (+Y)";
@@ -42,8 +62,8 @@ namespace RAGENativeUI.Elements
             get => value;
             set
             {
-                value = new Vector2(MathHelper.Clamp(value.X, 0.0f, 1.0f),
-                                    MathHelper.Clamp(value.Y, 0.0f, 1.0f));
+                value = new Vector2(Style == UIMenuGridPanelStyle.SingleColumn ? 0.5f : MathHelper.Clamp(value.X, 0.0f, 1.0f),
+                                    Style == UIMenuGridPanelStyle.SingleRow    ? 0.5f : MathHelper.Clamp(value.Y, 0.0f, 1.0f));
                 if (this.value != value)
                 {
                     var oldValue = this.value;
@@ -134,11 +154,32 @@ namespace RAGENativeUI.Elements
             float gridY = y + Height * 0.5f;
             float gridWidth = Height * 0.4f;
             float gridHeight = gridWidth * aspectRatio;
-            N.DrawSprite(
-                Txd, Tex,
-                gridX, gridY, gridWidth, gridHeight,
-                0.0f,
-                color.R, color.G, color.B, color.A);
+            switch (Style)
+            {
+                case UIMenuGridPanelStyle.SingleRow:
+                    N.DrawSpriteUV(
+                        Txd, Tex,
+                        gridX, gridY, gridWidth, gridHeight / 5.0f,
+                        0.0f, 0.4f, 1.0f, 0.6f,
+                        0.0f,
+                        color.R, color.G, color.B, color.A);
+                    break;
+                case UIMenuGridPanelStyle.SingleColumn:
+                    N.DrawSpriteUV(
+                        Txd, Tex,
+                        gridX, gridY, gridWidth / 5.0f, gridHeight,
+                        0.4f, 0.0f, 0.6f, 1.0f,
+                        0.0f,
+                        color.R, color.G, color.B, color.A);
+                    break;
+                default:
+                    N.DrawSprite(
+                        Txd, Tex,
+                        gridX, gridY, gridWidth, gridHeight,
+                        0.0f,
+                        color.R, color.G, color.B, color.A);
+                    break;
+            }
 
             color = DotColor;
             float dotX = gridX - (gridWidth * 0.5f) + (gridWidth * Value.X);
