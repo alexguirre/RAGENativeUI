@@ -203,24 +203,38 @@ namespace RAGENativeUI.Elements
             // draw labels
             {
                 const float Padding = 0.0046875f;
-                var leftCharHeight = LeftLabelStyle.CharacterHeight;
-                var rightCharHeight = RightLabelStyle.CharacterHeight;
 
-                var gridRight = gridX + gridWidth * 0.5f + Padding;
-                var gridLeft = gridX - gridWidth * 0.5f - Padding;
-                var gridBottom = gridY + gridHeight * 0.5f + Padding;
                 var centerX = x + menuWidth * 0.5f;
                 var centerY = y + Height * 0.5f;
 
-                var topStyle =       TopLabelStyle.WithWrap(x,          x + menuWidth);
-                var bottomStyle = BottomLabelStyle.WithWrap(x,          x + menuWidth);
-                var leftStyle =     LeftLabelStyle.WithWrap(x,          gridLeft);
-                var rightStyle =   RightLabelStyle.WithWrap(gridRight,  x + menuWidth);
+                if (!string.IsNullOrEmpty(TopLabel))
+                {
+                    var topStyle = TopLabelStyle.WithWrap(x, x + menuWidth);
+                    TextCommands.Display(TopLabel, topStyle, centerX, y + Padding);
+                }
 
-                TextCommands.Display(TopLabel,      topStyle,       centerX,    y + Padding);
-                TextCommands.Display(BottomLabel,   bottomStyle,    centerX,    gridBottom);
-                TextCommands.Display(LeftLabel,     leftStyle,      x,          centerY - leftCharHeight * 0.6f);
-                TextCommands.Display(RightLabel,    rightStyle,     gridRight,  centerY - rightCharHeight * 0.6f);
+                if (!string.IsNullOrEmpty(BottomLabel))
+                {
+                    var gridBottom = gridY + gridHeight * 0.5f + Padding;
+                    var bottomStyle = BottomLabelStyle.WithWrap(x, x + menuWidth);
+                    TextCommands.Display(BottomLabel, bottomStyle, centerX, gridBottom);
+                }
+
+                if (!string.IsNullOrEmpty(LeftLabel))
+                {
+                    var gridLeft = gridX - gridWidth * 0.5f - Padding;
+                    var leftCharHeight = LeftLabelStyle.CharacterHeight;
+                    var leftStyle = LeftLabelStyle.WithWrap(x, gridLeft);
+                    TextCommands.Display(LeftLabel, leftStyle, x, centerY - leftCharHeight * 0.6f);
+                }
+
+                if (!string.IsNullOrEmpty(RightLabel))
+                {
+                    var gridRight = gridX + gridWidth * 0.5f + Padding;
+                    var rightCharHeight = RightLabelStyle.CharacterHeight;
+                    var rightStyle = RightLabelStyle.WithWrap(gridRight, x + menuWidth);
+                    TextCommands.Display(RightLabel, rightStyle, gridRight, centerY - rightCharHeight * 0.6f);
+                }
             }
         }
 
