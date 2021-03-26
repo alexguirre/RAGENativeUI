@@ -90,22 +90,34 @@ namespace RAGENativeUI.Elements
 
         private void DrawLabels(float x, float y, float menuWidth)
         {
-            var titleCharHeight = TitleStyle.CharacterHeight;
-            var leftCharHeight = LeftLabelStyle.CharacterHeight;
-            var rightCharHeight = RightLabelStyle.CharacterHeight;
 
             var centerX = x + menuWidth * 0.5f;
 
             float wrapStart = x + BorderMargin, wrapEnd = x + menuWidth - BorderMargin;
-            var titleStyle = TitleStyle.WithWrap(wrapStart, wrapEnd);
-            var leftStyle = LeftLabelStyle.WithWrap(wrapStart, wrapEnd);
-            var rightStyle = RightLabelStyle.WithWrap(wrapStart, wrapEnd);
 
             const float PaddingFromBar = BorderMargin * 2.5f;
             var r = barBounds;
-            TextCommands.Display(Title, titleStyle, centerX, r.Y - PaddingFromBar - titleCharHeight);
-            TextCommands.Display(LeftLabel, leftStyle, wrapStart, r.Y - PaddingFromBar - leftCharHeight);
-            TextCommands.Display(RightLabel, rightStyle, wrapEnd, r.Y - PaddingFromBar - rightCharHeight);
+
+            if (!string.IsNullOrEmpty(Title))
+            {
+                var titleCharHeight = TitleStyle.CharacterHeight;
+                var titleStyle = TitleStyle.WithWrap(wrapStart, wrapEnd);
+                TextCommands.Display(Title, titleStyle, centerX, r.Y - PaddingFromBar - titleCharHeight);
+            }
+
+            if (!string.IsNullOrEmpty(LeftLabel))
+            {
+                var leftCharHeight = LeftLabelStyle.CharacterHeight;
+                var leftStyle = LeftLabelStyle.WithWrap(wrapStart, wrapEnd);
+                TextCommands.Display(LeftLabel, leftStyle, wrapStart, r.Y - PaddingFromBar - leftCharHeight);
+            }
+
+            if (!string.IsNullOrEmpty(RightLabel))
+            {
+                var rightCharHeight = RightLabelStyle.CharacterHeight;
+                var rightStyle = RightLabelStyle.WithWrap(wrapStart, wrapEnd);
+                TextCommands.Display(RightLabel, rightStyle, wrapEnd, r.Y - PaddingFromBar - rightCharHeight);
+            }
         }
 
         private void DrawSlider(float x, float y, float menuWidth)
