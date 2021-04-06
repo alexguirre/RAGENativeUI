@@ -9,8 +9,6 @@
     <OutputPath>bin/$(Configuration)/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateDocumentationFile Condition="'$(Configuration)' == 'Release'">true</GenerateDocumentationFile>
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
@@ -26,8 +24,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Library for RAGEPluginHook that helps you to quickly and easily build Rockstar-like menus and UIs.</Description>
     <Copyright>Copyright ©  2016-2021</Copyright>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
@@ -53,10 +49,11 @@
     <PostBuildEvent>
       copy $(SolutionDir)\..\Dependencies\RagePluginHookSDK.dll RagePluginHook.dll
 
-      $(ILMergeConsolePath) /internalize /ndebug /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
+      $(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
 
-      del RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll
+      del RAGENativeUI.dll RAGENativeUI.pdb System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll
       move "$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll
+      move "$(Temp)\RAGENativeUI.pdb" RAGENativeUI.pdb
     </PostBuildEvent>
   </PropertyGroup>
 </Project>
