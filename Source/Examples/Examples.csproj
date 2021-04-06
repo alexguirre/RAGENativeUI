@@ -1,76 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{FB83ECBC-E996-4314-8C65-E79211AEA8BC}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RNUIExamples</RootNamespace>
     <AssemblyName>RAGENativeUI_Examples</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <LangVersion>8.0</LangVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin\x64\Debug\Plugins\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\x64\Release\Plugins\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>9.0</LangVersion>
+    <Platforms>x64</Platforms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>../bin/$(Configuration)/Plugins/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RagePluginHookSDK">
       <HintPath>..\..\Dependencies\RagePluginHookSDK.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BigMessageExample.cs" />
-    <Compile Include="ConfirmationMenu.cs" />
-    <Compile Include="InstructionalButtonsExample.cs" />
-    <Compile Include="InstructionalKeysExample.cs" />
-    <Compile Include="MenuExtensions.cs" />
-    <Compile Include="PauseMenuExample.cs" />
-    <Compile Include="MenuExample.cs" />
-    <Compile Include="Showcase\BigMessages.cs" />
-    <Compile Include="Showcase\Elements.cs" />
-    <Compile Include="Showcase\InstructionalButtons.cs" />
-    <Compile Include="Showcase\LocalizationMenu.cs" />
-    <Compile Include="Showcase\MainMenu.cs" />
-    <Compile Include="Showcase\Menus.cs" />
-    <Compile Include="Showcase\Plugin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Showcase\TimerBars.cs" />
-    <Compile Include="SwitchMenusExample.cs" />
-    <Compile Include="TimerBarsExample.cs" />
-    <Compile Include="Util.cs" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RAGENativeUI.csproj">
-      <Project>{f3e16ed9-dbf7-4e7b-b04b-9b24b11891d3}</Project>
-      <Name>RAGENativeUI</Name>
-      <Private>False</Private>
+      <Private>false</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

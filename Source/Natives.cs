@@ -14,11 +14,11 @@
         {
             if (DirectNatives.DrawSpriteAvailable)
             {
-                DirectNatives.DrawSprite(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, false);
+                DirectNatives.DrawSprite(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, 0);
             }
             else
             {
-                Natives.xE7FFAE5EBF23D890(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, false);
+                Natives.xE7FFAE5EBF23D890(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, 0);
             }
         }
 
@@ -26,11 +26,11 @@
         {
             if (DirectNatives.DrawRectAvailable)
             {
-                DirectNatives.DrawRect(x, y, width, height, r, g, b, a, false);
+                DirectNatives.DrawRect(x, y, width, height, r, g, b, a, 0);
             }
             else
             {
-                Natives.x3A618A217E5154F0(x, y, width, height, r, g, b, a, false);
+                Natives.x3A618A217E5154F0(x, y, width, height, r, g, b, a, 0);
             }
         }
 
@@ -145,11 +145,11 @@
         {
             if (DirectNatives.DisableControlActionAvailable)
             {
-                DirectNatives.DisableControlAction(index, (int)control, true);
+                DirectNatives.DisableControlAction(index, (int)control, 1);
             }
             else
             {
-                Natives.DisableControlAction(index, (int)control, true);
+                Natives.DisableControlAction(index, (int)control, 1);
             }
         }
         public static void EnableAllControlActions(int index) => Natives.EnableAllControlActions(index);

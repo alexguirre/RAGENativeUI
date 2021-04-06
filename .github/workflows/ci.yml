@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: RAGENativeUI-${{ matrix.config }}
-          path: Source/bin/x64/${{ matrix.config }}
+          path: Source/bin/${{ matrix.config }}

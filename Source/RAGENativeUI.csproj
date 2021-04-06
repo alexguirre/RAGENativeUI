@@ -1,169 +1,61 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{F3E16ED9-DBF7-4E7B-B04B-9B24B11891D3}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RAGENativeUI</RootNamespace>
-    <AssemblyName>RAGENativeUI</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <LangVersion>8.0</LangVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>9.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Platforms>x64</Platforms>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <OutputPath>bin/$(Configuration)/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDocumentationFile Condition="'$(Configuration)' == 'Release'">true</GenerateDocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\x64\Release\RAGENativeUI.XML</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  <PropertyGroup>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
+    <PackageId>RAGENativeUI</PackageId>
+    <Version>1.7.1</Version>
+    <Authors>alexguirre</Authors>
+    <Company>$(Authors)</Company>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/alexguirre/RAGENativeUI</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/alexguirre/RAGENativeUI/releases</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Library for RAGEPluginHook that helps you to quickly and easily build Rockstar-like menus and UIs.</Description>
+    <Copyright>Copyright ©  2016-2021</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RAGENativeUI.IL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>IL\bin\RAGENativeUI.IL.dll</HintPath>
-    </Reference>
     <Reference Include="RagePluginHookSDK">
       <HintPath>..\Dependencies\RagePluginHookSDK.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseCollection.cs" />
-    <Compile Include="Common.cs" />
-    <Compile Include="Elements\BigMessage.cs" />
-    <Compile Include="Elements\Container.cs" />
-    <Compile Include="InstructionalKey.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuListScrollerItem.cs" />
-    <Compile Include="Elements\MissionPassedScreen.cs" />
-    <Compile Include="Elements\Rectangle.cs" />
-    <Compile Include="Elements\Text.cs" />
-    <Compile Include="Elements\IElement.cs" />
-    <Compile Include="Elements\TimerBars\BarTimerBar.cs" />
-    <Compile Include="Elements\TimerBars\CheckpointsTimerBar.cs" />
-    <Compile Include="Elements\TimerBars\IconsTimerBar.cs" />
-    <Compile Include="Elements\TimerBars\TextTimerBar.cs" />
-    <Compile Include="Elements\TimerBars\TimerBarBase.cs" />
-    <Compile Include="Elements\TimerBars\TimerBarPool.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuScrollerItem.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuColoredItem.cs" />
-    <Compile Include="Elements\InstructionalButtons.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuNumericScrollerItem.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuSwitchMenusItem.cs" />
-    <Compile Include="DisplayItemsCollection.cs" />
-    <Compile Include="HudColor.cs" />
-    <Compile Include="Internals\atArray.cs" />
-    <Compile Include="Internals\DebugCommands.cs" />
-    <Compile Include="Internals\Hooks.cs" />
-    <Compile Include="Internals\Stubs.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Stubs.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Internals\EmbeddedTexturesHook.cs" />
-    <Compile Include="Internals\TokenParserHook.cs" />
-    <Compile Include="Internals\Memory.cs" />
-    <Compile Include="Internals\ModuleInitializer.cs" />
-    <Compile Include="Internals\Shared.cs" />
-    <Compile Include="Internals\UsingTls.cs" />
-    <Compile Include="Localization.cs" />
-    <Compile Include="MenuPool.cs" />
-    <Compile Include="Natives.cs" />
-    <Compile Include="PauseMenu\TabInteractiveListItem.cs" />
-    <Compile Include="PauseMenu\TabItem.cs" />
-    <Compile Include="PauseMenu\TabItemSimpleList.cs" />
-    <Compile Include="PauseMenu\TabMissionSelectItem.cs" />
-    <Compile Include="PauseMenu\TabSubmenuItem.cs" />
-    <Compile Include="PauseMenu\TabTextItem.cs" />
-    <Compile Include="PauseMenu\TabView.cs" />
-    <Compile Include="PointExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Elements\Sprite.cs" />
-    <Compile Include="StringMeasurer.cs" />
-    <Compile Include="TextCommands.cs" />
-    <Compile Include="TextStyle.cs" />
-    <Compile Include="UIMenu.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuCheckboxItem.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuItem.cs" />
-    <Compile Include="Elements\MenuItems\UIMenuListItem.cs" />
-    <Compile Include="Elements\ResRectangle.cs" />
-    <Compile Include="Elements\ResText.cs" />
-    <Compile Include="Elements\Scaleform.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="ilmerge">
-      <Version>3.0.29</Version>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="ILMerge" Version="3.0.41">
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="InjectModuleInitializer">
-      <Version>2.0.3</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Internals\Stubs.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Stubs.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Compile Remove="Examples\**" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Internals\Stubs\EmbeddedTextures" />
-    <None Include="Internals\Stubs\EmbeddedTextures.asm" />
-    <None Include="Internals\Stubs\TokenParser" />
-    <None Include="Internals\Stubs\TokenParser.asm" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release (
-copy $(SolutionDir)\..\Dependencies\RagePluginHookSDK.dll RagePluginHook.dll
+    <PostBuildEvent>
+      copy $(SolutionDir)\..\Dependencies\RagePluginHookSDK.dll RagePluginHook.dll
 
-$(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll RAGENativeUI.IL.dll
+      $(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
 
-del RAGENativeUI.dll
-del RAGENativeUI.pdb
-del RAGENativeUI.IL.dll
-move "$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll
-move "$(Temp)\RAGENativeUI.pdb" RAGENativeUI.pdb
-
-del RagePluginHook.dll
-)</PostBuildEvent>
+      del RAGENativeUI.dll RAGENativeUI.pdb System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll
+      move "$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll
+      move "$(Temp)\RAGENativeUI.pdb" RAGENativeUI.pdb
+    </PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>dotnet build "$(ProjectDir)\IL\RAGENativeUI.IL.ilproj" --configuration "$(ConfigurationName)" --output "$(ProjectDir)\IL\bin\"</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

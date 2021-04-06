@@ -1,6 +1,7 @@
 ﻿namespace RAGENativeUI
 {
     using System;
+    using System.Runtime.CompilerServices;
     using System.Text;
 
     using Rage;
@@ -28,7 +29,7 @@
 #if DEBUG
         static unsafe Localization()
         {
-            Game.LogTrivialDebug($"CTextFile => {((IntPtr)IL.Unsafe.AsPointer(ref CTextFile.Instance)).ToString("X16")}");
+            Game.LogTrivialDebug($"CTextFile => {((IntPtr)Unsafe.AsPointer(ref CTextFile.Instance)).ToString("X16")}");
         }
 #endif
 
