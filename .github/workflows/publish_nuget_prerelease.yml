@@ -1,0 +1,36 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+(.[0-9]+)-rc[0-9]+"
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      
+      - name: Install Dependencies
+        uses: carlosperate/download-file-action@v1.0.2
+        with:
+          file-url: https://www.dropbox.com/s/a315cekpgeeiz9t/RagePluginHookSDK.dll?dl=1
+          location: Dependencies/
+
+      - name: Build
+        run: |
+          $env:TAG_VERSION=git describe --tags --abbrev=0
+          msbuild Source/RAGENativeUI.sln /t:restore
+          msbuild Source/RAGENativeUI.sln /p:Configuration=Release /p:Platform=x64 /p:Version="$env:TAG_VERSION"
+
+      - name: Push Package
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          cd Source/bin/Release/
+          dotnet nuget push RAGENativeUI.*.nupkg --api-key "$env:NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+          dotnet nuget push RAGENativeUI.*.snupkg --api-key "$env:NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
