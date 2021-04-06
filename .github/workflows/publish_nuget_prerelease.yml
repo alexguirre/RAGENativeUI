@@ -34,4 +34,3 @@ jobs:
         run: |
           cd Source/bin/Release/
           dotnet nuget push RAGENativeUI.*.nupkg --api-key "$env:NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
-          dotnet nuget push RAGENativeUI.*.snupkg --api-key "$env:NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
