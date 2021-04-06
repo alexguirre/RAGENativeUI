@@ -53,11 +53,10 @@
     <PostBuildEvent>
       copy $(SolutionDir)\..\Dependencies\RagePluginHookSDK.dll RagePluginHook.dll
 
-      $(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
+      $(ILMergeConsolePath) /internalize /ndebug /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
 
-      del RAGENativeUI.dll RAGENativeUI.pdb System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll
+      del RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll
       move "$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll
-      move "$(Temp)\RAGENativeUI.pdb" RAGENativeUI.pdb
     </PostBuildEvent>
   </PropertyGroup>
 </Project>
