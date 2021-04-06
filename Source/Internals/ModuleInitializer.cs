@@ -1,10 +1,17 @@
-﻿namespace RAGENativeUI.Internals
+﻿namespace System.Runtime.CompilerServices
+{
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    internal sealed class ModuleInitializerAttribute : Attribute { }
+}
+
+namespace RAGENativeUI.Internals
 {
     using System.Runtime.CompilerServices;
     using Rage;
 
     internal static class ModuleInitializer
     {
+        [ModuleInitializer]
         internal static void Run()
         {
             Game.LogTrivialDebug("[RAGENativeUI] Initializing...");

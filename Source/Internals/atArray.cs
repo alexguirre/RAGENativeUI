@@ -3,7 +3,6 @@
     using System;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-    using RAGENativeUI.IL;
 
     [StructLayout(LayoutKind.Sequential, Size = 0x10)]
     internal unsafe struct atArray<T> where T : unmanaged

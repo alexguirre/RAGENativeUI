@@ -2,12 +2,10 @@
 {
     using System;
     using System.Drawing;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
     using Rage;
-
-    using static RAGENativeUI.IL.Unsafe;
-    using static RAGENativeUI.IL.Invoker;
 
     internal static unsafe class Memory
     {
@@ -301,12 +299,12 @@
     {
         public static readonly bool TimersBarsTotalHeightAvailable = Memory.TimershudSharedGlobalId != -1 && Memory.TimershudSharedTimerbarsTotalHeightOffset != -1 && Memory.TimerbarsPrevTotalHeightGlobalId != -1;
 
-        public static ref float TimerBarsTotalHeight => ref AsRef<float>(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedTimerbarsTotalHeightOffset * 8);
-        public static ref float TimerBarsPrevTotalHeight => ref AsRef<float>(Game.GetScriptGlobalVariableAddress(Memory.TimerbarsPrevTotalHeightGlobalId));
+        public static ref float TimerBarsTotalHeight => ref Unsafe.AsRef<float>((void*)(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedTimerbarsTotalHeightOffset * 8));
+        public static ref float TimerBarsPrevTotalHeight => ref Unsafe.AsRef<float>((void*)Game.GetScriptGlobalVariableAddress(Memory.TimerbarsPrevTotalHeightGlobalId));
 
         public static readonly bool TimerBarsInstructionButtonsNumRowsAvailable = Memory.TimershudSharedGlobalId != -1 && Memory.TimershudSharedInstructionalButtonsNumRowsOffset != -1;
 
-        public static ref int TimerBarsInstructionButtonsNumRows => ref AsRef<int>(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedInstructionalButtonsNumRowsOffset * 8);
+        public static ref int TimerBarsInstructionButtonsNumRows => ref Unsafe.AsRef<int>((void*)(Game.GetScriptGlobalVariableAddress(Memory.TimershudSharedGlobalId) + Memory.TimershudSharedInstructionalButtonsNumRowsOffset * 8));
 
 #if false // not needed for now
         public static readonly bool MenuIdsAvailable = true;
@@ -363,7 +361,7 @@
         /// <summary>
         /// Gets the resolution of the main screen, the one containing the UI in case multiple screens are used.
         /// </summary>
-        public static SizeF ActualResolution
+        public static unsafe SizeF ActualResolution
         {
             get
             {
@@ -371,7 +369,9 @@
                 {
                     using var tls = UsingTls.Scope();
 
-                    return new SizeF(InvokeRetFloat(Memory.Screen_GetActualWidth), InvokeRetFloat(Memory.Screen_GetActualHeight));
+                    var w = ((delegate* unmanaged[Stdcall]<float>)Memory.Screen_GetActualWidth)();
+                    var h = ((delegate* unmanaged[Stdcall]<float>)Memory.Screen_GetActualHeight)();
+                    return new SizeF(w, h);
                 }
                 else
                 {
@@ -381,23 +381,23 @@
         }
     }
 
-    internal static class DirectNatives
+    internal static unsafe class DirectNatives
     {
         public static readonly bool DisableControlActionAvailable = Memory.Native_DisableControlAction != IntPtr.Zero;
-        public static void DisableControlAction(int index, int control, bool b) => Invoke(Memory.Native_DisableControlAction, index, control, b);
+        public static void DisableControlAction(int index, int control, byte b) => ((delegate* unmanaged[Stdcall]<int, int, byte, void>)Memory.Native_DisableControlAction)(index, control, b);
 
         public static readonly bool DrawSpriteAvailable = Memory.Native_DrawSprite != IntPtr.Zero;
-        public static void DrawSprite(string textureDict, string textureName, float x, float y, float width, float height, float rotation, int r, int g, int b, int a, bool unk)
+        public static void DrawSprite(string textureDict, string textureName, float x, float y, float width, float height, float rotation, int r, int g, int b, int a, byte unk)
         {
             using var tls = UsingTls.Scope();
-            Invoke(Memory.Native_DrawSprite, textureDict, textureName, x, y, width, height, rotation, r, g, b, a, unk);
+            ((delegate* unmanaged[Stdcall]<string, string, float, float, float, float, float, int, int, int, int, byte, void>)Memory.Native_DrawSprite)(textureDict, textureName, x, y, width, height, rotation, r, g, b, a, unk);
         }
 
         public static readonly bool DrawRectAvailable = Memory.Native_DrawRect != IntPtr.Zero;
-        public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a, bool unk)
+        public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a, byte unk)
         {
             using var tls = UsingTls.Scope();
-            Invoke(Memory.Native_DrawRect, x, y, width, height, r, g, b, a, unk);
+            ((delegate* unmanaged[Stdcall]<float, float, float, float, int, int, int, int, byte, void>)Memory.Native_DrawRect)(x, y, width, height, r, g, b, a, unk);
         }
     }
 
@@ -416,33 +416,33 @@
         [FieldOffset(0x1F), MarshalAs(UnmanagedType.I1)] public bool Outline;
 
 
-        public static ref CTextStyle ScriptStyle => ref AsRef<CTextStyle>(Memory.CTextStyle_ScriptStyle);
+        public static unsafe ref CTextStyle ScriptStyle => ref Unsafe.AsRef<CTextStyle>((void*)Memory.CTextStyle_ScriptStyle);
 
         public static readonly bool ScriptStyleAvailable = Memory.CTextStyle_ScriptStyle != IntPtr.Zero;
     }
 
     internal static class CScaleformMgr
     {
-        public static bool BeginMethod(int index, int baseClass, string methodName)
+        public static unsafe bool BeginMethod(int index, int baseClass, string methodName)
         {
             // set thread type to 1 so CScaleformMgr::BeginMethod adds the method call to the same queue as if it was done using natives
             long v = UsingTls.Get(0xB4);
             UsingTls.Set(0xB4, 1);
-            bool b = InvokeRetBool(Memory.CScaleformMgr_BeginMethod, index, baseClass, methodName);
+            byte b = ((delegate* unmanaged[Stdcall]<int, int, string, byte>)Memory.CScaleformMgr_BeginMethod)(index, baseClass, methodName);
             UsingTls.Set(0xB4, v);
-            return b;
+            return b != 0;
         }
 
-        public static bool IsMovieRendering(int index)
+        public static unsafe bool IsMovieRendering(int index)
         {
             // CScaleformMgr::IsMovieRendering checks if the current thread is the render thread,
             // so temporarily set this thread type to the render thread type (2)
             // doesn't seem to cause any issue in this case
             long v = UsingTls.Get(0xB4);
             UsingTls.Set(0xB4, 2);
-            bool b = InvokeRetBool(Memory.CScaleformMgr_IsMovieRendering, index);
+            byte b = ((delegate* unmanaged[Stdcall]<int, byte>)Memory.CScaleformMgr_IsMovieRendering)(index);
             UsingTls.Set(0xB4, v);
-            return b;
+            return b != 0;
         }
 
         public static readonly bool Available = Memory.CScaleformMgr_IsMovieRendering != IntPtr.Zero && Memory.CScaleformMgr_BeginMethod != IntPtr.Zero;
@@ -450,7 +450,7 @@
 
     internal static class CBusySpinner
     {
-        public static ref atArray<int> InstructionalButtons => ref AsRef<atArray<int>>(Memory.CBusySpinner_InstructionalButtons);
+        public static unsafe ref atArray<int> InstructionalButtons => ref Unsafe.AsRef<atArray<int>>((void*)Memory.CBusySpinner_InstructionalButtons);
 
         public static readonly bool Available = Memory.CBusySpinner_InstructionalButtons != IntPtr.Zero;
     }
@@ -459,9 +459,9 @@
     internal unsafe struct scrProgramRegistry
     {
         public scrProgram* Find(string name) => Find(Game.GetHashKey(name));
-        public scrProgram* Find(uint name) => (scrProgram*)InvokeRetPointer(Memory.scrProgramRegistry_Find, AsPointer(ref this), name);
+        public scrProgram* Find(uint name) => ((delegate* unmanaged[Thiscall]<ref scrProgramRegistry, uint, scrProgram*>)Memory.scrProgramRegistry_Find)(ref this, name);
 
-        public static ref scrProgramRegistry Instance => ref AsRef<scrProgramRegistry>(Memory.scrProgramRegistry_sm_Instance);
+        public static ref scrProgramRegistry Instance => ref Unsafe.AsRef<scrProgramRegistry>((void*)Memory.scrProgramRegistry_sm_Instance);
 
         public static readonly bool Available = Memory.scrProgramRegistry_sm_Instance != IntPtr.Zero && Memory.scrProgramRegistry_Find != IntPtr.Zero;
     }
@@ -503,10 +503,10 @@
                                                 Memory.CTextFormat_GetIconListFormatString != IntPtr.Zero;
 
         public static void GetInputSourceIcons(uint mapperSource, uint mapperParameter, ref atFixedArray_sIconData_4 icons)
-            => Invoke(Memory.CTextFormat_GetInputSourceIcons, mapperSource, mapperParameter, AsPointer(ref icons));
+            => ((delegate* unmanaged[Stdcall]<uint, uint, ref atFixedArray_sIconData_4, void>)Memory.CTextFormat_GetInputSourceIcons)(mapperSource, mapperParameter, ref icons);
 
         public static void GetIconListFormatString(ref atFixedArray_sIconData_4 icons, byte* buffer, uint bufferSize)
-            => Invoke(Memory.CTextFormat_GetIconListFormatString, AsPointer(ref icons), buffer, bufferSize, null);
+            => ((delegate* unmanaged[Stdcall]<ref atFixedArray_sIconData_4, byte*, uint, void*, void>)Memory.CTextFormat_GetIconListFormatString)(ref icons, buffer, bufferSize, null);
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 0x8)]
@@ -593,10 +593,10 @@
         // Should be good enough to allow us to override/add text labels
         [FieldOffset(0x258)] public atBinaryMap OverridesTextMap;
 
-        public IntPtr GetStringByHash(uint hash) => (IntPtr)InvokeRetPointer(Memory.CTextFile_GetStringByHash, AsPointer(ref this), hash);
+        public IntPtr GetStringByHash(uint hash) => ((delegate* unmanaged[Thiscall]<ref CTextFile, uint, nint>)Memory.CTextFile_GetStringByHash)(ref this, hash);
 
-        public static ref CTextFile Instance => ref AsRef<CTextFile>(Memory.CTextFile_sm_Instance);
-        public static ref CRITICAL_SECTION CriticalSection => ref AsRef<CRITICAL_SECTION>(Memory.CTextFile_sm_CriticalSection);
+        public static ref CTextFile Instance => ref Unsafe.AsRef<CTextFile>((void*)Memory.CTextFile_sm_Instance);
+        public static ref CRITICAL_SECTION CriticalSection => ref Unsafe.AsRef<CRITICAL_SECTION>((void*)Memory.CTextFile_sm_CriticalSection);
 
         public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero &&
                                                 Memory.CTextFile_GetStringByHash != IntPtr.Zero &&
@@ -634,9 +634,9 @@
     {
         private readonly IntPtr* vtable;
 
-        public void* Allocate(ulong size, ulong align, int subAllocator) => InvokeRetPointer(vtable[2], AsPointer(ref this), size, align, subAllocator);
-        public void Free(void* ptr) => Invoke(vtable[4], AsPointer(ref this), ptr);
+        public void* Allocate(ulong size, ulong align, int subAllocator) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, ulong, ulong, int, void*>)vtable[2])(ref this, size, align, subAllocator);
+        public void Free(void* ptr) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, void*, void>)vtable[4])(ref this, ptr);
 
-        public static ref sysMemAllocator TheAllocator => ref AsRef<sysMemAllocator>((IntPtr)UsingTls.GetFromMain(0xC8));
+        public static ref sysMemAllocator TheAllocator => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(0xC8));
     }
 }

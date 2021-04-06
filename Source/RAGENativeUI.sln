@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAGENativeUI", "RAGENativeUI.csproj", "{F3E16ED9-DBF7-4E7B-B04B-9B24B11891D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RAGENativeUI", "RAGENativeUI.csproj", "{F3E16ED9-DBF7-4E7B-B04B-9B24B11891D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{FB83ECBC-E996-4314-8C65-E79211AEA8BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples", "Examples\Examples.csproj", "{FB83ECBC-E996-4314-8C65-E79211AEA8BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

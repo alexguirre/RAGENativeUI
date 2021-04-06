@@ -3,12 +3,12 @@ namespace RAGENativeUI.Internals
 {
     using System;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using System.Text;
     using Rage;
     using Rage.Attributes;
     using RAGENativeUI.Elements;
-    using RAGENativeUI.IL;
 
     internal static unsafe class DebugCommands
     {
