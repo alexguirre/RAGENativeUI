@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
@@ -23,13 +23,9 @@
     <PackageReleaseNotes>https://github.com/alexguirre/RAGENativeUI/releases</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Library for RAGEPluginHook that helps you to quickly and easily build Rockstar-like menus and UIs.</Description>
-    <Copyright>Copyright ©  2016-2021</Copyright>
+    <Copyright>Copyright © 2016-2021 alexguirre</Copyright>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RagePluginHookSDK">
-      <HintPath>..\Dependencies\RagePluginHookSDK.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
   </ItemGroup>
@@ -38,6 +34,7 @@
     <PackageReference Include="ILMerge" Version="3.0.41">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="RagePluginHook" Version="1.86.1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -47,8 +44,6 @@
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>
-      copy $(SolutionDir)\..\Dependencies\RagePluginHookSDK.dll RagePluginHook.dll
-
       $(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
 
       del RAGENativeUI.dll RAGENativeUI.pdb System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll

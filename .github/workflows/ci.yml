@@ -14,12 +14,6 @@ jobs:
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
-      
-      - name: Install Dependencies
-        uses: carlosperate/download-file-action@v1.0.2
-        with:
-          file-url: https://www.dropbox.com/s/a315cekpgeeiz9t/RagePluginHookSDK.dll?dl=1
-          location: Dependencies/
 
       - name: Build
         run: |
