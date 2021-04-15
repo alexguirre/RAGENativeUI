@@ -1,14 +1,18 @@
 namespace RAGENativeUI.Elements
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
 
-    using Rage;
-
     public class UIMenuStatsPanel : UIMenuPanel
     {
+        private IList<Stat> stats = new List<Stat>();
 
-        public IList<Stat> Stats { get; } = new List<Stat>();
+        public IList<Stat> Stats
+        {
+            get => stats;
+            set => stats = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         private float CalculateHeight()
         {

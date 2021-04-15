@@ -17,6 +17,7 @@ namespace RAGENativeUI.Elements
         private float value = 0.0f;
         private RectangleF barBounds;
         private bool mousePressed;
+        private IList<Marker> markers = new List<Marker>();
 
         /// <summary>
         /// Gets or sets the foreground color of the slider bar.
@@ -58,14 +59,17 @@ namespace RAGENativeUI.Elements
 
         public event ValueChangedEvent ValueChanged;
 
-        public IList<Marker> Markers { get; }
+        public IList<Marker> Markers
+        {
+            get => markers;
+            set => markers = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         public UIMenuSliderPanel()
         {
             InstructionalButtons.Add(new InstructionalButtonDynamic("Change Value", InstructionalKey.Mouse, InstructionalKey.ControllerRStick));
             BarForegroundColor = HudColor.White.GetColor();
             BarBackgroundColor = Color.FromArgb(76, BarForegroundColor);
-            Markers = new List<Marker>();
         }
 
         public override void Draw(float x, ref float y, float menuWidth)

@@ -1,8 +1,8 @@
 namespace RAGENativeUI.Elements
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
 
     public abstract class UIMenuPanel
     {
@@ -17,14 +17,11 @@ namespace RAGENativeUI.Elements
             get => instructionalButtons;
             set
             {
-                instructionalButtons = value ?? throw new System.ArgumentNullException(nameof(value));
+                instructionalButtons = value ?? throw new ArgumentNullException(nameof(value));
                 InstructionalButtonsChanged = true;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public bool InstructionalButtonsChanged { get; set; }
 
         public abstract void Draw(float x, ref float y, float menuWidth);
