@@ -51,7 +51,10 @@
                 BindMenuToItem(new LocalizationMenu(), item);
             }
 
-            //AddItem(new UIMenuItem("Dummy1"));
+            var dummy1 = new UIMenuItem("Dummy1");
+            var dummy2 = new UIMenuItem("Dummy2");
+            var dummy3 = new UIMenuItem("Dummy3");
+            AddItems(dummy1, dummy2, dummy3);
             //AddItem(new UIMenuItem("Dummy2"));
             //AddItem(new UIMenuItem("Dummy3"));
             //AddItem(new UIMenuItem("Dummy4"));
@@ -82,7 +85,9 @@
                 p3.Stats[2].Upgrade = oldValue.Y - newValue.Y;
             };
 
-            Panels = new UIMenuPanel[] { p1, p2, p3 };
+            dummy1.Panels.Add(p1);
+            dummy1.Panels.Add(p2);
+            dummy3.Panels.Add(p3);
         }
     }
 }

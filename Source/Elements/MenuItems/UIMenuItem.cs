@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace RAGENativeUI.Elements
 {
@@ -96,6 +97,10 @@ namespace RAGENativeUI.Elements
         /// </summary>
         public virtual string Description { get; set; }
 
+        /// <summary>
+        /// Gets the <see cref="UIMenuPanel"/>s shown when this item is selected.
+        /// </summary>
+        public virtual IList<UIMenuPanel> Panels { get; set; } = new List<UIMenuPanel>(0);
 
         /// <summary>
         /// Whether this item is enabled or disabled (text is greyed out and you cannot select it).
@@ -353,7 +358,7 @@ namespace RAGENativeUI.Elements
         /// <summary>
         /// Gets or sets the text style for this item's label. Note, the property <see cref="TextStyle.Color"/> is ignored, instead the color returned by <see cref="CurrentForeColor"/> is used.
         /// </summary>
-        public TextStyle TextStyle { get; set; } = TextStyle.Default.With(font: DefaultTextFont,scale: DefaultTextScale);
+        public TextStyle TextStyle { get; set; } = TextStyle.Default.With(font: DefaultTextFont, scale: DefaultTextScale);
 
         /// <summary>
         /// Returns the menu this item is in.

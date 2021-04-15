@@ -6,8 +6,26 @@ namespace RAGENativeUI.Elements
 
     public abstract class UIMenuPanel
     {
+        private IList<IInstructionalButtonSlot> instructionalButtons = new List<IInstructionalButtonSlot>();
+
         public Color BackgroundColor { get; set; } = HudColor.InGameBackground.GetColor();
-        public virtual IEnumerable<IInstructionalButtonSlot> InstructionalButtons => Enumerable.Empty<IInstructionalButtonSlot>();
+        /// <summary>
+        /// Gets the instructional buttons to show when this panel is visible.
+        /// </summary>
+        public IList<IInstructionalButtonSlot> InstructionalButtons
+        {
+            get => instructionalButtons;
+            set
+            {
+                instructionalButtons = value ?? throw new System.ArgumentNullException(nameof(value));
+                InstructionalButtonsChanged = true;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool InstructionalButtonsChanged { get; set; }
 
         public abstract void Draw(float x, ref float y, float menuWidth);
 
@@ -28,4 +46,3 @@ namespace RAGENativeUI.Elements
         }
     }
 }
-

@@ -25,7 +25,6 @@ namespace RAGENativeUI.Elements
 
     public class UIMenuGridPanel : UIMenuPanel
     {
-
         public delegate void ValueChangedEvent(UIMenuGridPanel sender, Vector2 oldValue, Vector2 newValue);
 
         private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
@@ -34,16 +33,6 @@ namespace RAGENativeUI.Elements
         private Vector2 value = new Vector2(0.5f, 0.5f);
         private RectangleF gridBounds;
         private bool mousePressed;
-
-        public override IEnumerable<IInstructionalButtonSlot> InstructionalButtons 
-        {
-            get
-            {
-                yield return ValueInstructionalButton;
-            }
-        }
-
-        public IInstructionalButtonSlot ValueInstructionalButton { get; } = new InstructionalButtonDynamic("Fine Tune", InstructionalKey.Mouse, InstructionalKey.ControllerRStick);
 
         public Color GridColor { get; set; } = Color.FromArgb(205, 105, 105, 102);
         public Color DotColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
@@ -63,7 +52,7 @@ namespace RAGENativeUI.Elements
             set
             {
                 value = new Vector2(Style == UIMenuGridPanelStyle.SingleColumn ? 0.5f : MathHelper.Clamp(value.X, 0.0f, 1.0f),
-                                    Style == UIMenuGridPanelStyle.SingleRow    ? 0.5f : MathHelper.Clamp(value.Y, 0.0f, 1.0f));
+                                    Style == UIMenuGridPanelStyle.SingleRow ? 0.5f : MathHelper.Clamp(value.Y, 0.0f, 1.0f));
                 if (this.value != value)
                 {
                     var oldValue = this.value;
@@ -74,6 +63,11 @@ namespace RAGENativeUI.Elements
         }
 
         public event ValueChangedEvent ValueChanged;
+
+        public UIMenuGridPanel()
+        {
+            InstructionalButtons.Add(new InstructionalButtonDynamic("Fine Tune", InstructionalKey.Mouse, InstructionalKey.ControllerRStick));
+        }
 
         public override void Draw(float x, ref float y, float menuWidth)
         {
@@ -105,22 +99,24 @@ namespace RAGENativeUI.Elements
 
         public override bool ProcessMouse(float mouseX, float mouseY)
         {
-            //N.DrawRect(gridBounds.X + gridBounds.Width * 0.5f, gridBounds.Y + gridBounds.Height * 0.5f,
-            //           gridBounds.Width, gridBounds.Height,
-            //           255, 0, 0, gridBounds.Contains(mouseX, mouseY) ? 220 : 100);
-            //N.DrawRect(mouseX, mouseY, 0.005f, 0.005f * N.GetAspectRatio(false), 0, 255, 0, 200);
+            const int CursorFinger = 5;
 
             if (!mousePressed)
             {
                 bool inBounds = gridBounds.Contains(mouseX, mouseY);
-                if (inBounds && Game.IsControlJustPressed(2, GameControl.CursorAccept))
+                if (inBounds)
                 {
-                    mousePressed = true;
-                    return true;
+                    N.SetMouseCursorSprite(CursorFinger);
+                    if (Game.IsControlJustPressed(2, GameControl.CursorAccept))
+                    {
+                        mousePressed = true;
+                        return true;
+                    }
                 }
             }
             else
             {
+                N.SetMouseCursorSprite(CursorFinger);
                 if (Game.IsControlJustReleased(2, GameControl.CursorAccept))
                 {
                     mousePressed = false;
@@ -141,6 +137,8 @@ namespace RAGENativeUI.Elements
         {
             const string Txd = "pause_menu_pages_char_mom_dad";
             const string Tex = "nose_grid";
+            const string DotTxd = "commonmenu";
+            const string DotTex = "common_medal";
 
             N.RequestStreamedTextureDict(Txd);
             if (!N.HasStreamedTextureDictLoaded(Txd))
@@ -184,10 +182,11 @@ namespace RAGENativeUI.Elements
             color = DotColor;
             float dotX = gridX - (gridWidth * 0.5f) + (gridWidth * Value.X);
             float dotY = gridY - (gridHeight * 0.5f) + (gridHeight * Value.Y);
-            float dotWidth = 0.0065f;
+            float dotWidth = 0.0065f * 3;
             float dotHeight = dotWidth * aspectRatio;
-            N.DrawRect(
-                dotX, dotY, dotWidth, dotHeight,
+            N.DrawSprite(
+                DotTxd, DotTex,
+                dotX, dotY, dotWidth, dotHeight, 0.0f,
                 color.R, color.G, color.B, color.A);
 
             // calculate grid bounds
@@ -242,4 +241,3 @@ namespace RAGENativeUI.Elements
             => ValueChanged?.Invoke(this, oldValue, newValue);
     }
 }
-

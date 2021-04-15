@@ -18,16 +18,6 @@ namespace RAGENativeUI.Elements
         private RectangleF barBounds;
         private bool mousePressed;
 
-        public override IEnumerable<IInstructionalButtonSlot> InstructionalButtons
-        {
-            get
-            {
-                yield return ValueInstructionalButton;
-            }
-        }
-
-        public IInstructionalButtonSlot ValueInstructionalButton { get; } = new InstructionalButtonDynamic("Change Opacity", InstructionalKey.Mouse, InstructionalKey.ControllerRStick);
-
         /// <summary>
         /// Gets or sets the foreground color of the slider bar.
         /// </summary>
@@ -44,7 +34,7 @@ namespace RAGENativeUI.Elements
         /// </remarks>
         public Color BarBackgroundColor { get; set; }
 
-        public string Title { get; set; } = "Title";
+        public string Title { get; set; } = "Value";
         public TextStyle TitleStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Center);
         public string LeftLabel { get; set; } = "Left (0.0)";
         public TextStyle LeftLabelStyle { get; set; } = BaseLabelStyle.With(justification: TextJustification.Left);
@@ -72,6 +62,7 @@ namespace RAGENativeUI.Elements
 
         public UIMenuSliderPanel()
         {
+            InstructionalButtons.Add(new InstructionalButtonDynamic("Change Value", InstructionalKey.Mouse, InstructionalKey.ControllerRStick));
             BarForegroundColor = HudColor.White.GetColor();
             BarBackgroundColor = Color.FromArgb(76, BarForegroundColor);
             Markers = new List<Marker>();
@@ -255,4 +246,3 @@ namespace RAGENativeUI.Elements
         }
     }
 }
-
