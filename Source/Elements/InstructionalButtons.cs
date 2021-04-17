@@ -324,6 +324,62 @@ namespace RAGENativeUI.Elements
             => string.Join("%", buttons.Reverse().Select(btn => btn.Id));
     }
 
+    public class InstructionalButtonDynamic : IInstructionalButtonSlot
+    {
+        private IList<InstructionalButtonId> buttonsForKeyboard, buttonsForController;
+
+        /// <inheritdoc/>
+        public string Text { get; set; }
+
+        public IList<InstructionalButtonId> ButtonsForKeyboard
+        {
+            get => buttonsForKeyboard;
+            set => buttonsForKeyboard = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public IList<InstructionalButtonId> ButtonsForController
+        {
+            get => buttonsForController;
+            set => buttonsForController = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <inheritdoc/>
+        public Predicate<IInstructionalButtonSlot> CanBeDisplayed { get; set; }
+
+        /// <inheritdoc/>
+        public GameControl? BindedControl { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonDynamic"/> class.
+        /// </summary>
+        /// <param name="text">The text displayed next to the button.</param>
+        /// <param name="forKeyboard">The button to be displayed when using keyboard and mouse.</param>
+        /// <param name="forController">The button to be displayed when using a controller.</param>
+        public InstructionalButtonDynamic(string text, InstructionalButtonId forKeyboard, InstructionalButtonId forController)
+        {
+            Text = text;
+            ButtonsForKeyboard = new List<InstructionalButtonId>(1) { forKeyboard };
+            ButtonsForController = new List<InstructionalButtonId>(1) { forController };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstructionalButtonDynamic"/> class.
+        /// </summary>
+        /// <param name="text">The text displayed next to the button.</param>
+        /// <param name="forKeyboard">The buttons to be displayed when using keyboard and mouse.</param>
+        /// <param name="forController">The buttons to be displayed when using a controller.</param>
+        public InstructionalButtonDynamic(string text, IEnumerable<InstructionalButtonId> forKeyboard, IEnumerable<InstructionalButtonId> forController)
+        {
+            Text = text;
+            ButtonsForKeyboard = new List<InstructionalButtonId>(forKeyboard);
+            ButtonsForController = new List<InstructionalButtonId>(forController);
+        }
+
+        /// <inheritdoc/>
+        public string GetButtonId() => UIMenu.IsUsingController ? InstructionalButtonGroup.GetButtonId(ButtonsForController) : 
+                                                                  InstructionalButtonGroup.GetButtonId(ButtonsForKeyboard);
+    }
+
     public readonly struct InstructionalButtonId
     {
         /// <summary>

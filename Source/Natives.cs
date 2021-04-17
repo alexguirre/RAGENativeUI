@@ -22,6 +22,9 @@
             }
         }
 
+        public static void DrawSpriteUV(string textureDict, string textureName, float x, float y, float width, float height, float u1, float v1, float u2, float v2, float rotation, int r, int g, int b, int a)
+            => Natives.x95812F9B26074726(textureDict, textureName, x, y, width, height, u1, v1, u2, v2, rotation, r, g, b, a);
+
         public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a)
         {
             if (DirectNatives.DrawRectAvailable)

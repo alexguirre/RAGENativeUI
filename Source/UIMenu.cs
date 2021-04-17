@@ -15,8 +15,10 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+
 using Rage;
 using Rage.Native;
+
 using RAGENativeUI.Elements;
 using RAGENativeUI.Internals;
 
@@ -29,7 +31,7 @@ namespace RAGENativeUI
     public delegate void CheckboxChangeEvent(UIMenu sender, UIMenuCheckboxItem checkboxItem, bool Checked);
 
     public delegate void ScrollerChangedEvent(UIMenu sender, UIMenuScrollerItem item, int oldIndex, int newIndex);
-    
+
     public delegate void ItemSelectEvent(UIMenu sender, UIMenuItem selectedItem, int index);
 
     public delegate void MenuOpenEvent(UIMenu sender);
@@ -265,6 +267,9 @@ namespace RAGENativeUI
         /// Gets or sets whether the instructional buttons are currently visible.
         /// </summary>
         public bool InstructionalButtonsEnabled { get; set; } = true;
+
+        private readonly List<IInstructionalButtonSlot> instructionalButtonsFromPanels = new();
+        private readonly List<UIMenuPanel> lastPanels = new();
 
         /// <summary>
         /// Basic Menu constructor.
@@ -713,6 +718,8 @@ namespace RAGENativeUI
 
             DrawDescription(x, ref y);
 
+            DrawPanels(x, ref y);
+
             EndDraw();
         }
 
@@ -977,6 +984,32 @@ namespace RAGENativeUI
             }
         }
 
+        /// <summary>
+        /// Draws the description text and background at the specified position.
+        /// </summary>
+        /// <param name="x">The position along the X-axis in relative coordinates.</param>
+        /// <param name="y">
+        /// The position along the Y-axis in relative coordinates.
+        /// When this method returns, contains the position right below the description.
+        /// </param>
+        protected virtual void DrawPanels(float x, ref float y)
+        {
+            if (DescriptionOverride == null && MenuItems.Count == 0)
+            {
+                return;
+            }
+
+            var panels = CurrentPanels;
+            if (panels != null && panels.Count != 0)
+            {
+                y += 0.00277776f * 2.25f;
+                foreach (var panel in panels)
+                {
+                    panel?.Draw(x, ref y, menuWidth);
+                }
+            }
+        }
+
         // Converted from game scripts
         internal static void GetTextureDrawSize(string txd, string texName, out float width, out float height)
         {
@@ -1129,7 +1162,7 @@ namespace RAGENativeUI
             {
                 return;
             }
-            
+
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
             {
                 CurrentSelection++;
@@ -1148,7 +1181,7 @@ namespace RAGENativeUI
             {
                 return;
             }
-            
+
             MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Left);
         }
 
@@ -1311,65 +1344,78 @@ namespace RAGENativeUI
                 input = UIMenuItem.MouseInput.Pressed;
             }
 
-            bool mouseInputConsumed = selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input);
-            if (!mouseInputConsumed)
+            if (selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input))
             {
-                UpdateHoveredItem(mouseX, mouseY);
+                return;
+            }
 
-                if (hoveredItem != -1)
+            var panels = CurrentPanels;
+            if (panels != null && panels.Count != 0)
+            {
+                foreach (var panel in panels)
                 {
-                    hoveredUpDown = 0;
-                    if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
+                    if (panel.ProcessMouse(mouseX, mouseY))
                     {
-                        CurrentSelection = hoveredItem;
-                        Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
-                        IndexChange(CurrentSelection);
+                        return;
                     }
                 }
-                else if (hoveredItem == -1)
+            }
+
+            UpdateHoveredItem(mouseX, mouseY);
+
+            if (hoveredItem != -1)
+            {
+                hoveredUpDown = 0;
+                if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
                 {
-                    UpdateHoveredUpDown(mouseX, mouseY);
+                    CurrentSelection = hoveredItem;
+                    Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
+                    IndexChange(CurrentSelection);
+                }
+            }
+            else if (hoveredItem == -1)
+            {
+                UpdateHoveredUpDown(mouseX, mouseY);
 
-                    if (hoveredUpDown != 0 && controls.CursorAccept.IsJustPressedRepeated)
+                if (hoveredUpDown != 0 && controls.CursorAccept.IsJustPressedRepeated)
+                {
+                    if (hoveredUpDown == 1)
                     {
-                        if (hoveredUpDown == 1)
+                        GoUp();
+                    }
+                    else
+                    {
+                        GoDown();
+                    }
+                }
+
+                if (MouseEdgeEnabled)
+                {
+                    const int CursorLeftArrow = 6, CursorRightArrow = 7;
+
+                    if (mouseX > (1f - (0.05f * 0.75f))) // right edge
+                    {
+                        N.SetMouseCursorSprite(CursorRightArrow);
+                        float mult = 0.05f - (1f - mouseX);
+                        if (mult > 0.05f)
                         {
-                            GoUp();
+                            mult = 0.05f;
                         }
-                        else
+
+                        N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
+                    }
+                    else if (mouseX < (0.05f * 0.75f)) // left edge
+                    {
+                        N.SetMouseCursorSprite(CursorLeftArrow);
+                        float mult = 0.05f - mouseX;
+                        if (mult > 0.05f)
                         {
-                            GoDown();
+                            mult = 0.05f;
                         }
+
+                        N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
                     }
 
-                    if (MouseEdgeEnabled)
-                    {
-                        const int CursorLeftArrow = 6, CursorRightArrow = 7;
-
-                        if (mouseX > (1f - (0.05f * 0.75f))) // right edge
-                        {
-                            N.SetMouseCursorSprite(CursorRightArrow);
-                            float mult = 0.05f - (1f - mouseX);
-                            if (mult > 0.05f)
-                            {
-                                mult = 0.05f;
-                            }
-
-                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() - (70f * mult));
-                        }
-                        else if (mouseX < (0.05f * 0.75f)) // left edge
-                        {
-                            N.SetMouseCursorSprite(CursorLeftArrow);
-                            float mult = 0.05f - mouseX;
-                            if (mult > 0.05f)
-                            {
-                                mult = 0.05f;
-                            }
-
-                            N.SetGameplayCamRelativeHeading(N.GetGameplayCamRelativeHeading() + (70f * mult));
-                        }
-
-                    }
                 }
             }
         }
@@ -1518,6 +1564,18 @@ namespace RAGENativeUI
                 return;
             }
 
+            var panels = CurrentPanels;
+            if (panels != null && panels.Count != 0)
+            {
+                foreach (var panel in panels)
+                {
+                    if (panel.ProcessControl())
+                    {
+                        return;
+                    }
+                }
+            }
+
             if (controls[Common.MenuControls.Back].IsJustReleased)
             {
                 GoBack();
@@ -1548,6 +1606,28 @@ namespace RAGENativeUI
         public void AddInstructionalButton(IInstructionalButtonSlot button) => InstructionalButtons.Buttons.Add(button);
         public void RemoveInstructionalButton(InstructionalButton button) => InstructionalButtons.Buttons.Remove(button);
         public void RemoveInstructionalButton(IInstructionalButtonSlot button) => InstructionalButtons.Buttons.Remove(button);
+
+        private void UpdateInstructionalButtons()
+        {
+            var panels = CurrentPanels ?? Array.Empty<UIMenuPanel>();
+            if (panels.Count != lastPanels.Count || !panels.SequenceEqual(lastPanels) || panels.Any(p => p.InstructionalButtonsChanged))
+            {
+                instructionalButtonsFromPanels.ForEach(b => InstructionalButtons.Buttons.Remove(b));
+                instructionalButtonsFromPanels.Clear();
+                instructionalButtonsFromPanels.AddRange(panels.SelectMany(p =>
+                {
+                    p.InstructionalButtonsChanged = false;
+                    return p.InstructionalButtons;
+                }));
+
+                lastPanels.Clear();
+                lastPanels.AddRange(panels);
+
+                InstructionalButtons.Buttons.AddRange(instructionalButtonsFromPanels);
+            }
+
+            InstructionalButtons.Update();
+        }
 
         /// <summary>
         /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
@@ -1670,7 +1750,7 @@ namespace RAGENativeUI
                         }
                     }
 
-                    InstructionalButtons.Update();
+                    UpdateInstructionalButtons();
                     if (ParentMenu != null || !visible)
                     {
                         return;
@@ -1718,6 +1798,7 @@ namespace RAGENativeUI
                         }
                         currentItem = newIndex;
                         MenuItems[currentItem].Selected = true;
+                        UpdateInstructionalButtons();
                     }
 
                     UpdateVisibleItemsIndices();
@@ -1872,6 +1953,15 @@ namespace RAGENativeUI
         /// </summary>
         /// <seealso cref="DefaultUpDownArrowsForegroundColor"/>
         public Color UpDownArrowsForegroundColor { get; set; } = DefaultUpDownArrowsForegroundColor;
+
+        /// <summary>
+        /// Gets or sets the panels override.
+        /// If not <c>null</c>, this list of <see cref="UIMenuPanel"/>s is shown instead of
+        /// the <see cref="UIMenuItem.Panels"/> of the currently selected item.
+        /// </summary>
+        public IList<UIMenuPanel> PanelsOverride { get; set; }
+
+        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ?? MenuItems[CurrentSelection].Panels;
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
@@ -2146,7 +2236,7 @@ namespace RAGENativeUI
             /// Gets the number of milliseconds the control must be pressed before using the <see cref="TimeBetweenRepeats"/> of this step.
             /// </summary>
             public uint HeldTime { get; }
-            
+
             /// <summary>
             /// Gets the number of milliseconds between input events of the control.
             /// </summary>

@@ -230,6 +230,18 @@
             );
         }
 
+        internal readonly TextStyle WithWrap(float start, float end)
+            => new TextStyle(
+                font: Font,
+                color: Color,
+                scale: Scale,
+                justification: Justification,
+                wrap: (start, end),
+                dropShadow: DropShadow,
+                outline: Outline,
+                characterHeight: characterHeight
+            );
+
         /// <inheritdoc/>
         public override readonly string ToString() => (Font, Color, Scale, Justification, Wrap, DropShadow, Outline).ToString();
 
