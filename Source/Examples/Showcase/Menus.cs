@@ -7,6 +7,7 @@
     using Rage;
 
     using static Util;
+    using System.Collections.Generic;
 
     internal sealed class Menus : UIMenu
     {
@@ -19,21 +20,24 @@
 
         private void CreateMenuItems()
         {
-            UIMenuItem visualOptionsBindItem = new UIMenuItem("Visual Options", $"Demonstrates the visual options of the ~b~{nameof(UIMenu)}~s~ class.");
-            UIMenuItem checkboxBindItem = new UIMenuItem("Checkbox", $"Demonstrates the ~b~{nameof(UIMenuCheckboxItem)}~s~ class.");
-            UIMenuItem scrollerBindItem = new UIMenuItem("Scroller", $"Demonstrates the ~b~{nameof(UIMenuListScrollerItem<int>)}~s~ and ~b~{nameof(UIMenuNumericScrollerItem<int>)}~s~ classes.");
+            UIMenuItem visualOptionsBindItem = new("Visual Options", $"Demonstrates the visual options of the ~b~{nameof(UIMenu)}~s~ class.");
+            UIMenuItem checkboxBindItem = new("Checkbox", $"Demonstrates the ~b~{nameof(UIMenuCheckboxItem)}~s~ class.");
+            UIMenuItem scrollerBindItem = new("Scroller", $"Demonstrates the ~b~{nameof(UIMenuListScrollerItem<int>)}~s~ and ~b~{nameof(UIMenuNumericScrollerItem<int>)}~s~ classes.");
+            UIMenuItem panelsBindItem = new("Panels", $"Demonstrates the ~b~{nameof(UIMenuPanel)}~s~ classes.");
 
             UIMenu visualOptionsMenu = new UIMenu(TitleText, SubtitleText + ": VISUAL OPTIONS");
             UIMenu checkboxMenu = new UIMenu(TitleText, SubtitleText + ": CHECKBOX");
             UIMenu scrollerMenu = new UIMenu(TitleText, SubtitleText + ": SCROLLER");
+            UIMenu panelsMenu = new UIMenu(TitleText, SubtitleText + ": PANELS");
 
-            Plugin.Pool.Add(visualOptionsMenu, checkboxMenu, scrollerMenu);
+            Plugin.Pool.Add(visualOptionsMenu, checkboxMenu, scrollerMenu, panelsMenu);
 
-            AddItems(visualOptionsBindItem, checkboxBindItem, scrollerBindItem);
+            AddItems(visualOptionsBindItem, checkboxBindItem, scrollerBindItem, panelsBindItem);
 
             BindMenuToItem(visualOptionsMenu, visualOptionsBindItem);
             BindMenuToItem(checkboxMenu, checkboxBindItem);
             BindMenuToItem(scrollerMenu, scrollerBindItem);
+            BindMenuToItem(panelsMenu, panelsBindItem);
 
             // visual options
             {
@@ -257,6 +261,70 @@
                         SliderBar = new UIMenuScrollerSliderBar() { Width = 0.5f, Height = 0.5f, ForegroundColor = HudColor.Green.GetColor(), BackgroundColor = Color.FromArgb(120, HudColor.Green.GetColor()) }
                     }
                 );
+            }
+
+            // panels
+            {
+                UIMenuItem statsItem = new("Stats"),
+                           gridItem = new("Grid"),
+                           sliderItem = new("Slider"),
+                           combinedItem = new("Combined");
+
+                // stats
+                {
+                    var panel = new UIMenuStatsPanel();
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 0%", 0.0f, 0.0f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 20%", 0.2f, 0.0f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 40%", 0.4f, 0.0f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 60%", 0.6f, 0.0f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 80%", 0.8f, 0.0f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 100%", 1.0f, 0.0f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("50% +20%", 0.5f, 0.2f));
+                    panel.Stats.Add(new UIMenuStatsPanel.Stat("50% -20%", 0.5f, -0.2f));
+
+                    statsItem.Panels.Add(panel);
+                }
+
+                // grid
+                {
+                    var panel = new UIMenuGridPanel();
+                    gridItem.Panels.Add(panel);
+                }
+
+                // slider
+                {
+                    var panel = new UIMenuSliderPanel();
+                    sliderItem.Panels.Add(panel);
+                }
+
+                // combined
+                {
+                    var slider = new UIMenuSliderPanel();
+
+                    var grid = new UIMenuGridPanel();
+
+                    var stats = new UIMenuStatsPanel();
+                    stats.Stats.Add(new UIMenuStatsPanel.Stat("Slider", slider.Value, 0.0f));
+                    stats.Stats.Add(new UIMenuStatsPanel.Stat("Grid X", grid.Value.X, 0.0f));
+                    stats.Stats.Add(new UIMenuStatsPanel.Stat("Grid Y", grid.Value.Y, 0.0f));
+
+                    slider.ValueChanged += (s, newValue, oldValue) =>
+                    {
+                        stats.Stats[0].Percentage = newValue;
+                        stats.Stats[0].Upgrade = oldValue - newValue;
+                    };
+                    grid.ValueChanged += (s, newValue, oldValue) =>
+                    {
+                        stats.Stats[1].Percentage = newValue.X;
+                        stats.Stats[1].Upgrade = oldValue.X - newValue.X;
+                        stats.Stats[2].Percentage = newValue.Y;
+                        stats.Stats[2].Upgrade = oldValue.Y - newValue.Y;
+                    };
+
+                    combinedItem.Panels = new List<UIMenuPanel> { slider, grid, stats };
+                }
+
+                panelsMenu.AddItems(statsItem, gridItem, sliderItem, combinedItem);
             }
         }
     }
