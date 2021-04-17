@@ -16,7 +16,8 @@ namespace RAGENativeUI.Elements
 
         private float CalculateHeight()
         {
-            return 0.00138888f * (27.0f * Stats.Count);
+            // TODO: what if Stat.Draw if overrided with a higher bar?
+            return 0.034722f * Stats.Count + 0.00277776f * 2.95f * 2.0f;
         }
 
         public override void Draw(float x, ref float y, float menuWidth)
@@ -46,7 +47,7 @@ namespace RAGENativeUI.Elements
             public virtual void Draw(float x, ref float y, float menuWidth)
             {
                 const float OffsetX = 0.0046875f;
-                const float OffsetY = 0.00277776f * 2.95f;
+                const float OffsetY = 0.008194392f;
 
                 TextStyle.Apply();
                 TextCommands.Display(Text, x + OffsetX, y + OffsetY);

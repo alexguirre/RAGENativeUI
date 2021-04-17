@@ -71,6 +71,12 @@
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Slider Value", p1.Value, 0.0f));
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value X", p2.Value.X, 0.0f));
             p3.Stats.Add(new UIMenuStatsPanel.Stat("Grid Value Y", p2.Value.Y, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Dummy Value 1", 0.1f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Dummy Value 2", 0.2f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Dummy Value 3", 0.3f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Dummy Value 4", 0.4f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Dummy Value 5", 0.5f, 0.0f));
+            p3.Stats.Add(new UIMenuStatsPanel.Stat("Dummy Value 6", 0.6f, 0.0f));
 
             p1.ValueChanged += (s, newValue, oldValue) =>
             {
