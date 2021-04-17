@@ -267,6 +267,8 @@
             {
                 UIMenuItem statsItem = new("Stats"),
                            gridItem = new("Grid"),
+                           gridVerticalItem = new("Grid Vertical"),
+                           gridHorizontalItem = new("Grid Horizontal"),
                            sliderItem = new("Slider"),
                            combinedItem = new("Combined");
 
@@ -287,8 +289,9 @@
 
                 // grid
                 {
-                    var panel = new UIMenuGridPanel();
-                    gridItem.Panels.Add(panel);
+                    gridItem.Panels.Add(new UIMenuGridPanel());
+                    gridVerticalItem.Panels.Add(new UIMenuGridPanel { Style = UIMenuGridPanelStyle.SingleColumn });
+                    gridHorizontalItem.Panels.Add(new UIMenuGridPanel { Style = UIMenuGridPanelStyle.SingleRow });
                 }
 
                 // slider
@@ -324,7 +327,7 @@
                     combinedItem.Panels = new List<UIMenuPanel> { slider, grid, stats };
                 }
 
-                panelsMenu.AddItems(statsItem, gridItem, sliderItem, combinedItem);
+                panelsMenu.AddItems(statsItem, gridItem, gridVerticalItem, gridHorizontalItem, sliderItem, combinedItem);
             }
         }
     }
