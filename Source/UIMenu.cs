@@ -1000,7 +1000,7 @@ namespace RAGENativeUI
             }
 
             var panels = CurrentPanels;
-            if (panels != null && panels.Count != 0)
+            if (panels.Count != 0)
             {
                 y += 0.00277776f * 2.25f;
                 foreach (var panel in panels)
@@ -1350,7 +1350,7 @@ namespace RAGENativeUI
             }
 
             var panels = CurrentPanels;
-            if (panels != null && panels.Count != 0)
+            if (panels.Count != 0)
             {
                 foreach (var panel in panels)
                 {
@@ -1565,7 +1565,7 @@ namespace RAGENativeUI
             }
 
             var panels = CurrentPanels;
-            if (panels != null && panels.Count != 0)
+            if (panels.Count != 0)
             {
                 foreach (var panel in panels)
                 {
@@ -1609,7 +1609,7 @@ namespace RAGENativeUI
 
         private void UpdateInstructionalButtons()
         {
-            var panels = CurrentPanels ?? Array.Empty<UIMenuPanel>();
+            var panels = CurrentPanels;
             if (panels.Count != lastPanels.Count || !panels.SequenceEqual(lastPanels) || panels.Any(p => p.InstructionalButtonsChanged))
             {
                 instructionalButtonsFromPanels.ForEach(b => InstructionalButtons.Buttons.Remove(b));
@@ -1961,7 +1961,9 @@ namespace RAGENativeUI
         /// </summary>
         public IList<UIMenuPanel> PanelsOverride { get; set; }
 
-        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ?? MenuItems[CurrentSelection].Panels;
+        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ?? 
+                                                    (MenuItems.Count > 0 ? MenuItems[CurrentSelection].Panels : null) ??
+                                                    Array.Empty<UIMenuPanel>();
 
         /// <summary>
         /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
