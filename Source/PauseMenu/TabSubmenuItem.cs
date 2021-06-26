@@ -14,21 +14,31 @@ namespace RAGENativeUI.PauseMenu
             CanBeFocused = true;
             Items = new List<TabItem>(items);
             IsInList = true;
+            RefreshIndex();
         }
 
         public List<TabItem> Items { get; set; }
+        /// <summary>
+        /// Gets or sets the current selected item's index. Set to -1 if no selection exists, for example, when <see cref="Items"/> is empty.
+        /// </summary>
         public int Index { get; set; }
         public bool IsInList { get; set; }
 
         public void RefreshIndex()
         {
+            if (Items.Count == 0)
+            {
+                Index = -1;
+                return;
+            }
+
             foreach (TabItem item in Items)
             {
                 item.Focused = false;
                 item.Active = false;
                 item.Visible = false;
             }
-            Index = (1000 - (1000 % Items.Count)) % Items.Count;
+            Index = 0;
         }
 
         public override void ProcessControls()
@@ -39,9 +49,10 @@ namespace RAGENativeUI.PauseMenu
                 return;
             }
 
-            if (!Focused) return;
+            if (!Focused || Items.Count == 0 || Index < 0 || Index > Items.Count)
+                return;
 
-            if (Items.Count > 0 && Items[Index].Focused)
+            if (Items[Index].Focused)
             {
                 if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && Focused && Parent.FocusLevel > 1)
                 {
@@ -94,7 +105,10 @@ namespace RAGENativeUI.PauseMenu
         {
             if (!Visible) return;
             base.Draw();
-            
+
+            if (Items.Count == 0)
+                return;
+
             var res = UIMenu.GetScreenResolutionMantainRatio();
             
             var blackAlpha = Focused ? 200 : 100;
@@ -137,15 +151,18 @@ namespace RAGENativeUI.PauseMenu
                 //}
             }
 
-            Items[Index].Visible = true;
-            Items[Index].FadeInWhenFocused = true;
-            //if (Items[Index].CanBeFocused)
-            //    Items[Index].Focused = true;
-            Items[Index].UseDynamicPositionment = false;
-            Items[Index].SafeSize = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));
-            Items[Index].TopLeft = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));
-            Items[Index].BottomRight = new Point((int)res.Width - SafeSize.X, (int)res.Height - SafeSize.Y);
-            Items[Index].Draw();
+            if (Index >= 0 && Index < Items.Count)
+            {
+                Items[Index].Visible = true;
+                Items[Index].FadeInWhenFocused = true;
+                //if (Items[Index].CanBeFocused)
+                //    Items[Index].Focused = true;
+                Items[Index].UseDynamicPositionment = false;
+                Items[Index].SafeSize = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));
+                Items[Index].TopLeft = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));
+                Items[Index].BottomRight = new Point((int)res.Width - SafeSize.X, (int)res.Height - SafeSize.Y);
+                Items[Index].Draw();
+            }
         }
     }
 }
