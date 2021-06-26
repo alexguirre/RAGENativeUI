@@ -31,6 +31,7 @@ namespace RAGENativeUI.PauseMenu
             TemporarilyHidden = false;
             CanLeave = true;
             PauseGame = false;
+            PlayBackgroundEffect = true;
 
             MoneySubtitle = "";
 
@@ -51,6 +52,10 @@ namespace RAGENativeUI.PauseMenu
         public bool CanLeave { get; set; }
         public bool PauseGame { get; set; }
         public bool HideTabs { get; set; }
+        /// <summary>
+        /// Gets or sets whether the background effect plays when the menu is open.
+        /// </summary>
+        public bool PlayBackgroundEffect { get; set; }
 
         public event EventHandler OnMenuClose;
 
@@ -70,13 +75,14 @@ namespace RAGENativeUI.PauseMenu
                     Shared.NumberOfVisiblePauseMenus++;
                     NumberOfVisiblePauseMenus++;
                     N.SetPlayerControl(Game.LocalPlayer, false, 0);
-                    N.AnimPostFxPlay("MinigameTransitionIn", 0, true);
+                    if (PlayBackgroundEffect)
+                        N.AnimPostFxPlay("MinigameTransitionIn", 0, true);
                     if (PauseGame)
                         Game.IsPaused = true;
                 }
                 else
                 {
-                    CleanUp();
+                    CleanUp(this);
                     Shared.NumberOfVisiblePauseMenus--;
                     NumberOfVisiblePauseMenus--;
                     if (PauseGame)
@@ -325,10 +331,11 @@ namespace RAGENativeUI.PauseMenu
             }
         });
 
-        private static void CleanUp()
+        private static void CleanUp(TabView view = null)
         {
             N.SetPlayerControl(Game.LocalPlayer, true, 0);
-            N.AnimPostFxStop("MinigameTransitionIn");
+            if (view?.PlayBackgroundEffect ?? true)
+                N.AnimPostFxStop("MinigameTransitionIn");
         }
     }
 }
