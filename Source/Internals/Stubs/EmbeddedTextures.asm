@@ -204,7 +204,7 @@ search_texture_in_drawable:
         ; keys are sorted so binary search could be used, but I don't think any drawable will have enough textures to make it worthy, so just do linear search
     .loop: ; rax = i
         cmp     ax, word [r9 + atArray_Count] ; while (i < keys.Count)
-        jge     .exit
+        jge     .not_found
 
 
         cmp     edx, dword [r8 + rax * 4]       ; if (texture_name_hash == keys[i]) found else continue
