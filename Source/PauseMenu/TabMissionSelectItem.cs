@@ -179,7 +179,8 @@ namespace RAGENativeUI.PauseMenu
                 drawTexture = false;
                 Sprite sprite = Heists[Index].Logo.Sprite;
                 sprite.Position = new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y);
-                sprite.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
+                sprite.Size = new Size(512, 256);
+                sprite.Color = Color.FromArgb(blackAlpha, 255, 255, 255);
                 sprite.Draw();
             }
             else
