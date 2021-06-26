@@ -59,6 +59,10 @@ namespace RAGENativeUI.PauseMenu
             get { return _visible; }
             set
             {
+                // if the value is not changed, then don't change any properties or call any methods to avoid false data
+                if (_visible == value)
+                    return;
+
                 _visible = value;
 
                 if (value)
