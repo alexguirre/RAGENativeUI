@@ -51,7 +51,7 @@ namespace RAGENativeUI.Elements
 
         public bool IsTextureDictionaryLoaded
         {
-            get { return N.HasStreamedTextureDictLoaded(_textureDict); }
+            get { return HasTextureDictionaryLoaded(_textureDict); }
         }
 
         [Obsolete("Use Sprite.LoadTextureDictionary() instead.")]
@@ -62,7 +62,7 @@ namespace RAGENativeUI.Elements
 
         public void LoadTextureDictionary()
         {
-            N.RequestStreamedTextureDict(_textureDict);
+            RequestTextureDictionary(_textureDict);
         }
 
         /// <summary>
@@ -108,12 +108,37 @@ namespace RAGENativeUI.Elements
             Draw(_textureDict, TextureName, Position, Size, Heading, Color, false);
         }
 
+        private static void RequestTextureDictionary(string textureDictionary)
+        {
+            if (textureDictionary.StartsWith("embed:"))
+            {
+                // nothing, the user is in charge of loading the model
+            }
+            else
+            {
+                N.RequestStreamedTextureDict(textureDictionary);
+            }
+        }
+
+        private static bool HasTextureDictionaryLoaded(string textureDictionary)
+        {
+            if (textureDictionary.StartsWith("embed:"))
+            {
+                // nothing, the user is in charge of loading the model, assume it is loaded
+                return true;
+            }
+            else
+            {
+                return N.HasStreamedTextureDictLoaded(textureDictionary);
+            }
+        }
+
         public static void Draw(string textureDictionary, string textureName, Point position, Size size, float heading, Color color, bool loadTexture = true)
         {
             if (loadTexture)
             {
-                N.RequestStreamedTextureDict(textureDictionary);
-                if (!N.HasStreamedTextureDictLoaded(textureDictionary))
+                RequestTextureDictionary(textureDictionary);
+                if (!HasTextureDictionaryLoaded(textureDictionary))
                 {
                     return;
                 }
