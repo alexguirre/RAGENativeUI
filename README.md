@@ -1,4 +1,4 @@
-# RAGENativeUI [![Build Status](https://github.com/alexguirre/RAGENativeUI/workflows/CI/badge.svg)](https://github.com/alexguirre/RAGENativeUI/actions?workflow=CI)
+# RAGENativeUI [![Build Status](https://github.com/alexguirre/RAGENativeUI/workflows/CI/badge.svg)](https://github.com/alexguirre/RAGENativeUI/actions?workflow=CI) [![NuGet](https://img.shields.io/nuget/v/RAGENativeUI?logo=nuget)](https://www.nuget.org/packages/RAGENativeUI)
 
 RAGENativeUI is a library for [RAGEPluginHook](https://ragepluginhook.net/) that helps you to quickly and easily build Rockstar-like menus and UIs.
 
