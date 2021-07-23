@@ -28,6 +28,7 @@
         public static readonly IntPtr CTextFile_sm_Instance;
         public static readonly IntPtr CTextFile_sm_CriticalSection;
         public static readonly IntPtr CTextFile_GetStringByHash;
+        public static readonly int CTextFile_OverridesTextMapOffset = -1;
         public static readonly IntPtr g_FragmentStore;
         public static readonly IntPtr g_DrawableStore;
         public static readonly IntPtr atStringHash;
@@ -151,6 +152,7 @@
                 {
                     CTextFile_GetStringByHash = addr - 0x19;
                     CTextFile_sm_CriticalSection = addr + *(int*)(addr + 3) + 7;
+                    CTextFile_OverridesTextMapOffset = *(int*)(addr + 0x19);
                 }
             }
 
@@ -607,7 +609,16 @@
 
         // this is the first map checked when retrieving text labels and seems to be unused, it is always empty as far as I can tell
         // Should be good enough to allow us to override/add text labels
-        [FieldOffset(0x258)] public atBinaryMap OverridesTextMap;
+        public ref atBinaryMap OverridesTextMap
+        {
+            get
+            {
+                fixed (void* This = &this)
+                {
+                    return ref Unsafe.AsRef<atBinaryMap>((byte*)This + Memory.CTextFile_OverridesTextMapOffset);
+                }
+            }
+        }
 
         public IntPtr GetStringByHash(uint hash) => ((delegate* unmanaged[Thiscall]<ref CTextFile, uint, nint>)Memory.CTextFile_GetStringByHash)(ref this, hash);
 
@@ -615,6 +626,7 @@
         public static ref CRITICAL_SECTION CriticalSection => ref Unsafe.AsRef<CRITICAL_SECTION>((void*)Memory.CTextFile_sm_CriticalSection);
 
         public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero &&
+                                                Memory.CTextFile_OverridesTextMapOffset != -1 &&
                                                 Memory.CTextFile_GetStringByHash != IntPtr.Zero &&
                                                 Memory.CTextFile_sm_CriticalSection != IntPtr.Zero;
     }
