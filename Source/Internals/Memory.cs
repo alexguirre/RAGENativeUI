@@ -208,6 +208,22 @@
             {
                 TimershudSharedInstructionalButtonsNumRowsOffset = Shared.MemoryInts[3];
             }
+
+#if DEBUG
+            Game.LogTrivialDebug($"[RAGENativeUI] Available memory stuff:");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > ScriptGlobals.TimerBarsInstructionButtonsNumRows = {ScriptGlobals.TimerBarsInstructionButtonsNumRowsAvailable}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > ScriptGlobals.TimersBarsTotalHeight = {ScriptGlobals.TimersBarsTotalHeightAvailable}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > Screen = {Screen.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > DirectNatives.DisableControlAction = {DirectNatives.DisableControlActionAvailable}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > DirectNatives.DrawRect = {DirectNatives.DrawRectAvailable}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > DirectNatives.DrawSprite = {DirectNatives.DrawSpriteAvailable}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > CTextStyle.ScriptStyle = {CTextStyle.ScriptStyleAvailable}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > CScaleformMgr = {CScaleformMgr.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > CBusySpinner = {CBusySpinner.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > scrProgramRegistry = {scrProgramRegistry.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > CTextFormat = {CTextFormat.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > CTextFile = {CTextFile.Available}");
+#endif
         }
 
         private static int findAddressKey = 0;
@@ -356,7 +372,7 @@
 
     internal static class Screen
     {
-        private static readonly bool Available = Memory.Screen_GetActualWidth != IntPtr.Zero && Memory.Screen_GetActualHeight != IntPtr.Zero;
+        public static readonly bool Available = Memory.Screen_GetActualWidth != IntPtr.Zero && Memory.Screen_GetActualHeight != IntPtr.Zero;
 
         /// <summary>
         /// Gets the resolution of the main screen, the one containing the UI in case multiple screens are used.
