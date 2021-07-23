@@ -22,10 +22,16 @@
             prefersMetricMeasurements = new UIMenuItem("Prefers Metric Measurements", $"Gets the ~b~{nameof(Localization)}.{nameof(Localization.PrefersMetricMeasurements)}~s~ property.");
             var resultExists = new UIMenuItem(
                 "    Exists",
-                $"Whether the input label ID exists, using ~b~{nameof(Localization)}.{nameof(Localization.DoesTextExist)}~s~.");
+                $"Whether the input label ID exists, using ~b~{nameof(Localization)}.{nameof(Localization.DoesTextExist)}~s~.")
+            {
+                Skipped = true,
+            };
             var resultString = new UIMenuItem(
                 "    Text",
-                $"Value of the input label ID, using ~b~{nameof(Localization)}.{nameof(Localization.GetText)}~s~.");
+                $"Value of the input label ID, using ~b~{nameof(Localization)}.{nameof(Localization.GetText)}~s~.")
+            {
+                Skipped = true,
+            };
             var labelId = new UIMenuItem("Label ID", $"Select to change the input label ID.")
                 .WithTextEditing(() => inputLabelId,
                                  s =>

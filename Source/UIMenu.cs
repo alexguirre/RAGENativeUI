@@ -578,10 +578,17 @@ namespace RAGENativeUI
                 return;
             }
 
+            var selection = -1;
             for (int i = 0; i < MenuItems.Count; i++)
+            {
+                if (selection == -1 && !MenuItems[i].Skipped)
+                {
+                    selection = i;
+                }
                 MenuItems[i].Selected = false;
+            }
 
-            CurrentSelection = 0;
+            CurrentSelection = selection;
         }
 
         /// <summary>
@@ -1122,6 +1129,35 @@ namespace RAGENativeUI
             return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
+        private void MoveToPreviousItem()
+        {
+            CurrentSelection = GetIndexOfPreviousSelectableItem(CurrentSelection);
+        }
+
+        private void MoveToNextItem()
+        {
+            CurrentSelection = GetIndexOfNextSelectableItem(CurrentSelection);
+        }
+
+        private int GetIndexOfPreviousSelectableItem(int startIndex)
+            => GetIndexOfNextSelectableItem(startIndex, directionStep: -1);
+
+        private int GetIndexOfNextSelectableItem(int startIndex)
+            => GetIndexOfNextSelectableItem(startIndex, directionStep: +1);
+
+        private int GetIndexOfNextSelectableItem(int startIndex, int directionStep)
+        {
+            int newSelection = startIndex;
+            int count = 0; // keep count to prevent an infinite loop when all items are skipped
+            do
+            {
+                newSelection = WrapItemIndex(newSelection + directionStep);
+                count++;
+            } while (count < MenuItems.Count && MenuItems[newSelection].Skipped);
+
+            return MenuItems[newSelection].Skipped ? -1 : newSelection;
+        }
+
         [Obsolete("Use UIMenu.GoUp() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoUpOverflow()
         {
@@ -1140,8 +1176,7 @@ namespace RAGENativeUI
 
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Up))
             {
-                CurrentSelection--;
-
+                MoveToPreviousItem();
                 Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                 IndexChange(CurrentSelection);
             }
@@ -1165,8 +1200,7 @@ namespace RAGENativeUI
 
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
             {
-                CurrentSelection++;
-
+                MoveToNextItem();
                 Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                 IndexChange(CurrentSelection);
             }
@@ -1713,7 +1747,7 @@ namespace RAGENativeUI
         /// </summary>
         private void RefreshCurrentSelection()
         {
-            CurrentSelection = CurrentSelection == -1 ? 0 : CurrentSelection;
+            CurrentSelection = GetIndexOfNextSelectableItem((CurrentSelection == -1 ? 0 : CurrentSelection) - 1);
         }
 
         /// <summary>
@@ -1788,7 +1822,7 @@ namespace RAGENativeUI
                 }
                 else
                 {
-                    int newIndex = Common.Wrap(value, 0, MenuItems.Count);
+                    int newIndex = WrapItemIndex(value);
 
                     if (currentItem != newIndex || !MenuItems[newIndex].Selected)
                     {
@@ -1805,6 +1839,11 @@ namespace RAGENativeUI
                 }
             }
         }
+
+        /// <summary>
+        /// TODO TODO
+        /// </summary>
+        private int WrapItemIndex(int value) => Common.Wrap(value, 0, MenuItems.Count);
 
         /// <summary>
         /// Gets or set the maximum number of visible items.
@@ -1961,7 +2000,7 @@ namespace RAGENativeUI
         /// </summary>
         public IList<UIMenuPanel> PanelsOverride { get; set; }
 
-        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ?? 
+        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ??
                                                     (MenuItems.Count > 0 ? MenuItems[CurrentSelection].Panels : null) ??
                                                     Array.Empty<UIMenuPanel>();
 
