@@ -71,10 +71,10 @@
 
             CBusySpinner_InstructionalButtons = FindAddress(() =>
             {
-                IntPtr addr = Game.FindPattern("0F B7 05 ?? ?? ?? ?? 33 DB 8B F8 85 C0");
+                IntPtr addr = Game.FindPattern("48 8B 05 ?? ?? ?? ?? 3B 1C 90 74 22 48 FF C2 ");
                 if (addr != IntPtr.Zero)
                 {
-                    addr += *(int*)(addr + 3) + 7 - 8;
+                    addr += *(int*)(addr + 3) + 7;
                 }
                 return addr;
             });
