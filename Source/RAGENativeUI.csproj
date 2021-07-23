@@ -9,6 +9,7 @@
     <OutputPath>bin/$(Configuration)/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateDocumentationFile Condition="'$(Configuration)' == 'Release'">true</GenerateDocumentationFile>
+    <Configurations>Debug;Release;Debug-NoILMerge</Configurations>
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
@@ -43,12 +44,15 @@
     <Compile Remove="Examples\**" />
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>
+    <PostBuildEvent Condition="'$(Configuration)' != 'Debug-NoILMerge'">
       $(ILMergeConsolePath) /internalize /out:"$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll System.Runtime.CompilerServices.Unsafe.dll
 
       del RAGENativeUI.dll RAGENativeUI.pdb System.Runtime.CompilerServices.Unsafe.dll RagePluginHook.dll
       move "$(Temp)\RAGENativeUI.dll" RAGENativeUI.dll
       move "$(Temp)\RAGENativeUI.pdb" RAGENativeUI.pdb
+    </PostBuildEvent>
+    <PostBuildEvent Condition="'$(Configuration)' == 'Debug-NoILMerge'">
+      del RagePluginHook.dll
     </PostBuildEvent>
   </PropertyGroup>
 </Project>

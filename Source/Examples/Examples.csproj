@@ -9,6 +9,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>../bin/$(Configuration)/Plugins/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Configurations>Debug;Release;Debug-NoILMerge</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
