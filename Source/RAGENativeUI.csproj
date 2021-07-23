@@ -26,6 +26,10 @@
     <Description>Library for RAGEPluginHook that helps you to quickly and easily build Rockstar-like menus and UIs.</Description>
     <Copyright>Copyright © 2016-2021 alexguirre</Copyright>
   </PropertyGroup>
+  <PropertyGroup Condition="$(Configuration.StartsWith('Debug'))">
+    <DefineConstants>DEBUG</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
