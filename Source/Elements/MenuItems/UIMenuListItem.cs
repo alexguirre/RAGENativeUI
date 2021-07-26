@@ -230,7 +230,7 @@ namespace RAGENativeUI.Elements
 
             GetBadgeOffsets(out _, out float badgeOffset);
 
-            if (Selected && Enabled)
+            if (Selected && CanDrawNavBar && Enabled)
             {
                 Color textColor = CurrentForeColor;
                 float optTextX = x + width - (0.00390625f * 1.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;

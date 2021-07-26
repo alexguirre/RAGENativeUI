@@ -241,7 +241,7 @@
 
             GetBadgeOffsets(out _, out float badgeOffset);
 
-            if (Selected && (Enabled || ScrollingEnabledWhenDisabled) && ScrollingEnabled)
+            if (Selected && CanDrawNavBar && (Enabled || ScrollingEnabledWhenDisabled) && ScrollingEnabled)
             {
                 Color arrowsColor = CurrentForeColor;
                 if (!Enabled)

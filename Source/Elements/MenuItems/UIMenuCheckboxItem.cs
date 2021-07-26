@@ -107,7 +107,7 @@ namespace RAGENativeUI.Elements
             bool isDefaultHightlitedForeColor = HighlightedForeColor == DefaultHighlightedForeColor;
 
             string name;
-            if (Selected && Enabled && isDefaultHightlitedForeColor)
+            if (Selected && CanDrawNavBar && Enabled && isDefaultHightlitedForeColor)
             {
                 name = Checked ? GetChecked(Style, true) : UIMenu.CheckboxBlankSelectedTextureName;
             }
@@ -117,7 +117,7 @@ namespace RAGENativeUI.Elements
             }
 
             Color color = Enabled ?
-                        (Selected && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor :
+                        (Selected && CanDrawNavBar && !isDefaultHightlitedForeColor) ? HighlightedForeColor : ForeColor :
                         DisabledForeColor;
 
             return (name, color);
