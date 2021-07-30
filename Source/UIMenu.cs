@@ -837,7 +837,14 @@ namespace RAGENativeUI
             }
             else if (MenuItems.Count > MaxItemsOnScreen)
             {
-                counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
+                if (HasSelection)
+                {
+                    counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
+                }
+                else
+                {
+                    counterText = CounterPretext + "- / " + MenuItems.Count;
+                }
             }
 
             if (counterText == null)
