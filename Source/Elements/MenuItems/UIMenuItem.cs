@@ -108,6 +108,11 @@ namespace RAGENativeUI.Elements
         public virtual bool Enabled { get; set; }
 
         /// <summary>
+        /// Whether this item should be skipped when moving through the menu.
+        /// </summary>
+        public virtual bool Skipped { get; set; }
+
+        /// <summary>
         /// Gets or sets whether the navigation bar is drawn when selected.
         /// For now, only needed internally by <see cref="PauseMenu.TabInteractiveListItem"/> to hide the navigation bar when not focused.
         /// </summary>

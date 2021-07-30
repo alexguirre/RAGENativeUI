@@ -578,10 +578,17 @@ namespace RAGENativeUI
                 return;
             }
 
+            var selection = -1;
             for (int i = 0; i < MenuItems.Count; i++)
+            {
+                if (selection == -1 && !MenuItems[i].Skipped)
+                {
+                    selection = i;
+                }
                 MenuItems[i].Selected = false;
+            }
 
-            CurrentSelection = 0;
+            CurrentSelection = selection;
         }
 
         /// <summary>
@@ -830,7 +837,14 @@ namespace RAGENativeUI
             }
             else if (MenuItems.Count > MaxItemsOnScreen)
             {
-                counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
+                if (HasSelection)
+                {
+                    counterText = CounterPretext + (CurrentSelection + 1) + " / " + MenuItems.Count;
+                }
+                else
+                {
+                    counterText = CounterPretext + "- / " + MenuItems.Count;
+                }
             }
 
             if (counterText == null)
@@ -948,7 +962,7 @@ namespace RAGENativeUI
         /// </param>
         protected virtual void DrawDescription(float x, ref float y)
         {
-            if (DescriptionOverride == null && MenuItems.Count == 0)
+            if (DescriptionOverride == null && !HasSelection)
             {
                 return;
             }
@@ -1122,6 +1136,35 @@ namespace RAGENativeUI
             return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
+        private void MoveToPreviousItem()
+        {
+            CurrentSelection = GetIndexOfPreviousSelectableItem(CurrentSelection);
+        }
+
+        private void MoveToNextItem()
+        {
+            CurrentSelection = GetIndexOfNextSelectableItem(CurrentSelection);
+        }
+
+        private int GetIndexOfPreviousSelectableItem(int startIndex)
+            => GetIndexOfNextSelectableItem(startIndex, directionStep: -1);
+
+        private int GetIndexOfNextSelectableItem(int startIndex)
+            => GetIndexOfNextSelectableItem(startIndex, directionStep: +1);
+
+        private int GetIndexOfNextSelectableItem(int startIndex, int directionStep)
+        {
+            int newSelection = startIndex;
+            int count = 0; // keep count to prevent an infinite loop when all items are skipped
+            do
+            {
+                newSelection = Common.Wrap(newSelection + directionStep, 0, MenuItems.Count);
+                count++;
+            } while (count < MenuItems.Count && MenuItems[newSelection].Skipped);
+
+            return MenuItems[newSelection].Skipped ? -1 : newSelection;
+        }
+
         [Obsolete("Use UIMenu.GoUp() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoUpOverflow()
         {
@@ -1133,15 +1176,14 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void GoUp()
         {
-            if (MenuItems.Count == 0)
+            if (!HasSelection)
             {
                 return;
             }
 
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Up))
             {
-                CurrentSelection--;
-
+                MoveToPreviousItem();
                 Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                 IndexChange(CurrentSelection);
             }
@@ -1158,15 +1200,14 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void GoDown()
         {
-            if (MenuItems.Count == 0)
+            if (!HasSelection)
             {
                 return;
             }
 
             if (!MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Down))
             {
-                CurrentSelection++;
-
+                MoveToNextItem();
                 Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                 IndexChange(CurrentSelection);
             }
@@ -1177,7 +1218,7 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void GoLeft()
         {
-            if (MenuItems.Count == 0)
+            if (!HasSelection)
             {
                 return;
             }
@@ -1190,7 +1231,7 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void GoRight()
         {
-            if (MenuItems.Count == 0)
+            if (!HasSelection)
             {
                 return;
             }
@@ -1203,7 +1244,7 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void SelectItem()
         {
-            if (MenuItems.Count == 0)
+            if (!HasSelection)
             {
                 return;
             }
@@ -1216,7 +1257,7 @@ namespace RAGENativeUI
         /// </summary>
         public virtual void GoBack()
         {
-            if (MenuItems.Count == 0 || !MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back))
+            if (!HasSelection || !MenuItems[CurrentSelection].OnInput(this, Common.MenuControls.Back))
             {
                 Common.PlaySound(AUDIO_BACK, AUDIO_LIBRARY);
                 Close();
@@ -1324,7 +1365,7 @@ namespace RAGENativeUI
             float mouseY = N.GetControlNormal(2, GameControl.CursorY);
 
             // send mouse input event to selected item
-            UIMenuItem selectedItem = MenuItems[CurrentSelection];
+            UIMenuItem selectedItem = HasSelection ? MenuItems[CurrentSelection] : null;
 
             UIMenuItem.MouseInput input = UIMenuItem.MouseInput.Released;
             if (controls.CursorAccept.IsJustPressed)
@@ -1344,7 +1385,7 @@ namespace RAGENativeUI
                 input = UIMenuItem.MouseInput.Pressed;
             }
 
-            if (selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input))
+            if (selectedItem != null && selectedItem.OnMouseInput(this, currentItemBounds, new PointF(mouseX, mouseY), input))
             {
                 return;
             }
@@ -1655,7 +1696,7 @@ namespace RAGENativeUI
                     c.Checked = false;
                 }
             }
-            CurrentSelection = 0;
+            RefreshIndex();
         }
 
 
@@ -1674,7 +1715,7 @@ namespace RAGENativeUI
                 return;
             }
 
-            if (minItem == -1 || maxItem == -1) // if no previous selection
+            if (currentItem == -1 || minItem == -1 || maxItem == -1) // if no selection or no previous selection
             {
                 minItem = 0;
                 maxItem = Math.Min(MenuItems.Count, MaxItemsOnScreen) - 1;
@@ -1713,7 +1754,7 @@ namespace RAGENativeUI
         /// </summary>
         private void RefreshCurrentSelection()
         {
-            CurrentSelection = CurrentSelection == -1 ? 0 : CurrentSelection;
+            CurrentSelection = GetIndexOfNextSelectableItem((CurrentSelection == -1 ? 0 : CurrentSelection) - 1);
         }
 
         /// <summary>
@@ -1772,14 +1813,19 @@ namespace RAGENativeUI
         internal bool IgnoreVisibility { get; set; }
 
         /// <summary>
-        /// Gets or sets the current selected item's index. When setting it, the specified value will be wrap around between 0 and the number of items.
-        /// Returns -1 if no selection exists, for example, when no items have been added to the menu.
+        /// Gets or sets the currently selected item index.
+        /// A value of <c>-1</c> indicates that no selection exists, for example, when no items have been added to the menu.
         /// </summary>
         public int CurrentSelection
         {
             get => currentItem;
             set
             {
+                if (value != -1 && !IsValidItemIndex(value))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), $"Value must be -1 or in the range [0, {nameof(MenuItems)}.{nameof(MenuItems.Count)})");
+                }
+
                 if (MenuItems.Count == 0)
                 {
                     currentItem = -1;
@@ -1788,16 +1834,19 @@ namespace RAGENativeUI
                 }
                 else
                 {
-                    int newIndex = Common.Wrap(value, 0, MenuItems.Count);
-
-                    if (currentItem != newIndex || !MenuItems[newIndex].Selected)
+                    if (currentItem != value || (IsValidItemIndex(value) && !MenuItems[value].Selected))
                     {
-                        if (currentItem >= 0 && currentItem < MenuItems.Count)
+                        if (IsValidItemIndex(currentItem))
                         {
                             MenuItems[currentItem].Selected = false;
                         }
-                        currentItem = newIndex;
-                        MenuItems[currentItem].Selected = true;
+                        
+                        currentItem = value;
+
+                        if (IsValidItemIndex(currentItem))
+                        {
+                            MenuItems[currentItem].Selected = true;
+                        }
                         UpdateInstructionalButtons();
                     }
 
@@ -1805,6 +1854,16 @@ namespace RAGENativeUI
                 }
             }
         }
+
+        /// <summary>
+        /// Gets whether a selection exists. If the selection exists, <see cref="CurrentSelection"/> returns the index of the selected item; otherwise, <c>-1</c>.
+        /// </summary>
+        public bool HasSelection => IsValidItemIndex(CurrentSelection);
+
+        /// <summary>
+        /// Gets whether <paramref name="index"/> is in the range [0, MenuItems.Count).
+        /// </summary>
+        private bool IsValidItemIndex(int index) => index >= 0 && index < MenuItems.Count;
 
         /// <summary>
         /// Gets or set the maximum number of visible items.
@@ -1961,8 +2020,8 @@ namespace RAGENativeUI
         /// </summary>
         public IList<UIMenuPanel> PanelsOverride { get; set; }
 
-        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ?? 
-                                                    (MenuItems.Count > 0 ? MenuItems[CurrentSelection].Panels : null) ??
+        private IList<UIMenuPanel> CurrentPanels => PanelsOverride ??
+                                                    (HasSelection ? MenuItems[CurrentSelection].Panels : null) ??
                                                     Array.Empty<UIMenuPanel>();
 
         /// <summary>
