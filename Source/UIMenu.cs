@@ -1158,7 +1158,7 @@ namespace RAGENativeUI
             int count = 0; // keep count to prevent an infinite loop when all items are skipped
             do
             {
-                newSelection = WrapItemIndex(newSelection + directionStep);
+                newSelection = Common.Wrap(newSelection + directionStep, 0, MenuItems.Count);
                 count++;
             } while (count < MenuItems.Count && MenuItems[newSelection].Skipped);
 
@@ -1855,18 +1855,15 @@ namespace RAGENativeUI
             }
         }
 
-        // TODO: make HasSelection public?
-        private bool HasSelection => IsValidItemIndex(CurrentSelection);
+        /// <summary>
+        /// Gets whether a selection exists. If the selection exists, <see cref="CurrentSelection"/> returns the index of the selected item; otherwise, <c>-1</c>.
+        /// </summary>
+        public bool HasSelection => IsValidItemIndex(CurrentSelection);
 
         /// <summary>
         /// Gets whether <paramref name="index"/> is in the range [0, MenuItems.Count).
         /// </summary>
         private bool IsValidItemIndex(int index) => index >= 0 && index < MenuItems.Count;
-
-        /// <summary>
-        /// TODO TODO
-        /// </summary>
-        private int WrapItemIndex(int value) => Common.Wrap(value, 0, MenuItems.Count);
 
         /// <summary>
         /// Gets or set the maximum number of visible items.
