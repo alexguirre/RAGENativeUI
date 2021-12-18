@@ -76,48 +76,56 @@ namespace RAGENativeUI.Elements
         {
             DrawBackground(x, y, Height, menuWidth);
 
-            barBounds = GetSliderBarBounds(x, y, menuWidth);
-            DrawLabels(x, y, menuWidth);
-            DrawSlider(x, y, menuWidth);
+            var sliderRect = GetSliderDrawRect(x, y, menuWidth);
+            DrawLabels(x, menuWidth, sliderRect);
+            DrawSlider(sliderRect);
+
+            // calculate slider bar bounds by applying the safezone to the rect drawn
+            {
+                float x1 = sliderRect.Left, y1 = sliderRect.Top;
+                float x2 = sliderRect.Right, y2 = sliderRect.Bottom;
+                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+                barBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
+            }
 
             y += Height;
         }
 
-        private void DrawLabels(float x, float y, float menuWidth)
+        private void DrawLabels(float x, float menuWidth, RectangleF sliderRect)
         {
-
             var centerX = x + menuWidth * 0.5f;
 
             float wrapStart = x + BorderMargin, wrapEnd = x + menuWidth - BorderMargin;
 
             const float PaddingFromBar = BorderMargin * 2.5f;
-            var r = barBounds;
 
             if (!string.IsNullOrEmpty(Title))
             {
                 var titleCharHeight = TitleStyle.CharacterHeight;
                 var titleStyle = TitleStyle.WithWrap(wrapStart, wrapEnd);
-                TextCommands.Display(Title, titleStyle, centerX, r.Y - PaddingFromBar - titleCharHeight);
+                TextCommands.Display(Title, titleStyle, centerX, sliderRect.Y - PaddingFromBar - titleCharHeight);
             }
 
             if (!string.IsNullOrEmpty(LeftLabel))
             {
                 var leftCharHeight = LeftLabelStyle.CharacterHeight;
                 var leftStyle = LeftLabelStyle.WithWrap(wrapStart, wrapEnd);
-                TextCommands.Display(LeftLabel, leftStyle, wrapStart, r.Y - PaddingFromBar - leftCharHeight);
+                TextCommands.Display(LeftLabel, leftStyle, wrapStart, sliderRect.Y - PaddingFromBar - leftCharHeight);
             }
 
             if (!string.IsNullOrEmpty(RightLabel))
             {
                 var rightCharHeight = RightLabelStyle.CharacterHeight;
                 var rightStyle = RightLabelStyle.WithWrap(wrapStart, wrapEnd);
-                TextCommands.Display(RightLabel, rightStyle, wrapEnd, r.Y - PaddingFromBar - rightCharHeight);
+                TextCommands.Display(RightLabel, rightStyle, wrapEnd, sliderRect.Y - PaddingFromBar - rightCharHeight);
             }
         }
 
-        private void DrawSlider(float x, float y, float menuWidth)
+        private void DrawSlider(RectangleF sliderRect)
         {
-            var r = barBounds;
+            var r = sliderRect;
             UIMenu.DrawRect(r.X + r.Width * 0.5f, r.Y + r.Height * 0.5f, r.Width, r.Height, BarBackgroundColor);
 
             float fillWidth = r.Width * Value;
@@ -185,7 +193,7 @@ namespace RAGENativeUI.Elements
             return false;
         }
 
-        private RectangleF GetSliderBarBounds(float x, float y, float menuWidth)
+        private RectangleF GetSliderDrawRect(float x, float y, float menuWidth)
         {
             float barWidth = (menuWidth - BorderMargin * 2.0f);
             float barHeight = 0.00675f;
