@@ -4,6 +4,7 @@ using Rage.Native;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Drawing;
 
 namespace RAGENativeUI
 {
@@ -129,6 +130,16 @@ namespace RAGENativeUI
                 value = min + (value - min) % (max - min);
 
             return value;
+        }
+
+        internal static RectangleF GetScriptGfxRect(RectangleF rect)
+        {
+            float x1 = rect.Left, y1 = rect.Top;
+            float x2 = rect.Right, y2 = rect.Bottom;
+            N.GetScriptGfxPosition(x1, y1, out x1, out y1);
+            N.GetScriptGfxPosition(x2, y2, out x2, out y2);
+
+            return new RectangleF(x1, y1, x2 - x1, y2 - y1);
         }
     }
 }

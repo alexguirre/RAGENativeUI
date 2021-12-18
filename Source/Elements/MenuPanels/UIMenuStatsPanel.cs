@@ -24,7 +24,7 @@ namespace RAGENativeUI.Elements
         {
             var height = CalculateHeight();
 
-            DrawBackground(x, y, height, menuWidth);
+            DrawBackground(x, y, menuWidth, height);
 
             float statY = y;
             foreach (var s in Stats)

@@ -74,21 +74,14 @@ namespace RAGENativeUI.Elements
 
         public override void Draw(float x, ref float y, float menuWidth)
         {
-            DrawBackground(x, y, Height, menuWidth);
+            DrawBackground(x, y, menuWidth, Height);
 
             var sliderRect = GetSliderDrawRect(x, y, menuWidth);
             DrawLabels(x, menuWidth, sliderRect);
             DrawSlider(sliderRect);
 
             // calculate slider bar bounds by applying the safezone to the rect drawn
-            {
-                float x1 = sliderRect.Left, y1 = sliderRect.Top;
-                float x2 = sliderRect.Right, y2 = sliderRect.Bottom;
-                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
-                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
-
-                barBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
-            }
+            barBounds = Common.GetScriptGfxRect(sliderRect);
 
             y += Height;
         }
@@ -190,7 +183,7 @@ namespace RAGENativeUI.Elements
                 return true;
             }
 
-            return false;
+            return base.ProcessMouse(mouseX, mouseY);
         }
 
         private RectangleF GetSliderDrawRect(float x, float y, float menuWidth)

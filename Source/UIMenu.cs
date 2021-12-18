@@ -1016,7 +1016,7 @@ namespace RAGENativeUI
             var panels = CurrentPanels;
             if (panels.Count != 0)
             {
-                y += 0.00277776f * 2.25f;
+                y += 0.00277776f * 1.75f;
                 foreach (var panel in panels)
                 {
                     panel?.Draw(x, ref y, menuWidth);

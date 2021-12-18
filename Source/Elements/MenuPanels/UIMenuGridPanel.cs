@@ -71,7 +71,7 @@ namespace RAGENativeUI.Elements
 
         public override void Draw(float x, ref float y, float menuWidth)
         {
-            DrawBackground(x, y, Height, menuWidth);
+            DrawBackground(x, y, menuWidth, Height);
 
             DrawGrid(x, y, menuWidth);
 
@@ -130,7 +130,7 @@ namespace RAGENativeUI.Elements
                 return true;
             }
 
-            return false;
+            return base.ProcessMouse(mouseX, mouseY);
         }
 
         private void DrawGrid(float x, float y, float menuWidth)
@@ -190,14 +190,7 @@ namespace RAGENativeUI.Elements
                 color.R, color.G, color.B, color.A);
 
             // calculate grid bounds
-            {
-                float x1 = gridX - gridWidth * 0.5f, y1 = gridY - gridHeight * 0.5f;
-                float x2 = gridX + gridWidth * 0.5f, y2 = gridY + gridHeight * 0.5f;
-                N.GetScriptGfxPosition(x1, y1, out x1, out y1);
-                N.GetScriptGfxPosition(x2, y2, out x2, out y2);
-
-                gridBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
-            }
+            gridBounds = Common.GetScriptGfxRect(new RectangleF(gridX - gridWidth * 0.5f, gridY - gridHeight * 0.5f, gridWidth, gridHeight));
 
             // draw labels
             {

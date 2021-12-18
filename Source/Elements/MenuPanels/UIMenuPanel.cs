@@ -7,6 +7,7 @@ namespace RAGENativeUI.Elements
     public abstract class UIMenuPanel
     {
         private IList<IInstructionalButtonSlot> instructionalButtons = new List<IInstructionalButtonSlot>();
+        private RectangleF backgroundBounds;
 
         public Color BackgroundColor { get; set; } = HudColor.InGameBackground.GetColor();
         /// <summary>
@@ -30,16 +31,18 @@ namespace RAGENativeUI.Elements
         public virtual bool ProcessControl() => false;
 
         /// <returns>Whether any input was consumed.</returns>
-        public virtual bool ProcessMouse(float mouseX, float mouseY) => false;
+        public virtual bool ProcessMouse(float mouseX, float mouseY) => backgroundBounds.Contains(mouseX, mouseY);
 
-        protected virtual void DrawBackground(float x, float y, float height, float width)
+        protected virtual void DrawBackground(float x, float y, float width, float height)
         {
             var color = BackgroundColor;
             N.DrawRect(x + width * 0.5f,
-                       y + height * 0.5f - 0.00138888f,
+                       y + height * 0.5f,
                        width,
                        height,
                        color.R, color.G, color.B, color.A);
+
+            backgroundBounds = Common.GetScriptGfxRect(new RectangleF(x, y, width, height));
         }
     }
 }
