@@ -11,7 +11,7 @@
             thisThreadRefCount--;
             if (thisThreadRefCount == 0)
             {
-                WinFunctions.SetTlsValues(thisThreadTls, thisThreadSavedValues, Offsets);
+                WinFunctions.SetTlsValue(thisThreadTls, thisThreadSavedValue, Memory.TLS_AllocatorOffset);
             }
         }
 
@@ -25,7 +25,6 @@
             if (thisThreadTls == IntPtr.Zero)
             {
                 thisThreadTls = WinFunctions.GetTlsPointer(WinFunctions.GetCurrentThreadId());
-                thisThreadSavedValues = new long[Offsets.Length];
             }
         }
 
@@ -35,8 +34,8 @@
             {
                 EnsureTlsPointers();
 
-                WinFunctions.GetTlsValues(thisThreadTls, thisThreadSavedValues, Offsets);
-                WinFunctions.CopyTlsValues(mainThreadTls, thisThreadTls, Offsets);
+                thisThreadSavedValue = WinFunctions.GetTlsValue(thisThreadTls, Memory.TLS_AllocatorOffset);
+                WinFunctions.CopyTlsValue(mainThreadTls, thisThreadTls, Memory.TLS_AllocatorOffset);
             }
             thisThreadRefCount++;
             return default;
@@ -63,12 +62,10 @@
             return *(long*)(*(byte**)mainThreadTls + offset);
         }
 
-        private static readonly int[] Offsets = { 0xC8 };
-
         private static IntPtr mainThreadTls;
         [ThreadStatic] private static int thisThreadRefCount;
         [ThreadStatic] private static IntPtr thisThreadTls;
-        [ThreadStatic] private static long[] thisThreadSavedValues;
+        [ThreadStatic] private static long thisThreadSavedValue;
 
         private static unsafe class WinFunctions
         {
@@ -136,41 +133,14 @@
                 }
             }
 
-            public static void GetTlsValues(IntPtr tlsPtr, long[] dest, params int[] valuesOffsets)
-            {
-                if (dest.Length != valuesOffsets.Length)
-                {
-                    throw new ArgumentException();
-                }
+            public static long GetTlsValue(IntPtr tlsPtr, int valueOffset)
+                => *(long*)(*(byte**)tlsPtr + valueOffset);
 
-                int i = 0;
-                foreach (int offset in valuesOffsets)
-                {
-                    dest[i++] = *(long*)(*(byte**)tlsPtr + offset);
-                }
-            }
+            public static void SetTlsValue(IntPtr tlsPtr, long value, int valueOffset)
+                => *(long*)(*(byte**)tlsPtr + valueOffset) = value;
 
-            public static void SetTlsValues(IntPtr tlsPtr, long[] src, params int[] valuesOffsets)
-            {
-                if (src.Length != valuesOffsets.Length)
-                {
-                    throw new ArgumentException();
-                }
-
-                int i = 0;
-                foreach (int offset in valuesOffsets)
-                {
-                    *(long*)(*(byte**)tlsPtr + offset) = src[i++];
-                }
-            }
-
-            public static void CopyTlsValues(IntPtr sourceTlsPtr, IntPtr targetTlsPtr, params int[] valuesOffsets)
-            {
-                foreach (int offset in valuesOffsets)
-                {
-                    *(long*)(*(byte**)targetTlsPtr + offset) = *(long*)(*(byte**)sourceTlsPtr + offset);
-                }
-            }
+            public static void CopyTlsValue(IntPtr sourceTlsPtr, IntPtr targetTlsPtr, int valueOffset)
+                => *(long*)(*(byte**)targetTlsPtr + valueOffset) = *(long*)(*(byte**)sourceTlsPtr + valueOffset);
 
             [Flags]
             public enum ThreadAccess : int

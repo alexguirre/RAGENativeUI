@@ -9,9 +9,10 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 16;
+        public const int MaxMemoryAddresses = 17;
         public const int MaxInts = 4;
 
+        public static readonly int TLS_AllocatorOffset = -1;
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
         public static readonly IntPtr CTextStyle_ScriptStyle;
         public static readonly IntPtr CScaleformMgr_IsMovieRendering;
@@ -39,6 +40,12 @@
 
         static Memory()
         {
+            var tlsAllocatorOffsetAddr = FindAddress(() => Game.FindPattern("B9 ?? ?? ?? ?? 48 8B 0C 01 45 33 C9 49 8B D2"));
+            if (tlsAllocatorOffsetAddr != IntPtr.Zero)
+            {
+                TLS_AllocatorOffset = *(int*)(tlsAllocatorOffsetAddr + 1);
+            }
+
             const string GetActualResolutionPattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
 
             Screen_GetActualHeight = FindAddress(() => Game.FindPattern(GetActualResolutionPattern));
@@ -213,6 +220,7 @@
 
 #if DEBUG
             Game.LogTrivialDebug($"[RAGENativeUI] Available memory stuff:");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > TLS_AllocatorOffset = {TLS_AllocatorOffset != -1}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > ScriptGlobals.TimerBarsInstructionButtonsNumRows = {ScriptGlobals.TimerBarsInstructionButtonsNumRowsAvailable}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > ScriptGlobals.TimersBarsTotalHeight = {ScriptGlobals.TimersBarsTotalHeightAvailable}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > Screen = {Screen.Available}");
