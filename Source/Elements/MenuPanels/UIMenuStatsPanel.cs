@@ -6,41 +6,50 @@ namespace RAGENativeUI.Elements
 
     public class UIMenuStatsPanel : UIMenuPanel
     {
-        private IList<Stat> stats = new List<Stat>();
+        private IList<IStat> stats = new List<IStat>();
 
-        public IList<Stat> Stats
+        public override float Height
+        {
+            get
+            {
+                var height = 0.00277776f * 2.95f * 2.0f;
+                for (int i = 0; i < Stats.Count; i++)
+                {
+                    height += Stats[i].Height;
+                }
+                return height;
+            }
+        }
+
+        public IList<IStat> Stats
         {
             get => stats;
             set => stats = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        private float CalculateHeight()
+        protected override void DrawContents(float x, float y, float menuWidth)
         {
-            // TODO: what if Stat.Draw if overrided with a higher bar?
-            return 0.034722f * Stats.Count + 0.00277776f * 2.95f * 2.0f;
-        }
-
-        public override void Draw(float x, ref float y, float menuWidth)
-        {
-            var height = CalculateHeight();
-
-            DrawBackground(x, y, menuWidth, height);
-
-            float statY = y;
+            var statY = y;
             foreach (var s in Stats)
             {
                 s.Draw(x, ref statY, menuWidth);
             }
-
-            y += height;
         }
 
-        public class Stat
+        public interface IStat
+        {
+            float Height { get; }
+
+            void Draw(float x, ref float y, float menuWidth);
+        }
+
+        public class Stat : IStat
         {
             public string Text { get; set; }
             public TextStyle TextStyle { get; set; } = TextStyle.Default.With(font: UIMenuItem.DefaultTextFont, scale: UIMenuItem.DefaultTextScale);
             public float Percentage { get; set; }
             public float Upgrade { get; set; }
+            public virtual float Height => 0.034722f;
 
             public Stat(string text, float percentage, float upgrade) => (Text, Percentage, Upgrade) = (text, percentage, upgrade);
 
@@ -79,7 +88,7 @@ namespace RAGENativeUI.Elements
                 }
                 DrawSections(sectionsX, sectionsY, percentage, foreColor);
 
-                y += 0.034722f;
+                y += Height;
             }
         }
 
@@ -99,7 +108,7 @@ namespace RAGENativeUI.Elements
                 float p = System.Math.Min(percentage, SectionPercent);
                 if (p > 0f)
                 {
-                    DrawRect(x, y, TotalWidthNoPadding * p, SectionHeight, color);
+                    DrawRectTL(x, y, TotalWidthNoPadding * p, SectionHeight, color);
                 }
 
                 percentage -= SectionPercent;
@@ -107,7 +116,8 @@ namespace RAGENativeUI.Elements
             }
         }
 
-        private static void DrawRect(float x, float y, float w, float h, Color color)
+        // DrawRect but with (x,y) placed in the top-left corner
+        private static void DrawRectTL(float x, float y, float w, float h, Color color)
             => N.DrawRect(x + (w * 0.5f), y + (h * 0.5f), w, h, color.R, color.G, color.B, color.A);
     }
 }

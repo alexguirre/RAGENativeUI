@@ -11,13 +11,14 @@ namespace RAGENativeUI.Elements
         public delegate void ValueChangedEvent(UIMenuSliderPanel sender, float oldValue, float newValue);
 
         private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
-        private const float Height = 0.034722f * 2;
         private const float BorderMargin = 0.0046875f;
 
         private float value = 0.0f;
         private RectangleF barBounds;
         private bool mousePressed;
         private IList<Marker> markers = new List<Marker>();
+
+        public override float Height => 0.034722f * 2;
 
         /// <summary>
         /// Gets or sets the foreground color of the slider bar.
@@ -72,18 +73,14 @@ namespace RAGENativeUI.Elements
             BarBackgroundColor = Color.FromArgb(76, BarForegroundColor);
         }
 
-        public override void Draw(float x, ref float y, float menuWidth)
+        protected override void DrawContents(float x, float y, float menuWidth)
         {
-            DrawBackground(x, y, menuWidth, Height);
-
             var sliderRect = GetSliderDrawRect(x, y, menuWidth);
             DrawLabels(x, menuWidth, sliderRect);
             DrawSlider(sliderRect);
 
             // calculate slider bar bounds by applying the safezone to the rect drawn
             barBounds = Common.GetScriptGfxRect(sliderRect);
-
-            y += Height;
         }
 
         private void DrawLabels(float x, float menuWidth, RectangleF sliderRect)

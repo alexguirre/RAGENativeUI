@@ -28,12 +28,12 @@ namespace RAGENativeUI.Elements
         public delegate void ValueChangedEvent(UIMenuGridPanel sender, Vector2 oldValue, Vector2 newValue);
 
         private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
-        private const float Height = 0.034722f * 7 + (0.034722f * 0.25f);
 
         private Vector2 value = new Vector2(0.5f, 0.5f);
         private RectangleF gridBounds;
         private bool mousePressed;
 
+        public override float Height => 0.034722f * 7 + (0.034722f * 0.25f);
         public Color GridColor { get; set; } = Color.FromArgb(205, 105, 105, 102);
         public Color DotColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
         public UIMenuGridPanelStyle Style { get; set; }
@@ -67,15 +67,6 @@ namespace RAGENativeUI.Elements
         public UIMenuGridPanel()
         {
             InstructionalButtons.Add(new InstructionalButtonDynamic("Fine Tune", InstructionalKey.Mouse, InstructionalKey.ControllerRStick));
-        }
-
-        public override void Draw(float x, ref float y, float menuWidth)
-        {
-            DrawBackground(x, y, menuWidth, Height);
-
-            DrawGrid(x, y, menuWidth);
-
-            y += Height;
         }
 
         public override bool ProcessControl()
@@ -133,7 +124,7 @@ namespace RAGENativeUI.Elements
             return base.ProcessMouse(mouseX, mouseY);
         }
 
-        private void DrawGrid(float x, float y, float menuWidth)
+        protected override void DrawContents(float x, float y, float menuWidth)
         {
             const string Txd = "pause_menu_pages_char_mom_dad";
             const string Tex = "nose_grid";

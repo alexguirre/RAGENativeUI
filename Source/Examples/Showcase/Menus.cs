@@ -5,6 +5,7 @@
     using RAGENativeUI;
     using RAGENativeUI.Elements;
     using Rage;
+    using Rage.Native;
 
     using static Util;
     using System.Collections.Generic;
@@ -281,6 +282,8 @@
                     panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 60%", 0.6f, 0.0f));
                     panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 80%", 0.8f, 0.0f));
                     panel.Stats.Add(new UIMenuStatsPanel.Stat("Stat 100%", 1.0f, 0.0f));
+                    panel.Stats.Add(new CustomBoolStat("Custom Stat: True", true));
+                    panel.Stats.Add(new CustomBoolStat("Custom Stat: False", false));
                     panel.Stats.Add(new UIMenuStatsPanel.Stat("50% +20%", 0.5f, 0.2f));
                     panel.Stats.Add(new UIMenuStatsPanel.Stat("50% -20%", 0.5f, -0.2f));
 
@@ -313,21 +316,55 @@
 
                     slider.ValueChanged += (s, newValue, oldValue) =>
                     {
-                        stats.Stats[0].Percentage = newValue;
-                        stats.Stats[0].Upgrade = oldValue - newValue;
+                        ((UIMenuStatsPanel.Stat)stats.Stats[0]).Percentage = newValue;
+                        ((UIMenuStatsPanel.Stat)stats.Stats[0]).Upgrade = oldValue - newValue;
                     };
                     grid.ValueChanged += (s, newValue, oldValue) =>
                     {
-                        stats.Stats[1].Percentage = newValue.X;
-                        stats.Stats[1].Upgrade = oldValue.X - newValue.X;
-                        stats.Stats[2].Percentage = newValue.Y;
-                        stats.Stats[2].Upgrade = oldValue.Y - newValue.Y;
+                        ((UIMenuStatsPanel.Stat)stats.Stats[1]).Percentage = newValue.X;
+                        ((UIMenuStatsPanel.Stat)stats.Stats[1]).Upgrade = oldValue.X - newValue.X;
+                        ((UIMenuStatsPanel.Stat)stats.Stats[2]).Percentage = newValue.Y;
+                        ((UIMenuStatsPanel.Stat)stats.Stats[2]).Upgrade = oldValue.Y - newValue.Y;
                     };
 
                     combinedItem.Panels = new List<UIMenuPanel> { slider, grid, stats };
                 }
 
                 panelsMenu.AddItems(statsItem, gridItem, gridVerticalItem, gridHorizontalItem, sliderItem, combinedItem);
+            }
+        }
+
+        private class CustomBoolStat : UIMenuStatsPanel.IStat
+        {
+            public string Text { get; set; }
+            public TextStyle TextStyle { get; set; } = TextStyle.Default.With(font: UIMenuItem.DefaultTextFont, scale: UIMenuItem.DefaultTextScale * 1.5f);
+            public bool Value { get; set; }
+            public virtual float Height => 0.034722f * 1.5f;
+
+            public CustomBoolStat(string text, bool value) => (Text, Value) = (text, value);
+
+            public virtual void Draw(float x, ref float y, float menuWidth)
+            {
+                const float OffsetX = 0.0046875f;
+                const float OffsetY = 0.008194392f * 1.5f;
+
+                var style = TextStyle;
+
+                style.Wrap = (x, x + menuWidth);
+                style.Apply();
+                NativeFunction.Natives.BEGIN_TEXT_COMMAND_DISPLAY_TEXT("STRING");
+                NativeFunction.Natives.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(Text);
+                NativeFunction.Natives.END_TEXT_COMMAND_DISPLAY_TEXT(x + OffsetX, y + OffsetY);
+
+                style.Color = Value ? Color.Green : Color.Red;
+                style.Justification = TextJustification.Right;
+                style.Wrap = (x, x + menuWidth - OffsetX * 4.0f);
+                style.Apply();
+                NativeFunction.Natives.BEGIN_TEXT_COMMAND_DISPLAY_TEXT("STRING");
+                NativeFunction.Natives.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME(Value ? "Yes" : "No");
+                NativeFunction.Natives.END_TEXT_COMMAND_DISPLAY_TEXT(x + OffsetX, y + OffsetY);
+
+                y += Height;
             }
         }
     }
