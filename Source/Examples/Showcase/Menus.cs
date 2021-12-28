@@ -271,6 +271,7 @@
                            gridVerticalItem = new("Grid Vertical"),
                            gridHorizontalItem = new("Grid Horizontal"),
                            sliderItem = new("Slider"),
+                           colorsItem = new("Colors"),
                            combinedItem = new("Combined");
 
                 // stats
@@ -303,6 +304,37 @@
                     sliderItem.Panels.Add(panel);
                 }
 
+                // slider
+                {
+                    var panel = new UIMenuColorListPanel
+                    {
+                        Colors = new List<Color>
+                        {
+                            Color.MediumPurple,Color.MediumSeaGreen,Color.MediumSlateBlue,Color.MediumSpringGreen,Color.MediumTurquoise,Color.MediumVioletRed,Color.MidnightBlue,Color.MediumOrchid,
+                            Color.MintCream,Color.Moccasin,Color.NavajoWhite,Color.Navy,Color.OldLace,Color.Olive,Color.OliveDrab,Color.Orange,Color.MistyRose,Color.OrangeRed,Color.MediumBlue,
+                            Color.Maroon,Color.LightBlue,Color.LightCoral,Color.LightGoldenrodYellow,Color.LightGreen,Color.LightGray,Color.LightPink,Color.LightSalmon,Color.MediumAquamarine,
+                            Color.LightSeaGreen,Color.LightSlateGray,Color.LightSteelBlue,Color.LightYellow,Color.Lime,Color.LimeGreen,Color.Linen,Color.Magenta,Color.LightSkyBlue,Color.LemonChiffon,
+                            Color.Orchid,Color.PaleGreen,Color.SlateBlue,Color.SlateGray,Color.Snow,Color.SpringGreen,Color.SteelBlue,Color.Tan,Color.Teal,Color.SkyBlue,Color.Thistle,Color.Turquoise,
+                            Color.Violet,Color.Wheat,Color.White,Color.WhiteSmoke,Color.Yellow,Color.YellowGreen,Color.Tomato,Color.PaleGoldenrod,Color.Silver,Color.SeaShell,Color.PaleTurquoise,
+                            Color.PaleVioletRed,Color.PapayaWhip,Color.PeachPuff,Color.Peru,Color.Pink,Color.Plum,Color.Sienna,Color.PowderBlue,Color.Red,Color.RosyBrown,Color.RoyalBlue,Color.SaddleBrown,
+                            Color.Salmon,Color.SandyBrown,Color.SeaGreen,Color.Purple,Color.LawnGreen,Color.LightCyan,Color.Lavender,Color.DarkKhaki,Color.DarkGreen,Color.DarkGray,Color.DarkGoldenrod,
+                            Color.DarkCyan,Color.DarkBlue,Color.Cyan,Color.Crimson,Color.Cornsilk,Color.LavenderBlush,Color.Coral,Color.Chocolate,Color.Chartreuse,Color.DarkMagenta,Color.CadetBlue,
+                            Color.Brown,Color.BlueViolet,Color.Blue,Color.BlanchedAlmond,Color.Black,Color.Bisque,Color.Beige,Color.Azure,Color.Aquamarine,Color.Aqua,Color.AntiqueWhite,Color.AliceBlue,
+                            Color.BurlyWood,Color.DarkOliveGreen,Color.CornflowerBlue,Color.DarkOrchid,Color.Khaki,Color.Ivory,Color.DarkOrange,Color.Indigo,Color.IndianRed,Color.HotPink,Color.Honeydew,
+                            Color.GreenYellow,Color.Green,Color.Gray,Color.Goldenrod,Color.GhostWhite,Color.Gainsboro,Color.Fuchsia,Color.Gold,Color.FloralWhite,Color.DarkRed,Color.DarkSalmon,Color.DarkSeaGreen,
+                            Color.ForestGreen,Color.DarkSlateGray,Color.DarkTurquoise,Color.DarkSlateBlue,Color.DeepPink,Color.DeepSkyBlue,Color.DimGray,Color.DodgerBlue,Color.Firebrick,Color.DarkViolet,
+                        },
+                    };
+                    // https://stackoverflow.com/a/31317084
+                    ((List<Color>)panel.Colors).Sort((left, right) => (left.R * 299 + left.G * 587 + left.B * 114).CompareTo(right.R * 299 + right.G * 587 + right.B * 114));
+                    panel.SelectionChanged += (_, _, newIndex) =>
+                    {
+                        panel.Title = $"Title ({newIndex + 1} of {panel.Colors.Count})";
+                        colorsItem.HighlightedBackColor = panel.Colors[newIndex];
+                    };
+                    colorsItem.Panels.Add(panel);
+                }
+
                 // combined
                 {
                     var slider = new UIMenuSliderPanel();
@@ -327,10 +359,15 @@
                         ((UIMenuStatsPanel.Stat)stats.Stats[2]).Upgrade = oldValue.Y - newValue.Y;
                     };
 
-                    combinedItem.Panels = new List<UIMenuPanel> { slider, grid, stats };
+                    var colors = new UIMenuColorListPanel()
+                    {
+                        Colors = new List<Color> { Color.Red, Color.Green, Color.Blue, Color.Black, Color.White }
+                    };
+
+                    combinedItem.Panels = new List<UIMenuPanel> { slider, grid, stats, colors };
                 }
 
-                panelsMenu.AddItems(statsItem, gridItem, gridVerticalItem, gridHorizontalItem, sliderItem, combinedItem);
+                panelsMenu.AddItems(statsItem, gridItem, gridVerticalItem, gridHorizontalItem, sliderItem, colorsItem, combinedItem);
             }
         }
 
