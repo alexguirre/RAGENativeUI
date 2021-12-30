@@ -673,6 +673,6 @@
         public void* Allocate(ulong size, ulong align, int subAllocator) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, ulong, ulong, int, void*>)vtable[2])(ref this, size, align, subAllocator);
         public void Free(void* ptr) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, void*, void>)vtable[4])(ref this, ptr);
 
-        public static ref sysMemAllocator TheAllocator => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(0xC8));
+        public static ref sysMemAllocator TheAllocator => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(Memory.TLS_AllocatorOffset));
     }
 }
