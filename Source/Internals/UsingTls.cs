@@ -11,7 +11,8 @@
             thisThreadRefCount--;
             if (thisThreadRefCount == 0)
             {
-                WinFunctions.SetTlsValue(thisThreadTls, thisThreadSavedValue, Memory.TLS_AllocatorOffset);
+                WinFunctions.SetTlsValue(thisThreadTls, thisThreadSavedValue0, Memory.TLSOffset_sysMemAllocator_Current);
+                WinFunctions.SetTlsValue(thisThreadTls, thisThreadSavedValue1, Memory.TLSOffset_sysMemAllocator_Master);
             }
         }
 
@@ -34,8 +35,10 @@
             {
                 EnsureTlsPointers();
 
-                thisThreadSavedValue = WinFunctions.GetTlsValue(thisThreadTls, Memory.TLS_AllocatorOffset);
-                WinFunctions.CopyTlsValue(mainThreadTls, thisThreadTls, Memory.TLS_AllocatorOffset);
+                thisThreadSavedValue0 = WinFunctions.GetTlsValue(thisThreadTls, Memory.TLSOffset_sysMemAllocator_Current);
+                thisThreadSavedValue1 = WinFunctions.GetTlsValue(thisThreadTls, Memory.TLSOffset_sysMemAllocator_Master);
+                WinFunctions.CopyTlsValue(mainThreadTls, thisThreadTls, Memory.TLSOffset_sysMemAllocator_Current);
+                WinFunctions.CopyTlsValue(mainThreadTls, thisThreadTls, Memory.TLSOffset_sysMemAllocator_Master);
             }
             thisThreadRefCount++;
             return default;
@@ -65,7 +68,8 @@
         private static IntPtr mainThreadTls;
         [ThreadStatic] private static int thisThreadRefCount;
         [ThreadStatic] private static IntPtr thisThreadTls;
-        [ThreadStatic] private static long thisThreadSavedValue;
+        [ThreadStatic] private static long thisThreadSavedValue0;
+        [ThreadStatic] private static long thisThreadSavedValue1;
 
         private static unsafe class WinFunctions
         {

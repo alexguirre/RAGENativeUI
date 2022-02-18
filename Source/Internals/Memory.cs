@@ -14,11 +14,12 @@
         [Conditional("DEBUG")]
         private static void Log(string str) => Game.LogTrivialDebug($"[RAGENativeUI::{nameof(Memory)}] {str}");
 
-        public const int MaxMemoryAddresses = 17;
+        public const int MaxMemoryAddresses = 20;
         public const int MaxInts = 4;
-
-        public static readonly int TLS_AllocatorOffset = -1;
+        
         public static readonly int sysMemAllocator_Allocate_VTableOffset = -1;
+        public static readonly int TLSOffset_sysMemAllocator_Current = -1;
+        public static readonly int TLSOffset_sysMemAllocator_Master = -1;
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
         public static readonly IntPtr CTextStyle_ScriptStyle;
         public static readonly IntPtr CScaleformMgr_IsMovieRendering;
@@ -38,19 +39,28 @@
         public static readonly int CTextFile_OverridesTextMapOffset = -1;
         public static readonly IntPtr g_FragmentStore;
         public static readonly IntPtr g_DrawableStore;
+        public static readonly IntPtr g_TxdStore;
         public static readonly IntPtr atStringHash;
         public static readonly int TimershudSharedGlobalId = -1;
         public static readonly int TimershudSharedTimerbarsTotalHeightOffset = -1;
         public static readonly int TimerbarsPrevTotalHeightGlobalId = -1;
         public static readonly int TimershudSharedInstructionalButtonsNumRowsOffset = -1;
+        public static readonly IntPtr grcTextureFactory_Instance;
+        public static readonly IntPtr pgDictionary_grcTexture_ctor;
 
         static Memory()
         {
-            var tlsAllocatorOffsetAddr = FindAddress(() => Game.FindPattern("B9 ?? ?? ?? ?? 48 8B 0C 01 45 33 C9 49 8B D2"));
+            var tlsAllocatorOffsetAddr = FindAddress(() => Game.FindPattern("41 BB ?? ?? ?? ?? 48 8B 14 C8 48 8B 0C C8 41 B8 ?? ?? ?? ?? 4D 8B 0C 13"));
             if (tlsAllocatorOffsetAddr != IntPtr.Zero)
             {
-                TLS_AllocatorOffset = *(int*)(tlsAllocatorOffsetAddr + 1);
-                sysMemAllocator_Allocate_VTableOffset = *(byte*)(tlsAllocatorOffsetAddr + 0x15);
+                TLSOffset_sysMemAllocator_Current = *(int*)(tlsAllocatorOffsetAddr + 2);
+                TLSOffset_sysMemAllocator_Master = *(int*)(tlsAllocatorOffsetAddr + 16);
+            }
+
+            var sysMemAllocatorAllocAddr = FindAddress(() => Game.FindPattern("B9 ?? ?? ?? ?? 48 8B 0C 01 45 33 C9 49 8B D2"));
+            if (sysMemAllocatorAllocAddr != IntPtr.Zero)
+            {
+                sysMemAllocator_Allocate_VTableOffset = *(byte*)(sysMemAllocatorAllocAddr + 0x15);
             }
 
             const string GetActualResolutionPattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
@@ -176,7 +186,9 @@
                 {
                     addr -= 0x30;
                     g_FragmentStore = addr + *(int*)(addr + 3) + 7;
-                    addr -= 0x18;
+                    addr -= 0xC;
+                    g_TxdStore = addr + *(int*)(addr + 3) + 7;
+                    addr -= 0xC;
                     g_DrawableStore = addr + *(int*)(addr + 3) + 7;
                 }
             }
@@ -184,6 +196,26 @@
             atStringHash = FindAddress(() =>
             {
                 IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 44 8B 47 10 48 8B CB 8B D0 E8 ?? ?? ?? ?? 48 8D 4F 38 41 B0 01");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 1) + 5;
+                }
+                return addr;
+            });
+
+            grcTextureFactory_Instance = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("48 8B 1D ?? ?? ?? ?? 48 8B 10 48 8B 3B 48 8B C8 FF 92");
+                if (addr != IntPtr.Zero)
+                {
+                    addr += *(int*)(addr + 3) + 7;
+                }
+                return addr;
+            });
+
+            pgDictionary_grcTexture_ctor = FindAddress(() =>
+            {
+                IntPtr addr = Game.FindPattern("E8 ?? ?? ?? ?? 48 8B F8 EB 02 33 FF 4C 8D 3D");
                 if (addr != IntPtr.Zero)
                 {
                     addr += *(int*)(addr + 1) + 5;
@@ -229,7 +261,7 @@
 
 #if DEBUG
             Game.LogTrivialDebug($"[RAGENativeUI] Available memory stuff:");
-            Game.LogTrivialDebug($"[RAGENativeUI]  > TLS_AllocatorOffset = {TLS_AllocatorOffset != -1}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > TLS_AllocatorOffset = {TLSOffset_sysMemAllocator_Current != -1}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > ScriptGlobals.TimerBarsInstructionButtonsNumRows = {ScriptGlobals.TimerBarsInstructionButtonsNumRowsAvailable}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > ScriptGlobals.TimersBarsTotalHeight = {ScriptGlobals.TimersBarsTotalHeightAvailable}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > Screen = {Screen.Available}");
@@ -242,6 +274,8 @@
             Game.LogTrivialDebug($"[RAGENativeUI]  > scrProgramRegistry = {scrProgramRegistry.Available}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > CTextFormat = {CTextFormat.Available}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > CTextFile = {CTextFile.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > grcTextureFactory = {grcTextureFactory.Available}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > pgDictionary<grcTexture>::ctor = {pgDictionary_grcTexture_ctor != IntPtr.Zero}");
 #endif
         }
 
@@ -692,6 +726,102 @@
         private static readonly int VTableIndexAllocate = Memory.sysMemAllocator_Allocate_VTableOffset / 8;
         private static readonly int VTableIndexFree = VTableIndexAllocate + 2;
 
-        public static ref sysMemAllocator TheAllocator => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(Memory.TLS_AllocatorOffset));
+        public static ref sysMemAllocator Current => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(Memory.TLSOffset_sysMemAllocator_Current));
+    }
+
+    internal unsafe struct grcTexture
+    {
+    }
+
+    internal enum grcBufferFormat : uint
+    {
+        B8G8R8A8_UNORM = 0x2,  // DXGI_FORMAT_B8G8R8A8_UNORM
+        R8G8B8A8_UNORM = 0x28, // DXGI_FORMAT_R8G8B8A8_UNORM
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 8)]
+    internal unsafe struct grcTextureFactory
+    {
+        [StructLayout(LayoutKind.Explicit, Size = 0x30)]
+        public struct TextureCreateParams
+        {
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct VTable
+        {
+            [FieldOffset(8 * 2)] public delegate* unmanaged[Thiscall]<ref grcTextureFactory, uint, uint, grcBufferFormat, IntPtr, byte, TextureCreateParams*, grcTexture*> Create_raw;
+
+            [FieldOffset(8 * 4)] public delegate* unmanaged[Thiscall]<ref grcTextureFactory, string, TextureCreateParams*, grcTexture*> Create_name;
+        }
+
+        private readonly VTable* vtable;
+
+        public grcTexture* Create(uint width, uint height, grcBufferFormat format, IntPtr initialData, TextureCreateParams* createParams = null) => vtable->Create_raw(ref this, width, height, format, initialData, 0, createParams);
+        public grcTexture* Create(string name, TextureCreateParams* createParams = null) => vtable->Create_name(ref this, name, createParams);
+
+        public static ref grcTextureFactory Instance => ref Unsafe.AsRef<grcTextureFactory>(*(void**)Memory.grcTextureFactory_Instance);
+
+        public static readonly bool Available = Memory.grcTextureFactory_Instance != IntPtr.Zero;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Size = 4)]
+    internal struct strLocalIndex { public uint Value; }
+
+    internal unsafe struct fwTxdStore
+    {
+        [StructLayout(LayoutKind.Explicit)]
+        private struct VTable
+        {
+            [FieldOffset(8 * 1)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, string, void> Register;
+            [FieldOffset(8 * 2)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, string, void> FindSlot;
+
+            [FieldOffset(8 * 4)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, void> RemoveSlot;
+
+            [FieldOffset(8 * 16)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, uint, void> AddRef;
+            [FieldOffset(8 * 17)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, uint, void> RemoveRef;
+
+            [FieldOffset(8 * 19)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, int> GetNumRefs;
+
+            [FieldOffset(8 * 32)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, uint> GetSize;
+            [FieldOffset(8 * 33)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, uint> GetNumUsedSlots;
+
+            [FieldOffset(8 * 37)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*, void> Set;
+
+            [FieldOffset(8 * 39)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, in uint, void> AddSlot;
+        }
+
+        private readonly VTable* vtable;
+
+        public uint Size => vtable->GetSize(ref this);
+        public uint NumUsedSlots => vtable->GetNumUsedSlots(ref this);
+
+        public strLocalIndex Register(string name)
+        {
+            vtable->Register(ref this, out var result, name);
+            return result;
+        }
+
+        public strLocalIndex FindSlot(string name)
+        {
+            vtable->FindSlot(ref this, out var result, name);
+            return result;
+        }
+
+        public void RemoveSlot(strLocalIndex index) => vtable->RemoveSlot(ref this, index);
+        public void AddRef(strLocalIndex index) => vtable->AddRef(ref this, index, 0);
+        public void RemoveRef(strLocalIndex index) => vtable->RemoveRef(ref this, index, 0);
+        public int GetNumRefs(strLocalIndex index) => vtable->GetNumRefs(ref this, index);
+        public void Set(strLocalIndex index, pgDictionary<grcTexture>* txd) => vtable->Set(ref this, index, txd);
+
+        public strLocalIndex AddSlot(uint nameHash)
+        {
+            vtable->AddSlot(ref this, out var result, nameHash);
+            return result;
+        }
+
+        public static ref fwTxdStore Instance => ref Unsafe.AsRef<fwTxdStore>((void*)Memory.g_TxdStore);
+
+        public static readonly bool Available = Memory.g_TxdStore != IntPtr.Zero;
     }
 }

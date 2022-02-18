@@ -193,7 +193,7 @@
             fixed (char* chars = str)
             {
                 var size = Encoding.UTF8.GetByteCount(chars, str.Length) + 1; // str + null terminator
-                var dest = (byte*)sysMemAllocator.TheAllocator.Allocate((ulong)size, 16, 0);
+                var dest = (byte*)sysMemAllocator.Current.Allocate((ulong)size, 16, 0);
                 Encoding.UTF8.GetBytes(chars, str.Length, dest, size - 1);
                 dest[size - 1] = 0; // null terminator
                 return (IntPtr)dest;
@@ -203,6 +203,6 @@
         /// <summary>
         /// Frees a UTF-8 string previously allocated by <see cref="ToUtf8(string)"/>.
         /// </summary>
-        private static unsafe void FreeUtf8(IntPtr ptr) => sysMemAllocator.TheAllocator.Free((void*)ptr);
+        private static unsafe void FreeUtf8(IntPtr ptr) => sysMemAllocator.Current.Free((void*)ptr);
     }
 }
