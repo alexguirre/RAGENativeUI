@@ -179,8 +179,13 @@
         /// <summary>
         /// Converts a null-terminated UTF-8 string to a <see cref="string"/>.
         /// </summary>
-        private static unsafe string FromUtf8(IntPtr ptr)
+        internal static unsafe string FromUtf8(IntPtr ptr)
         {
+            if (ptr == IntPtr.Zero)
+            {
+                return string.Empty;
+            }
+
             var p = (byte*)ptr;
             return Encoding.UTF8.GetString(p, Memory.StrLen(p));
         }
@@ -188,12 +193,12 @@
         /// <summary>
         /// Converts a <see cref="string"/> to an unmanaged null-terminated UTF-8 string, allocated using the game allocator.
         /// </summary>
-        private static unsafe IntPtr ToUtf8(string str)
+        internal static unsafe IntPtr ToUtf8(string str)
         {
             fixed (char* chars = str)
             {
                 var size = Encoding.UTF8.GetByteCount(chars, str.Length) + 1; // str + null terminator
-                var dest = (byte*)sysMemAllocator.Current.Allocate((ulong)size, 16, 0);
+                var dest = (byte*)sysMemAllocator.Current.Allocate((ulong)size, 1, 0);
                 Encoding.UTF8.GetBytes(chars, str.Length, dest, size - 1);
                 dest[size - 1] = 0; // null terminator
                 return (IntPtr)dest;
@@ -203,6 +208,6 @@
         /// <summary>
         /// Frees a UTF-8 string previously allocated by <see cref="ToUtf8(string)"/>.
         /// </summary>
-        private static unsafe void FreeUtf8(IntPtr ptr) => sysMemAllocator.Current.Free((void*)ptr);
+        internal static unsafe void FreeUtf8(IntPtr ptr) => sysMemAllocator.Current.Free((void*)ptr);
     }
 }
