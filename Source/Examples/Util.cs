@@ -79,6 +79,39 @@
                 bitmap.UnlockBits(bitmapData);
             }
 
+            foreach (var texture in txd.Textures)
+            {
+                Game.LogTrivial(" > " + texture);
+            }
+
+            if (txd.MapTexture("my_tex6", out var map))
+            {
+                Game.LogTrivial(" Mapped texture");
+                Game.LogTrivial($"  > Data          = {map.Data.ToString("X")}");
+                Game.LogTrivial($"  > Width         = {map.Width}");
+                Game.LogTrivial($"  > Height        = {map.Height}");
+                Game.LogTrivial($"  > Stride        = {map.Stride}");
+                Game.LogTrivial($"  > BitsPerPixel  = {map.BitsPerPixel}");
+                Game.LogTrivial($"  > Stride*Height = {map.Stride*map.Height}");
+
+                if (map.Data != IntPtr.Zero)
+                {
+                    unsafe
+                    {
+                        Game.LogTrivial($"  {(((uint*)map.Data)[0]):X8}");
+                        Game.LogTrivial($"  {(*(uint*)&((byte*)map.Data)[map.Stride * map.Height / 2 + map.Stride / 2]):X8}");
+                        for (int i = 0; i < (map.Stride * map.Height); i++)
+                            ((byte*)map.Data)[i] = 0;
+                    }
+                }
+
+                txd.UnmapTexture("my_tex6", map);
+            }
+            else
+            {
+                Game.LogTrivial(" Failed to map texture");
+            }
+
             var r = 0.0f;
             while (true)
             {

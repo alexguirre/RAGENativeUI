@@ -1,5 +1,7 @@
 ﻿namespace RAGENativeUI.Internals
 {
+    using Rage;
+
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Sequential, Size = 0x40)]
@@ -9,6 +11,7 @@
         public atArray<uint> Keys;
         public atArrayOfPtrs<T> Values;
 
+        public bool Add(string key, T* value) => Add(Game.GetHashKey(key), value);
         public bool Add(uint key, T* value)
         {
             int insertIndex = Keys.Count;
@@ -45,6 +48,28 @@
             Keys[insertIndex] = key;
             Values[insertIndex] = value;
             return true;
+        }
+
+        public bool Find(string key, out T* value) => Find(Game.GetHashKey(key), out value);
+        public bool Find(uint key, out T* value)
+        {
+            for (int i = 0; i < Keys.Count; i++)
+            {
+                if (Keys[i] == key)
+                {
+                    value = Values[i];
+                    return true;
+                }
+
+                if (Keys[i] > key)
+                {
+                    break;
+                }
+            }
+
+            // not found
+            value = null;
+            return false;
         }
     }
 }

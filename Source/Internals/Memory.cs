@@ -729,14 +729,47 @@
         public static ref sysMemAllocator Current => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(Memory.TLSOffset_sysMemAllocator_Current));
     }
 
+    [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct grcTexture
     {
+        [Flags]
+        public enum MapFlags : uint
+        {
+
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct VTable
+        {
+            [FieldOffset(8 * 25)] public delegate* unmanaged[Thiscall]<ref grcTexture, int, int, out grcMapData, MapFlags, byte> Map;
+            [FieldOffset(8 * 26)] public delegate* unmanaged[Thiscall]<ref grcTexture, in grcMapData, void> Unmap;
+        }
+
+        [FieldOffset(0x00)] private readonly VTable* vtable;
+
+        [FieldOffset(0x28)] public IntPtr Name;
+
+        public bool Map(int textureIndex, int mipLevel, out grcMapData mapData, MapFlags flags) => vtable->Map(ref this, textureIndex, mipLevel, out mapData, flags) != 0;
+        public void Unmap(in grcMapData mapData) => vtable->Unmap(ref this, mapData);
     }
 
     internal enum grcBufferFormat : uint
     {
         B8G8R8A8_UNORM = 0x2,  // DXGI_FORMAT_B8G8R8A8_UNORM
         R8G8B8A8_UNORM = 0x28, // DXGI_FORMAT_R8G8B8A8_UNORM
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 0x28)]
+    internal unsafe struct grcMapData
+    {
+        [FieldOffset(0x00)] public uint MipLevel;
+        [FieldOffset(0x08)] public IntPtr Data;
+        [FieldOffset(0x10)] public uint Stride;
+        [FieldOffset(0x14)] public uint BitsPerPixel;
+        [FieldOffset(0x18)] public uint Width;
+        [FieldOffset(0x1C)] public uint Height;
+        [FieldOffset(0x20)] public uint Format; // DXGI_FORMAT
+        [FieldOffset(0x24)] public uint TextureIndex;
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 8)]
