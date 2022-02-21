@@ -9,7 +9,7 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 19;
+        public const int MaxMemoryAddresses = 20;
         public const int MaxInts = 4;
 
         public static readonly int TLSOffset_sysMemAllocator_Current = -1;
@@ -41,6 +41,8 @@
         public static readonly int TimershudSharedInstructionalButtonsNumRowsOffset = -1;
         public static readonly IntPtr grcTextureFactory_Instance;
         public static readonly IntPtr pgDictionary_grcTexture_ctor;
+        public static readonly IntPtr grcBeginUsingDeviceContext;
+        public static readonly IntPtr grcEndUsingDeviceContext;
 
         static Memory()
         {
@@ -210,6 +212,15 @@
                 }
                 return addr;
             });
+
+            {
+                IntPtr addr = FindAddress(() => Game.FindPattern("8A D3 48 8B CF E8 ?? ?? ?? ?? 8A D8 E8"));
+                if (addr != IntPtr.Zero)
+                {
+                    grcBeginUsingDeviceContext = addr + *(int*)(addr - 12) - 8;
+                    grcEndUsingDeviceContext = addr + *(int*)(addr + 13) + 17;
+                }
+            }
 
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
@@ -715,8 +726,18 @@
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal unsafe struct grcTexture
+    public unsafe struct grcTexture
     {
+        public enum UsageType
+        {
+          Immutable = 0x0,
+          DefaultWithStagingTexture = 0x1,
+          Default = 0x2,
+          Dynamic1 = 0x3,
+          Dynamic2 = 0x4,
+          Dynamic3 = 0x5,
+        }
+
         [Flags]
         public enum MapFlags : uint
         {
@@ -726,6 +747,9 @@
         [StructLayout(LayoutKind.Explicit)]
         private struct VTable
         {
+            [FieldOffset(8 * 5)] public delegate* unmanaged[Thiscall]<ref grcTexture, uint> GetWidth;
+            [FieldOffset(8 * 6)] public delegate* unmanaged[Thiscall]<ref grcTexture, uint> GetHeight;
+
             [FieldOffset(8 * 25)] public delegate* unmanaged[Thiscall]<ref grcTexture, int, int, out grcMapData, MapFlags, byte> Map;
             [FieldOffset(8 * 26)] public delegate* unmanaged[Thiscall]<ref grcTexture, in grcMapData, void> Unmap;
         }
@@ -733,6 +757,18 @@
         [FieldOffset(0x00)] private readonly VTable* vtable;
 
         [FieldOffset(0x28)] public IntPtr Name;
+        [FieldOffset(0x30)] public ushort RefCount;
+
+        // grcTexturePC
+        [FieldOffset(0x5F)] public byte UsageAndFlags; // bit 1-3: usage type
+                                                       // bit 4:   has pixel data buffer
+                                                       // bit 6:   is dynamic usage
+
+        public UsageType Usage => (UsageType)((UsageAndFlags >> 1) & 7);
+        public bool HasPixelDataBuffer => (UsageAndFlags & 0x10) != 0;
+        public bool IsDynamic => (UsageAndFlags & 0x40) != 0;
+        public uint Width => vtable->GetWidth(ref this);
+        public uint Height => vtable->GetHeight(ref this);
 
         public bool Map(int textureIndex, int mipLevel, out grcMapData mapData, MapFlags flags) => vtable->Map(ref this, textureIndex, mipLevel, out mapData, flags) != 0;
         public void Unmap(in grcMapData mapData) => vtable->Unmap(ref this, mapData);
@@ -741,11 +777,13 @@
     internal enum grcBufferFormat : uint
     {
         B8G8R8A8_UNORM = 0x2,  // DXGI_FORMAT_B8G8R8A8_UNORM
+        R8_UNORM = 0xD,        // DXGI_FORMAT_R8_UNORM
+        R8G8_UNORM = 0xF,      // DXGI_FORMAT_R8G8_UNORM
         R8G8B8A8_UNORM = 0x28, // DXGI_FORMAT_R8G8B8A8_UNORM
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 0x28)]
-    internal unsafe struct grcMapData
+    public unsafe struct grcMapData
     {
         [FieldOffset(0x00)] public uint MipLevel;
         [FieldOffset(0x08)] public IntPtr Data;
@@ -753,16 +791,27 @@
         [FieldOffset(0x14)] public uint BitsPerPixel;
         [FieldOffset(0x18)] public uint Width;
         [FieldOffset(0x1C)] public uint Height;
-        [FieldOffset(0x20)] public uint Format; // DXGI_FORMAT
+        [FieldOffset(0x20)] public uint Format;
         [FieldOffset(0x24)] public uint TextureIndex;
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 8)]
     internal unsafe struct grcTextureFactory
     {
-        [StructLayout(LayoutKind.Explicit, Size = 0x30)]
+        [StructLayout(LayoutKind.Sequential, Size = 0x30)]
         public struct TextureCreateParams
         {
+            public int UsageVar1;
+            public int field_4;
+            public int UsageVar2;
+            public int field_C;
+            public long field_10;
+            public int IsRenderTarget;
+            public int field_1C;
+            public int field_20;
+            public int MipLevels;
+            public int field_28;
+            public int field_2C;
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -796,6 +845,8 @@
 
             [FieldOffset(8 * 4)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, void> RemoveSlot;
 
+            [FieldOffset(8 * 8)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*> GetPtr;
+
             [FieldOffset(8 * 16)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, uint, void> AddRef;
             [FieldOffset(8 * 17)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, uint, void> RemoveRef;
 
@@ -826,6 +877,7 @@
             return result;
         }
 
+        public pgDictionary<grcTexture>* GetPtr(strLocalIndex index) => vtable->GetPtr(ref this, index);
         public void RemoveSlot(strLocalIndex index) => vtable->RemoveSlot(ref this, index);
         public void AddRef(strLocalIndex index) => vtable->AddRef(ref this, index, 0);
         public void RemoveRef(strLocalIndex index) => vtable->RemoveRef(ref this, index, 0);
