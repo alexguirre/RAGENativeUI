@@ -8,22 +8,28 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Runtime.CompilerServices;
 
     public enum GameTextureFormat : uint
     {
+        R8 = grcBufferFormat.R8_UNORM,
+        R8G8 = grcBufferFormat.R8G8_UNORM,
         B8G8R8A8 = grcBufferFormat.B8G8R8A8_UNORM,
         R8G8B8A8 = grcBufferFormat.R8G8B8A8_UNORM,
     }
 
-    public unsafe ref struct GameTextureMapData
+    public unsafe readonly ref struct GameTextureMapData
     {
-        internal grcMapData Native;
+        internal readonly grcMapData Native;
+
+        internal GameTextureMapData(grcMapData native) => Native = native;
 
         public IntPtr Data => Native.Data;
         public uint Width => Native.Width;
         public uint Height => Native.Height;
         public uint Stride => Native.Stride;
         public uint BitsPerPixel => Native.BitsPerPixel;
+        public uint DXGIFormat => Native.Format;
     }
 
     public unsafe class GameTextureDictionary : IDisposable
@@ -112,15 +118,29 @@
             GC.SuppressFinalize(this);
         }
 
+        public grcTexture* GetTexture(string name)
+        {
+            if (txd->Find(name, out var texture))
+            {
+                return texture;
+            }
+
+            return null;
+        }
+
         public bool MapTexture(string name, out GameTextureMapData mapData)
         {
-            mapData = default;
             if (!txd->Find(name, out var texture))
             {
+                mapData = default;
                 return false;
             }
 
-            return texture->Map(0, 0, out mapData.Native, (grcTexture.MapFlags)3);
+            BeginUsingDeviceContext();
+            var result = texture->Map(0, 0, out var nativeMapData, (grcTexture.MapFlags)3);
+            EndUsingDeviceContext();
+            mapData = new(nativeMapData);
+            return result;
         }
 
         public void UnmapTexture(string name, in GameTextureMapData mapData)
@@ -130,33 +150,34 @@
                 return;
             }
 
+            BeginUsingDeviceContext();
             texture->Unmap(mapData.Native);
+            EndUsingDeviceContext();
         }
 
-        // TODO: add option for creating texture with CPU write access
-        public void AddTexture(string name, uint width, uint height, GameTextureFormat format, byte[] initialData)
+        public void AddTexture(string name, uint width, uint height, GameTextureFormat format, byte[] initialData, bool updatable = false)
         {
             fixed (byte* data = initialData)
             {
-                AddTexture(name, width, height, format, (IntPtr)data);
+                AddTexture(name, width, height, format, (IntPtr)data, updatable);
             }
         }
 
-        public void AddTexture(string name, uint width, uint height, GameTextureFormat format, IntPtr initialData)
+        public void AddTexture(string name, uint width, uint height, GameTextureFormat format, IntPtr initialData, bool updatable = false)
         {
-            var tex = NewTexture(width, height, format, initialData);
+            var tex = NewTexture(width, height, format, initialData, updatable);
             AddTexture(name, tex);
         }
 
-        public void AddTextureFromDDS(string name, string ddsFilePath)
+        public void AddTextureFromDDS(string name, string ddsFilePath, bool updatable = false)
         {
             Log($"Loading texture from '{ddsFilePath}'");
-            AddTextureFromDDS(name, File.ReadAllBytes(ddsFilePath));
+            AddTextureFromDDS(name, File.ReadAllBytes(ddsFilePath), updatable);
         }
 
-        public void AddTextureFromDDS(string name, byte[] ddsFile)
+        public void AddTextureFromDDS(string name, byte[] ddsFile, bool updatable = false)
         {
-            var tex = NewTextureFromDDS(name, ddsFile);
+            var tex = NewTextureFromDDS(name, ddsFile, updatable);
             AddTexture(name, tex);
         }
 
@@ -170,6 +191,11 @@
             texture->Name = Localization.ToUtf8(name);
 
             Log($"Adding texture '{name}' ({((IntPtr)texture).ToString("X")}) to texture dictionary '{Name}'");
+            Log($" > RefCount           = {texture->RefCount}");
+            Log($" > UsageAndFlags      = {texture->UsageAndFlags:X2}");
+            Log($" > Usage              = {texture->Usage}");
+            Log($" > IsDynamic          = {texture->IsDynamic}");
+            Log($" > HasPixelDataBuffer = {texture->HasPixelDataBuffer}");
             txd->Add(name, texture);
         }
 
@@ -194,7 +220,7 @@
             return txd;
         }
 
-        private static grcTexture* NewTexture(uint width, uint height, GameTextureFormat format, IntPtr initialData)
+        private static grcTexture* NewTexture(uint width, uint height, GameTextureFormat format, IntPtr initialData, bool updatable)
         {
             if (!grcTextureFactory.Available)
             {
@@ -203,11 +229,13 @@
             }
 
             using var tls = UsingTls.Scope();
-            Log($"Creating texture from raw data (width:{width}, height:{height}, format:{format}, initialData:{initialData.ToString("X")})");
-            return grcTextureFactory.Instance.Create(width, height, (grcBufferFormat)format, initialData);
+
+            Log($"Creating texture from raw data (width:{width}, height:{height}, format:{format}, initialData:{initialData.ToString("X")}, updatable:{updatable})");
+            var createParams = UpdatableTextureCreateParams;
+            return grcTextureFactory.Instance.Create(width, height, (grcBufferFormat)format, initialData, updatable ? &createParams : null);
         }
 
-        private static grcTexture* NewTextureFromDDS(string name, byte[] ddsFile)
+        private static grcTexture* NewTextureFromDDS(string name, byte[] ddsFile, bool updatable)
         {
             if (!grcTextureFactory.Available)
             {
@@ -220,8 +248,9 @@
                 using var tls = UsingTls.Scope();
 
                 var memFileName = MakeMemoryFileName((IntPtr)ptr, (uint)ddsFile.Length, false, name);
-                Log($"Creating texture from '{memFileName}'");
-                return grcTextureFactory.Instance.Create(memFileName);
+                Log($"Creating texture from DDS  (memFileName:{memFileName}, updatable:{updatable})");
+                var createParams = UpdatableTextureCreateParams;
+                return grcTextureFactory.Instance.Create(memFileName, updatable ? &createParams : null);
             }
         }
 
@@ -229,5 +258,25 @@
         {
             return $"memory:${address.ToString("X16")},{size},{(freeOnClose ? 1 : 0)}:{name}";
         }
+
+        private static void BeginUsingDeviceContext() => ((delegate* unmanaged[Stdcall]<void>)Memory.grcBeginUsingDeviceContext)();
+        private static void EndUsingDeviceContext() => ((delegate* unmanaged[Stdcall]<void>)Memory.grcEndUsingDeviceContext)();
+
+        /// <summary>
+        /// These params create a texture that can be updated through a staging texture.
+        /// </summary>
+        private static readonly grcTextureFactory.TextureCreateParams UpdatableTextureCreateParams
+            = new()
+            {
+                UsageVar1 = 0,
+                field_4 = 0,
+                UsageVar2 = 3,
+                field_10 = 0,
+                IsRenderTarget = 0,
+                field_1C = 0,
+                field_20 = 2,
+                MipLevels = 1,
+                field_28 = 0,
+            };
     }
 }

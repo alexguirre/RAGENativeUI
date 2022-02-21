@@ -71,5 +71,25 @@
             value = null;
             return false;
         }
+
+        public bool Set(string key, T* value) => Set(Game.GetHashKey(key), value);
+        public bool Set(uint key, T* value)
+        {
+            for (int i = 0; i < Keys.Count; i++)
+            {
+                if (Keys[i] == key)
+                {
+                    Values[i] = value;
+                    return true;
+                }
+
+                if (Keys[i] > key)
+                {
+                    break;
+                }
+            }
+
+            return false;
+        }
     }
 }
