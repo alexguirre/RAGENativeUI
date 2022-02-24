@@ -112,9 +112,11 @@ namespace RAGENativeUI.PauseMenu
         public List<MissionInformation> Heists { get; set; }
         public int Index { get; set; }
 
-        public bool DynamicMissionWidth { get; set; } = true;
+        public bool DynamicMissionWidth { get; set; } = false;
         public int MinMissionWidth { get; set; } = 512;
+        public int MaxMissionWidth { get; set; } = 1440;
         public int MinLabelWidth { get; set; } = 100;
+        public int MaxLabelWidth { get; set; } = 512;
 
         protected const int MaxItemsPerView = 15;
         protected int _minItem;
@@ -189,40 +191,20 @@ namespace RAGENativeUI.PauseMenu
             res = UIMenu.GetScreenResolutionMantainRatio();
             var activeWidth = res.Width - SafeSize.X * 2;
             var activeHeight = res.Height - SafeSize.Y * 2;
-            logoSize = new Size(baseLogoWidth, (int)(0.5f * baseLogoWidth));
 
             if (DynamicMissionWidth)
             {
                 // ensure logo height does not exceed safe zone, logo width is over min but optimized to text width
 
                 float maxLabelWidth = 30;
-                // float maxItemDescHeight = 40;
 
                 foreach (var heist in Heists)
                 {
                     maxLabelWidth = Math.Max(maxLabelWidth, ResText.MeasureStringWidth(heist.Name, Common.EFont.ChaletLondon, 0.35f));
                 }
 
-                maxLabelWidth = Math.Max(MinLabelWidth, maxLabelWidth + 20);
-                baseLogoWidth = (int)Math.Max(activeWidth - maxLabelWidth, MinMissionWidth);
-
-                /*
-                foreach (var heist in Heists)
-                {
-                    float heistDescHeight = 40 + (40 * heist.ValueList.Count);
-                    if (!string.IsNullOrWhiteSpace(heist.Description))
-                    {
-                        // heistDescHeight += TextCommands.GetLineCount(heist.Description, 0.0f, 0.0f) * 45 + 4;
-                        int lineCount = TextCommands.GetLineCount(heist.Description, new TextStyle(TextFont.ChaletLondon, Color.White, 0.35f, TextJustification.Left, 0, logoWidth / 1920f), 0f, 0f);
-                        heistDescHeight += (lineCount * 25) + 20;
-                    }
-                    maxItemDescHeight = Math.Max(maxItemDescHeight, heistDescHeight);
-                }
-                */
-
-                // var logoHeight = activeHeight - maxItemDescHeight;
-                // logoSize = new Size((int)logoWidth, (int)logoHeight);
-                // baseLogoWidth = (int)logoWidth;
+                maxLabelWidth = Math.Min(MaxLabelWidth, Math.Max(MinLabelWidth, maxLabelWidth + 20));
+                baseLogoWidth = (int)Math.Min(MaxMissionWidth, Math.Max(activeWidth - maxLabelWidth, MinMissionWidth));
             }
 
             var curHeist = Heists[Index];
@@ -236,9 +218,8 @@ namespace RAGENativeUI.PauseMenu
                 heistDescHeight += (lineCount * 25) + 20;
             }
 
-            float logoWidth = baseLogoWidth;
             float logoHeight = Math.Min(baseLogoWidth / ratio, activeHeight - heistDescHeight);
-            logoWidth = logoHeight * ratio;
+            float logoWidth = logoHeight * ratio;
             logoSize = new Size((int)logoWidth, (int)logoHeight);
             logoArea = new Size(baseLogoWidth, (int)logoHeight);
 
@@ -251,8 +232,14 @@ namespace RAGENativeUI.PauseMenu
             var counter = 0;
             for (int i = _minItem; i < Math.Min(Heists.Count, _maxItem); i++)
             {
+                string listItemName = Heists[i].Name;
+                var nameLength = ResText.MeasureStringWidth(listItemName, Common.EFont.ChaletLondon, 0.35f);
+                if(nameLength > itemSize.Width - 10)
+                {
+                    listItemName = listItemName.Substring(0, Math.Max(Math.Min(listItemName.Length, 10), (int)((itemSize.Width - 20) / nameLength * listItemName.Length))).Trim() + "...";
+                }
                 ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * counter)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
-                ResText.Draw(Heists[i].Name, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * counter)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
+                ResText.Draw(listItemName, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * counter)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
                 counter++;
             }
 
