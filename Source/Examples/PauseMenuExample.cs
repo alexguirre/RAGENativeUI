@@ -43,6 +43,7 @@
                 new MissionInformation("Mission Two", "I have description!", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective") }),
                 new MissionInformation("Mission Three", "This has a description and a full texture", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_chopper", "banner_4") },
                 new MissionInformation("Mission Four", new Tuple<string, string>[] { }) { Logo = new MissionLogo("candc_casinoheist", "stockade_b") },
+                new MissionInformation("Mission Five", "Long description with a~n~very very~n~very very~n~very very~n~very very~n~very very very very very very very very very very long string", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_default", "dump") },
             };
             tabView.AddTab(missionSelectTab = new TabMissionSelectItem("I'm a Mission Select Tab", missionsInfo));
             missionSelectTab.OnItemSelect += (info) =>
