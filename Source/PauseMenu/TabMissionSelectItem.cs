@@ -56,6 +56,37 @@ namespace RAGENativeUI.PauseMenu
         internal readonly bool IsGameSprite;
         internal readonly Texture Texture;
         internal readonly Sprite Sprite;
+
+        private Size spriteResolution;
+        public Size Resolution
+        {
+            get
+            {
+                if (!IsGameSprite) return Texture.Size;
+
+                if (spriteResolution == default)
+                {
+                    var res = N.GetTextureResolution(Sprite.TextureDictionary, Sprite.TextureName);
+                    if (res.X > 4 && res.Y > 4) // GetTextureResolution returns (4, 4, 0) if texture isn't loaded
+                    {
+                        spriteResolution = new Size((int)res.X, (int)res.Y);
+                    }
+                }
+
+                return spriteResolution;
+            }
+        }
+
+        public float Ratio
+        {
+            get
+            {
+                var res = Resolution;
+                if (res == default) return 2.0f;
+
+                return (float)res.Width / (float)res.Height;
+            }
+        }
     }
 
     public class TabMissionSelectItem : TabItem
@@ -79,9 +110,14 @@ namespace RAGENativeUI.PauseMenu
         public List<MissionInformation> Heists { get; set; }
         public int Index { get; set; }
 
+        public bool DynamicMissionWidth { get; set; } = true;
+        public int MinMissionWidth { get; set; } = 512;
+        public int MinLabelWidth { get; set; } = 100;
+
         protected const int MaxItemsPerView = 15;
         protected int _minItem;
         protected int _maxItem;
+        protected Size logoSize = new Size(512, 256);
         protected Sprite _noLogo { get; set; }
 
         public override void ProcessControls()
@@ -147,9 +183,35 @@ namespace RAGENativeUI.PauseMenu
             if (Heists.Count == 0) return;
             
             res = UIMenu.GetScreenResolutionMantainRatio();
-
             var activeWidth = res.Width - SafeSize.X * 2;
-            var itemSize = new Size((int)activeWidth - 515, 40);
+            var activeHeight = res.Height - SafeSize.Y * 2;
+
+            if(DynamicMissionWidth)
+            {
+                float maxLabelWidth = 30;
+                float maxItemDescHeight = 40;
+
+                foreach (var heist in Heists)
+                {
+                    maxLabelWidth = Math.Max(maxLabelWidth, ResText.MeasureStringWidth(heist.Name, Common.EFont.ChaletLondon, 0.35f));
+
+                    float heistDescHeight = 40 + (40 * heist.ValueList.Count);
+                    if (!string.IsNullOrWhiteSpace(heist.Description))
+                    {
+                        heistDescHeight += TextCommands.GetLineCount(heist.Description, 0.0f, 0.0f) + 4;
+                    }
+                    maxItemDescHeight = Math.Max(maxItemDescHeight, heistDescHeight);
+                }
+
+                // ensure logo height does not exceed safe zone, logo width is over min but optimized to text width
+                maxLabelWidth = Math.Max(MinLabelWidth, maxLabelWidth + 20);
+                var logoWidth = Math.Max(activeWidth - maxLabelWidth, MinMissionWidth);
+                var logoHeight = Math.Min(0.5f * logoWidth, activeHeight - maxItemDescHeight);
+                logoWidth = logoHeight * 2.0f;
+                logoSize = new Size((int)logoWidth, (int)logoHeight);
+            }
+            
+            var itemSize = new Size((int)activeWidth - logoSize.Width - 3, 40);
 
             var alpha = Focused ? 120 : 30;
             var blackAlpha = Focused ? 200 : 100;
@@ -166,7 +228,8 @@ namespace RAGENativeUI.PauseMenu
             if (Heists[Index].Logo == null || (Heists[Index].Logo.Sprite == null && Heists[Index].Logo.Texture == null))
             {
                 drawTexture = false;
-                _noLogo.Position = new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y);
+                _noLogo.Size = logoSize;
+                _noLogo.Position = new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y);
                 _noLogo.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
                 _noLogo.Draw();
             }
@@ -178,8 +241,8 @@ namespace RAGENativeUI.PauseMenu
             {
                 drawTexture = false;
                 Sprite sprite = Heists[Index].Logo.Sprite;
-                sprite.Position = new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y);
-                sprite.Size = new Size(512, 256);
+                sprite.Position = new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y);
+                sprite.Size = logoSize;
                 sprite.Color = Color.FromArgb(blackAlpha, 255, 255, 255);
                 sprite.Draw();
             }
@@ -188,28 +251,28 @@ namespace RAGENativeUI.PauseMenu
                 drawTexture = false;
             }
 
-            ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256), new Size(512, 40), Color.FromArgb(fullAlpha, Color.Black));
-            ResText.Draw(Heists[Index].Name, new Point((int)res.Width - SafeSize.X - 4, SafeSize.Y + 260), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, Size.Empty);
+            ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y + logoSize.Height), new Size(logoSize.Width, 40), Color.FromArgb(fullAlpha, Color.Black));
+            ResText.Draw(Heists[Index].Name, new Point((int)res.Width - SafeSize.X - 4, SafeSize.Y + (logoSize.Height + 4)), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, Size.Empty);
 
             for (int i = 0; i < Heists[Index].ValueList.Count; i++)
             {
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 40 + (40 * i)), new Size(512, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y + logoSize.Height + 40 + (40 * i)), new Size(logoSize.Width, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
                 var text = Heists[Index].ValueList[i].Item1;
                 var label = Heists[Index].ValueList[i].Item2;
 
 
-                ResText.Draw(text, new Point((int)res.Width - SafeSize.X - 506, SafeSize.Y + 260 + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
-                ResText.Draw(label, new Point((int)res.Width - SafeSize.X - 6, SafeSize.Y + 260 + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
+                ResText.Draw(text, new Point((int)res.Width - SafeSize.X - (logoSize.Width - 6), SafeSize.Y + (logoSize.Height + 4) + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
+                ResText.Draw(label, new Point((int)res.Width - SafeSize.X - 6, SafeSize.Y + (logoSize.Height + 4) + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
             }
 
             if (!string.IsNullOrEmpty(Heists[Index].Description))
             {
                 var propLen = Heists[Index].ValueList.Count;
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 42 + 40 * propLen), new Size(512, 2), Color.FromArgb(fullAlpha, Color.White));
-                ResText.Draw(Heists[Index].Description, new Point((int)res.Width - SafeSize.X - 508, SafeSize.Y + 256 + 45 + 40 * propLen + 4), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size(508, 0));
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y + logoSize.Height + 42 + 40 * propLen), new Size(logoSize.Width, 2), Color.FromArgb(fullAlpha, Color.White));
+                ResText.Draw(Heists[Index].Description, new Point((int)res.Width - SafeSize.X - (logoSize.Width - 4), SafeSize.Y + logoSize.Height + 45 + 40 * propLen + 4), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size(508, 0));
 
                 int lineCount = TextCommands.GetLineCount(Heists[Index].Description, 0.0f, 0.0f);
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y + 256 + 44 + 40 * propLen), new Size(512, 45 * lineCount), Color.FromArgb(blackAlpha, 0, 0, 0));
+                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y + logoSize.Height + 44 + 40 * propLen), new Size(logoSize.Width, 45 * lineCount), Color.FromArgb(blackAlpha, 0, 0, 0));
             }
         }
 
@@ -218,7 +281,7 @@ namespace RAGENativeUI.PauseMenu
         {
             if (drawTexture && Heists[Index].Logo != null)
             {
-                Sprite.DrawTexture(Heists[Index].Logo.Texture, new Point((int)res.Width - SafeSize.X - 512, SafeSize.Y), new Size(512, 256), g);
+                Sprite.DrawTexture(Heists[Index].Logo.Texture, new Point((int)res.Width - SafeSize.X - logoSize.Width, SafeSize.Y), logoSize, g);
             }
         }
     }
