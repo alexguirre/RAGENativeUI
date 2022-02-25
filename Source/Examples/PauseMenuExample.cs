@@ -39,11 +39,12 @@
 
             List<MissionInformation> missionsInfo = new List<MissionInformation>()
             {
-                new MissionInformation("Mission One", new Tuple<string, string>[] { new Tuple<string, string>("This the first info", "Random Info"), new Tuple<string, string>("This the second info", "Random Info #2") }) { Logo = new MissionLogo(Game.CreateTextureFromFile("DefaultSkin.png")) },
-                new MissionInformation("Mission Two", "I have description!", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective") }),
+                new MissionInformation("Mission One", "I have description!", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission One Objective") }),
+                new MissionInformation("Mission Two", new Tuple<string, string>[] { new Tuple<string, string>("This the second info", "Random Info"), new Tuple<string, string>("This the second info", "Random Info #2") }) { Logo = new MissionLogo(Game.CreateTextureFromFile("DefaultSkin.png")) },
                 new MissionInformation("Mission Three", "This has a description and a full texture", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_chopper", "banner_4") },
                 new MissionInformation("Mission Four", new Tuple<string, string>[] { }) { Logo = new MissionLogo("candc_casinoheist", "stockade_b") },
                 new MissionInformation("Unreasonably long mission name which really ought to be cut off because it's so stupidly long", "Long description with a~n~very very~n~very very~n~very very~n~very very~n~very very very very very very very very very very long string", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_default", "dump") },
+                new MissionInformation("Mission Item", "Mission with a very tall texture", new Tuple<string, string>[] { Tuple.Create("Info 1", "#1"), Tuple.Create("Info 2", "#2"), Tuple.Create("Info 3", "#3") }) { Logo = new MissionLogo("helicopterhud", "hud_vert") },
             };
             tabView.AddTab(missionSelectTab = new TabMissionSelectItem("Static Mission Select Tab", missionsInfo));
             missionSelectTab.OnItemSelect += (info) =>
@@ -73,6 +74,9 @@
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
                 items.Add(tItem);
             }
+
+            items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
+
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
 
             UIMenuItem[] menuItems = CreateMenuItems();

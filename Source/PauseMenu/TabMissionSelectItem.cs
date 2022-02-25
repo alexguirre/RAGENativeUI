@@ -28,8 +28,6 @@ namespace RAGENativeUI.PauseMenu
         public string Description { get; set; }
         public MissionLogo Logo { get; set; }
         public List<Tuple<string, string>> ValueList { get; set; }
-
-
     }
 
     public class MissionLogo
@@ -69,7 +67,7 @@ namespace RAGENativeUI.PauseMenu
                 if (spriteResolution == default)
                 {
                     var res = N.GetTextureResolution(Sprite.TextureDictionary, Sprite.TextureName);
-                    if (res.X > 4 && res.Y > 4) // GetTextureResolution returns (4, 4, 0) if texture isn't loaded
+                    if (res.X != 4 || res.Y != 4) // GetTextureResolution returns (4, 4, 0) if texture isn't loaded
                     {
                         spriteResolution = new Size((int)res.X, (int)res.Y);
                     }
@@ -189,8 +187,8 @@ namespace RAGENativeUI.PauseMenu
             if (Heists.Count == 0) return;
             
             res = UIMenu.GetScreenResolutionMantainRatio();
-            var activeWidth = res.Width - SafeSize.X * 2;
-            var activeHeight = res.Height - SafeSize.Y * 2;
+            var activeWidth = BottomRight.X - TopLeft.X;
+            var activeHeight = BottomRight.Y - TopLeft.Y;
 
             if (DynamicMissionWidth)
             {
@@ -216,6 +214,8 @@ namespace RAGENativeUI.PauseMenu
             {
                 int lineCount = TextCommands.GetLineCount(curHeist.Description, new TextStyle(TextFont.ChaletLondon, Color.White, 0.35f, TextJustification.Left, 0, baseLogoWidth / 1920f), 0f, 0f);
                 heistDescHeight += (lineCount * 25) + 20;
+                // this is necessary to reset an issue with GetLineCount breaking the next legitimate text rendering if a description is present
+                ResText.Draw("", Point.Empty, 0.01f, Color.FromArgb(0, 0, 0, 0), Common.EFont.ChaletLondon, false);
             }
 
             float logoHeight = Math.Min(baseLogoWidth / ratio, activeHeight - heistDescHeight);
@@ -229,6 +229,7 @@ namespace RAGENativeUI.PauseMenu
             var blackAlpha = Focused ? 200 : 100;
             var fullAlpha = Focused ? 255 : 150;
 
+            // mission list rendering
             var counter = 0;
             for (int i = _minItem; i < Math.Min(Heists.Count, _maxItem); i++)
             {
@@ -244,68 +245,72 @@ namespace RAGENativeUI.PauseMenu
             }
 
             int logoPadding = (int)(0.5f * (logoArea.Width - logoSize.Width));
+            var missionPoint = new Point(TopLeft.X + activeWidth - logoArea.Width, TopLeft.Y);
 
+            // texture/logo rendering
             if (Heists[Index].Logo == null || (Heists[Index].Logo.Sprite == null && Heists[Index].Logo.Texture == null))
             {
                 drawTexture = false;
                 _noLogo.Size = logoSize;
-                _noLogo.Position = new Point((int)res.Width - SafeSize.X - logoArea.Width + logoPadding, SafeSize.Y);
+                _noLogo.Position = missionPoint.AddPoints(new Point(logoPadding, 0));
                 _noLogo.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
                 _noLogo.Draw();
-                ResRectangle.Draw(new Point((int)(res.Width - SafeSize.X - logoArea.Width), SafeSize.Y), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
-                ResRectangle.Draw(new Point((int)(res.Width - SafeSize.X - logoPadding), SafeSize.Y), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
             }
             else if (Heists[Index].Logo != null && Heists[Index].Logo.Texture != null && !Heists[Index].Logo.IsGameSprite)
             {
                 drawTexture = true;
-                ResRectangle.Draw(new Point((int)(res.Width - SafeSize.X - logoArea.Width), SafeSize.Y), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
-                ResRectangle.Draw(new Point((int)(res.Width - SafeSize.X - logoPadding), SafeSize.Y), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
             }
             else if (Heists[Index].Logo != null && Heists[Index].Logo.Sprite != null && Heists[Index].Logo.IsGameSprite)
             {
                 drawTexture = false;
                 Sprite sprite = Heists[Index].Logo.Sprite;
-                sprite.Position = new Point((int)res.Width - SafeSize.X - logoArea.Width + logoPadding, SafeSize.Y);
+                sprite.Position = missionPoint.AddPoints(new Point(logoPadding, 0));
                 sprite.Size = logoSize;
                 sprite.Color = Color.FromArgb(blackAlpha, 255, 255, 255);
                 sprite.Draw();
-                ResRectangle.Draw(new Point((int)(res.Width - SafeSize.X - logoArea.Width), SafeSize.Y), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
-                ResRectangle.Draw(new Point((int)(res.Width - SafeSize.X - logoPadding), SafeSize.Y), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
             }
             else
             {
                 drawTexture = false;
             }
+            
+            // padding around texture background
+            ResRectangle.Draw(missionPoint, new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
+            ResRectangle.Draw(missionPoint.AddPoints(new Point(logoArea.Width - logoPadding, 0)), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
 
-            ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoArea.Width, SafeSize.Y + logoArea.Height), new Size(logoArea.Width, 40), Color.FromArgb(fullAlpha, Color.Black));
-            ResText.Draw(Heists[Index].Name, new Point((int)res.Width - SafeSize.X - 4, SafeSize.Y + (logoArea.Height + 4)), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, Size.Empty);
+            // description text and background rendering
+            ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height)), new Size(logoArea.Width, 40), Color.FromArgb(fullAlpha, Color.Black));
+            ResText.Draw(Heists[Index].Name, missionPoint.AddPoints(new Point(logoArea.Width - 4, logoArea.Height + 4)), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, Size.Empty);
 
+            // objective items rendering
             for (int i = 0; i < Heists[Index].ValueList.Count; i++)
             {
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoArea.Width, SafeSize.Y + logoArea.Height + 40 + (40 * i)), new Size(logoArea.Width, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
+                ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 40 * (i + 1))), new Size(logoArea.Width, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
                 var text = Heists[Index].ValueList[i].Item1;
                 var label = Heists[Index].ValueList[i].Item2;
 
-
-                ResText.Draw(text, new Point((int)res.Width - SafeSize.X - (logoArea.Width - 6), SafeSize.Y + (logoArea.Height + 4) + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
-                ResText.Draw(label, new Point((int)res.Width - SafeSize.X - 6, SafeSize.Y + (logoArea.Height + 4) + 42 + (40 * i)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
+                ResText.Draw(text, missionPoint.AddPoints(new Point(6, logoArea.Height + 6 + 40 * (i + 1))), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
+                ResText.Draw(label, missionPoint.AddPoints(new Point(logoArea.Width - 6, logoArea.Height + 6 + 40 * (i + 1))), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
             }
 
+            // description rendering
             if (!string.IsNullOrEmpty(Heists[Index].Description))
             {
                 var propLen = Heists[Index].ValueList.Count;
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoArea.Width, SafeSize.Y + logoArea.Height + 42 + 40 * propLen), new Size(logoArea.Width, 2), Color.FromArgb(fullAlpha, Color.White));
-                ResText.Draw(Heists[Index].Description, new Point((int)res.Width - SafeSize.X - (logoArea.Width - 4), SafeSize.Y + logoArea.Height + 45 + 40 * propLen + 4), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size((logoArea.Width - 4), 0));
+                var propBuffer = 40 * (1 + propLen);
+
+                ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 2 + propBuffer)), new Size(logoArea.Width, 2), Color.FromArgb(fullAlpha, Color.White));
+                ResText.Draw(Heists[Index].Description, missionPoint.AddPoints(new Point(4, logoArea.Height + 9 + propBuffer)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size((logoArea.Width - 4), 0));
 
                 int lineCount = TextCommands.GetLineCount(Heists[Index].Description, new TextStyle(TextFont.ChaletLondon, Color.White, 0.35f, TextJustification.Left, 0, logoArea.Width / 1920f), 0f, 0f);
-                ResRectangle.Draw(new Point((int)res.Width - SafeSize.X - logoArea.Width, SafeSize.Y + logoArea.Height + 44 + 40 * propLen), new Size(logoArea.Width, 25 * lineCount + 20), Color.FromArgb(blackAlpha, 0, 0, 0));
+                ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 4 + propBuffer)), new Size(logoArea.Width, 25 * lineCount + 20), Color.FromArgb(blackAlpha, 0, 0, 0));
             }
         }
 
         private bool drawTexture = false;
         public override void DrawTextures(Rage.Graphics g)
         {
-            if (drawTexture && Heists[Index].Logo != null)
+            if (drawTexture && Heists[Index].Logo?.Texture != null)
             {
                 int logoPadding = (int)(0.5f * (logoArea.Width - logoSize.Width));
                 var pos = new Point((int)res.Width - SafeSize.X - logoArea.Width + logoPadding, SafeSize.Y);
