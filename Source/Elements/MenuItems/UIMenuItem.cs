@@ -8,7 +8,7 @@ namespace RAGENativeUI.Elements
     /// <summary>
     /// Simple item with a label.
     /// </summary>
-    public class UIMenuItem
+    public class UIMenuItem : IScrollableListItem
     {
         public static readonly Color DefaultBackColor = Color.Empty,
                                      DefaultHighlightedBackColor = Color.White,

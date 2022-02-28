@@ -51,7 +51,7 @@ namespace RAGENativeUI
     /// <summary>
     /// Base class for RAGENativeUI. Calls the next events: OnIndexChange, OnListChanged, OnCheckboxChange, OnItemSelect, OnMenuClose, OnMenuchange.
     /// </summary>
-    public class UIMenu
+    public class UIMenu : ScrollableListBase<UIMenuItem>
     {
         /// <summary>
         /// Represents the default value of <see cref="MaxItemsOnScreen"/>.
@@ -173,12 +173,7 @@ namespace RAGENativeUI
 
         private Texture _customBanner;
 
-        private int currentItem;
         private RectangleF currentItemBounds = RectangleF.Empty;
-        private int minItem;
-        private int maxItem;
-        private int hoveredItem = -1;
-        private int maxItemsOnScreen = DefaultMaxItemsOnScreen;
 
         private bool visible;
         private bool justOpenedProcessInputFirstTick = true;
@@ -196,6 +191,10 @@ namespace RAGENativeUI
         public string AUDIO_ERROR = "ERROR";
 
         public List<UIMenuItem> MenuItems = new List<UIMenuItem>();
+        protected override List<UIMenuItem> Items { 
+            get => MenuItems; 
+            set => MenuItems = value; 
+        }
 
         public bool MouseEdgeEnabled = true;
         public bool ControlDisablingEnabled = true;
@@ -328,6 +327,7 @@ namespace RAGENativeUI
                 CounterPretext = subtitle.Substring(0, subtitle.IndexOf('~', 1) + 1);
             }
 
+            maxItemsOnScreen = DefaultMaxItemsOnScreen;
             CurrentSelection = -1;
 
             SetKey(Common.MenuControls.Up, GameControl.FrontendUp, 2);
@@ -566,39 +566,6 @@ namespace RAGENativeUI
             RefreshCurrentSelection(); // refresh the current selection in case we removed the selected item
         }
 
-        /// <summary>
-        /// Reset the current selected item to 0. Use this after you add or remove items from <see cref="MenuItems"/> directly
-        /// instead of through <see cref="AddItem(UIMenuItem)"/>, <see cref="AddItem(UIMenuItem, int)"/> or <see cref="RemoveItemAt(int)"/>.
-        /// </summary>
-        public void RefreshIndex()
-        {
-            if (MenuItems.Count == 0)
-            {
-                CurrentSelection = -1;
-                return;
-            }
-
-            var selection = -1;
-            for (int i = 0; i < MenuItems.Count; i++)
-            {
-                if (selection == -1 && !MenuItems[i].Skipped)
-                {
-                    selection = i;
-                }
-                MenuItems[i].Selected = false;
-            }
-
-            CurrentSelection = selection;
-        }
-
-        /// <summary>
-        /// Remove all items from the menu.
-        /// </summary>
-        public void Clear()
-        {
-            MenuItems.Clear();
-            CurrentSelection = -1;
-        }
 
         /// <summary>
         /// Draw your custom banner.
@@ -1136,35 +1103,6 @@ namespace RAGENativeUI
             return new Point(Convert.ToInt32(Math.Round(g * wmp)), Convert.ToInt32(Math.Round(g * hmp)));
         }
 
-        private void MoveToPreviousItem()
-        {
-            CurrentSelection = GetIndexOfPreviousSelectableItem(CurrentSelection);
-        }
-
-        private void MoveToNextItem()
-        {
-            CurrentSelection = GetIndexOfNextSelectableItem(CurrentSelection);
-        }
-
-        private int GetIndexOfPreviousSelectableItem(int startIndex)
-            => GetIndexOfNextSelectableItem(startIndex, directionStep: -1);
-
-        private int GetIndexOfNextSelectableItem(int startIndex)
-            => GetIndexOfNextSelectableItem(startIndex, directionStep: +1);
-
-        private int GetIndexOfNextSelectableItem(int startIndex, int directionStep)
-        {
-            int newSelection = startIndex;
-            int count = 0; // keep count to prevent an infinite loop when all items are skipped
-            do
-            {
-                newSelection = Common.Wrap(newSelection + directionStep, 0, MenuItems.Count);
-                count++;
-            } while (count < MenuItems.Count && MenuItems[newSelection].Skipped);
-
-            return MenuItems[newSelection].Skipped ? -1 : newSelection;
-        }
-
         [Obsolete("Use UIMenu.GoUp() instead."), EditorBrowsable(EditorBrowsableState.Never)]
         public void GoUpOverflow()
         {
@@ -1670,6 +1608,11 @@ namespace RAGENativeUI
             InstructionalButtons.Update();
         }
 
+        protected override void onSelectionChange(int newItemIndex, bool isNewItem)
+        {
+            if (isNewItem) UpdateInstructionalButtons();
+        }
+
         /// <summary>
         /// Sets the index of all lists to 0 and unchecks all the checkboxes. 
         /// </summary>
@@ -1704,57 +1647,6 @@ namespace RAGENativeUI
         {
             N.EnableControlAction(0, GameControl.LookLeftRight);
             N.EnableControlAction(0, GameControl.LookUpDown);
-        }
-
-        private void UpdateVisibleItemsIndices()
-        {
-            if (MaxItemsOnScreen >= MenuItems.Count)
-            {
-                minItem = 0;
-                maxItem = MenuItems.Count - 1;
-                return;
-            }
-
-            if (currentItem == -1 || minItem == -1 || maxItem == -1) // if no selection or no previous selection
-            {
-                minItem = 0;
-                maxItem = Math.Min(MenuItems.Count, MaxItemsOnScreen) - 1;
-            }
-            else if (currentItem < minItem) // moved selection up, out of current visible item
-            {
-                minItem = currentItem;
-                maxItem = currentItem + Math.Min(MaxItemsOnScreen, MenuItems.Count) - 1;
-            }
-            else if (currentItem > maxItem) // moved selection down, out of current visible item
-            {
-                minItem = currentItem - Math.Min(MaxItemsOnScreen, MenuItems.Count) + 1;
-                maxItem = currentItem;
-            }
-            else if (maxItem - minItem + 1 != MaxItemsOnScreen) // MaxItemsOnScreen changed
-            {
-                if (maxItem == currentItem)
-                {
-                    minItem = maxItem - Math.Min(maxItemsOnScreen, MenuItems.Count) + 1;
-                }
-                else
-                {
-                    maxItem = minItem + Math.Min(maxItemsOnScreen, MenuItems.Count) - 1;
-                    if (maxItem >= MenuItems.Count)
-                    {
-                        int diff = maxItem - MenuItems.Count + 1;
-                        maxItem -= diff;
-                        minItem -= diff;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Refreshes the current item index and min/max visible items, in case they are out of bounds.
-        /// </summary>
-        private void RefreshCurrentSelection()
-        {
-            CurrentSelection = GetIndexOfNextSelectableItem((CurrentSelection == -1 ? 0 : CurrentSelection) - 1);
         }
 
         /// <summary>
@@ -1811,91 +1703,6 @@ namespace RAGENativeUI
         /// Needed by <see cref="PauseMenu.TabInteractiveListItem"/>, which uses a hidden menu for managing the menu items.
         /// </summary>
         internal bool IgnoreVisibility { get; set; }
-
-        /// <summary>
-        /// Gets or sets the currently selected item index.
-        /// A value of <c>-1</c> indicates that no selection exists, for example, when no items have been added to the menu.
-        /// </summary>
-        public int CurrentSelection
-        {
-            get => currentItem;
-            set
-            {
-                if (value != -1 && !IsValidItemIndex(value))
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), $"Value must be -1 or in the range [0, {nameof(MenuItems)}.{nameof(MenuItems.Count)})");
-                }
-
-                if (MenuItems.Count == 0)
-                {
-                    currentItem = -1;
-                    minItem = -1;
-                    maxItem = -1;
-                }
-                else
-                {
-                    if (currentItem != value || (IsValidItemIndex(value) && !MenuItems[value].Selected))
-                    {
-                        if (IsValidItemIndex(currentItem))
-                        {
-                            MenuItems[currentItem].Selected = false;
-                        }
-                        
-                        currentItem = value;
-
-                        if (IsValidItemIndex(currentItem))
-                        {
-                            MenuItems[currentItem].Selected = true;
-                        }
-                        UpdateInstructionalButtons();
-                    }
-
-                    UpdateVisibleItemsIndices();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets whether a selection exists. If the selection exists, <see cref="CurrentSelection"/> returns the index of the selected item; otherwise, <c>-1</c>.
-        /// </summary>
-        public bool HasSelection => IsValidItemIndex(CurrentSelection);
-
-        /// <summary>
-        /// Gets whether <paramref name="index"/> is in the range [0, MenuItems.Count).
-        /// </summary>
-        private bool IsValidItemIndex(int index) => index >= 0 && index < MenuItems.Count;
-
-        /// <summary>
-        /// Gets or set the maximum number of visible items.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">If the specified value is less than 1.</exception>
-        public int MaxItemsOnScreen
-        {
-            get => maxItemsOnScreen;
-            set
-            {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, $"{nameof(MaxItemsOnScreen)} must be at least 1");
-                }
-
-                if (maxItemsOnScreen != value)
-                {
-                    maxItemsOnScreen = value;
-                    UpdateVisibleItemsIndices();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the index of the first visible item.
-        /// </summary>
-        public int FirstItemOnScreen => minItem;
-
-        /// <summary>
-        /// Gets the index of the last visible item.
-        /// </summary>
-        public int LastItemOnScreen => maxItem;
 
         /// <summary>
         /// Returns false if last input was made with mouse and keyboard, true if it was made with a controller.
