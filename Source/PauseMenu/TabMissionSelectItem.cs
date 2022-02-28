@@ -87,6 +87,15 @@ namespace RAGENativeUI.PauseMenu
                 return (float)res.Width / (float)res.Height;
             }
         }
+
+        public bool IsTextureLoaded
+        {
+            get
+            {
+                var res = Resolution;
+                return (res.Width > 0 && res.Height > 0 && !(res.Width == 4 && res.Height == 4));
+            }
+        }
     }
 
     public class TabMissionSelectItem : TabItem
@@ -207,6 +216,7 @@ namespace RAGENativeUI.PauseMenu
 
             var curHeist = Heists[Index];
             var logo = curHeist.Logo;
+            bool logoLoaded = curHeist.Logo?.IsTextureLoaded ?? false;
             float ratio = logo?.Ratio ?? 2f; // width to height ratio of actual texture being rendered this frame
 
             float heistDescHeight = 40 + (40 * curHeist.ValueList.Count);
@@ -248,7 +258,7 @@ namespace RAGENativeUI.PauseMenu
             var missionPoint = new Point(TopLeft.X + activeWidth - logoArea.Width, TopLeft.Y);
 
             // texture/logo rendering
-            if (Heists[Index].Logo == null || (Heists[Index].Logo.Sprite == null && Heists[Index].Logo.Texture == null))
+            if (Heists[Index].Logo == null || !logoLoaded || (Heists[Index].Logo.Sprite == null && Heists[Index].Logo.Texture == null))
             {
                 drawTexture = false;
                 _noLogo.Size = logoSize;
