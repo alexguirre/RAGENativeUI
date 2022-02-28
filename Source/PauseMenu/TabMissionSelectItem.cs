@@ -122,6 +122,7 @@ namespace RAGENativeUI.PauseMenu
         public bool DynamicMissionWidth { get; set; } = false;
         public int MinMissionWidth { get; set; } = 512;
         public int MaxMissionWidth { get; set; } = 1440;
+        public int MaxLogoHeight { get; set; } = 512;
         public int MinLabelWidth { get; set; } = 100;
         public int MaxLabelWidth { get; set; } = 512;
 
@@ -217,8 +218,7 @@ namespace RAGENativeUI.PauseMenu
             var curHeist = Heists[Index];
             var logo = curHeist.Logo;
             bool logoLoaded = curHeist.Logo?.IsTextureLoaded ?? false;
-            float ratio = logo?.Ratio ?? 2f; // width to height ratio of actual texture being rendered this frame
-
+            
             float heistDescHeight = 40 + (40 * curHeist.ValueList.Count);
             if (!string.IsNullOrWhiteSpace(curHeist.Description))
             {
@@ -228,8 +228,9 @@ namespace RAGENativeUI.PauseMenu
                 ResText.Draw("", Point.Empty, 0.01f, Color.FromArgb(0, 0, 0, 0), Common.EFont.ChaletLondon, false);
             }
 
-            float logoHeight = Math.Min(baseLogoWidth / ratio, activeHeight - heistDescHeight);
-            float logoWidth = logoHeight * ratio;
+            float logoRatio = logo?.Ratio ?? 2f; // width to height ratio of actual texture being rendered this frame
+            float logoHeight = Math.Min(Math.Min(baseLogoWidth / logoRatio, activeHeight - heistDescHeight), MaxLogoHeight);
+            float logoWidth = logoHeight * logoRatio;
             logoSize = new Size((int)logoWidth, (int)logoHeight);
             logoArea = new Size(baseLogoWidth, (int)logoHeight);
 
