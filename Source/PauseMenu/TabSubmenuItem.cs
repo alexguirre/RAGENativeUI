@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Rage;
@@ -8,6 +9,17 @@ namespace RAGENativeUI.PauseMenu
 {
     public class TabSubmenuItem : TabItem
     {
+        private class ScrollableTabList : ScrollableListBase<TabItem>
+        {
+            protected override List<TabItem> Items { get; set; } = new List<TabItem>();
+
+            public List<TabItem> TabItems
+            {
+                get => Items;
+                set => Items = value;
+            }
+        }
+
         public TabSubmenuItem(string name, IEnumerable<TabItem> items) : base(name)
         {
             DrawBg = false;
@@ -17,29 +29,26 @@ namespace RAGENativeUI.PauseMenu
             RefreshIndex();
         }
 
-        public List<TabItem> Items { get; set; }
+        private ScrollableTabList tabList = new ScrollableTabList();
+
+        public List<TabItem> Items
+        {
+            get => tabList.TabItems;
+            set => tabList.TabItems = value;
+        }
+
         /// <summary>
         /// Gets or sets the current selected item's index. Set to -1 if no selection exists, for example, when <see cref="Items"/> is empty.
         /// </summary>
-        public int Index { get; set; }
+        public int Index
+        {
+            get => tabList.CurrentSelection;
+            set => tabList.CurrentSelection = value;
+        }
+
         public bool IsInList { get; set; }
 
-        public void RefreshIndex()
-        {
-            if (Items.Count == 0)
-            {
-                Index = -1;
-                return;
-            }
-
-            foreach (TabItem item in Items)
-            {
-                item.Focused = false;
-                item.Active = false;
-                item.Visible = false;
-            }
-            Index = 0;
-        }
+        public void RefreshIndex() => tabList.RefreshIndex();
 
         public override void ProcessControls()
         {
@@ -115,15 +124,19 @@ namespace RAGENativeUI.PauseMenu
             var fullAlpha = Focused ? 255 : 150;
 
             var activeWidth = res.Width - SafeSize.X * 2;
+            var activeHeight = res.Height - SafeSize.Y * 2;
             var submenuWidth = (int)(activeWidth * 0.6818f);
             var itemSize = new Size((int)activeWidth - (submenuWidth + 3), 40);
 
-            for (int i = 0; i < Items.Count; i++)
+            tabList.MaxItemsOnScreen = (int)Math.Floor(activeHeight / 43f);
+
+            for (int c = tabList.FirstItemOnScreen; c <= tabList.LastItemOnScreen; c++)
             {
+                int i = c - tabList.FirstItemOnScreen;
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
-                ResText.Draw(Items[i].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(Items[c].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
                 //if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
                 //{
