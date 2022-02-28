@@ -122,6 +122,7 @@ namespace RAGENativeUI.PauseMenu
         public bool DynamicMissionWidth { get; set; } = false;
         public int MinMissionWidth { get; set; } = 512;
         public int MaxMissionWidth { get; set; } = 1440;
+        public int MaxLogoHeight { get; set; } = 512;
         public int MinLabelWidth { get; set; } = 100;
         public int MaxLabelWidth { get; set; } = 512;
 
@@ -217,8 +218,7 @@ namespace RAGENativeUI.PauseMenu
             var curHeist = Heists[Index];
             var logo = curHeist.Logo;
             bool logoLoaded = curHeist.Logo?.IsTextureLoaded ?? false;
-            float ratio = logo?.Ratio ?? 2f; // width to height ratio of actual texture being rendered this frame
-
+            
             float heistDescHeight = 40 + (40 * curHeist.ValueList.Count);
             if (!string.IsNullOrWhiteSpace(curHeist.Description))
             {
@@ -228,8 +228,9 @@ namespace RAGENativeUI.PauseMenu
                 ResText.Draw("", Point.Empty, 0.01f, Color.FromArgb(0, 0, 0, 0), Common.EFont.ChaletLondon, false);
             }
 
-            float logoHeight = Math.Min(baseLogoWidth / ratio, activeHeight - heistDescHeight);
-            float logoWidth = logoHeight * ratio;
+            float logoRatio = logo?.Ratio ?? 2f; // width to height ratio of actual texture being rendered this frame
+            float logoHeight = Math.Min(Math.Min(baseLogoWidth / logoRatio, activeHeight - heistDescHeight), MaxLogoHeight);
+            float logoWidth = logoHeight * logoRatio;
             logoSize = new Size((int)logoWidth, (int)logoHeight);
             logoArea = new Size(baseLogoWidth, (int)logoHeight);
 
@@ -254,7 +255,8 @@ namespace RAGENativeUI.PauseMenu
                 counter++;
             }
 
-            int logoPadding = (int)(0.5f * (logoArea.Width - logoSize.Width));
+            var logoPaddingLeft = (int)Math.Floor(0.5f * (logoArea.Width - logoSize.Width));
+            var logoPaddingRight = (int)Math.Ceiling(0.5f * (logoArea.Width - logoSize.Width));
             var missionPoint = new Point(TopLeft.X + activeWidth - logoArea.Width, TopLeft.Y);
 
             // texture/logo rendering
@@ -262,7 +264,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 drawTexture = false;
                 _noLogo.Size = logoSize;
-                _noLogo.Position = missionPoint.AddPoints(new Point(logoPadding, 0));
+                _noLogo.Position = missionPoint.AddPoints(new Point(logoPaddingLeft, 0));
                 _noLogo.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
                 _noLogo.Draw();
             }
@@ -274,7 +276,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 drawTexture = false;
                 Sprite sprite = Heists[Index].Logo.Sprite;
-                sprite.Position = missionPoint.AddPoints(new Point(logoPadding, 0));
+                sprite.Position = missionPoint.AddPoints(new Point(logoPaddingLeft, 0));
                 sprite.Size = logoSize;
                 sprite.Color = Color.FromArgb(blackAlpha, 255, 255, 255);
                 sprite.Draw();
@@ -285,8 +287,8 @@ namespace RAGENativeUI.PauseMenu
             }
             
             // padding around texture background
-            ResRectangle.Draw(missionPoint, new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
-            ResRectangle.Draw(missionPoint.AddPoints(new Point(logoArea.Width - logoPadding, 0)), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
+            ResRectangle.Draw(missionPoint, new Size(logoPaddingLeft, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
+            ResRectangle.Draw(missionPoint.AddPoints(new Point(logoArea.Width - logoPaddingRight, 0)), new Size(logoPaddingRight, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
 
             // description text and background rendering
             ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height)), new Size(logoArea.Width, 40), Color.FromArgb(fullAlpha, Color.Black));

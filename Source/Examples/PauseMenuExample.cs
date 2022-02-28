@@ -66,7 +66,6 @@
             textTab.Activated += (s, e) => Game.DisplaySubtitle("I'm in the text tab", 5000);
 
             List<TabItem> items = new List<TabItem>();
-            items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
 
             for (int i = 0; i < 30; i++)
             {
@@ -76,6 +75,9 @@
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
                 items.Add(tItem);
             }
+
+            items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
+            items.Add(new TabMissionSelectItem("Submenu Dynamic Mission Select Item", missionsInfo) { DynamicMissionWidth = true });
 
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
 
