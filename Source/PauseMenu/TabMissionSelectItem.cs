@@ -254,7 +254,8 @@ namespace RAGENativeUI.PauseMenu
                 counter++;
             }
 
-            int logoPadding = (int)(0.5f * (logoArea.Width - logoSize.Width));
+            var logoPaddingLeft = (int)Math.Floor(0.5f * (logoArea.Width - logoSize.Width));
+            var logoPaddingRight = (int)Math.Ceiling(0.5f * (logoArea.Width - logoSize.Width));
             var missionPoint = new Point(TopLeft.X + activeWidth - logoArea.Width, TopLeft.Y);
 
             // texture/logo rendering
@@ -262,7 +263,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 drawTexture = false;
                 _noLogo.Size = logoSize;
-                _noLogo.Position = missionPoint.AddPoints(new Point(logoPadding, 0));
+                _noLogo.Position = missionPoint.AddPoints(new Point(logoPaddingLeft, 0));
                 _noLogo.Color = Color.FromArgb(blackAlpha, 0, 0, 0);
                 _noLogo.Draw();
             }
@@ -274,7 +275,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 drawTexture = false;
                 Sprite sprite = Heists[Index].Logo.Sprite;
-                sprite.Position = missionPoint.AddPoints(new Point(logoPadding, 0));
+                sprite.Position = missionPoint.AddPoints(new Point(logoPaddingLeft, 0));
                 sprite.Size = logoSize;
                 sprite.Color = Color.FromArgb(blackAlpha, 255, 255, 255);
                 sprite.Draw();
@@ -285,8 +286,8 @@ namespace RAGENativeUI.PauseMenu
             }
             
             // padding around texture background
-            ResRectangle.Draw(missionPoint, new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
-            ResRectangle.Draw(missionPoint.AddPoints(new Point(logoArea.Width - logoPadding, 0)), new Size(logoPadding, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
+            ResRectangle.Draw(missionPoint, new Size(logoPaddingLeft, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
+            ResRectangle.Draw(missionPoint.AddPoints(new Point(logoArea.Width - logoPaddingRight, 0)), new Size(logoPaddingRight, logoArea.Height), Color.FromArgb(blackAlpha, Color.Black));
 
             // description text and background rendering
             ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height)), new Size(logoArea.Width, 40), Color.FromArgb(fullAlpha, Color.Black));
