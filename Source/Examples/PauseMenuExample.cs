@@ -66,9 +66,10 @@
             textTab.Activated += (s, e) => Game.DisplaySubtitle("I'm in the text tab", 5000);
 
             List<TabItem> items = new List<TabItem>();
-            for (int i = 0; i < 10; i++)
+
+            for (int i = 0; i < 30; i++)
             {
-                TabItem tItem = i < 5 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
+                TabItem tItem = i < 15 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
                                         (TabItem)new TabInteractiveListItem("Item #" + i, CreateMenuItems());
 
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
