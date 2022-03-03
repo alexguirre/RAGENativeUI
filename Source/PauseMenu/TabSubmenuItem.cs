@@ -185,6 +185,14 @@ namespace RAGENativeUI.PauseMenu
                 Items[Index].Draw();
             }
         }
+
+        public override void DrawTextures(Rage.Graphics g)
+        {
+            if (Index >= 0 && Index < Items.Count)
+            {
+                Items[Index].DrawTextures(g);
+            }
+        }
     }
 }
 
