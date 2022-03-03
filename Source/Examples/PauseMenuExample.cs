@@ -77,6 +77,7 @@
 
             items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
             items.Add(new TabMissionSelectItem("Submenu Dynamic Mission Select Item", missionsInfo) { DynamicMissionWidth = true });
+            items.Add(new TabMissionSelectItem("Submenu Fixed Ratio Mission Select Item", missionsInfo) { DynamicLogoRatio = false });
 
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
 
