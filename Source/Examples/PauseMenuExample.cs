@@ -37,6 +37,8 @@
             tabView.AddTab(simpleListTab = new TabItemSimpleList("A List", listDict));
             simpleListTab.Activated += (s, e) => Game.DisplaySubtitle("I'm in the simple list tab", 5000);
 
+            tabView.AddTab(new TabTextItem("Skipped Tab Item", "This item is skipped", "You shouldn't be able to see this") { Skipped = true });
+
             List<MissionInformation> missionsInfo = new List<MissionInformation>()
             {
                 new MissionInformation("Mission One", "I have description!", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission One Objective") }),
@@ -61,7 +63,7 @@
 
             tabView.AddTab(new TabMissionSelectItem("Dynamic Mission Select Tab", missionsInfo) { DynamicMissionWidth = true });
 
-
+            tabView.AddTab(new TabTextItem("Very very very very long and extremely detailed tab name", "This item has a stupid long title", "This should force dynamic tab resizing"));
             tabView.AddTab(textTab = new TabTextItem("TabTextItem", "Text Tab Item", "I'm a text tab item"));
             textTab.Activated += (s, e) => Game.DisplaySubtitle("I'm in the text tab", 5000);
 

@@ -866,9 +866,9 @@ namespace RAGENativeUI
             itemsX = x;
             itemsY = y;
 
-            for (int index = minItem; index <= maxItem; index++)
+            foreach ((int iterIndex, int itemIndex, UIMenuItem item, bool selectedItem) in IterateVisibleItems())
             {
-                if (CurrentSelection == index)
+                if (selectedItem)
                 {
                     float x1 = x, y1 = y;
                     float x2 = x + menuWidth, y2 = y + itemHeight;
@@ -878,7 +878,6 @@ namespace RAGENativeUI
                     currentItemBounds = new RectangleF(x1, y1, x2 - x1, y2 - y1);
                 }
 
-                var item = MenuItems[index];
                 item.Draw(x, y, menuWidth, itemHeight);
                 y += itemHeight;
             }

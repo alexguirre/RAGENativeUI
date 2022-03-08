@@ -7,6 +7,7 @@ namespace RAGENativeUI.PauseMenu
 {
     public class TabInteractiveListItem : TabItem
     {
+        // TODO: Make dynamic
         protected const int MaxItemsPerView = 15;
         private int lastItemCount = 0;
 

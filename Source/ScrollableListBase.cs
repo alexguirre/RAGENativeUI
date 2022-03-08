@@ -20,7 +20,7 @@ namespace RAGENativeUI
         public bool Skipped { get; set; }
     }
 
-    public abstract class ScrollableListBase<T> where T : IScrollableListItem
+    public abstract class ScrollableListBase<T> where T : class, IScrollableListItem
     {
         protected abstract List<T> Items { get; set; }
 
@@ -66,7 +66,7 @@ namespace RAGENativeUI
         /// Gets or sets the currently selected item index.
         /// A value of <c>-1</c> indicates that no selection exists, for example, when no items have been added to the menu.
         /// </summary>
-        public int CurrentSelection
+        public virtual int CurrentSelection
         {
             get => currentItem;
             set
@@ -106,6 +106,20 @@ namespace RAGENativeUI
             }
         }
 
+        public T CurrentItem
+        {
+            get
+            {
+                int index = CurrentSelection;
+                if (IsValidItemIndex(index))
+                {
+                    return Items[index];
+                }
+
+                return null;
+            }
+        }
+
         protected virtual void onSelectionChange(int newItemIndex, bool isNewItem) { }
 
         /// <summary>
@@ -116,7 +130,7 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets whether <paramref name="index"/> is in the range [0, Items.Count).
         /// </summary>
-        private bool IsValidItemIndex(int index) => index >= 0 && index < Items.Count;
+        protected bool IsValidItemIndex(int index) => index >= 0 && index < Items.Count;
 
         /// <summary>
         /// Gets the index of the first visible item.
@@ -128,12 +142,19 @@ namespace RAGENativeUI
         /// </summary>
         public int LastItemOnScreen => maxItem;
 
+        protected IEnumerable<(int iterIndex, int itemIndex, T item, bool isItemSelected)> IterateVisibleItems()
+        {
+            for (int c = minItem; c <= maxItem; c++)
+            {
+                yield return (c - minItem, c, Items[c], c == CurrentSelection);
+            }
+        }
 
         /// <summary>
         /// Reset the current selected item to 0. Use this after you add or remove items from <see cref="Items"/> directly
         /// instead of through <see cref="AddItem(UIMenuItem)"/>, <see cref="AddItem(UIMenuItem, int)"/> or <see cref="RemoveItemAt(int)"/>.
         /// </summary>
-        public void RefreshIndex()
+        public virtual void RefreshIndex()
         {
             if (Items.Count == 0)
             {
@@ -193,8 +214,7 @@ namespace RAGENativeUI
             return Items[newSelection].Skipped ? -1 : newSelection;
         }
 
-
-        private void UpdateVisibleItemsIndices()
+        protected void UpdateVisibleItemsIndices()
         {
             if (MaxItemsOnScreen >= Items.Count)
             {

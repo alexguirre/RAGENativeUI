@@ -18,6 +18,8 @@ namespace RAGENativeUI.PauseMenu
         public bool Visible { get; set; }
         public bool Focused { get; set; }
         public string Title { get; set; }
+        
+        [Obsolete("Use Selected instead", false)]
         public bool Active { get; set; }
         public bool JustOpened { get; set; }
         public bool CanBeFocused { get; set; }
@@ -32,22 +34,8 @@ namespace RAGENativeUI.PauseMenu
         public bool DrawBg;
         public bool FadeInWhenFocused { get; set; }
 
-        public bool SubmenuSelected
-        {
-            get => Selected;
-            set => Selected = value;
-        }
-
-        public bool SubmenuSkipped
-        {
-            get => Skipped;
-            set => Skipped = value;
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public bool Selected { get; set; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public bool Skipped { get; set; }
 
         protected Sprite RockstarTile;

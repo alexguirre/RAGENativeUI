@@ -8,7 +8,7 @@ using RAGENativeUI.Internals;
 
 namespace RAGENativeUI.PauseMenu
 {
-    public class TabView
+    public class TabView : ScrollableListBase<TabItem>
     {
         /// <summary>
         /// Keeps track of the number of visible pause menus from the executing plugin.
@@ -24,9 +24,7 @@ namespace RAGENativeUI.PauseMenu
         public TabView(string title)
         {
             Title = title;
-            Tabs = new List<TabItem>();
 
-            Index = 0;
             Name = Game.LocalPlayer.Name;
             TemporarilyHidden = false;
             CanLeave = true;
@@ -46,12 +44,21 @@ namespace RAGENativeUI.PauseMenu
         public string Name { get; set; }
         public string Money { get; set; }
         public string MoneySubtitle { get; set; }
-        public List<TabItem> Tabs { get; set; }
+        public List<TabItem> Tabs { get; set; } = new List<TabItem>();
+
+        protected override List<TabItem> Items 
+        { 
+            get => Tabs; 
+            set => Tabs = value; 
+        }
+
         public int FocusLevel { get; set; }
         public bool TemporarilyHidden { get; set; }
         public bool CanLeave { get; set; }
         public bool PauseGame { get; set; }
         public bool HideTabs { get; set; }
+        public bool ScrollTabs { get; set; } = true;
+        public Color SelectedTabHighlight { get; set; } = Color.DodgerBlue;
         /// <summary>
         /// Gets or sets whether the background effect plays when the menu is open.
         /// </summary>
@@ -91,7 +98,7 @@ namespace RAGENativeUI.PauseMenu
             }
         }
 
-
+        [Obsolete("Use CurrentSelection instead", true)]
         public int Index;
         private bool _visible;
 
@@ -115,55 +122,48 @@ namespace RAGENativeUI.PauseMenu
                 return;
             }
 
+            // avoid recalculating unnecessarily
+            var curTab = CurrentItem;
+
+            if (curTab == null)
+            {
+                RefreshIndex();
+                return;
+            }
+
             if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneLeft) && FocusLevel == 0)
             {
-                Tabs[Index].Active = false;
-                Tabs[Index].Focused = false;
-                Tabs[Index].Visible = false;
-                Index = (1000 - (1000 % Tabs.Count) + Index - 1) % Tabs.Count;
-                Tabs[Index].Active = true;
-                Tabs[Index].Focused = false;
-                Tabs[Index].Visible = true;
-                
+                MoveToPreviousItem();
                 Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneRight) && FocusLevel == 0)
             {
-                Tabs[Index].Active = false;
-                Tabs[Index].Focused = false;
-                Tabs[Index].Visible = false;
-                Index = (1000 - (1000 % Tabs.Count) + Index + 1) % Tabs.Count;
-                Tabs[Index].Active = true;
-                Tabs[Index].Focused = false;
-                Tabs[Index].Visible = true;
-
+                MoveToNextItem();
                 Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendAccept) && FocusLevel == 0)
             {
-                if (Tabs[Index].CanBeFocused)
+                if (curTab.CanBeFocused)
                 {
-                    Tabs[Index].Focused = true;
-                    Tabs[Index].JustOpened = true;
+                    curTab.Focused = true;
+                    curTab.JustOpened = true;
                     FocusLevel = 1;
                 }
                 else
                 {
-                    Tabs[Index].JustOpened = true;
-                    Tabs[Index].OnActivated();
+                    curTab.JustOpened = true;
+                    curTab.OnActivated();
                 }
 
                 Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
-
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && FocusLevel == 1)
             {
-                Tabs[Index].Focused = false;
+                curTab.Focused = false;
                 FocusLevel = 0;
-
                 Common.PlaySound("BACK", "HUD_FRONTEND_DEFAULT_SOUNDSET");
             }
 
@@ -179,56 +179,68 @@ namespace RAGENativeUI.PauseMenu
             {
                 if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendLb))
                 {
-                    Tabs[Index].Active = false;
-                    Tabs[Index].Focused = false;
-                    Tabs[Index].Visible = false;
-                    // if (Tabs[Index] is TabSubmenuItem submenuItem)
-                    //     submenuItem.RefreshIndex();
-                    Index = (1000 - (1000 % Tabs.Count) + Index - 1) % Tabs.Count;
-                    Tabs[Index].Active = true;
-                    Tabs[Index].Focused = false;
-                    Tabs[Index].Visible = true;
-
                     FocusLevel = 0;
-
+                    MoveToPreviousItem();
                     Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
                 }
 
                 else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendRb))
                 {
-                    Tabs[Index].Active = false;
-                    Tabs[Index].Focused = false;
-                    Tabs[Index].Visible = false;
-                    // if (Tabs[Index] is TabSubmenuItem submenuItem)
-                    //     submenuItem.RefreshIndex();
-                    Index = (1000 - (1000 % Tabs.Count) + Index + 1) % Tabs.Count;
-                    Tabs[Index].Active = true;
-                    Tabs[Index].Focused = false;
-                    Tabs[Index].Visible = true;
-
                     FocusLevel = 0;
-
+                    MoveToNextItem();
                     Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
                 }
             }
 
-            if (Tabs.Count > 0) Tabs[Index].ProcessControls();
+            if (Tabs.Count > 0) curTab.ProcessControls();
         }
 
-        public void RefreshIndex()
+        public override int CurrentSelection 
+        { 
+            get => base.CurrentSelection; 
+            set 
+            {
+                var curTab = CurrentItem;
+                if (curTab != null)
+                {
+                    CurrentItem.Focused = false;
+                    CurrentItem.Selected = false;
+                    CurrentItem.Visible = false;
+                }
+
+                base.CurrentSelection = value;
+
+                var newTab = CurrentItem;
+                if (newTab != null)
+                {
+                    newTab.Selected = true;
+                    newTab.Focused = false;
+                    newTab.Visible = true;
+                }
+            }
+        }
+
+        public override void RefreshIndex()
         {
+            base.RefreshIndex();
+
             foreach (TabItem item in Tabs)
             {
                 item.Focused = false;
-                item.Active = false;
+                item.Selected = false;
                 item.Visible = false;
             }
 
-            Index = (1000 - (1000 % Tabs.Count)) % Tabs.Count;
-            Tabs[Index].Active = true;
-            Tabs[Index].Focused = false;
-            Tabs[Index].Visible = true;
+            CurrentSelection = Items.Count > 0 ? 0 : -1;
             FocusLevel = 0;
+            
+            var curTab = CurrentItem;
+            if(curTab != null)
+            {
+                curTab.Selected = true;
+                curTab.Focused = false;
+                curTab.Visible = true;
+            }
         }
 
         public void Update()
@@ -274,26 +286,75 @@ namespace RAGENativeUI.PauseMenu
 
                 ResText.Draw(MoneySubtitle, new Point((int)res.Width - safe.X - 70, safe.Y - 40), 0.4f, Color.White, Common.EFont.ChaletComprimeCologne, ResText.Alignment.Right, true, false, Size.Empty);
 
-                for (int i = 0; i < Tabs.Count; i++)
+                float activeTabBarWidth = res.Width - 2 * safe.X;
+
+                if (ScrollTabs)
                 {
-                    var activeSize = res.Width - 2 * safe.X;
-                    activeSize -= 4 * 5;
-                    int tabWidth = (int)activeSize / Tabs.Count;
+                    float maxTabWidth = 0;
+                    foreach (var tab in Items)
+                    {
+                        maxTabWidth = Math.Max(maxTabWidth, ResText.MeasureStringWidth(tab.Title.ToUpper(), Common.EFont.ChaletLondon, 0.35f) + 5);
+                    }
+
+                    MaxItemsOnScreen = (int)Math.Max(3, Math.Floor(activeTabBarWidth / maxTabWidth));
+                }
+                else
+                {
+                    MaxItemsOnScreen = Tabs.Count;
+                }
+
+                // TODO: Draw arrows if there are more items than fit in the tab menu
+
+                /*
+                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float w, out float h);
+                    float spriteX = x + width - (0.00390625f * 0.5f) - (w * 0.5f) - badgeOffset;
+                    float spriteY = y + (0.034722f * 0.5f);
+                    Color c = (!AllowWrapAround && Index == OptionCount - 1 || IsEmpty) ? DisabledForeColor : arrowsColor;
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, c);
+                
+                
+                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
+                    float spriteX = x + width - (0.00390625f * 1.5f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
+                    float spriteY = y + (0.034722f * 0.5f);
+                    Color c = (!AllowWrapAround && Index == 0 || IsEmpty) ? DisabledForeColor : arrowsColor;
+                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, c);
+                */
+
+                int selectedTabWidth = (int)Math.Max(activeTabBarWidth / MaxItemsOnScreen, ResText.MeasureStringWidth(CurrentItem.Title.ToUpper(), Common.EFont.ChaletLondon, 0.35f));
+                int otherTabWidth = (int)((activeTabBarWidth - selectedTabWidth - ((MaxItemsOnScreen - 1) * 5)) / Math.Max(1, MaxItemsOnScreen - 1));
+                int leftPadding = 0;
+
+                foreach ((int i, int tabIndex, TabItem tab, bool selectedItem) in IterateVisibleItems())
+                {
+                    // int tabWidth = (int)activeTabBarWidth / MaxItemsOnScreen;
+                    int tabWidth = selectedItem ? selectedTabWidth : otherTabWidth;
+                    string tabLabel = tab.Title.ToUpper();
+                    for (int textChars = tabLabel.Length; textChars > 5; textChars--)
+                    {
+                        tabLabel = tabLabel.Substring(0, textChars);
+                        int textWidth = (int)ResText.MeasureStringWidth(tabLabel, Common.EFont.ChaletLondon, 0.35f);
+                        if (textWidth <= tabWidth) break;
+                    }
+
+                    if (tabLabel.Length < tab.Title.Length) tabLabel += "...";
+
 
                     //Game.DisableControlAction(0, GameControl.CursorX, false);
                     //Game.DisableControlAction(0, GameControl.CursorY, false);
 
                     //bool hovering = UIMenu.IsMouseInBounds(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40));
 
-                    var tabColor = Tabs[i].Active ? Color.White : /*hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.Black;
-                    ResRectangle.Draw(safe.AddPoints(new Point((tabWidth + 5) * i, 0)), new Size(tabWidth, 40), Color.FromArgb(Tabs[i].Active ? 255 : 200, tabColor));
+                    var tabBgColor = selectedItem ? Color.White : /*hovering ? Color.FromArgb(100, 50, 50, 50) :*/ (tab.Skipped ? Color.DarkSlateGray : Color.Black);
+                    var tabTextColor = selectedItem ? Color.Black : (tab.Skipped ? Color.LightGray : Color.White);
+                    ResRectangle.Draw(safe.AddPoints(new Point(leftPadding, 0)), new Size(tabWidth, 40), Color.FromArgb(selectedItem ? 255 : 200, tabBgColor));
+                    ResText.Draw(tabLabel, safe.AddPoints(new Point((tabWidth / 2) + leftPadding, 5)), 0.35f, tabTextColor, Common.EFont.ChaletLondon, ResText.Alignment.Centered, false, false, Size.Empty);
 
-                    ResText.Draw(Tabs[i].Title.ToUpper(), safe.AddPoints(new Point((tabWidth / 2) + (tabWidth + 5) * i, 5)), 0.35f, Tabs[i].Active ? Color.Black : Color.White, Common.EFont.ChaletLondon, ResText.Alignment.Centered, false, false, Size.Empty);
-
-                    if (Tabs[i].Active)
+                    if (selectedItem)
                     {
-                        ResRectangle.Draw(safe.SubtractPoints(new Point(-((tabWidth + 5) * i), 10)), new Size(tabWidth, 10), Color.DodgerBlue);
+                        ResRectangle.Draw(safe.SubtractPoints(new Point(-leftPadding, 10)), new Size(tabWidth, 10), SelectedTabHighlight);
                     }
+
+                    leftPadding += tabWidth + 5;
 
                     //if (hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept) && !Tabs[i].Active)
                     //{
@@ -313,14 +374,14 @@ namespace RAGENativeUI.PauseMenu
                 }
             }
 
-            Tabs[Index].Draw();
+            CurrentItem?.Draw();
         }
 
         public void DrawTextures(Rage.Graphics g)
         {
             if (!Visible) return;
 
-            Tabs[Index].DrawTextures(g);
+            CurrentItem?.DrawTextures(g);
         }
 
         private static readonly StaticFinalizer cleanUpFinalizer = new StaticFinalizer(() =>
