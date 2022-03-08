@@ -1022,7 +1022,7 @@ namespace RAGENativeUI
         }
 
         /// <summary>
-        /// Returns the 1080pixels-based screen resolution while mantaining current aspect ratio.
+        /// Returns the 1080pixels-based screen resolution of the main monitor while maintaining current aspect ratio.
         /// </summary>
         /// <returns></returns>
         public static SizeF GetScreenResolutionMantainRatio()
@@ -1036,6 +1036,12 @@ namespace RAGENativeUI
 
             return new SizeF(width, height);
         }
+
+        /// <summary>
+        /// Returns the actual screen resolution of the main monitor (where UIs are drawn). 
+        /// </summary>
+        /// <returns></returns>
+        public static SizeF GetActualScreenResolution() => Internals.Screen.ActualResolution;
 
         /// <summary>
         /// Chech whether the mouse is inside the specified rectangle.
