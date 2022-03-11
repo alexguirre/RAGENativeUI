@@ -305,22 +305,15 @@ namespace RAGENativeUI.PauseMenu
 
                 int itemsOnScreen = Math.Min(MaxItemsOnScreen, Tabs.Count);
 
-                // TODO: Draw arrows if there are more items than fit in the tab menu
+                // Draw arrows if there are more items than fit in the tab menu
+                if (Tabs.Count > itemsOnScreen)
+                {
+                    int leftArrowAlpha = (minItem == CurrentSelection) ? 255 : 50;
+                    int rightArrowAlpha = (maxItem == CurrentSelection) ? 255 : 50;
 
-                /*
-                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, out float w, out float h);
-                    float spriteX = x + width - (0.00390625f * 0.5f) - (w * 0.5f) - badgeOffset;
-                    float spriteY = y + (0.034722f * 0.5f);
-                    Color c = (!AllowWrapAround && Index == OptionCount - 1 || IsEmpty) ? DisabledForeColor : arrowsColor;
-                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, spriteX, spriteY, w, h, c);
-                
-                
-                    UIMenu.GetTextureDrawSize(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, out float w, out float h);
-                    float spriteX = x + width - (0.00390625f * 1.5f) - (w * 0.5f) - optTextWidth - (0.0046875f * 1.5f) - badgeOffset;
-                    float spriteY = y + (0.034722f * 0.5f);
-                    Color c = (!AllowWrapAround && Index == 0 || IsEmpty) ? DisabledForeColor : arrowsColor;
-                    UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, c);
-                */
+                    Sprite.Draw(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, safe.AddPoints(new Point(-45, 0)), new Size(40, 40), 0, Color.FromArgb(leftArrowAlpha, Color.White), true);
+                    Sprite.Draw(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, safe.AddPoints(new Point((int)activeTabBarWidth + 5, 0)), new Size(40, 40), 0, Color.FromArgb(rightArrowAlpha, Color.White), true);
+                }
 
                 int selectedTabWidth = (int)Math.Max(activeTabBarWidth / itemsOnScreen, ResText.MeasureStringWidth(CurrentItem.Title.ToUpper(), Common.EFont.ChaletLondon, 0.35f));
                 int otherTabWidth = (int)((activeTabBarWidth - selectedTabWidth - ((itemsOnScreen - 1) * 5)) / Math.Max(1, itemsOnScreen - 1));
@@ -328,7 +321,6 @@ namespace RAGENativeUI.PauseMenu
 
                 foreach ((int i, int tabIndex, TabItem tab, bool selectedItem) in IterateVisibleItems())
                 {
-                    // int tabWidth = (int)activeTabBarWidth / MaxItemsOnScreen;
                     int tabWidth = selectedItem ? selectedTabWidth : otherTabWidth;
                     string tabLabel = tab.Title.ToUpper();
                     for (int textChars = tabLabel.Length; textChars > 5; textChars--)
