@@ -303,6 +303,8 @@ namespace RAGENativeUI.PauseMenu
                     MaxItemsOnScreen = Tabs.Count;
                 }
 
+                int itemsOnScreen = Math.Min(MaxItemsOnScreen, Tabs.Count);
+
                 // TODO: Draw arrows if there are more items than fit in the tab menu
 
                 /*
@@ -320,8 +322,8 @@ namespace RAGENativeUI.PauseMenu
                     UIMenu.DrawSprite(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, spriteX, spriteY, w, h, c);
                 */
 
-                int selectedTabWidth = (int)Math.Max(activeTabBarWidth / MaxItemsOnScreen, ResText.MeasureStringWidth(CurrentItem.Title.ToUpper(), Common.EFont.ChaletLondon, 0.35f));
-                int otherTabWidth = (int)((activeTabBarWidth - selectedTabWidth - ((MaxItemsOnScreen - 1) * 5)) / Math.Max(1, MaxItemsOnScreen - 1));
+                int selectedTabWidth = (int)Math.Max(activeTabBarWidth / itemsOnScreen, ResText.MeasureStringWidth(CurrentItem.Title.ToUpper(), Common.EFont.ChaletLondon, 0.35f));
+                int otherTabWidth = (int)((activeTabBarWidth - selectedTabWidth - ((itemsOnScreen - 1) * 5)) / Math.Max(1, itemsOnScreen - 1));
                 int leftPadding = 0;
 
                 foreach ((int i, int tabIndex, TabItem tab, bool selectedItem) in IterateVisibleItems())
