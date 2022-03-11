@@ -24,7 +24,7 @@ namespace RAGENativeUI
     {
         protected abstract List<T> Items { get; set; }
 
-        protected int maxItemsOnScreen;
+        protected int maxItemsOnScreen = 15;
         protected int currentItem;
         protected int minItem;
         protected int maxItem;
@@ -142,9 +142,10 @@ namespace RAGENativeUI
         /// </summary>
         public int LastItemOnScreen => maxItem;
 
-        protected IEnumerable<(int iterIndex, int itemIndex, T item, bool isItemSelected)> IterateVisibleItems()
+        public IEnumerable<(int iterIndex, int itemIndex, T item, bool isItemSelected)> IterateVisibleItems()
         {
             for (int c = minItem; c <= maxItem; c++)
+            // for (int c = minItem; c <= maxItem && c < Items.Count && c >= 0; c++)
             {
                 yield return (c - minItem, c, Items[c], c == CurrentSelection);
             }
@@ -185,12 +186,12 @@ namespace RAGENativeUI
         }
 
 
-        protected void MoveToPreviousItem()
+        public void MoveToPreviousItem()
         {
             CurrentSelection = GetIndexOfPreviousSelectableItem(CurrentSelection);
         }
 
-        protected void MoveToNextItem()
+        public void MoveToNextItem()
         {
             CurrentSelection = GetIndexOfNextSelectableItem(CurrentSelection);
         }
@@ -216,6 +217,8 @@ namespace RAGENativeUI
 
         protected void UpdateVisibleItemsIndices()
         {
+            int maxItems = Math.Min(MaxItemsOnScreen, Items.Count);
+
             if (MaxItemsOnScreen >= Items.Count)
             {
                 minItem = 0;
@@ -223,30 +226,34 @@ namespace RAGENativeUI
                 return;
             }
 
-            if (currentItem == -1 || minItem == -1 || maxItem == -1) // if no selection or no previous selection
+            if (
+                (currentItem == -1 || minItem == -1 || maxItem == -1) // if no selection or no previous selection
+                || (maxItem < minItem) // if invalid range
+                || (maxItem - minItem < maxItems - 1) // if not enough items
+            ) 
             {
                 minItem = 0;
-                maxItem = Math.Min(Items.Count, MaxItemsOnScreen) - 1;
+                maxItem = maxItems - 1;
             }
             else if (currentItem < minItem) // moved selection up, out of current visible item
             {
                 minItem = currentItem;
-                maxItem = currentItem + Math.Min(MaxItemsOnScreen, Items.Count) - 1;
+                maxItem = currentItem + maxItems - 1;
             }
             else if (currentItem > maxItem) // moved selection down, out of current visible item
             {
-                minItem = currentItem - Math.Min(MaxItemsOnScreen, Items.Count) + 1;
+                minItem = currentItem - maxItems + 1;
                 maxItem = currentItem;
             }
             else if (maxItem - minItem + 1 != MaxItemsOnScreen) // MaxItemsOnScreen changed
             {
                 if (maxItem == currentItem)
                 {
-                    minItem = maxItem - Math.Min(maxItemsOnScreen, Items.Count) + 1;
+                    minItem = maxItem - maxItems + 1;
                 }
                 else
                 {
-                    maxItem = minItem + Math.Min(maxItemsOnScreen, Items.Count) - 1;
+                    maxItem = minItem + maxItems - 1;
                     if (maxItem >= Items.Count)
                     {
                         int diff = maxItem - Items.Count + 1;

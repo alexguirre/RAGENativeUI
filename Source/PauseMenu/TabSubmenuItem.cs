@@ -11,6 +11,8 @@ namespace RAGENativeUI.PauseMenu
     {
         private class ScrollableTabList : ScrollableListBase<TabItem>
         {
+            public override int MaxItemsOnScreen { get => TabView.MaxTabRowItemsOnScreen; set { }  }
+
             protected override List<TabItem> Items { get; set; } = new List<TabItem>();
 
             public List<TabItem> TabItems
@@ -73,7 +75,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && Focused && Parent.FocusLevel > 1)
                 {
-                    Common.PlaySound("CANCEL", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    TabView.PlayCancelSound();
                     if (Items[Index].CanBeFocused && Items[Index].Focused)
                     {
                         Parent.FocusLevel--;
@@ -87,7 +89,7 @@ namespace RAGENativeUI.PauseMenu
             {
                 if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect) && Focused && Parent.FocusLevel == 1)
                 {
-                    Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    TabView.PlaySelectSound();
 
                     if (Items[Index].CanBeFocused && !Items[Index].Focused)
                     {
@@ -103,14 +105,14 @@ namespace RAGENativeUI.PauseMenu
 
                 if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp) && Parent.FocusLevel == 1)
                 {
-                    Index = (1000 - (1000 % Items.Count) + Index - 1) % Items.Count;
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    tabList.MoveToPreviousItem();
+                    TabView.PlayNavUpDownSound();
                 }
 
                 else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown) && Parent.FocusLevel == 1)
                 {
-                    Index = (1000 - (1000 % Items.Count) + Index + 1) % Items.Count;
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    tabList.MoveToNextItem();
+                    TabView.PlayNavUpDownSound();
                 }
             }
         }
@@ -136,15 +138,13 @@ namespace RAGENativeUI.PauseMenu
             var submenuWidth = (int)(activeWidth * 0.6818f);
             var itemSize = new Size((int)activeWidth - (submenuWidth + 3), 40);
 
-            tabList.MaxItemsOnScreen = (int)Math.Floor(activeHeight / 43f);
-
-            for (int c = tabList.FirstItemOnScreen; c <= tabList.LastItemOnScreen; c++)
+            foreach ((int iterIndex, int tabIndex, TabItem tab, bool tabSelected) in tabList.IterateVisibleItems())
             {
-                int i = c - tabList.FirstItemOnScreen;
+
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
-                ResText.Draw(Items[c].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == c && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * iterIndex)), itemSize, (tabSelected && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(tab.Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * iterIndex)), 0.35f, Color.FromArgb(fullAlpha, (tabSelected && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
                 //if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
                 //{

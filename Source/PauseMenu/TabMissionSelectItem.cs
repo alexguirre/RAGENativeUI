@@ -9,7 +9,7 @@ namespace RAGENativeUI.PauseMenu
 {
     public delegate void OnItemSelect(MissionInformation selectedItem);
 
-    public class MissionInformation
+    public class MissionInformation : IScrollableListItem
     {
         public MissionInformation(string name, IEnumerable<Tuple<string, string>> info)
         {
@@ -28,6 +28,8 @@ namespace RAGENativeUI.PauseMenu
         public string Description { get; set; }
         public MissionLogo Logo { get; set; }
         public List<Tuple<string, string>> ValueList { get; set; }
+        public bool Selected { get; set; }
+        public bool Skipped { get; set; }
     }
 
     public class MissionLogo
@@ -106,18 +108,42 @@ namespace RAGENativeUI.PauseMenu
             base.DrawBg = false;
 
             _noLogo = new Sprite("gtav_online", "rockstarlogo256", new Point(), new Size(512, 256));
-            _maxItem = MaxItemsPerView;
-            _minItem = 0;
 
             CanBeFocused = true;
 
             Heists = new List<MissionInformation>(list);
+            missions.RefreshIndex();
+        }
+
+        private class ScrollableMissionList : ScrollableListBase<MissionInformation>
+        {
+            protected override List<MissionInformation> Items { get; set; } = new List<MissionInformation>();
+            public List<MissionInformation> Heists
+            {
+                get => Items;
+                set => Items = value;
+            }
+
+            public override int MaxItemsOnScreen 
+            { 
+                get => TabView.MaxTabRowItemsOnScreen; 
+                set { } 
+            }
         }
 
         public event OnItemSelect OnItemSelect;
 
-        public List<MissionInformation> Heists { get; set; }
-        public int Index { get; set; }
+        private ScrollableMissionList missions = new ScrollableMissionList();
+        public List<MissionInformation> Heists
+        {
+            get => missions.Heists;
+            set => missions.Heists = value;
+        }
+        public int Index
+        {
+            get => missions.CurrentSelection;
+            set => missions.CurrentSelection = value;
+        }
 
         public float DefaultLogoRatio { get; set; } = 2f;
         public bool DynamicLogoRatio { get; set; } = true;
@@ -128,9 +154,11 @@ namespace RAGENativeUI.PauseMenu
         public int MinLabelWidth { get; set; } = 100;
         public int MaxLabelWidth { get; set; } = 512;
 
-        protected const int MaxItemsPerView = 15;
+        [Obsolete("Item scrolling is now handled automatically", true)]
         protected int _minItem;
+        [Obsolete("Item scrolling is now handled automatically", true)]
         protected int _maxItem;
+
         protected int baseLogoWidth = 512;
         protected Size logoSize;
         protected Size logoArea;
@@ -148,50 +176,26 @@ namespace RAGENativeUI.PauseMenu
                 return;
             }
 
+            // reset index if it's an invalid value
+            if (Index < 0 || Index >= Heists.Count)
+                missions.RefreshIndex();
+
             if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect))
             {
-                NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, "SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1);
+                TabView.PlaySelectSound();
                 OnItemSelect?.Invoke(Heists[Index]);
             }
 
             if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly))
             {
-                Index = (1000 - (1000 % Heists.Count) + Index - 1) % Heists.Count;
-                NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1);
-
-                if (Heists.Count <= MaxItemsPerView) return;
-
-                if (Index < _minItem)
-                {
-                    _minItem--;
-                    _maxItem--;
-                }
-
-                if (Index == Heists.Count - 1)
-                {
-                    _minItem = Heists.Count - MaxItemsPerView;
-                    _maxItem = Heists.Count;
-                }
+                missions.MoveToPreviousItem();
+                TabView.PlayNavUpDownSound();
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly))
             {
-                Index = (1000 - (1000 % Heists.Count) + Index + 1) % Heists.Count;
-                NativeFunction.CallByName<uint>("PLAY_SOUND_FRONTEND", -1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", 1);
-
-                if (Heists.Count <= MaxItemsPerView) return;
-
-                if (Index >= _maxItem)
-                {
-                    _maxItem++;
-                    _minItem++;
-                }
-
-                if (Index == 0)
-                {
-                    _minItem = 0;
-                    _maxItem = MaxItemsPerView;
-                }
+                missions.MoveToNextItem();
+                TabView.PlayNavUpDownSound();
             }
         }
 
@@ -245,18 +249,16 @@ namespace RAGENativeUI.PauseMenu
             var fullAlpha = Focused ? 255 : 150;
 
             // mission list rendering
-            var counter = 0;
-            for (int i = _minItem; i < Math.Min(Heists.Count, _maxItem); i++)
+            foreach ((int iterIndex, int heistIndex, MissionInformation heist, bool heistSelected) in missions.IterateVisibleItems())
             {
-                string listItemName = Heists[i].Name;
+                string listItemName = heist.Name;
                 var nameLength = ResText.MeasureStringWidth(listItemName, Common.EFont.ChaletLondon, 0.35f);
                 if(nameLength > itemSize.Width - 10)
                 {
                     listItemName = listItemName.Substring(0, Math.Max(Math.Min(listItemName.Length, 10), (int)((itemSize.Width - 20) / nameLength * listItemName.Length))).Trim() + "...";
                 }
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * counter)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
-                ResText.Draw(listItemName, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * counter)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
-                counter++;
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * iterIndex)), itemSize, (heistSelected && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(listItemName, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * iterIndex)), 0.35f, Color.FromArgb(fullAlpha, (heistSelected && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
             }
 
             logoPaddingLeft = DynamicLogoRatio ? (int)Math.Floor(0.5f * (logoArea.Width - logoSize.Width)) : 0;

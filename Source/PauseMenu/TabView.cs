@@ -10,6 +10,12 @@ namespace RAGENativeUI.PauseMenu
 {
     public class TabView : ScrollableListBase<TabItem>
     {
+        // Used by tab classes that have row items (e.g. TabSubmenuItem, TabInteractiveListItem, TabMissionSelectItem) 
+        // Sets the maximum rows that should be shown on screen at once 
+        // This should always be 14 because everything is scaled relative to a height of 1080p
+        // With a 240px safezone height, 1080 - (2 * 240) = 600, and with 40px items + 3px spacing, 600 / 43 = 14 items
+        internal const int MaxTabRowItemsOnScreen = 14;
+
         /// <summary>
         /// Keeps track of the number of visible pause menus from the executing plugin.
         /// Used to keep <see cref="Shared.NumberOfVisiblePauseMenus"/> consistent when unloading the plugin with some menu open.
@@ -134,13 +140,13 @@ namespace RAGENativeUI.PauseMenu
             if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneLeft) && FocusLevel == 0)
             {
                 MoveToPreviousItem();
-                Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                PlayNavUpDownSound();
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneRight) && FocusLevel == 0)
             {
                 MoveToNextItem();
-                Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                PlayNavUpDownSound();
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendAccept) && FocusLevel == 0)
@@ -157,20 +163,20 @@ namespace RAGENativeUI.PauseMenu
                     curTab.OnActivated();
                 }
 
-                Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                PlaySelectSound();
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && FocusLevel == 1)
             {
                 curTab.Focused = false;
                 FocusLevel = 0;
-                Common.PlaySound("BACK", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                PlayBackSound();
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && FocusLevel == 0 && CanLeave)
             {
                 Visible = false;
-                Common.PlaySound("BACK", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                PlayBackSound();
 
                 OnMenuClose?.Invoke(this, EventArgs.Empty);
             }
@@ -181,14 +187,14 @@ namespace RAGENativeUI.PauseMenu
                 {
                     FocusLevel = 0;
                     MoveToPreviousItem();
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    PlayNavUpDownSound();
                 }
 
                 else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendRb))
                 {
                     FocusLevel = 0;
                     MoveToNextItem();
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    PlayNavUpDownSound();
                 }
             }
 
@@ -377,6 +383,14 @@ namespace RAGENativeUI.PauseMenu
 
             CurrentItem?.DrawTextures(g);
         }
+
+        public static void PlayNavUpDownSound() => Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+
+        public static void PlaySelectSound() => Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+
+        public static void PlayCancelSound() => Common.PlaySound("CANCEL", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+
+        public static void PlayBackSound() => Common.PlaySound("BACK", "HUD_FRONTEND_DEFAULT_SOUNDSET");
 
         private static readonly StaticFinalizer cleanUpFinalizer = new StaticFinalizer(() =>
         {

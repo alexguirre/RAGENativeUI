@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Rage;
@@ -7,8 +8,6 @@ namespace RAGENativeUI.PauseMenu
 {
     public class TabInteractiveListItem : TabItem
     {
-        // TODO: Make dynamic
-        protected const int MaxItemsPerView = 15;
         private int lastItemCount = 0;
 
         public List<UIMenuItem> Items { get => BackingMenu.MenuItems; set => BackingMenu.MenuItems = value; }
@@ -28,8 +27,8 @@ namespace RAGENativeUI.PauseMenu
             CanBeFocused = true;
             BackingMenu = new UIMenu(nameof(TabInteractiveListItem), nameof(BackingMenu))
             {
+                MaxItemsOnScreen = TabView.MaxTabRowItemsOnScreen,
                 MenuItems = new List<UIMenuItem>(items),
-                MaxItemsOnScreen = MaxItemsPerView,
                 IgnoreVisibility = true,
             };
             RefreshIndex();
@@ -102,6 +101,7 @@ namespace RAGENativeUI.PauseMenu
             int fullAlpha = Focused ? 255 : 150;
 
             int subMenuWidth = (BottomRight.X - TopLeft.X);
+            int subMenuHeight = (BottomRight.Y - TopLeft.Y);
             Size itemSize = new Size(subMenuWidth, 40);
 
             // taken from ResRectangle.Draw
@@ -110,23 +110,20 @@ namespace RAGENativeUI.PauseMenu
             float ratio = res.Width / res.Height;
             var width = height * ratio;
 
-            int i = 0;
-            for (int c = BackingMenu.FirstItemOnScreen; c <= BackingMenu.LastItemOnScreen; c++)
+            foreach ((int iterIndex, int itemIndex, UIMenuItem item, bool itemSelected) in BackingMenu.IterateVisibleItems())
             {
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                Point pos = SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i));
+                Point pos = SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * iterIndex));
                 
                 // draw item background
-                ResRectangle.Draw(pos, itemSize, (Index == c && Focused) ? Color.FromArgb(fullAlpha, Color.White) : /*Focused && hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.FromArgb(blackAlpha, Color.Black));
+                ResRectangle.Draw(pos, itemSize, (itemSelected && Focused) ? Color.FromArgb(fullAlpha, Color.White) : /*Focused && hovering ? Color.FromArgb(100, 50, 50, 50) :*/ Color.FromArgb(blackAlpha, Color.Black));
 
                 // taken from ResRectangle.Draw
                 float w = itemSize.Width / width;
                 float h = itemSize.Height / height;
                 float x = pos.X / width;
                 float y = pos.Y / height;
-
-                var item = Items[c];
 
                 // only draw the navigation bar if this tab is focused
                 bool canDrawNavBar = item.CanDrawNavBar;
@@ -158,8 +155,6 @@ namespace RAGENativeUI.PauseMenu
                 //        }
                 //    }
                 //}
-
-                i++;
             }
         }
     }
