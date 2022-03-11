@@ -144,8 +144,10 @@ namespace RAGENativeUI
 
         public IEnumerable<(int iterIndex, int itemIndex, T item, bool isItemSelected)> IterateVisibleItems()
         {
+            // if selection is -1 (none) or out of range, do not return anything
+            if (CurrentSelection < 0 || CurrentSelection >= Items.Count) yield break;
+
             for (int c = minItem; c <= maxItem; c++)
-            // for (int c = minItem; c <= maxItem && c < Items.Count && c >= 0; c++)
             {
                 yield return (c - minItem, c, Items[c], c == CurrentSelection);
             }
