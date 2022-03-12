@@ -69,6 +69,7 @@ namespace RAGENativeUI.PauseMenu
         /// Gets or sets whether the background effect plays when the menu is open.
         /// </summary>
         public bool PlayBackgroundEffect { get; set; }
+        private bool isBackgroundEffectPlaying;
 
         public event EventHandler OnMenuClose;
 
@@ -88,18 +89,21 @@ namespace RAGENativeUI.PauseMenu
                     Shared.NumberOfVisiblePauseMenus++;
                     NumberOfVisiblePauseMenus++;
                     N.SetPlayerControl(Game.LocalPlayer, false, 0);
+                    
                     if (PlayBackgroundEffect)
+                    {
                         N.AnimPostFxPlay("MinigameTransitionIn", 0, true);
-                    if (PauseGame)
-                        Game.IsPaused = true;
+                        isBackgroundEffectPlaying = true;
+                    }
+
+                    if (PauseGame) Game.IsPaused = true;
                 }
                 else
                 {
                     CleanUp(this);
                     Shared.NumberOfVisiblePauseMenus--;
                     NumberOfVisiblePauseMenus--;
-                    if (PauseGame)
-                        Game.IsPaused = false;
+                    if (PauseGame) Game.IsPaused = false;
                 }
             }
         }
@@ -403,8 +407,11 @@ namespace RAGENativeUI.PauseMenu
         private static void CleanUp(TabView view = null)
         {
             N.SetPlayerControl(Game.LocalPlayer, true, 0);
-            if (view?.PlayBackgroundEffect ?? true)
+            if (view == null || view.PlayBackgroundEffect || view.isBackgroundEffectPlaying)
+            {
                 N.AnimPostFxStop("MinigameTransitionIn");
+                if (view != null) view.isBackgroundEffectPlaying = false;
+            }
         }
     }
 }

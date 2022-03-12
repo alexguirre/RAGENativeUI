@@ -19,6 +19,7 @@
         private static TabMissionSelectItem missionSelectTab;
         private static TabTextItem textTab;
         private static TabSubmenuItem submenuTab;
+        private static TabInteractiveListItem tabMenuOptions;
 
         private static readonly Keys KeyBinding = Keys.F7;
 
@@ -27,6 +28,8 @@
             tabView = new TabView("A RAGENativeUI Pause Menu");
             tabView.MoneySubtitle = "$10.000.000";
             tabView.Name = "Here goes the Name! :D";
+
+            tabView.AddTab(tabMenuOptions = new TabInteractiveListItem("Tab View Options", CreateOptionItems()));
 
             Dictionary<string, string> listDict = new Dictionary<string, string>()
             {
@@ -46,6 +49,7 @@
                 new MissionInformation("Mission Three", "This has a description and a full texture", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_chopper", "banner_4") },
                 new MissionInformation("Mission Four", new Tuple<string, string>[] { }) { Logo = new MissionLogo("candc_casinoheist", "stockade_b") },
                 new MissionInformation("Unreasonably long mission name which really ought to be cut off because it's so stupidly long", "Long description with a~n~very very~n~very very~n~very very~n~very very~n~very very very very very very very very very very long string", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_default", "dump") },
+                new MissionInformation("Skipped Mission", new Tuple<string, string>[] { }) { Skipped = true },
                 new MissionInformation("Mission Item", "Mission with a very tall texture", new Tuple<string, string>[] { Tuple.Create("Info 1", "#1"), Tuple.Create("Info 2", "#2"), Tuple.Create("Info 3", "#3") }) { Logo = new MissionLogo("helicopterhud", "hud_vert") },
             };
             tabView.AddTab(missionSelectTab = new TabMissionSelectItem("Static Mission Select Tab", missionsInfo));
@@ -69,19 +73,24 @@
 
             List<TabItem> items = new List<TabItem>();
 
+            items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
+            items.Add(new TabMissionSelectItem("Submenu Dynamic Mission Select Item", missionsInfo) { DynamicMissionWidth = true });
+            items.Add(new TabMissionSelectItem("Submenu Fixed Ratio Mission Select Item", missionsInfo) { DynamicLogoRatio = false });
+
             for (int i = 0; i < 30; i++)
             {
                 TabItem tItem = i < 15 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
                                         (TabItem)new TabInteractiveListItem("Item #" + i, CreateMenuItems());
 
+                if (i == 5 || i == 20)
+                {
+                    tItem.Skipped = true;
+                }
+
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
                 items.Add(tItem);
             }
-
-            items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
-            items.Add(new TabMissionSelectItem("Submenu Dynamic Mission Select Item", missionsInfo) { DynamicMissionWidth = true });
-            items.Add(new TabMissionSelectItem("Submenu Fixed Ratio Mission Select Item", missionsInfo) { DynamicLogoRatio = false });
-
+            
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
 
             UIMenuItem[] menuItems = CreateMenuItems();
@@ -118,6 +127,45 @@
                     tabView.Visible = !tabView.Visible;
                 }
             }
+        }
+
+        private static IEnumerable<UIMenuItem> CreateOptionItems()
+        {
+            UIMenuCheckboxItem canLeave = new UIMenuCheckboxItem("Can Leave", tabView.CanLeave);
+            canLeave.CheckboxEvent += (s, c) => { tabView.CanLeave = c; };
+            yield return canLeave;
+
+            UIMenuCheckboxItem hideTabs = new UIMenuCheckboxItem("Hide Tabs", tabView.HideTabs);
+            hideTabs.CheckboxEvent += (s, c) => { tabView.HideTabs = c; };
+            yield return hideTabs;
+
+            UIMenuNumericScrollerItem<int> moneyValue = new UIMenuNumericScrollerItem<int>("Money Value", "", 0, 100000000, 1000) { Value = 10000, Formatter = (v) => $"${v.ToString("N0")}" };
+            moneyValue.IndexChanged += (s, o, n) => { tabView.MoneySubtitle = moneyValue.OptionText; };
+            yield return moneyValue;
+
+            UIMenuCheckboxItem pauseGame = new UIMenuCheckboxItem("Pause Game", tabView.PauseGame);
+            pauseGame.CheckboxEvent += (s, c) => 
+            { 
+                tabView.PauseGame = c;
+                tabView.Visible = false;
+                tabView.Visible = true;
+                tabMenuOptions.Focused = true;
+            };
+            yield return pauseGame;
+
+            UIMenuCheckboxItem bgEffect = new UIMenuCheckboxItem("Play Background Effect", tabView.PlayBackgroundEffect);
+            bgEffect.CheckboxEvent += (s, c) => 
+            { 
+                tabView.PlayBackgroundEffect = c;
+                tabView.Visible = false;
+                tabView.Visible = true;
+                tabMenuOptions.Focused = true;
+            };
+            yield return bgEffect;
+
+            UIMenuCheckboxItem scrollTabs = new UIMenuCheckboxItem("Scroll Tabs", tabView.ScrollTabs);
+            scrollTabs.CheckboxEvent += (s, c) => { tabView.ScrollTabs = c; };
+            yield return scrollTabs;
         }
 
         private static UIMenuItem[] CreateMenuItems()
