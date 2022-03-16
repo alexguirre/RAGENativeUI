@@ -249,14 +249,14 @@ namespace RAGENativeUI.PauseMenu
                 var logo = curHeist.Logo;
                 bool logoLoaded = curHeist.Logo?.IsTextureLoaded ?? false;
 
-                float heistDescHeight = 40 + (40 * curHeist.ValueList.Count);
-                if (!string.IsNullOrWhiteSpace(curHeist.Description))
-                {
-                    int lineCount = TextCommands.GetLineCount(curHeist.Description, new TextStyle(TextFont.ChaletLondon, Color.White, 0.35f, TextJustification.Left, 0, baseLogoWidth / 1920f), 0f, 0f);
-                    heistDescHeight += (lineCount * 25) + 20;
-                    // this is necessary to reset an issue with GetLineCount breaking the next legitimate text rendering if a description is present
-                    ResText.Draw("", Point.Empty, 0.01f, Color.FromArgb(0, 0, 0, 0), Common.EFont.ChaletLondon, false);
-                }
+                int heistNameHeight = 40 * TextCommands.GetLineCount(curHeist.Name ?? " ", new TextStyle(TextFont.HouseScript, Color.White, 0.5f, TextJustification.Right, 0, baseLogoWidth / 1920f), 0f, 0f);
+                int descLineHeight = string.IsNullOrWhiteSpace(curHeist.Description) ? 0 : 20 + 25 * TextCommands.GetLineCount(curHeist.Description, new TextStyle(TextFont.ChaletLondon, Color.White, 0.35f, TextJustification.Left, 0, baseLogoWidth / 1920f), 0f, 0f);
+                int propListHeight = 40 * curHeist.ValueList.Count;
+
+                float heistDescHeight = heistNameHeight + propListHeight + descLineHeight;
+
+                // this is necessary to reset an issue with GetLineCount breaking the next legitimate text rendering if a description is present
+                // ResText.Draw("", Point.Empty, 0.01f, Color.FromArgb(0, 0, 0, 0), Common.EFont.ChaletLondon, false);
 
                 float logoRatio = (DynamicLogoRatio && logo != null) ? logo.Ratio : DefaultLogoRatio; // width to height ratio of actual texture being rendered this frame
                 float logoHeight = Math.Min(Math.Min(baseLogoWidth / logoRatio, activeHeight - heistDescHeight), MaxLogoHeight);
@@ -303,31 +303,27 @@ namespace RAGENativeUI.PauseMenu
                 }
 
                 // description text and background rendering
-                ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height)), new Size(logoArea.Width, 40), Color.FromArgb(fullAlpha, Color.Black));
-                ResText.Draw(curHeist.Name, missionPoint.AddPoints(new Point(logoArea.Width - 4, logoArea.Height + 4)), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, Size.Empty);
+                ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height)), new Size(logoArea.Width, heistNameHeight), Color.FromArgb(fullAlpha, Color.Black));
+                ResText.Draw(curHeist.Name, missionPoint.AddPoints(new Point(0, logoArea.Height + 4)), 0.5f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.HouseScript, ResText.Alignment.Right, false, false, new Size((logoArea.Width - 4), 0));
 
                 // objective items rendering
                 for (int i = 0; i < curHeist.ValueList.Count; i++)
                 {
-                    ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 40 * (i + 1))), new Size(logoArea.Width, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
-                    var text = curHeist.ValueList[i].Item1;
-                    var label = curHeist.ValueList[i].Item2;
-
-                    ResText.Draw(text, missionPoint.AddPoints(new Point(6, logoArea.Height + 6 + 40 * (i + 1))), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
-                    ResText.Draw(label, missionPoint.AddPoints(new Point(logoArea.Width - 6, logoArea.Height + 6 + 40 * (i + 1))), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
+                    int heightBuffer = logoArea.Height + heistNameHeight + 40 * i;
+                    ResRectangle.Draw(missionPoint.AddPoints(new Point(0, heightBuffer)), new Size(logoArea.Width, 40), i % 2 == 0 ? Color.FromArgb(alpha, 0, 0, 0) : Color.FromArgb(blackAlpha, 0, 0, 0));
+                    ResText.Draw(curHeist.ValueList[i].Item1, missionPoint.AddPoints(new Point(6, heightBuffer + 6)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, false);
+                    ResText.Draw(curHeist.ValueList[i].Item2, missionPoint.AddPoints(new Point(logoArea.Width - 6, heightBuffer + 6)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Right, false, false, Size.Empty);
                 }
 
                 // description rendering
                 if (!string.IsNullOrEmpty(curHeist.Description))
                 {
-                    var propLen = curHeist.ValueList.Count;
-                    var propBuffer = 40 * (1 + propLen);
+                    int heightBuffer = heistNameHeight + propListHeight;
 
-                    ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 2 + propBuffer)), new Size(logoArea.Width, 2), Color.FromArgb(fullAlpha, Color.White));
-                    ResText.Draw(curHeist.Description, missionPoint.AddPoints(new Point(4, logoArea.Height + 9 + propBuffer)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size((logoArea.Width - 4), 0));
+                    ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 2 + heightBuffer)), new Size(logoArea.Width, 2), Color.FromArgb(fullAlpha, Color.White));
+                    ResText.Draw(curHeist.Description, missionPoint.AddPoints(new Point(4, logoArea.Height + 9 + heightBuffer)), 0.35f, Color.FromArgb(fullAlpha, Color.White), Common.EFont.ChaletLondon, ResText.Alignment.Left, false, false, new Size((logoArea.Width - 4), 0));
 
-                    int lineCount = TextCommands.GetLineCount(curHeist.Description, new TextStyle(TextFont.ChaletLondon, Color.White, 0.35f, TextJustification.Left, 0, logoArea.Width / 1920f), 0f, 0f);
-                    ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 4 + propBuffer)), new Size(logoArea.Width, 25 * lineCount + 20), Color.FromArgb(blackAlpha, 0, 0, 0));
+                    ResRectangle.Draw(missionPoint.AddPoints(new Point(0, logoArea.Height + 4 + heightBuffer)), new Size(logoArea.Width, descLineHeight), Color.FromArgb(blackAlpha, 0, 0, 0));
                 }
             } else
             {
