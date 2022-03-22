@@ -48,6 +48,8 @@ namespace RAGENativeUI.PauseMenu
             set => tabList.CurrentSelection = value;
         }
 
+        public TabItem CurrentSubmenuItem => tabList.CurrentItem;
+
         public bool IsInList { get; set; }
 
         public void RefreshIndex() => tabList.RefreshIndex();

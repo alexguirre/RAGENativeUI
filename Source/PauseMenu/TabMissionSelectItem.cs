@@ -158,6 +158,7 @@ namespace RAGENativeUI.PauseMenu
             set => missions.CurrentSelection = value;
         }
 
+        public MissionInformation CurrentHeist => missions.CurrentItem;
         public float DefaultLogoRatio { get; set; } = 2f;
         public bool DynamicLogoRatio { get; set; } = true;
         public bool DynamicMissionWidth { get; set; } = false;
