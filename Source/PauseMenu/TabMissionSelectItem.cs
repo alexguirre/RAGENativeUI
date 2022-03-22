@@ -11,6 +11,19 @@ namespace RAGENativeUI.PauseMenu
 
     public class MissionInformation : IScrollableListItem
     {
+        public MissionInformation(string name)
+        {
+            Name = name;
+            ValueList = new List<Tuple<string, string>>();
+        }
+
+        public MissionInformation(string name, string description)
+        {
+            Name = name;
+            Description = description;
+            ValueList = new List<Tuple<string, string>>();
+        }
+
         public MissionInformation(string name, IEnumerable<Tuple<string, string>> info)
         {
             Name = name;
