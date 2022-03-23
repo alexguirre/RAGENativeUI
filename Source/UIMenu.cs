@@ -1916,14 +1916,13 @@ namespace RAGENativeUI
 
             public void Update()
             {
-                uint gameTime = Game.GameTime;
+                ulong gameTick = (uint)Game.TickCount;
                 for (int i = 0; i < controls.Length; i++)
                 {
-                    controls[i].Update(gameTime);
+                    controls[i].Update(gameTick);
                 }
-                CursorAccept.Update(gameTime);
+                CursorAccept.Update(gameTick);
             }
-
             public void SetJustOpened(bool value)
             {
                 for (int i = 0; i < controls.Length; i++)
@@ -1949,8 +1948,8 @@ namespace RAGENativeUI
 
         internal sealed class Control
         {
-            private uint pressedStartTime;
-            private uint nextRepeatTime;
+            private ulong pressedStartTime;
+            private ulong nextRepeatTime;
             private int repeatAccelerationIndex;
 
             public IList<(int Index, GameControl Control)> NativeControls { get; } = new List<(int, GameControl)>();
@@ -1981,7 +1980,7 @@ namespace RAGENativeUI
                 IsJustPressedRepeated = false;
             }
 
-            public void Update(uint gameTime)
+            public void Update(ulong gameTick)
             {
                 foreach (var c in NativeControls)
                 {
@@ -2008,15 +2007,15 @@ namespace RAGENativeUI
                 {
                     if (IsJustPressed || (prevPressed != IsPressed))
                     {
-                        pressedStartTime = gameTime;
+                        pressedStartTime = gameTick;
                         repeatAccelerationIndex = 0;
-                        nextRepeatTime = GetNextRepeatTime(gameTime);
+                        nextRepeatTime = GetNextRepeatTime(gameTick);
                     }
 
-                    if (gameTime >= nextRepeatTime)
+                    if (gameTick >= nextRepeatTime)
                     {
                         IsJustPressedRepeated = true;
-                        nextRepeatTime = GetNextRepeatTime(gameTime);
+                        nextRepeatTime = GetNextRepeatTime(gameTick);
                     }
                 }
                 else
@@ -2025,14 +2024,14 @@ namespace RAGENativeUI
                 }
             }
 
-            private uint GetHeldTime(uint gameTime)
+            private ulong GetHeldTime(ulong gameTick)
             {
-                return gameTime - pressedStartTime;
+                return gameTick - pressedStartTime;
             }
 
-            private uint GetNextRepeatTime(uint gameTime)
+            private ulong GetNextRepeatTime(ulong gameTick)
             {
-                uint heldTime = GetHeldTime(gameTime);
+                ulong heldTime = GetHeldTime(gameTick);
                 AccelerationStep[] acc = RepeatAcceleration;
                 while (repeatAccelerationIndex < acc.Length - 1 &&
                        acc[repeatAccelerationIndex + 1].HeldTime < heldTime)
@@ -2040,7 +2039,7 @@ namespace RAGENativeUI
                     repeatAccelerationIndex++;
                 }
 
-                return gameTime + acc[repeatAccelerationIndex].TimeBetweenRepeats;
+                return gameTick + (ulong)acc[repeatAccelerationIndex].TimeBetweenRepeats;
             }
 
             private bool AnyJustReleased()
