@@ -65,6 +65,11 @@
                 }
             };
 
+            missionSelectTab.OnIndexChanged += (sender, i, item) =>
+            {
+                Game.DisplaySubtitle($"Tab Mission Select Item ~y~{sender.Title}~w~ changed index to ~b~{i}~w~, item ~g~{item.Name}");
+            };
+
             tabView.AddTab(new TabMissionSelectItem("Dynamic Mission Select Tab", missionsInfo) { DynamicMissionWidth = true });
 
             tabView.AddTab(new TabTextItem("Very very very very long and extremely detailed tab name", "This item has a stupid long title", "This should force dynamic tab resizing"));
@@ -92,6 +97,11 @@
             }
             
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
+
+            submenuTab.OnIndexChanged += (sender, i, item) =>
+            {
+                Game.DisplaySubtitle($"Tab Submenu Item ~y~{sender.Title}~w~ changed index to ~b~{i}~w~, item ~g~{item.Title}");
+            };
 
             UIMenuItem[] menuItems = CreateMenuItems();
             menuItems[0].Activated += (m, s) => Game.DisplaySubtitle("Activated first item!");

@@ -7,6 +7,10 @@ using RAGENativeUI.Elements;
 
 namespace RAGENativeUI.PauseMenu
 {
+    public delegate void OnSubmenuSelect(TabItem selectedSubemnu);
+    public delegate void OnSubmenuIndexChanged(TabSubmenuItem sender, int newIndex, TabItem newItem);
+
+
     public class TabSubmenuItem : TabItem
     {
         private class ScrollableTabList : ScrollableListBase<TabItem>
@@ -30,6 +34,9 @@ namespace RAGENativeUI.PauseMenu
             IsInList = true;
             RefreshIndex();
         }
+
+        public event OnSubmenuSelect OnItemSelect;
+        public event OnSubmenuIndexChanged OnIndexChanged;
 
         private ScrollableTabList tabList = new ScrollableTabList();
 
@@ -92,6 +99,7 @@ namespace RAGENativeUI.PauseMenu
                 if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect) && Focused && Parent.FocusLevel == 1)
                 {
                     TabView.PlaySelectSound();
+                    OnItemSelect?.Invoke(Items[Index]);
 
                     if (Items[Index].CanBeFocused && !Items[Index].Focused)
                     {
@@ -109,12 +117,14 @@ namespace RAGENativeUI.PauseMenu
                 {
                     tabList.MoveToPreviousItem();
                     TabView.PlayNavUpDownSound();
+                    OnIndexChanged?.Invoke(this, tabList.CurrentSelection, tabList.CurrentItem);
                 }
 
                 else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown) && Parent.FocusLevel == 1)
                 {
                     tabList.MoveToNextItem();
                     TabView.PlayNavUpDownSound();
+                    OnIndexChanged?.Invoke(this, tabList.CurrentSelection, tabList.CurrentItem);
                 }
             }
         }

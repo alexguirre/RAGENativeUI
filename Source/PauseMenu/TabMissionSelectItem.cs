@@ -8,6 +8,7 @@ using RAGENativeUI.Elements;
 namespace RAGENativeUI.PauseMenu
 {
     public delegate void OnItemSelect(MissionInformation selectedItem);
+    public delegate void OnMissionIndexChanged(TabMissionSelectItem sender, int newIndex, MissionInformation newItem);
 
     public class MissionInformation : IScrollableListItem
     {
@@ -115,6 +116,7 @@ namespace RAGENativeUI.PauseMenu
 
     public class TabMissionSelectItem : TabItem
     {
+
         public TabMissionSelectItem(string name, IEnumerable<MissionInformation> list) : base(name)
         {
             base.FadeInWhenFocused = true;
@@ -145,6 +147,7 @@ namespace RAGENativeUI.PauseMenu
         }
 
         public event OnItemSelect OnItemSelect;
+        public event OnMissionIndexChanged OnIndexChanged;
 
         private ScrollableMissionList missions = new ScrollableMissionList();
         public List<MissionInformation> Heists
@@ -206,12 +209,14 @@ namespace RAGENativeUI.PauseMenu
             {
                 missions.MoveToPreviousItem();
                 TabView.PlayNavUpDownSound();
+                OnIndexChanged?.Invoke(this, Index, Heists[Index]);
             }
 
             else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly))
             {
                 missions.MoveToNextItem();
                 TabView.PlayNavUpDownSound();
+                OnIndexChanged?.Invoke(this, Index, Heists[Index]);
             }
         }
 
