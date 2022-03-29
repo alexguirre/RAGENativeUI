@@ -69,13 +69,17 @@ namespace RAGENativeUI.PauseMenu
                 return;
             }
 
-            // reset focus if the child menu is focused but this menu is not
-            if (!Focused && Index >= 0 && Index < Items.Count && Items[Index].Focused)
-                Items[Index].Focused = false;
-
             // reset index if it's an invalid value
             if (Index < 0 || Index >= Items.Count)
                 RefreshIndex();
+
+            // reset focus if the child menu is focused but this menu is not
+            if (!Focused && Items[Index].Focused)
+                Items[Index].Focused = false;
+
+            // reset focus level if the child menu is not focused but the focus level is >1
+            if (Parent.FocusLevel > 1 && !Items[Index].Focused)
+                Parent.FocusLevel--;
 
             if (!Focused || Items.Count == 0 || Index < 0 || Index >= Items.Count)
                 return;
