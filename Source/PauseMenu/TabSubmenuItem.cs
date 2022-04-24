@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Rage;
@@ -6,8 +7,25 @@ using RAGENativeUI.Elements;
 
 namespace RAGENativeUI.PauseMenu
 {
+    public delegate void OnSubmenuSelect(TabItem selectedSubemnu);
+    public delegate void OnSubmenuIndexChanged(TabSubmenuItem sender, int newIndex, TabItem newItem);
+
+
     public class TabSubmenuItem : TabItem
     {
+        private class ScrollableTabList : ScrollableListBase<TabItem>
+        {
+            public override int MaxItemsOnScreen { get => TabView.MaxTabRowItemsOnScreen; set { }  }
+
+            protected override List<TabItem> Items { get; set; } = new List<TabItem>();
+
+            public List<TabItem> TabItems
+            {
+                get => Items;
+                set => Items = value;
+            }
+        }
+
         public TabSubmenuItem(string name, IEnumerable<TabItem> items) : base(name)
         {
             DrawBg = false;
@@ -17,29 +35,31 @@ namespace RAGENativeUI.PauseMenu
             RefreshIndex();
         }
 
-        public List<TabItem> Items { get; set; }
+        public event OnSubmenuSelect OnItemSelect;
+        public event OnSubmenuIndexChanged OnIndexChanged;
+
+        private ScrollableTabList tabList = new ScrollableTabList();
+
+        public List<TabItem> Items
+        {
+            get => tabList.TabItems;
+            set => tabList.TabItems = value;
+        }
+
         /// <summary>
         /// Gets or sets the current selected item's index. Set to -1 if no selection exists, for example, when <see cref="Items"/> is empty.
         /// </summary>
-        public int Index { get; set; }
+        public int Index
+        {
+            get => tabList.CurrentSelection;
+            set => tabList.CurrentSelection = value;
+        }
+
+        public TabItem CurrentSubmenuItem => tabList.CurrentItem;
+
         public bool IsInList { get; set; }
 
-        public void RefreshIndex()
-        {
-            if (Items.Count == 0)
-            {
-                Index = -1;
-                return;
-            }
-
-            foreach (TabItem item in Items)
-            {
-                item.Focused = false;
-                item.Active = false;
-                item.Visible = false;
-            }
-            Index = 0;
-        }
+        public void RefreshIndex() => tabList.RefreshIndex();
 
         public override void ProcessControls()
         {
@@ -49,14 +69,26 @@ namespace RAGENativeUI.PauseMenu
                 return;
             }
 
-            if (!Focused || Items.Count == 0 || Index < 0 || Index > Items.Count)
+            // reset index if it's an invalid value
+            if (Index < 0 || Index >= Items.Count)
+                RefreshIndex();
+
+            // reset focus if the child menu is focused but this menu is not
+            if (!Focused && Items[Index].Focused)
+                Items[Index].Focused = false;
+
+            // reset focus level if the child menu is not focused but the focus level is >1
+            if (Parent.FocusLevel > 1 && !Items[Index].Focused)
+                Parent.FocusLevel--;
+
+            if (!Focused || Items.Count == 0 || Index < 0 || Index >= Items.Count)
                 return;
 
             if (Items[Index].Focused)
             {
                 if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && Focused && Parent.FocusLevel > 1)
                 {
-                    Common.PlaySound("CANCEL", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    TabView.PlayCancelSound();
                     if (Items[Index].CanBeFocused && Items[Index].Focused)
                     {
                         Parent.FocusLevel--;
@@ -70,7 +102,8 @@ namespace RAGENativeUI.PauseMenu
             {
                 if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect) && Focused && Parent.FocusLevel == 1)
                 {
-                    Common.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    TabView.PlaySelectSound();
+                    OnItemSelect?.Invoke(Items[Index]);
 
                     if (Items[Index].CanBeFocused && !Items[Index].Focused)
                     {
@@ -86,14 +119,16 @@ namespace RAGENativeUI.PauseMenu
 
                 if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp) && Parent.FocusLevel == 1)
                 {
-                    Index = (1000 - (1000 % Items.Count) + Index - 1) % Items.Count;
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    tabList.MoveToPreviousItem();
+                    TabView.PlayNavUpDownSound();
+                    OnIndexChanged?.Invoke(this, tabList.CurrentSelection, tabList.CurrentItem);
                 }
 
                 else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown) && Parent.FocusLevel == 1)
                 {
-                    Index = (1000 - (1000 % Items.Count) + Index + 1) % Items.Count;
-                    Common.PlaySound("NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET");
+                    tabList.MoveToNextItem();
+                    TabView.PlayNavUpDownSound();
+                    OnIndexChanged?.Invoke(this, tabList.CurrentSelection, tabList.CurrentItem);
                 }
             }
         }
@@ -115,15 +150,17 @@ namespace RAGENativeUI.PauseMenu
             var fullAlpha = Focused ? 255 : 150;
 
             var activeWidth = res.Width - SafeSize.X * 2;
+            var activeHeight = res.Height - SafeSize.Y * 2;
             var submenuWidth = (int)(activeWidth * 0.6818f);
             var itemSize = new Size((int)activeWidth - (submenuWidth + 3), 40);
 
-            for (int i = 0; i < Items.Count; i++)
+            foreach ((int iterIndex, int tabIndex, TabItem tab, bool tabSelected) in tabList.IterateVisibleItems())
             {
+
                 //bool hovering = UIMenu.IsMouseInBounds(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize);
 
-                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * i)), itemSize, (Index == i && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
-                ResText.Draw(Items[i].Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * i)), 0.35f, Color.FromArgb(fullAlpha, (Index == i && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
+                ResRectangle.Draw(SafeSize.AddPoints(new Point(0, (itemSize.Height + 3) * iterIndex)), itemSize, (tabSelected && Focused) ? Color.FromArgb(fullAlpha, Color.White) : Color.FromArgb(blackAlpha, Color.Black));
+                ResText.Draw(tab.Title, SafeSize.AddPoints(new Point(6, 5 + (itemSize.Height + 3) * iterIndex)), 0.35f, Color.FromArgb(fullAlpha, (tabSelected && Focused) ? Color.Black : Color.White), Common.EFont.ChaletLondon, false);
 
                 //if (Focused && hovering && Common.IsDisabledControlJustPressed(0, GameControl.CursorAccept))
                 //{
@@ -162,6 +199,14 @@ namespace RAGENativeUI.PauseMenu
                 Items[Index].TopLeft = SafeSize.AddPoints(new Point((int)activeWidth - submenuWidth, 0));
                 Items[Index].BottomRight = new Point((int)res.Width - SafeSize.X, (int)res.Height - SafeSize.Y);
                 Items[Index].Draw();
+            }
+        }
+
+        public override void DrawTextures(Rage.Graphics g)
+        {
+            if (Index >= 0 && Index < Items.Count)
+            {
+                Items[Index].DrawTextures(g);
             }
         }
     }

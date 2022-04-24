@@ -19,6 +19,7 @@
         private static TabMissionSelectItem missionSelectTab;
         private static TabTextItem textTab;
         private static TabSubmenuItem submenuTab;
+        private static TabInteractiveListItem tabMenuOptions;
 
         private static readonly Keys KeyBinding = Keys.F7;
 
@@ -27,6 +28,8 @@
             tabView = new TabView("A RAGENativeUI Pause Menu");
             tabView.MoneySubtitle = "$10.000.000";
             tabView.Name = "Here goes the Name! :D";
+
+            tabView.AddTab(tabMenuOptions = new TabInteractiveListItem("Tab View Options", CreateOptionItems()));
 
             Dictionary<string, string> listDict = new Dictionary<string, string>()
             {
@@ -37,12 +40,19 @@
             tabView.AddTab(simpleListTab = new TabItemSimpleList("A List", listDict));
             simpleListTab.Activated += (s, e) => Game.DisplaySubtitle("I'm in the simple list tab", 5000);
 
+            tabView.AddTab(new TabTextItem("Skipped Tab Item", "This item is skipped", "You shouldn't be able to see this") { Skipped = true });
+
             List<MissionInformation> missionsInfo = new List<MissionInformation>()
             {
-                new MissionInformation("Mission One", new Tuple<string, string>[] { new Tuple<string, string>("This the first info", "Random Info"), new Tuple<string, string>("This the second info", "Random Info #2") }) { Logo = new MissionLogo(Game.CreateTextureFromFile("DefaultSkin.png")) },
-                new MissionInformation("Mission Two", "I have description!", new Tuple<string, string>[] { new Tuple<string, string>("Objective", "Mission Two Objective") }),
+                new MissionInformation("Mission One", "I have description!", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission One Objective") }),
+                new MissionInformation("Mission Two", new Tuple<string, string>[] { new Tuple<string, string>("This the second info", "Random Info"), new Tuple<string, string>("This the second info", "Random Info #2") }) { Logo = new MissionLogo(Game.CreateTextureFromFile("DefaultSkin.png")) },
+                new MissionInformation("Mission Three", "This has a description and a full texture", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_chopper", "banner_4") },
+                new MissionInformation("Mission Four") { Logo = new MissionLogo("candc_default", "dump") },
+                new MissionInformation("Unreasonably long mission name which really ought to be cut off because it's so stupidly long", "Long description with a~n~very very~n~very very~n~very very~n~very very~n~very very very very very very very very very very long string", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_casinoheist", "stockade_b") },
+                new MissionInformation("Skipped Mission") { Skipped = true },
+                new MissionInformation("Mission Item", "Mission with a very tall texture", new Tuple<string, string>[] { Tuple.Create("Info 1", "#1"), Tuple.Create("Info 2", "#2"), Tuple.Create("Info 3", "#3") }) { Logo = new MissionLogo("helicopterhud", "hud_vert") },
             };
-            tabView.AddTab(missionSelectTab = new TabMissionSelectItem("I'm a Mission Select Tab", missionsInfo));
+            tabView.AddTab(missionSelectTab = new TabMissionSelectItem("Static Mission Select Tab", missionsInfo));
             missionSelectTab.OnItemSelect += (info) =>
             {
                 if (info.Name == "Mission One")
@@ -55,20 +65,43 @@
                 }
             };
 
+            missionSelectTab.OnIndexChanged += (sender, i, item) =>
+            {
+                Game.DisplaySubtitle($"Tab Mission Select Item ~y~{sender.Title}~w~ changed index to ~b~{i}~w~, item ~g~{item.Name}");
+            };
 
+            tabView.AddTab(new TabMissionSelectItem("Dynamic Mission Select Tab", missionsInfo) { DynamicMissionWidth = true });
+
+            tabView.AddTab(new TabTextItem("Very very very very long and extremely detailed tab name", "This item has a stupid long title", "This should force dynamic tab resizing"));
             tabView.AddTab(textTab = new TabTextItem("TabTextItem", "Text Tab Item", "I'm a text tab item"));
             textTab.Activated += (s, e) => Game.DisplaySubtitle("I'm in the text tab", 5000);
 
             List<TabItem> items = new List<TabItem>();
-            for (int i = 0; i < 10; i++)
+
+            items.Add(new TabMissionSelectItem("Submenu Mission Select Item", missionsInfo));
+            items.Add(new TabMissionSelectItem("Submenu Dynamic Mission Select Item", missionsInfo) { DynamicMissionWidth = true });
+            items.Add(new TabMissionSelectItem("Submenu Fixed Ratio Mission Select Item", missionsInfo) { DynamicLogoRatio = false });
+
+            for (int i = 0; i < 30; i++)
             {
-                TabItem tItem = i < 5 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
+                TabItem tItem = i < 15 ? (TabItem)new TabTextItem("Item #" + i, "Title #" + i, "Some random text for #" + i) :
                                         (TabItem)new TabInteractiveListItem("Item #" + i, CreateMenuItems());
+
+                if (i == 5 || i == 20)
+                {
+                    tItem.Skipped = true;
+                }
 
                 tItem.Activated += (s, e) => Game.DisplaySubtitle("Activated Submenu Item #" + submenuTab.Index, 5000);
                 items.Add(tItem);
             }
+            
             tabView.AddTab(submenuTab = new TabSubmenuItem("A submenu", items));
+
+            submenuTab.OnIndexChanged += (sender, i, item) =>
+            {
+                Game.DisplaySubtitle($"Tab Submenu Item ~y~{sender.Title}~w~ changed index to ~b~{i}~w~, item ~g~{item.Title}");
+            };
 
             UIMenuItem[] menuItems = CreateMenuItems();
             menuItems[0].Activated += (m, s) => Game.DisplaySubtitle("Activated first item!");
@@ -104,6 +137,45 @@
                     tabView.Visible = !tabView.Visible;
                 }
             }
+        }
+
+        private static IEnumerable<UIMenuItem> CreateOptionItems()
+        {
+            UIMenuCheckboxItem canLeave = new UIMenuCheckboxItem("Can Leave", tabView.CanLeave);
+            canLeave.CheckboxEvent += (s, c) => { tabView.CanLeave = c; };
+            yield return canLeave;
+
+            UIMenuCheckboxItem hideTabs = new UIMenuCheckboxItem("Hide Tabs", tabView.HideTabs);
+            hideTabs.CheckboxEvent += (s, c) => { tabView.HideTabs = c; };
+            yield return hideTabs;
+
+            UIMenuNumericScrollerItem<int> moneyValue = new UIMenuNumericScrollerItem<int>("Money Value", "", 0, 100000000, 1000) { Value = 10000, Formatter = (v) => $"${v.ToString("N0")}" };
+            moneyValue.IndexChanged += (s, o, n) => { tabView.MoneySubtitle = moneyValue.OptionText; };
+            yield return moneyValue;
+
+            UIMenuCheckboxItem pauseGame = new UIMenuCheckboxItem("Pause Game", tabView.PauseGame);
+            pauseGame.CheckboxEvent += (s, c) => 
+            { 
+                tabView.PauseGame = c;
+                tabView.Visible = false;
+                tabView.Visible = true;
+                tabMenuOptions.Focused = true;
+            };
+            yield return pauseGame;
+
+            UIMenuCheckboxItem bgEffect = new UIMenuCheckboxItem("Play Background Effect", tabView.PlayBackgroundEffect);
+            bgEffect.CheckboxEvent += (s, c) => 
+            { 
+                tabView.PlayBackgroundEffect = c;
+                tabView.Visible = false;
+                tabView.Visible = true;
+                tabMenuOptions.Focused = true;
+            };
+            yield return bgEffect;
+
+            UIMenuCheckboxItem scrollTabs = new UIMenuCheckboxItem("Scroll Tabs", tabView.ScrollTabs);
+            scrollTabs.CheckboxEvent += (s, c) => { tabView.ScrollTabs = c; };
+            yield return scrollTabs;
         }
 
         private static UIMenuItem[] CreateMenuItems()

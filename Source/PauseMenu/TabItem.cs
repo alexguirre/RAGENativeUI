@@ -1,10 +1,11 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using RAGENativeUI.Elements;
 
 namespace RAGENativeUI.PauseMenu
 {
-    public class TabItem
+    public class TabItem : IScrollableListItem
     {
         public TabItem(string name)
         {
@@ -17,6 +18,8 @@ namespace RAGENativeUI.PauseMenu
         public bool Visible { get; set; }
         public bool Focused { get; set; }
         public string Title { get; set; }
+        
+        [Obsolete("Use Selected instead", false)]
         public bool Active { get; set; }
         public bool JustOpened { get; set; }
         public bool CanBeFocused { get; set; }
@@ -30,6 +33,10 @@ namespace RAGENativeUI.PauseMenu
         public event EventHandler DrawInstructionalButtons;
         public bool DrawBg;
         public bool FadeInWhenFocused { get; set; }
+
+        public bool Selected { get; set; }
+
+        public bool Skipped { get; set; }
 
         protected Sprite RockstarTile;
 
