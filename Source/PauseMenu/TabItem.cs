@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using Rage;
 using RAGENativeUI.Elements;
 
 namespace RAGENativeUI.PauseMenu
@@ -13,7 +14,22 @@ namespace RAGENativeUI.PauseMenu
             Title = name;
             DrawBg = true;
             UseDynamicPositionment = true;
+
+            SetKey(Common.MenuControls.Up, GameControl.MoveUpOnly, 2);
+            SetKey(Common.MenuControls.Up, GameControl.FrontendUp, 2);
+            SetKey(Common.MenuControls.Up, GameControl.CursorScrollUp, 2);
+            SetKey(Common.MenuControls.Down, GameControl.MoveDownOnly, 2);
+            SetKey(Common.MenuControls.Down, GameControl.FrontendDown, 2);
+            SetKey(Common.MenuControls.Down, GameControl.CursorScrollDown, 2);
+            SetKey(Common.MenuControls.Left, GameControl.FrontendLeft, 2);
+            SetKey(Common.MenuControls.Right, GameControl.FrontendRight, 2);
+            SetKey(Common.MenuControls.Select, GameControl.FrontendAccept, 2);
+            SetKey(Common.MenuControls.Back, GameControl.FrontendCancel, 2);
+            SetKey(Common.MenuControls.Back, GameControl.FrontendPause, 2);
+            SetKey(Common.MenuControls.Back, GameControl.CursorCancel, 2);
         }
+
+        protected void SetKey(Common.MenuControls control, GameControl gtaControl, int controlIndex) => controls[control].NativeControls.Add((controlIndex, gtaControl));
 
         public bool Visible { get; set; }
         public bool Focused { get; set; }
@@ -45,8 +61,17 @@ namespace RAGENativeUI.PauseMenu
             Activated?.Invoke(this, EventArgs.Empty);
         }
 
+        internal UIMenu.Controls controls = new UIMenu.Controls();
+
         public virtual void ProcessControls()
         {
+            if (JustOpened)
+            {
+                JustOpened = false;
+                return;
+            }
+
+            controls.Update();
         }
 
         public virtual void Draw()
