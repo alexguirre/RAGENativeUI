@@ -733,11 +733,21 @@ namespace RAGENativeUI
                 customBannerW -= customBannerX;
                 customBannerH -= customBannerY;
 
-                N.GetActiveScreenResolution(out int w, out int h);
-                customBannerX *= w;
-                customBannerY *= h;
-                customBannerW *= w;
-                customBannerH *= h;
+                // relative coords to pixel coords
+                var mainRes = ActualResolution;
+                customBannerX *= mainRes.Width;
+                customBannerY *= mainRes.Height;
+                customBannerW *= mainRes.Width;
+                customBannerH *= mainRes.Height;
+
+                // offset to the middle screen
+                // in multi-monitor setups game uses the middle screen as the origin, but Rage.Graphics uses
+                // the left-most edge so we need to offset the coordinates
+                N.GetActiveScreenResolution(out int totalWidth, out int totalHeight);
+                var ox = totalWidth / 2.0f - mainRes.Width / 2;
+                var oy = totalHeight / 2.0f - mainRes.Height / 2;
+                customBannerX += ox;
+                customBannerY += oy;
             }
 
             y += bannerHeight;

@@ -166,13 +166,7 @@ namespace RAGENativeUI.Elements
         /// <param name="size"></param>
         [Obsolete("The Sprite.DrawTexture() overload that accepts a GraphicsEventArgs instance will be removed soon, use the Sprite.DrawTexture() overload that accepts a Graphics instance instead.")]
         public static void DrawTexture(Texture texture, Point position, Size size, GraphicsEventArgs canvas)
-        {
-            var origRes = Game.Resolution;
-            float aspectRaidou = origRes.Width / (float)origRes.Height;
-            PointF pos = new PointF(position.X / (1080 * aspectRaidou), position.Y / 1080f);
-            SizeF siz = new SizeF(size.Width / (1080 * aspectRaidou), size.Height / 1080f);
-            canvas.Graphics.DrawTexture(texture, pos.X * Game.Resolution.Width, pos.Y * Game.Resolution.Height, siz.Width * Game.Resolution.Width, siz.Height * Game.Resolution.Height);
-        }
+            => DrawTexture(texture, position, size, canvas.Graphics);
 
         /// <summary>
         /// Draws a custom texture from a file on a 1080-pixels height base.
@@ -183,11 +177,19 @@ namespace RAGENativeUI.Elements
         /// <param name="graphics"></param>
         public static void DrawTexture(Texture texture, Point position, Size size, Rage.Graphics graphics)
         {
-            var origRes = Screen.ActualResolution;
-            float aspectRatio = origRes.Width / (float)origRes.Height;
+            var mainRes = Screen.ActualResolution;
+            float aspectRatio = mainRes.Width / mainRes.Height;
             PointF pos = new PointF(position.X / (1080 * aspectRatio), position.Y / 1080f);
             SizeF siz = new SizeF(size.Width / (1080 * aspectRatio), size.Height / 1080f);
-            graphics.DrawTexture(texture, pos.X * origRes.Width, pos.Y * origRes.Height, siz.Width * origRes.Width, siz.Height * origRes.Height);
+
+            // offset to the middle screen
+            // in multi-monitor setups game uses the middle screen as the origin, but Rage.Graphics uses
+            // the left-most edge so we need to offset the coordinates
+            N.GetActiveScreenResolution(out int totalWidth, out int totalHeight); // this native doesn't access TLS, so it's fine to call it from RawFrameRender
+            var ox = totalWidth / 2.0f - mainRes.Width / 2;
+            var oy = totalHeight / 2.0f - mainRes.Height / 2;
+
+            graphics.DrawTexture(texture, pos.X * mainRes.Width + ox, pos.Y * mainRes.Height + oy, siz.Width * mainRes.Width, siz.Height * mainRes.Height);
         }
 
         /// <summary>
