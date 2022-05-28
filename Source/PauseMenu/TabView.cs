@@ -318,8 +318,8 @@ namespace RAGENativeUI.PauseMenu
                 // Draw arrows if there are more items than fit in the tab menu
                 if (Tabs.Count > itemsOnScreen)
                 {
-                    int leftArrowAlpha = (minItem == CurrentSelection) ? 255 : 50;
-                    int rightArrowAlpha = (maxItem == CurrentSelection) ? 255 : 50;
+                    int leftArrowAlpha = (MinItem == CurrentSelection) ? 255 : 50;
+                    int rightArrowAlpha = (MaxItem == CurrentSelection) ? 255 : 50;
 
                     Sprite.Draw(UIMenu.CommonTxd, UIMenu.ArrowLeftTextureName, safe.AddPoints(new Point(-45, 0)), new Size(40, 40), 0, Color.FromArgb(leftArrowAlpha, Color.White), true);
                     Sprite.Draw(UIMenu.CommonTxd, UIMenu.ArrowRightTextureName, safe.AddPoints(new Point((int)activeTabBarWidth + 5, 0)), new Size(40, 40), 0, Color.FromArgb(rightArrowAlpha, Color.White), true);

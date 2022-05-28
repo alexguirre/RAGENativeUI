@@ -327,7 +327,7 @@ namespace RAGENativeUI
                 CounterPretext = subtitle.Substring(0, subtitle.IndexOf('~', 1) + 1);
             }
 
-            maxItemsOnScreen = DefaultMaxItemsOnScreen;
+            MaxItemsOnScreen = DefaultMaxItemsOnScreen;
             CurrentSelection = -1;
 
             SetKey(Common.MenuControls.Up, GameControl.FrontendUp, 2);
@@ -557,10 +557,10 @@ namespace RAGENativeUI
         /// <param name="index">Index to remove the item at.</param>
         public void RemoveItemAt(int index)
         {
-            if (maxItem == MenuItems.Count - 1) // if max visible item matches last item, move the visible item range up by one item
+            if (MaxItem == MenuItems.Count - 1) // if max visible item matches last item, move the visible item range up by one item
             {
-                minItem = Math.Max(minItem - 1, 0);
-                maxItem = Math.Max(maxItem - 1, 0);
+                MinItem = Math.Max(MinItem - 1, 0);
+                MaxItem = Math.Max(MaxItem - 1, 0);
             }
             MenuItems.RemoveAt(index);
             RefreshCurrentSelection(); // refresh the current selection in case we removed the selected item
@@ -1279,10 +1279,10 @@ namespace RAGENativeUI
         {
             if (!Visible || justOpenedProcessMouse || MenuItems.Count == 0 || IsUsingController || !MouseControlsEnabled)
             {
-                if (hoveredItem != -1)
+                if (HoveredItem != -1)
                 {
-                    MenuItems[hoveredItem].Hovered = false;
-                    hoveredItem = -1;
+                    MenuItems[HoveredItem].Hovered = false;
+                    HoveredItem = -1;
                 }
                 hoveredUpDown = 0;
                 justOpenedProcessMouse = false;
@@ -1347,17 +1347,17 @@ namespace RAGENativeUI
 
             UpdateHoveredItem(mouseX, mouseY);
 
-            if (hoveredItem != -1)
+            if (HoveredItem != -1)
             {
                 hoveredUpDown = 0;
-                if (hoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
+                if (HoveredItem != CurrentSelection && input == UIMenuItem.MouseInput.JustReleased)
                 {
-                    CurrentSelection = hoveredItem;
+                    CurrentSelection = HoveredItem;
                     Common.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                     IndexChange(CurrentSelection);
                 }
             }
-            else if (hoveredItem == -1)
+            else if (HoveredItem == -1)
             {
                 UpdateHoveredUpDown(mouseX, mouseY);
 
@@ -1418,24 +1418,24 @@ namespace RAGENativeUI
 
             if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) // hovering items background
             {
-                int hoveredIdx = minItem + (int)((mouseY - y1) / itemHeight);
+                int hoveredIdx = MinItem + (int)((mouseY - y1) / itemHeight);
 
-                if (hoveredItem != hoveredIdx)
+                if (HoveredItem != hoveredIdx)
                 {
-                    if (hoveredItem != -1) // unhover previous item
+                    if (HoveredItem != -1) // unhover previous item
                     {
-                        MenuItems[hoveredItem].Hovered = false;
+                        MenuItems[HoveredItem].Hovered = false;
                     }
 
                     // hover new item
                     MenuItems[hoveredIdx].Hovered = true;
-                    hoveredItem = hoveredIdx;
+                    HoveredItem = hoveredIdx;
                 }
             }
-            else if (hoveredItem != -1)
+            else if (HoveredItem != -1)
             {
-                MenuItems[hoveredItem].Hovered = false;
-                hoveredItem = -1;
+                MenuItems[HoveredItem].Hovered = false;
+                HoveredItem = -1;
             }
         }
 

@@ -24,11 +24,12 @@ namespace RAGENativeUI
     {
         protected abstract List<T> Items { get; set; }
 
-        protected int maxItemsOnScreen = 15;
-        protected int currentItem;
-        protected int minItem;
-        protected int maxItem;
-        protected int hoveredItem = -1;
+        private int maxItemsOnScreen = 15;
+        private int currentItem;
+
+        protected int MinItem { get; set; }
+        protected int MaxItem { get; set; }
+        protected int HoveredItem { get; set; } = -1;
 
         /// <summary>
         /// Gets or set the maximum number of visible items.
@@ -79,8 +80,8 @@ namespace RAGENativeUI
                 if (Items.Count == 0)
                 {
                     currentItem = -1;
-                    minItem = -1;
-                    maxItem = -1;
+                    MinItem = -1;
+                    MaxItem = -1;
                 }
                 else
                 {
@@ -135,18 +136,18 @@ namespace RAGENativeUI
         /// <summary>
         /// Gets the index of the first visible item.
         /// </summary>
-        public int FirstItemOnScreen => minItem;
+        public int FirstItemOnScreen => MinItem;
 
         /// <summary>
         /// Gets the index of the last visible item.
         /// </summary>
-        public int LastItemOnScreen => maxItem;
+        public int LastItemOnScreen => MaxItem;
 
         public IEnumerable<(int iterIndex, int itemIndex, T item, bool isItemSelected)> IterateVisibleItems()
         {
-            for (int c = minItem; c <= maxItem; c++)
+            for (int c = MinItem; c <= MaxItem; c++)
             {
-                yield return (c - minItem, c, Items[c], c == CurrentSelection);
+                yield return (c - MinItem, c, Items[c], c == CurrentSelection);
             }
         }
 
@@ -220,44 +221,44 @@ namespace RAGENativeUI
 
             if (MaxItemsOnScreen >= Items.Count)
             {
-                minItem = 0;
-                maxItem = Items.Count - 1;
+                MinItem = 0;
+                MaxItem = Items.Count - 1;
                 return;
             }
 
             if (
-                (currentItem == -1 || minItem == -1 || maxItem == -1) // if no selection or no previous selection
-                || (maxItem < minItem) // if invalid range
-                || (maxItem - minItem < maxItems - 1) // if not enough items
+                (currentItem == -1 || MinItem == -1 || MaxItem == -1) // if no selection or no previous selection
+                || (MaxItem < MinItem) // if invalid range
+                || (MaxItem - MinItem < maxItems - 1) // if not enough items
             ) 
             {
-                minItem = 0;
-                maxItem = maxItems - 1;
+                MinItem = 0;
+                MaxItem = maxItems - 1;
             }
-            else if (currentItem < minItem) // moved selection up, out of current visible item
+            else if (currentItem < MinItem) // moved selection up, out of current visible item
             {
-                minItem = currentItem;
-                maxItem = currentItem + maxItems - 1;
+                MinItem = currentItem;
+                MaxItem = currentItem + maxItems - 1;
             }
-            else if (currentItem > maxItem) // moved selection down, out of current visible item
+            else if (currentItem > MaxItem) // moved selection down, out of current visible item
             {
-                minItem = currentItem - maxItems + 1;
-                maxItem = currentItem;
+                MinItem = currentItem - maxItems + 1;
+                MaxItem = currentItem;
             }
-            else if (maxItem - minItem + 1 != MaxItemsOnScreen) // MaxItemsOnScreen changed
+            else if (MaxItem - MinItem + 1 != MaxItemsOnScreen) // MaxItemsOnScreen changed
             {
-                if (maxItem == currentItem)
+                if (MaxItem == currentItem)
                 {
-                    minItem = maxItem - maxItems + 1;
+                    MinItem = MaxItem - maxItems + 1;
                 }
                 else
                 {
-                    maxItem = minItem + maxItems - 1;
-                    if (maxItem >= Items.Count)
+                    MaxItem = MinItem + maxItems - 1;
+                    if (MaxItem >= Items.Count)
                     {
-                        int diff = maxItem - Items.Count + 1;
-                        maxItem -= diff;
-                        minItem -= diff;
+                        int diff = MaxItem - Items.Count + 1;
+                        MaxItem -= diff;
+                        MinItem -= diff;
                     }
                 }
             }
