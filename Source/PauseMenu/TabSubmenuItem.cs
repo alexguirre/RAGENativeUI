@@ -84,9 +84,11 @@ namespace RAGENativeUI.PauseMenu
             if (!Focused || Items.Count == 0 || Index < 0 || Index >= Items.Count)
                 return;
 
+            base.ProcessControls();
+
             if (Items[Index].Focused)
             {
-                if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneCancel) && Focused && Parent.FocusLevel > 1)
+                if (Focused && Parent.FocusLevel > 1 && controls[Common.MenuControls.Back].IsJustPressed)
                 {
                     TabView.PlayCancelSound();
                     if (Items[Index].CanBeFocused && Items[Index].Focused)
@@ -100,7 +102,7 @@ namespace RAGENativeUI.PauseMenu
             }
             else
             {
-                if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect) && Focused && Parent.FocusLevel == 1)
+                if (Focused && Parent.FocusLevel == 1 && controls[Common.MenuControls.Select].IsJustPressed)
                 {
                     TabView.PlaySelectSound();
                     OnItemSelect?.Invoke(Items[Index]);
@@ -117,14 +119,14 @@ namespace RAGENativeUI.PauseMenu
                     }
                 }
 
-                if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollUp) && Parent.FocusLevel == 1)
+                if (Parent.FocusLevel == 1 && controls[Common.MenuControls.Up].IsJustPressedRepeated)
                 {
                     tabList.MoveToPreviousItem();
                     TabView.PlayNavUpDownSound();
                     OnIndexChanged?.Invoke(this, tabList.CurrentSelection, tabList.CurrentItem);
                 }
 
-                else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly) || Common.IsDisabledControlJustPressed(0, GameControl.CursorScrollDown) && Parent.FocusLevel == 1)
+                else if (Parent.FocusLevel == 1 && controls[Common.MenuControls.Down].IsJustPressedRepeated)
                 {
                     tabList.MoveToNextItem();
                     TabView.PlayNavUpDownSound();

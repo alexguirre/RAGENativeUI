@@ -199,20 +199,22 @@ namespace RAGENativeUI.PauseMenu
             if (Index < 0 || Index >= Heists.Count)
                 missions.RefreshIndex();
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.CellphoneSelect))
+            base.ProcessControls();
+
+            if (controls[Common.MenuControls.Select].IsJustPressed)
             {
                 TabView.PlaySelectSound();
                 OnItemSelect?.Invoke(Heists[Index]);
             }
 
-            if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendUp) || Common.IsDisabledControlJustPressed(0, GameControl.MoveUpOnly))
+            else if (controls[Common.MenuControls.Up].IsJustPressedRepeated)
             {
                 missions.MoveToPreviousItem();
                 TabView.PlayNavUpDownSound();
                 OnIndexChanged?.Invoke(this, Index, Heists[Index]);
             }
 
-            else if (Common.IsDisabledControlJustPressed(0, GameControl.FrontendDown) || Common.IsDisabledControlJustPressed(0, GameControl.MoveDownOnly))
+            else if (controls[Common.MenuControls.Down].IsJustPressedRepeated)
             {
                 missions.MoveToNextItem();
                 TabView.PlayNavUpDownSound();
