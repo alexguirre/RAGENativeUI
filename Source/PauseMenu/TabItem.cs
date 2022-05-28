@@ -34,9 +34,9 @@ namespace RAGENativeUI.PauseMenu
         public bool Visible { get; set; }
         public bool Focused { get; set; }
         public string Title { get; set; }
-        
+
         [Obsolete("Use Selected instead", false)]
-        public bool Active { get; set; }
+        public bool Active { get => Selected; set => Selected = value; }
         public bool JustOpened { get; set; }
         public bool CanBeFocused { get; set; }
         public Point TopLeft { get; set; }
