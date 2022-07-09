@@ -136,8 +136,9 @@
 
         public static Vector3 GetTextureResolution(string textureDict, string textureName) => Natives.x35736EE65BD00C11<Vector3>(textureDict, textureName);
 
-        public static bool HasStreamedTextureDictLoaded(string name) => Natives.HasStreamedTextureDictLoaded<bool>(name);
-        public static void RequestStreamedTextureDict(string name) => Natives.RequestStreamedTextureDict(name, 0);
+        public static bool HasStreamedTextureDictLoaded(string name) => Natives.x0145F696AAAAD2E4<bool>(name);
+        public static void RequestStreamedTextureDict(string name) => Natives.xDFA2EF8E04127DD5(name, 0);
+        public static void SetStreamedTextureDictAsNoLongerNeeded(string name) => Natives.xBE2CACCF5A8AA805(name);
 
         public static void HideHudComponentThisFrame(int id) => Natives.x6806C51AD12B83B8(id);
 
