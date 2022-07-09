@@ -8,6 +8,7 @@
 
     public class UIMenuColorListPanel : UIMenuPanel
     {
+        // TODO: maybe ScrollableListBase can be used here
         public delegate void SelectionChangedEvent(UIMenuColorListPanel sender, int oldIndex, int newIndex);
 
         private static readonly TextStyle BaseLabelStyle = TextStyle.Default.With(font: TextFont.ChaletLondon, scale: 0.35f);
