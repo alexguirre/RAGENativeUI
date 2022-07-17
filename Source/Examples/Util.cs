@@ -52,7 +52,13 @@
         [Rage.Attributes.ConsoleCommand]
         public static unsafe void TestTxd()
         {
-            using var txd = new GameTextureDictionary("my_rnui_txd");
+            if (!RuntimeTextureDictionary.TryRegister("my_rnui_txd", out var newTxd))
+            {
+                Game.LogTrivial(" > Failed to register texture dictionary");
+                return;
+            }
+
+            using var txd = newTxd;
             txd.AddTextureFromDDS("my_tex1", "Plugins\\some_image.dds");
             txd.AddTextureFromDDS("my_tex2", "Plugins\\some_image.dds");
             txd.AddTextureFromDDS("my_tex3", "Plugins\\some_image_rgba.dds", updatable: true);
@@ -70,26 +76,27 @@
                     g.FillEllipse(purpleBrush, 32 - 8, 32 - 8, 16, 16);
                     g.Flush();
                 }
-
-                var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, 64, 64), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-                txd.AddTexture("my_tex5", (uint)bitmapData.Width, (uint)bitmapData.Height, GameTextureFormat.B8G8R8A8, bitmapData.Scan0);
-                txd.AddTexture("my_tex6", (uint)bitmapData.Width, (uint)bitmapData.Height, GameTextureFormat.B8G8R8A8, bitmapData.Scan0, updatable: true);
-
-                bitmap.UnlockBits(bitmapData);
+                
+                txd.AddTextureFromImage("my_tex5", bitmap);
+                txd.AddTextureFromImage("my_tex6", bitmap, updatable: true);
             }
-            txd.AddTexture("my_tex7", 64, 64, GameTextureFormat.R8G8, IntPtr.Zero, updatable: true);
+            txd.AddTexture("my_tex7", 64, 64, TextureFormat.R8G8, IntPtr.Zero, updatable: true);
+
+            using (var pngImg = Image.FromFile("DefaultSkin.png"))
+            {
+                txd.AddTextureFromImage("my_tex8", pngImg);
+            }
 
             foreach (var texture in txd.Textures)
             {
                 Game.LogTrivial(" > " + texture);
             }
 
-            if (txd.MapTexture("my_tex6", out var map))
+            using (var map = txd.MapTexture("my_tex6"))
             {
                 Game.LogTrivial(" Mapped texture");
                 Game.LogTrivial($"  > Data          = {map.Data.ToString("X")}");
-                Game.LogTrivial($"  > Format        = {map.DXGIFormat}");
+                Game.LogTrivial($"  > Format        = {map.Format}");
                 Game.LogTrivial($"  > Width         = {map.Width}");
                 Game.LogTrivial($"  > Height        = {map.Height}");
                 Game.LogTrivial($"  > Stride        = {map.Stride}");
@@ -109,15 +116,13 @@
                     pixel[2] = (byte)(rnd.Next() % 255);
                     //((uint*)map.Data)[i] = 0xFFFFFFFF ;
                 }
-
-                txd.UnmapTexture("my_tex6", map);
             }
 
-            if (txd.MapTexture("my_tex3", out map))
+            using (var map = txd.MapTexture("my_tex3"))
             {
                 Game.LogTrivial(" Mapped texture");
                 Game.LogTrivial($"  > Data          = {map.Data.ToString("X")}");
-                Game.LogTrivial($"  > Format        = {map.DXGIFormat}");
+                Game.LogTrivial($"  > Format        = {map.Format}");
                 Game.LogTrivial($"  > Width         = {map.Width}");
                 Game.LogTrivial($"  > Height        = {map.Height}");
                 Game.LogTrivial($"  > Stride        = {map.Stride}");
@@ -137,8 +142,6 @@
                     pixel[2] = (byte)(pixel[2] + 50);
                     //((uint*)map.Data)[i] = 0xFFFFFFFF ;
                 }
-
-                txd.UnmapTexture("my_tex3", map);
             }
 
 
@@ -149,7 +152,7 @@
                 GameFiber.Yield();
 
                 hue = (hue + 60.0f * Game.FrameTime) % 360.0f;
-                if (txd.MapTexture("my_tex6", out map))
+                using (var map = txd.MapTexture("my_tex6"))
                 {
                     unsafe
                     {
@@ -165,8 +168,6 @@
                             ((int*)map.Data)[i] = c.ToArgb();
                         }
                     }
-
-                    txd.UnmapTexture("my_tex6", map);
                 }
 
 
@@ -177,9 +178,10 @@
                 NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex2", 0.25f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
                 NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex3", 0.25f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
                 NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex4", 0.25f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex5", 0.75f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex6", 0.75f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex7", 0.75f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex5", 0.75f, 0.2f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex6", 0.75f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex7", 0.75f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex8", 0.75f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
             }
         }
 
