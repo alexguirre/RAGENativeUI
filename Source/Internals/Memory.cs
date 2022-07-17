@@ -9,7 +9,7 @@
 
     internal static unsafe class Memory
     {
-        public const int MaxMemoryAddresses = 20;
+        public const int MaxMemoryAddresses = 21;
         public const int MaxInts = 4;
 
         public static readonly int TLSOffset_sysMemAllocator_Current = -1;
@@ -43,6 +43,7 @@
         public static readonly IntPtr pgDictionary_grcTexture_ctor;
         public static readonly IntPtr grcBeginUsingDeviceContext;
         public static readonly IntPtr grcEndUsingDeviceContext;
+        public static readonly IntPtr grcGetBufferFormatFromDXGIFormat;
 
         static Memory()
         {
@@ -222,6 +223,8 @@
                 }
             }
 
+            grcGetBufferFormatFromDXGIFormat = FindAddress(() => Game.FindPattern("FF C9 83 F9 62 0F 87 ?? ?? ?? ?? 48 8D 15 ?? ?? ?? ?? 0F B6 84 0A"));
+
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
                 IntPtr ingamehudAddr = FindPatternInScript("ingamehud",
@@ -273,6 +276,9 @@
             Game.LogTrivialDebug($"[RAGENativeUI]  > CTextFile = {CTextFile.Available}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > grcTextureFactory = {grcTextureFactory.Available}");
             Game.LogTrivialDebug($"[RAGENativeUI]  > pgDictionary<grcTexture>::ctor = {pgDictionary_grcTexture_ctor != IntPtr.Zero}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > grcBeginUsingDeviceContext = {grcBeginUsingDeviceContext != IntPtr.Zero}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > grcEndUsingDeviceContext = {grcEndUsingDeviceContext != IntPtr.Zero}");
+            Game.LogTrivialDebug($"[RAGENativeUI]  > grcGetBufferFormatFromDXGIFormat = {grcGetBufferFormatFromDXGIFormat != IntPtr.Zero}");
 #endif
         }
 
@@ -726,16 +732,16 @@
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    public unsafe struct grcTexture
+    internal unsafe struct grcTexture
     {
         public enum UsageType
         {
-          Immutable = 0x0,
-          DefaultWithStagingTexture = 0x1,
-          Default = 0x2,
-          Dynamic1 = 0x3,
-          Dynamic2 = 0x4,
-          Dynamic3 = 0x5,
+            Immutable = 0x0,
+            DefaultWithStagingTexture = 0x1,
+            Default = 0x2,
+            Dynamic1 = 0x3,
+            Dynamic2 = 0x4,
+            Dynamic3 = 0x5,
         }
 
         [Flags]
@@ -776,6 +782,8 @@
 
     internal enum grcBufferFormat : uint
     {
+        INVALID = 0,
+
         B8G8R8A8_UNORM = 0x2,  // DXGI_FORMAT_B8G8R8A8_UNORM
         R8_UNORM = 0xD,        // DXGI_FORMAT_R8_UNORM
         R8G8_UNORM = 0xF,      // DXGI_FORMAT_R8G8_UNORM
@@ -833,7 +841,12 @@
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 4)]
-    internal struct strLocalIndex { public uint Value; }
+    internal struct strLocalIndex
+    {
+        public uint Value;
+
+        public override string ToString() => Value.ToString();
+    }
 
     internal unsafe struct fwTxdStore
     {
