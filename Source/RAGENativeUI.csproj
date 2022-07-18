@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Examples\**" />
+    <Compile Remove="Tests\**" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent Condition="'$(Configuration)' != 'Debug-NoILMerge'">
