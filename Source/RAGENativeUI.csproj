@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Platforms>x64</Platforms>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -50,6 +50,20 @@
     <Compile Remove="Tests\**" />
     <None Remove="Tests\**" />
     <EmbeddedResource Remove="Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Elements\MenuPanels\UIMenuColorPickerPanel.Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UIMenuColorPickerPanel.Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Elements\MenuPanels\UIMenuColorPickerPanel.Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIMenuColorPickerPanel.Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>RAGENativeUI.Elements</CustomToolNamespace>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent Condition="'$(Configuration)' != 'Debug-NoILMerge'">

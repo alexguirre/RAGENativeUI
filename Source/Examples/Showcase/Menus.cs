@@ -271,7 +271,8 @@
                            gridVerticalItem = new("Grid Vertical"),
                            gridHorizontalItem = new("Grid Horizontal"),
                            sliderItem = new("Slider"),
-                           combinedItem = new("Combined");
+                           combinedItem = new("Combined"),
+                           colorPickerItem = new("Color Picker");
 
                 // stats
                 {
@@ -330,7 +331,16 @@
                     combinedItem.Panels = new List<UIMenuPanel> { slider, grid, stats };
                 }
 
-                panelsMenu.AddItems(statsItem, gridItem, gridVerticalItem, gridHorizontalItem, sliderItem, combinedItem);
+                // color picker
+                {
+                    var panel = new UIMenuColorPickerPanel
+                    {
+                        Color = Color.Red
+                    };
+                    colorPickerItem.Panels.Add(panel);
+                }
+
+                panelsMenu.AddItems(statsItem, gridItem, gridVerticalItem, gridHorizontalItem, sliderItem, combinedItem, colorPickerItem);
             }
         }
 
