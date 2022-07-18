@@ -791,7 +791,7 @@
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 0x28)]
-    public unsafe struct grcMapData
+    internal unsafe struct grcMapData
     {
         [FieldOffset(0x00)] public uint MipLevel;
         [FieldOffset(0x08)] public IntPtr Data;

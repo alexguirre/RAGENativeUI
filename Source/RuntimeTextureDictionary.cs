@@ -12,10 +12,10 @@
 
     public enum TextureFormat : uint
     {
-        Invalid = grcBufferFormat.INVALID,
+        Unknown = grcBufferFormat.INVALID,
 
         R8 = grcBufferFormat.R8_UNORM,
-        //R8G8 = grcBufferFormat.R8G8_UNORM, // NOTE: GetBufferFormatFromDXGIFormat doesn't round trip this format, so TextureLock.Format would return Invalid instead of R8G8, so disabled for now
+        //R8G8 = grcBufferFormat.R8G8_UNORM, // NOTE: GetBufferFormatFromDXGIFormat doesn't round trip this format, so TextureLock.Format would return Unknown instead of R8G8, so disabled for now
         B8G8R8A8 = grcBufferFormat.B8G8R8A8_UNORM,
         R8G8B8A8 = grcBufferFormat.R8G8B8A8_UNORM,
     }

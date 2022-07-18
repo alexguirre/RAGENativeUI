@@ -62,7 +62,7 @@ internal static class Plugin
     private static void OnTestFailed(object sender, TestFailedInfo e)
     {
         Game.DisplayNotification(
-            "some_txd", "some_tex", // TODO: look for an appropriate icon
+            "timerbar_sr", "timer_cross",
             $"~r~{e.TestDisplayName}",
             $"~r~TEST FAILED",
             $"{e.ExceptionMessage}~n~~s~Stack Trace:  {e.ExceptionStackTrace}".Replace(Environment.NewLine, "~n~").Replace("Expected:", "~b~Expected:").Replace("Actual:", "~r~Actual:"));
