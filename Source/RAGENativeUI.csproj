@@ -46,7 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Examples\**" />
+    <None Remove="Examples\**" />
     <Compile Remove="Tests\**" />
+    <None Remove="Tests\**" />
+    <EmbeddedResource Remove="Tests\**" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent Condition="'$(Configuration)' != 'Debug-NoILMerge'">
