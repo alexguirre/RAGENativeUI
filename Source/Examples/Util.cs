@@ -80,7 +80,7 @@
                 txd.AddTextureFromImage("my_tex5", bitmap);
                 txd.AddTextureFromImage("my_tex6", bitmap, updatable: true);
             }
-            txd.AddTexture("my_tex7", 64, 64, TextureFormat.R8G8, IntPtr.Zero, updatable: true);
+            txd.AddTexture("my_tex7", 64, 64, TextureFormat.R8, IntPtr.Zero, updatable: true);
 
             using (var pngImg = Image.FromFile("DefaultSkin.png"))
             {
