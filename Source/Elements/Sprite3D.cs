@@ -18,7 +18,7 @@
         public RectangleF UV { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether the back-face should be drawn. If <c>true</c> both front and back faces will be drawn, 
-        /// otherwise only the face that heads to (UpperRight-UpperLeft)x(UpperLeft-BottomLeft) is drawn.
+        /// otherwise only the face that heads to (UpperLeft-UpperRight)x(UpperRight-BottomRight) is drawn.
         /// </summary>
         /// <value>
         ///   <c>true</c> if the back-face should be drawn; otherwise, <c>false</c>.
@@ -85,13 +85,13 @@
 
             Vector3 ul = upperLeft, ur = upperRight, bl = bottomLeft, br = bottomRight;
 
-            N.DrawSpritePoly(ul, bl, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Left, uv.Top, 1f), new Vector3(uv.Left, uv.Bottom, 1f), new Vector3(uv.Right, uv.Top, 1f));
-            N.DrawSpritePoly(bl, br, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Left, uv.Bottom, 1f), new Vector3(uv.Right, uv.Bottom, 1f), new Vector3(uv.Right, uv.Top, 1f));
+            N.DrawSpritePoly(ur, bl, ul, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new(uv.Left, uv.Top, 1f), new(uv.Right, uv.Bottom, 1f), new(uv.Right, uv.Top, 1f));
+            N.DrawSpritePoly(ur, br, bl, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new(uv.Left, uv.Top, 1f), new(uv.Left, uv.Bottom, 1f), new(uv.Right, uv.Bottom, 1f));
 
             if (backFace)
             {
-                N.DrawSpritePoly(ur, bl, ul, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Right, uv.Top, 1f), new Vector3(uv.Left, uv.Bottom, 1f), new Vector3(uv.Left, uv.Top, 1f));
-                N.DrawSpritePoly(ur, br, bl, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new Vector3(uv.Right, uv.Top, 1f), new Vector3(uv.Right, uv.Bottom, 1f), new Vector3(uv.Left, uv.Bottom, 1f));
+                N.DrawSpritePoly(ul, bl, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new(uv.Right, uv.Top, 1f), new(uv.Right, uv.Bottom, 1f), new(uv.Left, uv.Top, 1f));
+                N.DrawSpritePoly(bl, br, ur, color.R, color.G, color.B, color.A, textureDictionary.Name, textureName, new(uv.Right, uv.Bottom, 1f), new(uv.Left, uv.Bottom, 1f), new(uv.Left, uv.Top, 1f));
             }
         }
 

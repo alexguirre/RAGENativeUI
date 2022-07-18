@@ -185,8 +185,9 @@
 
                 var pos = Game.LocalPlayer.Character.GetOffsetPositionFront(2.0f);
                 var size = new Vector2(2.0f);
-                var q = Game.LocalPlayer.Character.Orientation;
-                Sprite3D.Draw("my_rnui_txd", "my_tex8", pos, size, q, Color.White, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), backFace: true, loadTexture: false);
+                var q = Quaternion.FromRotation(new(pitch: 0.0f, roll: 0.0f, yaw: 180.0f)) * Game.LocalPlayer.Character.Orientation;
+                Sprite3D.Draw("my_rnui_txd", "my_tex8", pos, size, q, Color.White, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), backFace: false, loadTexture: false);
+                NativeFunction.Natives.DrawLine(pos, pos+q.ToVector()*5.0f, 255, 0, 0, 255);
             }
         }
 
