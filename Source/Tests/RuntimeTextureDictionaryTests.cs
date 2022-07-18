@@ -105,6 +105,38 @@ public class RuntimeTextureDictionaryTests
         ViewTexture(Txd, "my_tex");
     }
 
+    [Fact]
+    public void CreateFromDDS()
+    {
+        using var txd = RegisterTxd();
+        byte[] dds = Resources.bgra8_nomipmaps_16x16;
+
+        txd.AddTextureFromDDS("my_tex", dds);
+
+        using (var map = txd.MapTexture("my_tex"))
+        {
+            Assert.Equal(16, map.Width);
+            Assert.Equal(16, map.Height);
+            Assert.Equal(4 * 16, map.Stride);
+            Assert.Equal(32, map.BitsPerPixel);
+            Assert.Equal(TextureFormat.B8G8R8A8, map.Format);
+
+            unsafe
+            {
+                var d = (byte*)map.Data;
+                for (int i = 0; i < map.Stride * map.Height; i += 4)
+                {
+                    Assert.Equal(0xFF, d[i + 0]);
+                    Assert.Equal(0x00, d[i + 1]);
+                    Assert.Equal(0xFF, d[i + 2]);
+                    Assert.Equal(0xFF, d[i + 3]);
+                }
+            }
+        }
+
+        ViewTexture(Txd, "my_tex");
+    }
+
     private static RuntimeTextureDictionary RegisterTxd()
     {
         var success = RuntimeTextureDictionary.TryRegister(Txd, out var newTxd);

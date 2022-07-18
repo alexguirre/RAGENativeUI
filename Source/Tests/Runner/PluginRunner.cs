@@ -49,6 +49,9 @@ internal sealed class PluginRunner : IDisposable, IMessageSinkWithTypes
             throw new InvalidOperationException("Tests must be run within a game fiber!");
         }
 
+        discoveryCompletedFlag = false;
+        testCasesToRun.Clear();
+
         var discoveryOptions = GetDiscoveryOptions();
         var executionOptions = GetExecutionOptions();
         controller.Find(includeSourceInformation: false, this, discoveryOptions);
