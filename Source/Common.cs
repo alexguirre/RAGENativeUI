@@ -141,5 +141,17 @@ namespace RAGENativeUI
 
             return new RectangleF(x1, y1, x2 - x1, y2 - y1);
         }
+
+        internal static Vector3 TransformCoordinate(in Vector3 coordinate, in Matrix transform)
+        {
+            // From SlimMath's Vector3.TransformCoordinate: https://code.google.com/archive/p/slimmath/
+
+            var x = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
+            var y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + (coordinate.Z * transform.M32) + transform.M42;
+            var z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
+            var w = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
+
+            return new(x * w, y * w, z * w);
+        }
     }
 }

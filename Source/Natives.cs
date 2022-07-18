@@ -25,6 +25,12 @@
         public static void DrawSpriteUV(string textureDict, string textureName, float x, float y, float width, float height, float u1, float v1, float u2, float v2, float rotation, int r, int g, int b, int a)
             => Natives.x95812F9B26074726(textureDict, textureName, x, y, width, height, u1, v1, u2, v2, rotation, r, g, b, a);
 
+        public static void DrawSpritePoly(Vector3 p1, Vector3 p2, Vector3 p3, int r, int g, int b, int a, string textureDict, string textureName, Vector3 uvw1, Vector3 uvw2, Vector3 uvw3)
+            => Natives.x29280002282F1928(p1, p2, p3, r, g, b, a, textureDict, textureName, uvw1, uvw2, uvw3);
+
+        public static void DrawSpritePoly2(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 rgb1, int alpha1, Vector3 rgb2, int alpha2, Vector3 rgb3, int alpha3, string textureDict, string textureName, Vector3 uvw1, Vector3 uvw2, Vector3 uvw3)
+            => Natives.x29280002282F1928(p1, p2, p3, rgb1, alpha1, rgb2, alpha2, rgb3, alpha3, textureDict, textureName, uvw1, uvw2, uvw3);
+
         public static void DrawRect(float x, float y, float width, float height, int r, int g, int b, int a)
         {
             if (DirectNatives.DrawRectAvailable)
