@@ -182,6 +182,11 @@
                 NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex6", 0.75f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
                 NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex7", 0.75f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
                 NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex8", 0.75f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+
+                var pos = Game.LocalPlayer.Character.GetOffsetPositionFront(2.0f);
+                var size = new Vector2(2.0f);
+                var q = Game.LocalPlayer.Character.Orientation;
+                Sprite3D.Draw("my_rnui_txd", "my_tex8", pos, size, q, Color.White, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), backFace: true, loadTexture: false);
             }
         }
 
