@@ -10,19 +10,21 @@ using System;
 
 internal static class Plugin
 {
-    private static int totalTests = 0, passedTests = 0;
+    private static int totalTests = 0, passedTests = 0, finishedTests = 0;
 
     private static void Main()
     {
         Game.LogTrivial("-" + Thread.CurrentThread.ManagedThreadId);
         using var runner = new PluginRunner("Plugins\\RAGENativeUI.Tests.dll");
+        runner.DiscoveryCompleted += OnDiscoveryCompleted;
         runner.TestFinished += OnTestFinished;
         runner.TestPassed += OnTestPassed;
         runner.TestFailed += OnTestFailed;
 
+        Game.DisplaySubtitle("Discovering test cases...");
         runner.Run();
 
-        var msg = $"Test passed: {passedTests} / {totalTests}";
+        var msg = $"Tests finished: {passedTests} / {totalTests} passed";
         Game.LogTrivial(msg);
         if (passedTests == totalTests)
         {
@@ -34,9 +36,22 @@ internal static class Plugin
         }
     }
 
+    private static void ReportProgress()
+    {
+        var success = finishedTests == passedTests;
+        Game.DisplaySubtitle($"Running tests: {finishedTests} / {totalTests} (passed {(success ? "~g~" : "~r~")}{passedTests} / {totalTests}~s~)", 240_000);
+    }
+
+    private static void OnDiscoveryCompleted(object sender, DiscoveryCompleteInfo e)
+    {
+        totalTests = e.TestCasesToRun;
+        ReportProgress();
+    }
+
     private static void OnTestFinished(object sender, TestFinishedInfo e)
     {
-        totalTests++;
+        finishedTests++;
+        ReportProgress();
     }
 
     private static void OnTestPassed(object sender, TestPassedInfo e)
