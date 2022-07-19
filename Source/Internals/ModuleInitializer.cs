@@ -51,6 +51,12 @@ namespace RAGENativeUI.Internals
             Game.LogTrivialDebug("[RAGENativeUI] > Registering debug commands");
             Game.AddConsoleCommands(new[] { typeof(DebugCommands) });
 #endif
+
+#if !DEBUG
+            // TODO: run only once between all plugins loads
+            // TODO: add config to disable version checker
+            _ = VersionChecker.RunCheckAsync();
+#endif
         }
     }
 }
