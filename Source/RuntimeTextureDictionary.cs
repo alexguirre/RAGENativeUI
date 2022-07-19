@@ -104,7 +104,7 @@
         {
             if (!disposed)
             {
-                Grc.RemoveTextureDictionary(Name, index);
+                Grc.ReleaseTextureDictionary(Name, index);
                 disposed = true;
             }
         }
@@ -258,6 +258,20 @@
         public static bool TryRegister(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
         {
             if (Grc.TryRegisterTextureDictionary(name, out var txd, out var index))
+            {
+                runtimeTextureDictionary = new(name, txd, index);
+                return true;
+            }
+            else
+            {
+                runtimeTextureDictionary = null;
+                return false;
+            }
+        }
+
+        public static bool TryAcquire(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
+        {
+            if (Grc.AcquireTextureDictionary(name, out var txd, out var index))
             {
                 runtimeTextureDictionary = new(name, txd, index);
                 return true;
