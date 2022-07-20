@@ -12,13 +12,14 @@ public class VersionCheckerTests
         var current = new Version(1, 0, 0, 0);
         var latest = new Version(1, 0, 0, 0);
 
-        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "url"));
+        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "url", new DateTime(2022, 5, 28)));
         Assert.Equal(current, versionChecker.CurrentVersion);
 
         versionChecker.RequestLatestVersionAsync().Wait();
         Assert.Equal(VersionCheckerStatus.LatestVersionAvailable, versionChecker.Status);
         Assert.Equal(latest, versionChecker.LatestVersion);
         Assert.Equal("url", versionChecker.HtmlUrl);
+        Assert.Equal(new DateTime(2022, 5, 28), versionChecker.ReleaseDate);
 
         versionChecker.CheckForUpdates();
         Assert.Equal(VersionCheckerStatus.UpToDate, versionChecker.Status);
@@ -33,13 +34,14 @@ public class VersionCheckerTests
         var current = Version.Parse(currentVersion);
         var latest = Version.Parse(latestVersion);
 
-        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "url"));
+        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "url", new DateTime(2022, 5, 28)));
         Assert.Equal(current, versionChecker.CurrentVersion);
 
         versionChecker.RequestLatestVersionAsync().Wait();
         Assert.Equal(VersionCheckerStatus.LatestVersionAvailable, versionChecker.Status);
         Assert.Equal(latest, versionChecker.LatestVersion);
         Assert.Equal("url", versionChecker.HtmlUrl);
+        Assert.Equal(new DateTime(2022, 5, 28), versionChecker.ReleaseDate);
 
         versionChecker.CheckForUpdates();
         Assert.Equal(VersionCheckerStatus.Outdated, versionChecker.Status);
@@ -62,13 +64,14 @@ public class VersionCheckerTests
         var latest = Version.Parse(latestVersion);
         var expected = Version.Parse("1.9.0.0");
 
-        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "url"));
+        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "url", new DateTime(2022, 5, 28)));
         Assert.Equal(expected, versionChecker.CurrentVersion);
 
         versionChecker.RequestLatestVersionAsync().Wait();
         Assert.Equal(VersionCheckerStatus.LatestVersionAvailable, versionChecker.Status);
         Assert.Equal(expected, versionChecker.LatestVersion);
         Assert.Equal("url", versionChecker.HtmlUrl);
+        Assert.Equal(new DateTime(2022, 5, 28), versionChecker.ReleaseDate);
 
         versionChecker.CheckForUpdates();
         Assert.Equal(VersionCheckerStatus.UpToDate, versionChecker.Status);
@@ -80,7 +83,7 @@ public class VersionCheckerTests
         var current = new Version(1, 0, 0, 0);
         var latest = new Version(1, 9, 1, 0);
 
-        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "https://github.com/alexguirre/RAGENativeUI/releases/tag/1.9"));
+        var versionChecker = new VersionChecker(current, GetLatestVersionProviderMock(latest, "https://github.com/alexguirre/RAGENativeUI/releases/tag/1.9", new DateTime(2022, 5, 28)));
         versionChecker.RequestLatestVersionAsync().Wait();
         versionChecker.CheckForUpdates();
         versionChecker.NotifyUser();
@@ -98,17 +101,17 @@ public class VersionCheckerTests
         Assert.Null(versionChecker.HtmlUrl);
     }
 
-    private static ILatestVersionProvider GetLatestVersionProviderMock(Version version, string htmlUrl)
+    private static ILatestVersionProvider GetLatestVersionProviderMock(Version version, string htmlUrl, DateTime releaseDate)
     {
         var mock = new Mock<ILatestVersionProvider>();
-        mock.Setup(x => x.RequestLatestVersionAsync(It.IsAny<VersionChecker>()).Result).Returns((version, htmlUrl));
+        mock.Setup(x => x.RequestLatestVersionAsync(It.IsAny<VersionChecker>()).Result).Returns(new LatestVersionInfo(version, htmlUrl, releaseDate));
         return mock.Object;
     }
 
     private static ILatestVersionProvider GetFailingLatestVersionProviderMock()
     {
         var mock = new Mock<ILatestVersionProvider>();
-        mock.Setup(x => x.RequestLatestVersionAsync(It.IsAny<VersionChecker>()).Result).Returns(((Version, string)?)null);
+        mock.Setup(x => x.RequestLatestVersionAsync(It.IsAny<VersionChecker>()).Result).Returns((LatestVersionInfo?)null);
         return mock.Object;
     }
 }
