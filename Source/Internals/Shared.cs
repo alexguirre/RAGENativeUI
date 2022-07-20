@@ -30,6 +30,9 @@
 
         public static ref HooksData HooksData => ref data->HooksData;
 
+        public static ref bool ConfigLoaded => ref data->ConfigLoaded;
+        public static ref ConfigValues Config => ref data->Config;
+
         static Shared()
         {
             Game.LogTrivialDebug($"[RAGENativeUI::Shared] Init from '{System.AppDomain.CurrentDomain.FriendlyName}'");
@@ -83,6 +86,8 @@
             public fixed long MemoryAddresses[Memory.MaxMemoryAddresses];
             public fixed int MemoryInts[Memory.MaxInts];
             public HooksData HooksData;
+            public bool ConfigLoaded;
+            public ConfigValues Config;
         }
     }
 }

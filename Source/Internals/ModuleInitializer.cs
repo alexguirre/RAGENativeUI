@@ -52,10 +52,25 @@ namespace RAGENativeUI.Internals
             Game.AddConsoleCommands(new[] { typeof(DebugCommands) });
 #endif
 
+            bool first = true; // is this the first plugin to load RNUI?
+            if (Shared.ConfigLoaded)
+            {
+                Game.LogTrivialDebug("[RAGENativeUI] > Config already loaded");
+                first = false;
+            }
+            else
+            {
+                Game.LogTrivialDebug("[RAGENativeUI] > Loading config");
+                Shared.ConfigLoaded = true;
+                Shared.Config = Config.Get().Load();
+            }
+            Game.LogTrivialDebug($"[RAGENativeUI] >> {Shared.Config}");
+
 #if !DEBUG
-            // TODO: run only once between all plugins loads
-            // TODO: add config to disable version checker
-            _ = VersionChecker.RunCheckAsync();
+            if (first && Shared.Config.VersionCheckerEnabled)
+            {
+                _ = VersionChecker.RunCheckAsync();
+            }
 #endif
         }
     }

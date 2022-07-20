@@ -45,25 +45,22 @@ internal class VersionChecker
         LatestVersionProvider = latestVersionProvider;
     }
 
-    public Task RequestLatestVersionAsync()
+    public async Task RequestLatestVersionAsync()
     {
-        return Task.Run(async () =>
+        try
         {
-            try
-            {
-                var latestVersionResponse = await LatestVersionProvider.RequestLatestVersionAsync(this);
-                LatestVersion = NormalizeVersion(latestVersionResponse?.LatestVersion);
-                HtmlUrl = latestVersionResponse?.HtmlUrl;
-                LogDebug($"Current version: {CurrentVersion}");
-                LogDebug($"Latest version:  {LatestVersion}");
-                Status = LatestVersion is null ? VersionCheckerStatus.LatestVersionAvailable : VersionCheckerStatus.Error;
-            }
-            catch (Exception e)
-            {
-                Log($"Version check failed (may not have internet connection): {e}");
-                Status = VersionCheckerStatus.Error;
-            }
-        });
+            var latestVersionResponse = await LatestVersionProvider.RequestLatestVersionAsync(this);
+            LatestVersion = NormalizeVersion(latestVersionResponse?.LatestVersion);
+            HtmlUrl = latestVersionResponse?.HtmlUrl;
+            LogDebug($"Current version: {CurrentVersion}");
+            LogDebug($"Latest version:  {LatestVersion}");
+            Status = LatestVersion is not null ? VersionCheckerStatus.LatestVersionAvailable : VersionCheckerStatus.Error;
+        }
+        catch (Exception e)
+        {
+            Log($"Version check failed (may not have internet connection): {e}");
+            Status = VersionCheckerStatus.Error;
+        }
     }
 
     public void CheckForUpdates()
@@ -101,16 +98,18 @@ internal class VersionChecker
             Game.AddConsoleCommands(new[] { typeof(Commands) });
 
             Game.DisplayNotification(
-                "txd", "tex",
+                "shared", "info_icon_32",
                 "RAGENativeUI",
                 "~b~New version available!",
                 $"<font size='14'>Version ~r~<font size='17'>{ToStringTrimZeroes(CurrentVersion)}</font>~s~ is outdated. The latest version is ~b~<font size='17'>{ToStringTrimZeroes(LatestVersion)}</font>~s~.</font>");
             Game.DisplayNotification(
-                $"For more information, run ~b~{Commands.OpenDownloadPageName}~s~ in the console or visit ~b~{HtmlUrl}~s~.");
+                $"For more information, run ~b~{Commands.OpenDownloadPageName}~s~ in the console or visit ~b~{HtmlUrl}~s~." +
+                $"~n~~n~<font size='11'>Run ~b~{Commands.DisableVersionCheckerName}~s~ to disable this notification.</font>");
 
             Game.LogTrivial($"[RAGENativeUI] New version available!");
             Game.LogTrivial($"[RAGENativeUI] Version {ToStringTrimZeroes(CurrentVersion)} is outdated. The latest version is {ToStringTrimZeroes(LatestVersion)}.");
             Game.LogTrivial($"[RAGENativeUI] For more information, run `{Commands.OpenDownloadPageName}` in the console or visit {HtmlUrl}.");
+            Game.LogTrivial($"[RAGENativeUI] Run `{Commands.DisableVersionCheckerName}` to disable this notification.");
         });
     }
 
@@ -140,15 +139,18 @@ internal class VersionChecker
 
     public static async Task RunCheckAsync()
     {
+        LogDebug("Version check started");
         var checker = FromGithubReleases();
         await checker.RequestLatestVersionAsync();
         checker.CheckForUpdates();
         checker.NotifyUser();
+        LogDebug("Version check finished");
     }
 
     private static class Commands
     {
         public const string OpenDownloadPageName = "RNUI_OpenDownloadPage";
+        public const string DisableVersionCheckerName = "RNUI_DisableVersionChecker";
 
         public static string? DownloadPageUrl { get; set; }
 
@@ -157,10 +159,18 @@ internal class VersionChecker
         {
             if (DownloadPageUrl != null)
             {
+                Game.Console.Print($"Opening {DownloadPageUrl}.");
                 Process.Start(DownloadPageUrl);
             }
         }
 
+        [Rage.Attributes.ConsoleCommand(Name = DisableVersionCheckerName, Description = "Disables the RAGENativeUI version checker.")]
+        private static void DisableVersionChecker()
+        {
+            Shared.Config = Shared.Config with { VersionCheckerEnabled = false };
+            Config.Get().Save(Shared.Config);
+            Game.Console.Print($"Version checker disabled. Edit RAGENativeUI.ini to enable it again.");
+        }
     }
 }
 
