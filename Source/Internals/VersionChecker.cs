@@ -6,6 +6,7 @@ using Rage;
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -36,6 +37,7 @@ internal class VersionChecker
     public ILatestVersionProvider LatestVersionProvider { get; }
     public Version? LatestVersion { get; private set; }
     public string? HtmlUrl { get; private set; }
+    public DateTime? ReleaseDate { get; private set; }
     public ProductInfoHeaderValue UserAgent => new("RAGENativeUI", CurrentVersion.ToString());
 
     public VersionChecker(Version currentVersion, ILatestVersionProvider latestVersionProvider)
@@ -50,8 +52,9 @@ internal class VersionChecker
         try
         {
             var latestVersionResponse = await LatestVersionProvider.RequestLatestVersionAsync(this);
-            LatestVersion = NormalizeVersion(latestVersionResponse?.LatestVersion);
+            LatestVersion = NormalizeVersion(latestVersionResponse?.Version);
             HtmlUrl = latestVersionResponse?.HtmlUrl;
+            ReleaseDate = latestVersionResponse?.ReleaseDate;
             LogDebug($"Current version: {CurrentVersion}");
             LogDebug($"Latest version:  {LatestVersion}");
             Status = LatestVersion is not null ? VersionCheckerStatus.LatestVersionAvailable : VersionCheckerStatus.Error;
@@ -101,13 +104,13 @@ internal class VersionChecker
                 "shared", "info_icon_32",
                 "RAGENativeUI",
                 "~b~New version available!",
-                $"<font size='14'>Version ~r~<font size='17'>{ToStringTrimZeroes(CurrentVersion)}</font>~s~ is outdated. The latest version is ~b~<font size='17'>{ToStringTrimZeroes(LatestVersion)}</font>~s~.</font>");
+                $"<font size='13'>Version ~r~<font size='16'>{ToStringTrimZeroes(CurrentVersion)}</font>~s~ is outdated. The latest version is ~b~<font size='16'>{ToStringTrimZeroes(LatestVersion)}</font>~s~, released on {ReleaseDate?.ToString("D", DateTimeFormatInfo.InvariantInfo)}.</font>");
             Game.DisplayNotification(
                 $"For more information, run ~b~{Commands.OpenDownloadPageName}~s~ in the console or visit ~b~{HtmlUrl}~s~." +
                 $"~n~~n~<font size='11'>Run ~b~{Commands.DisableVersionCheckerName}~s~ to disable this notification.</font>");
 
             Game.LogTrivial($"[RAGENativeUI] New version available!");
-            Game.LogTrivial($"[RAGENativeUI] Version {ToStringTrimZeroes(CurrentVersion)} is outdated. The latest version is {ToStringTrimZeroes(LatestVersion)}.");
+            Game.LogTrivial($"[RAGENativeUI] Version {ToStringTrimZeroes(CurrentVersion)} is outdated. The latest version is {ToStringTrimZeroes(LatestVersion)}, released on {ReleaseDate?.ToString("D", DateTimeFormatInfo.InvariantInfo)}.");
             Game.LogTrivial($"[RAGENativeUI] For more information, run `{Commands.OpenDownloadPageName}` in the console or visit {HtmlUrl}.");
             Game.LogTrivial($"[RAGENativeUI] Run `{Commands.DisableVersionCheckerName}` to disable this notification.");
         });
@@ -174,14 +177,16 @@ internal class VersionChecker
     }
 }
 
+internal record struct LatestVersionInfo(Version Version, string HtmlUrl, DateTime ReleaseDate);
+
 internal interface ILatestVersionProvider
 {
-    Task<(Version LatestVersion, string HtmlUrl)?> RequestLatestVersionAsync(VersionChecker versionChecker);
+    Task<LatestVersionInfo?> RequestLatestVersionAsync(VersionChecker versionChecker);
 }
 
 internal sealed class GithubReleasesLatestVersionProvider : ILatestVersionProvider
 {
-    public async Task<(Version LatestVersion, string HtmlUrl)?> RequestLatestVersionAsync(VersionChecker versionChecker)
+    public async Task<LatestVersionInfo?> RequestLatestVersionAsync(VersionChecker versionChecker)
     {
         const string RequestUrl = "https://api.github.com/repos/alexguirre/RAGENativeUI/releases/latest";
 
@@ -197,10 +202,12 @@ internal sealed class GithubReleasesLatestVersionProvider : ILatestVersionProvid
             var doc = XDocument.Load(reader);
             var root = doc.Element("root");
             var htmlUrl = root.Element("html_url").Value;
+            var publishedAt = root.Element("published_at").Value;
             var latestVersionStr = root.Element("tag_name").Value;
-            if (Version.TryParse(latestVersionStr, out var latestVersion))
+            if (Version.TryParse(latestVersionStr, out var latestVersion) &&
+                DateTime.TryParse(publishedAt, out var releaseDate))
             {
-                return (latestVersion, htmlUrl);
+                return new(latestVersion, htmlUrl, releaseDate);
             }
             else
             {
