@@ -7,6 +7,8 @@ using Rage;
 
 public class UIMenuColorPickerPanel : UIMenuPanel
 {
+    public delegate void ColorChangedEvent(UIMenuColorPickerPanel sender);
+
     private float hue = 0.0f; // 0.0-360.0
     private float saturation = 0.0f; // 0.0-1.0
     private float value = 0.0f; // 0.0-1.0
@@ -22,23 +24,34 @@ public class UIMenuColorPickerPanel : UIMenuPanel
     public float Hue
     {
         get => hue;
-        set => hue = MathHelper.Clamp(value, 0.0f, 360.0f);
+        set => SetAndRaiseColorChanged(ref hue, MathHelper.Clamp(value, 0.0f, 360.0f));
     }
     public float Saturation
     {
         get => saturation;
-        set => saturation = MathHelper.Clamp(value, 0.0f, 1.0f);
+        set => SetAndRaiseColorChanged(ref saturation, MathHelper.Clamp(value, 0.0f, 1.0f));
     }
     public float Value
     {
         get => value;
-        set => this.value = MathHelper.Clamp(value, 0.0f, 1.0f);
+        set => SetAndRaiseColorChanged(ref this.value, MathHelper.Clamp(value, 0.0f, 1.0f));
     }
     public Color Color
     {
         get => ColorFromHSV(Hue, Saturation, Value);
-        set => (Hue, Saturation, Value) = ColorToHSV(value);
+        set
+        {
+            var (h, s, v) = ColorToHSV(value);
+            var changed = h != hue || s != saturation || v != this.value;
+            (hue, saturation, this.value) = (h, s, v); // NOTE: not using setters to avoid triggering the ColorChanged event multiple times
+            if (changed)
+            {
+                OnColorChanged();
+            }
+        }
     }
+
+    public event ColorChangedEvent ColorChanged;
 
     public UIMenuColorPickerPanel()
     {
@@ -191,6 +204,18 @@ public class UIMenuColorPickerPanel : UIMenuPanel
         // calculate gradient bounds
         hueGradientBounds = Common.GetScriptGfxRect(new RectangleF(gradientX - gradientWidth * 0.5f, gradientY - gradientHeight * 0.5f, gradientWidth, gradientHeight));
     }
+
+    private void SetAndRaiseColorChanged(ref float field, float newValue)
+    {
+        if (field != newValue)
+        {
+            field = newValue;
+            OnColorChanged();
+        }
+    }
+
+    protected virtual void OnColorChanged()
+        => ColorChanged?.Invoke(this);
 
     private static Color ColorFromHSV(float hue, float saturation, float value)
     {
