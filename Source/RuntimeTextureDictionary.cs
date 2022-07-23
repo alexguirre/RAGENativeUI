@@ -104,7 +104,7 @@
         {
             if (!disposed)
             {
-                Grc.ReleaseTextureDictionary(Name, index);
+                Grc.ReleaseTxd(Name, index);
                 disposed = true;
             }
         }
@@ -114,6 +114,8 @@
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        public bool HasTexture(string name) => txd->Find(name, out _);
 
         public TextureLock MapTexture(string name)
         {
@@ -255,9 +257,9 @@
             return texture;
         }
 
-        public static bool TryRegister(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
+        public static bool Create(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
         {
-            if (Grc.TryRegisterTextureDictionary(name, out var txd, out var index))
+            if (Grc.CreateRuntimeTxd(name, out var txd, out var index))
             {
                 runtimeTextureDictionary = new(name, txd, index);
                 return true;
@@ -269,9 +271,9 @@
             }
         }
 
-        public static bool TryAcquire(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
+        public static bool Get(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
         {
-            if (Grc.AcquireTextureDictionary(name, out var txd, out var index))
+            if (Grc.GetRuntimeTxd(name, out var txd, out var index))
             {
                 runtimeTextureDictionary = new(name, txd, index);
                 return true;
@@ -282,5 +284,8 @@
                 return false;
             }
         }
+
+        public static bool GetOrCreate(string name, out RuntimeTextureDictionary runtimeTextureDictionary)
+            => Get(name, out runtimeTextureDictionary) || Create(name, out runtimeTextureDictionary);
     }
 }

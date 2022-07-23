@@ -15,7 +15,7 @@
 
         public static grcBufferFormat GetBufferFormatFromDXGIFormat(uint dxgiFormat) => ((delegate* unmanaged[Stdcall]<uint, grcBufferFormat>)Memory.grcGetBufferFormatFromDXGIFormat)(dxgiFormat);
 
-        public static bool TryRegisterTextureDictionary(string name, out pgDictionary<grcTexture>* txd, out strLocalIndex index)
+        public static bool CreateRuntimeTxd(string name, out pgDictionary<grcTexture>* txd, out strLocalIndex index)
         {
             txd = null;
             index = default;
@@ -45,13 +45,13 @@
             Log($"Registered texture dictionary '{name}' at index {index.Value}");
             txdStore.Set(index, txd);
             //rage::strStreaming::SetDoNotDefrag(&rage::strStreaming::ms_instance, v18.m_nIndex + rage::strStreaming::ms_instance.moduleMgr.modules[this->store->base.base.moduleIndex]->baseIndex);
-            txdStore.AddRef(index);
+            txdStore.AddRef(index, (strRefKind)2);
             Log($" > NumRefs = {txdStore.GetNumRefs(index)}");
             
             return true;
         }
 
-        public static bool AcquireTextureDictionary(string name, out pgDictionary<grcTexture>* txd, out strLocalIndex index)
+        public static bool GetRuntimeTxd(string name, out pgDictionary<grcTexture>* txd, out strLocalIndex index)
         {
             // TODO: limit AcquireTextureDictionary to txds created with TryRegisterTextureDictionary?
             ref var txdStore = ref fwTxdStore.Instance;
@@ -71,20 +71,20 @@
                 return false;
             }
 
-            txdStore.AddRef(index);
+            txdStore.AddRef(index, (strRefKind)2);
             Log($"Found texture dictionary '{name}' at index {index.Value}");
             Log($" > NumRefs = {txdStore.GetNumRefs(index)}");
             return true;
         }
 
-        public static void ReleaseTextureDictionary(string name, strLocalIndex index)
+        public static void ReleaseTxd(string name, strLocalIndex index)
         {
             using var tls = UsingTls.Scope();
             ref var txdStore = ref fwTxdStore.Instance;
 
             Log($"Removing texture dictionary '{name}' at index {index}");
             Log($" > NumRefs Before RemoveRef = {txdStore.GetNumRefs(index)}");
-            txdStore.RemoveRef(index);
+            txdStore.RemoveRef(index, (strRefKind)2);
             Log($" > NumRefs After RemoveRef  = {txdStore.GetNumRefs(index)}");
 
             if (txdStore.GetNumRefs(index) <= 0)

@@ -63,6 +63,16 @@ namespace RAGENativeUI.Elements {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] crosshair {
+            get {
+                object obj = ResourceManager.GetObject("crosshair", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] hue_gradient {
             get {
                 object obj = ResourceManager.GetObject("hue_gradient", resourceCulture);

@@ -19,23 +19,44 @@ public class UIMenuColorPickerPanel : UIMenuPanel
     private MouseState mouseState = MouseState.Released;
 
     public override float Height => 0.034722f * 7 + (0.034722f * 0.25f);
-    public Color DotColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
+    //public Color CrosshairColor { get; set; } = Color.FromArgb(255, 0, 0, 0);
 
+    /// <summary>
+    /// Gets or sets the hue component from the HSV representation of the color selected by the user.
+    /// <para>
+    /// Valid values are 0.0 through 360.0. Values outside this range are clamped.
+    /// </para>
+    /// </summary>
     public float Hue
     {
         get => hue;
         set => SetAndRaiseColorChanged(ref hue, MathHelper.Clamp(value, 0.0f, 360.0f));
     }
+    /// <summary>
+    /// Gets or sets the saturation component from the HSV representation of the color selected by the user.
+    /// <para>
+    /// Valid values are 0.0 through 1.0. Values outside this range are clamped.
+    /// </para>
+    /// </summary>
     public float Saturation
     {
         get => saturation;
         set => SetAndRaiseColorChanged(ref saturation, MathHelper.Clamp(value, 0.0f, 1.0f));
     }
+    /// <summary>
+    /// Gets or sets the value component from the HSV representation of the color selected by the user.
+    /// <para>
+    /// Valid values are 0.0 through 1.0. Values outside this range are clamped.
+    /// </para>
+    /// </summary>
     public float Value
     {
         get => value;
         set => SetAndRaiseColorChanged(ref this.value, MathHelper.Clamp(value, 0.0f, 1.0f));
     }
+    /// <summary>
+    /// Gets or sets the color selected by the user.
+    /// </summary>
     public Color Color
     {
         get => ColorFromHSV(Hue, Saturation, Value);
@@ -51,6 +72,9 @@ public class UIMenuColorPickerPanel : UIMenuPanel
         }
     }
 
+    /// <summary>
+    /// Occurs when the selected color changes.
+    /// </summary>
     public event ColorChangedEvent ColorChanged;
 
     public UIMenuColorPickerPanel()
@@ -64,9 +88,11 @@ public class UIMenuColorPickerPanel : UIMenuPanel
 
     public override bool ProcessControl()
     {
+#if DEBUG
         Game.DisplaySubtitle($"H: {Hue}~n~S: {Saturation}~n~V: {Value}~n~RGB: {Color}");
         var c = Color;
         N.DrawRect(0.5f, 0.8f, 0.05f, 0.05f * N.GetAspectRatio(false), c.R, c.G, c.B, c.A);
+#endif
 
         if (UIMenu.IsUsingController)
         {
@@ -140,69 +166,110 @@ public class UIMenuColorPickerPanel : UIMenuPanel
 
     protected override void DrawContents(float x, float y, float menuWidth)
     {
-        DrawSaturationValueGradient(x, y, menuWidth);
-        DrawHueGradient(x, y, menuWidth);
+        var aspectRatio = N.GetAspectRatio(false);
+
+        float svX = x + menuWidth * 0.4f;
+        float svY = y + Height * 0.5f;
+        float svWidth = Height * 0.5f;
+        float svHeight = svWidth * aspectRatio;
+        DrawSaturationValueGradient(svX, svY, svWidth, svHeight);
+
+        float hX = x + menuWidth * 0.8f;
+        float hY = y + Height * 0.5f;
+        float hWidth = svWidth * 0.125f;
+        float hHeight = svHeight;
+        DrawHueGradient(hX, hY, hWidth, hHeight);
     }
 
-    private void DrawSaturationValueGradient(float x, float y, float menuWidth)
+    protected void DrawSaturationValueGradient(float x, float y, float width, float height)
     {
-        var aspectRatio = N.GetAspectRatio(false);
-        var color = ColorFromHSV(Hue, saturation: 1.0f, value: 1.0f);
-        float gradientX = x + menuWidth * 0.4f;
-        float gradientY = y + Height * 0.5f;
-        float gradientWidth = Height * 0.7f;
-        float gradientHeight = gradientWidth * aspectRatio;
+        var bgColor = ColorFromHSV(Hue, saturation: 1.0f, value: 1.0f);
         N.DrawRect(
-            gradientX, gradientY,
-            gradientWidth, gradientHeight,
-            color.R, color.G, color.B, color.A);
+            x, y,
+            width, height,
+            bgColor.R, bgColor.G, bgColor.B, bgColor.A);
         N.DrawSprite(
             Txd, TextureSaturationValueGradient,
-            gradientX, gradientY,
-            gradientWidth, gradientHeight,
+            x, y,
+            width, height,
             0.0f,
             255, 255, 255, 255);
 
-        color = DotColor;
-        float dotX = gradientX - (gradientWidth * 0.5f) + (gradientWidth * Saturation);
-        float dotY = gradientY - (gradientHeight * 0.5f) + (gradientHeight * (1.0f - Value));
-        float dotWidth = 0.005f;
-        float dotHeight = dotWidth * aspectRatio;
-        N.DrawRect(
-            dotX, dotY,
-            dotWidth, dotHeight,
-            color.R, color.G, color.B, color.A);
+        float crosshairX = x - (width * 0.5f) + (width * Saturation);
+        float crosshairY = y - (height * 0.5f) + (height * (1.0f - Value));
+        DrawSaturationValueCrosshair(crosshairX, crosshairY, width, height);
 
         // calculate gradient bounds
-        saturationValueGradientBounds = Common.GetScriptGfxRect(new RectangleF(gradientX - gradientWidth * 0.5f, gradientY - gradientHeight * 0.5f, gradientWidth, gradientHeight));
+        saturationValueGradientBounds = Common.GetScriptGfxRect(new RectangleF(x - width * 0.5f, y - height * 0.5f, width, height));
     }
 
-    private void DrawHueGradient(float x, float y, float menuWidth)
+    protected void DrawSaturationValueCrosshair(float x, float y, float boxWidth, float boxHeight)
     {
         var aspectRatio = N.GetAspectRatio(false);
-        float gradientX = x + menuWidth * 0.8f;
-        float gradientY = y + Height * 0.5f;
-        float gradientWidth = Height * 0.1f;
-        float gradientHeight = Height * 0.7f * aspectRatio;
+        var crosshairWidth = boxWidth * 0.075f;
+        var crosshairHeight = crosshairWidth * aspectRatio;
         N.DrawSprite(
-            Txd, TextureHueGradient,
-            gradientX, gradientY,
-            gradientWidth, gradientHeight,
+            Txd, TextureCrosshair,
+            x, y,
+            crosshairWidth, crosshairHeight,
             0.0f,
             255, 255, 255, 255);
 
-        var color = DotColor;
-        float dotX = gradientX - (gradientWidth * 0.5f) + (gradientWidth * 0.5f);
-        float dotY = gradientY - (gradientHeight * 0.5f) + (gradientHeight * Hue / 360.0f);
-        float dotWidth = 0.005f;
-        float dotHeight = dotWidth * aspectRatio;
-        N.DrawRect(
-            dotX, dotY,
-            dotWidth, dotHeight,
-            color.R, color.G, color.B, color.A);
+        //const float ScaleX = 1.0f / 85.0f;
+        //const float ScaleY = 1.0f / 10.0f;
+
+        //var color = CrosshairColor;
+        //var aspectRatio = N.GetAspectRatio(false);
+        //var verticalBarWidth = boxWidth * ScaleX;
+        //var verticalBarHeight = boxHeight * ScaleY;
+        //N.DrawRect(
+        //    x, y,
+        //    verticalBarWidth, verticalBarHeight,
+        //    color.R, color.G, color.B, color.A);
+        //var horizontalBarWidth = boxWidth * ScaleY;
+        //var horizontalBarHeight = boxHeight * ScaleX;
+        //N.DrawRect(
+        //    x, y,
+        //    horizontalBarWidth, horizontalBarHeight,
+        //    color.R, color.G, color.B, color.A);
+    }
+
+    protected void DrawHueGradient(float x, float y, float width, float height)
+    {
+        N.DrawSprite(
+            Txd, TextureHueGradient,
+            x, y,
+            width, height,
+            0.0f,
+            255, 255, 255, 255);
+
+        float crosshairX = x - (width * 0.5f) + (width * 0.5f);
+        float crosshairY = y - (height * 0.5f) + (height * Hue / 360.0f);
+        DrawHueCrosshair(crosshairX, crosshairY, width, height);
 
         // calculate gradient bounds
-        hueGradientBounds = Common.GetScriptGfxRect(new RectangleF(gradientX - gradientWidth * 0.5f, gradientY - gradientHeight * 0.5f, gradientWidth, gradientHeight));
+        hueGradientBounds = Common.GetScriptGfxRect(new RectangleF(x - width * 0.5f, y - height * 0.5f, width, height));
+    }
+
+    protected void DrawHueCrosshair(float x, float y, float boxWidth, float boxHeight)
+    {
+        var crosshairWidth = boxWidth;
+        var crosshairHeight = boxHeight * 0.075f;
+        N.DrawSprite(
+            Txd, TextureCrosshair,
+            x, y,
+            crosshairWidth, crosshairHeight,
+            0.0f,
+            255, 255, 255, 255);
+
+        //var color = CrosshairColor;
+        //var aspectRatio = N.GetAspectRatio(false);
+        //float dotWidth = 0.005f;
+        //float dotHeight = dotWidth * aspectRatio;
+        //N.DrawRect(
+        //    x, y,
+        //    dotWidth, dotHeight,
+        //    color.R, color.G, color.B, color.A);
     }
 
     private void SetAndRaiseColorChanged(ref float field, float newValue)
@@ -267,20 +334,29 @@ public class UIMenuColorPickerPanel : UIMenuPanel
     private const string Txd = "INTERNAL_RNUI_UIMenuColorPickerPanel";
     private const string TextureHueGradient = "hue_gradient";
     private const string TextureSaturationValueGradient = "saturation_value_gradient";
+    private const string TextureCrosshair = "crosshair";
 
     private static readonly RuntimeTextureDictionary runtimeTxd;
 
     static UIMenuColorPickerPanel()
     {
-        if (RuntimeTextureDictionary.TryRegister(Txd, out runtimeTxd))
+        if (RuntimeTextureDictionary.GetOrCreate(Txd, out runtimeTxd))
         {
             // textures from https://github.com/duckduckgo/zeroclickinfo-goodies/tree/5521881a99e0e912e076cfc50016bfb81a0bcc17/share/goodie/color_picker
-            runtimeTxd.AddTextureFromDDS(TextureHueGradient, UIMenuColorPickerPanel_Resources.hue_gradient);
-            runtimeTxd.AddTextureFromDDS(TextureSaturationValueGradient, UIMenuColorPickerPanel_Resources.saturation_value_gradient);
-        }
-        else
-        {
-            RuntimeTextureDictionary.TryAcquire(Txd, out runtimeTxd);
+            if (!runtimeTxd.HasTexture(TextureHueGradient))
+            {
+                runtimeTxd.AddTextureFromDDS(TextureHueGradient, UIMenuColorPickerPanel_Resources.hue_gradient);
+            }
+
+            if (!runtimeTxd.HasTexture(TextureSaturationValueGradient))
+            {
+                runtimeTxd.AddTextureFromDDS(TextureSaturationValueGradient, UIMenuColorPickerPanel_Resources.saturation_value_gradient);
+            }
+
+            if (!runtimeTxd.HasTexture(TextureCrosshair))
+            {
+                runtimeTxd.AddTextureFromDDS(TextureCrosshair, UIMenuColorPickerPanel_Resources.crosshair);
+            }
         }
     }
 }

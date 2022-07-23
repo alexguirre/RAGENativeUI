@@ -864,6 +864,8 @@
         public override string ToString() => Value.ToString();
     }
 
+    internal enum strRefKind : uint { }
+
     internal unsafe struct fwTxdStore
     {
         [StructLayout(LayoutKind.Explicit)]
@@ -876,8 +878,8 @@
 
             [FieldOffset(8 * 8)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*> GetPtr;
 
-            [FieldOffset(8 * 16)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, uint, void> AddRef;
-            [FieldOffset(8 * 17)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, uint, void> RemoveRef;
+            [FieldOffset(8 * 16)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, strRefKind, void> AddRef;
+            [FieldOffset(8 * 17)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, strRefKind, void> RemoveRef;
 
             [FieldOffset(8 * 19)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, int> GetNumRefs;
 
@@ -908,8 +910,8 @@
 
         public pgDictionary<grcTexture>* GetPtr(strLocalIndex index) => vtable->GetPtr(ref this, index);
         public void RemoveSlot(strLocalIndex index) => vtable->RemoveSlot(ref this, index);
-        public void AddRef(strLocalIndex index) => vtable->AddRef(ref this, index, 0);
-        public void RemoveRef(strLocalIndex index) => vtable->RemoveRef(ref this, index, 0);
+        public void AddRef(strLocalIndex index, strRefKind refKind) => vtable->AddRef(ref this, index, refKind);
+        public void RemoveRef(strLocalIndex index, strRefKind refKind) => vtable->RemoveRef(ref this, index, refKind);
         public int GetNumRefs(strLocalIndex index) => vtable->GetNumRefs(ref this, index);
         public void Set(strLocalIndex index, pgDictionary<grcTexture>* txd) => vtable->Set(ref this, index, txd);
 

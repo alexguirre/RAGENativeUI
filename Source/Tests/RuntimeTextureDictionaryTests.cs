@@ -139,7 +139,7 @@ public class RuntimeTextureDictionaryTests
 
     private static RuntimeTextureDictionary RegisterTxd()
     {
-        var success = RuntimeTextureDictionary.TryRegister(Txd, out var newTxd);
+        var success = RuntimeTextureDictionary.Create(Txd, out var newTxd);
         Assert.True(success);
         Assert.NotNull(newTxd);
         return newTxd;

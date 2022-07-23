@@ -52,7 +52,7 @@
         [Rage.Attributes.ConsoleCommand]
         public static unsafe void TestTxd()
         {
-            if (!RuntimeTextureDictionary.TryRegister("my_rnui_txd", out var newTxd))
+            if (!RuntimeTextureDictionary.Create("my_rnui_txd", out var newTxd))
             {
                 Game.LogTrivial(" > Failed to register texture dictionary");
                 return;
