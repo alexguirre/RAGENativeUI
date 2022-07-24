@@ -796,6 +796,12 @@
         public void Unmap(in grcMapData mapData) => vtable->Unmap(ref this, mapData);
     }
 
+    [StructLayout(LayoutKind.Explicit)]
+    internal struct grcRenderTarget
+    {
+        [FieldOffset(0)] public grcTexture Base;
+    }
+
     internal enum grcBufferFormat : uint
     {
         INVALID = 0,
@@ -838,18 +844,80 @@
             public int field_2C;
         }
 
+
+        [StructLayout(LayoutKind.Sequential, Size = 0x58)]
+        public struct RenderTargetCreateParams
+        {
+            public byte field_0;
+            public byte field_1;
+            public short field_2;
+            public int SampleCount;
+            public byte MultiSampleQuality;
+            public byte field_9;
+            public short field_A;
+            public int MipLevels;
+            public int field_10;
+            public byte field_14;
+            public byte field_15;
+            public short field_16;
+            public long field_18;
+            public byte field_20;
+            public byte field_21;
+            public short field_22;
+            public int field_24;
+            public byte field_28;
+            public byte field_29;
+            public short field_2A;
+            public grcBufferFormat Format;
+            public int field_30;
+            public byte field_34;
+            public byte ViewsPerMipLevel;
+            public byte TexturesArraySize;
+            public byte field_37;
+            public int field_38;
+            public int field_3C;
+            public bool HasUnorderedAccessView;
+            public byte field_41;
+            public short RTMemPoolID;
+            public byte field_44;
+            public byte field_45;
+            public short field_46;
+            public int field_48;
+            public byte field_4C;
+            public byte field_4D;
+            public byte field_4E;
+            public byte field_4F;
+            public long field_50;
+
+            public static RenderTargetCreateParams Default => default(RenderTargetCreateParams) with
+            {
+                field_9 = 1,
+                MipLevels = 1,
+                field_10 = 257,
+                field_30 = 0x10101,
+                field_34 = 1,
+                TexturesArraySize = 1,
+                field_38 = 2,
+                RTMemPoolID = -1,
+            };
+        };
+
+
         [StructLayout(LayoutKind.Explicit)]
         private struct VTable
         {
             [FieldOffset(8 * 2)] public delegate* unmanaged[Thiscall]<ref grcTextureFactory, uint, uint, grcBufferFormat, IntPtr, byte, TextureCreateParams*, grcTexture*> Create_raw;
 
             [FieldOffset(8 * 4)] public delegate* unmanaged[Thiscall]<ref grcTextureFactory, string, TextureCreateParams*, grcTexture*> Create_name;
+
+            [FieldOffset(8 * 18)] public delegate* unmanaged[Thiscall]<ref grcTextureFactory, string, uint, uint, uint, uint, in RenderTargetCreateParams, grcRenderTarget*, grcRenderTarget*> CreateRenderTarget;
         }
 
         private readonly VTable* vtable;
 
         public grcTexture* Create(uint width, uint height, grcBufferFormat format, IntPtr initialData, TextureCreateParams* createParams = null) => vtable->Create_raw(ref this, width, height, format, initialData, 0, createParams);
         public grcTexture* Create(string name, TextureCreateParams* createParams = null) => vtable->Create_name(ref this, name, createParams);
+        public grcRenderTarget* CreateRenderTarget(string name, uint a3, uint width, uint height, uint a6, in RenderTargetCreateParams createParams, grcRenderTarget* existingRT = null) => vtable->CreateRenderTarget(ref this, name, a3, width, height, a6, createParams, existingRT);
 
         public static ref grcTextureFactory Instance => ref Unsafe.AsRef<grcTextureFactory>(*(void**)Memory.grcTextureFactory_Instance);
 

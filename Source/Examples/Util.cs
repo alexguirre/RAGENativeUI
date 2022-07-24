@@ -10,6 +10,7 @@
 
     using RAGENativeUI;
     using RAGENativeUI.Elements;
+    using RAGENativeUI.Internals;
 
     internal static class Util
     {
@@ -86,6 +87,8 @@
             {
                 txd.AddTextureFromImage("my_tex8", pngImg);
             }
+
+            txd.AddRenderTargetTexture("my_rt", 512, 512, TextureFormat.B8G8R8A8);
 
             foreach (var texture in txd.Textures)
             {
@@ -170,24 +173,33 @@
                     }
                 }
 
+                var renderId = CustomRenderTargetsHook.SetCurrentRenderTarget(txd, "my_rt");
+                NativeFunction.Natives.SET_TEXT_RENDER_ID(renderId);
+                NativeFunction.Natives.DRAW_RECT(0.5f, 0.5f, 1.0f, 1.0f, 25, 25, 25, 120);
+                NativeFunction.Natives.DRAW_RECT(0.25f, 0.25f, 0.15f, 0.15f, 0, 255, 0, 255);
+                NativeFunction.Natives.DRAW_RECT(0.75f, 0.75f, 0.15f, 0.15f, 255, 0, 0, 255);
+                TextCommands.Display("Time is " + World.TimeOfDay, TextStyle.Default with { Scale = 0.75f, Justification = TextJustification.Center }, 0.5f, 0.5f);
+                NativeFunction.Natives.SET_TEXT_RENDER_ID(1);
+
 
                 var aspectRatio = NativeFunction.Natives.xF1307EF624A80D87<float>(false);
                 var s = 0.1f;
                 //r = (r + 20.0f * Game.FrameTime) % 360.0f;
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex1", 0.25f, 0.2f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex2", 0.25f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex3", 0.25f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex4", 0.25f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex5", 0.75f, 0.2f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex6", 0.75f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex7", 0.75f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
-                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex8", 0.75f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex1", 0.25f, 0.2f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex2", 0.25f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex3", 0.25f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex4", 0.25f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex5", 0.75f, 0.2f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex6", 0.75f, 0.4f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex7", 0.75f, 0.6f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                //NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_tex8", 0.75f, 0.8f, s, s * aspectRatio, rot, 255, 255, 255, 255, false);
+                NativeFunction.Natives.xE7FFAE5EBF23D890("my_rnui_txd", "my_rt", 0.85f, 0.85f, 0.17f, 0.17f * aspectRatio, rot, 255, 255, 255, 255, false);
 
-                var pos = Game.LocalPlayer.Character.GetOffsetPositionFront(2.0f);
+                var pos = Game.LocalPlayer.Character.GetOffsetPositionFront(2.0f) + Vector3.WorldUp;
                 var size = new Vector2(2.0f);
                 var q = Quaternion.FromRotation(new(pitch: 0.0f, roll: 0.0f, yaw: 180.0f)) * Game.LocalPlayer.Character.Orientation;
-                Sprite3D.Draw("my_rnui_txd", "my_tex8", pos, size, q, Color.White, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), backFace: false, loadTexture: false);
-                NativeFunction.Natives.DrawLine(pos, pos+q.ToVector()*5.0f, 255, 0, 0, 255);
+                Sprite3D.Draw("my_rnui_txd", "my_rt", pos, size, q, Color.White, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), backFace: false, loadTexture: false);
+                //NativeFunction.Natives.DrawLine(pos, pos+q.ToVector()*5.0f, 255, 0, 0, 255);
             }
         }
 

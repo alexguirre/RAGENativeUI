@@ -6,7 +6,7 @@
     /// <summary>
     /// Helper class for text command natives.
     /// </summary>
-    internal static class TextCommands
+    public static class TextCommands
     {
         private const string ShortStringFormat = "STRING";
         private const string LongStringFormat = "CELL_EMAIL_BCON";

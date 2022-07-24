@@ -36,6 +36,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EasyHook" Version="2.7.7097" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="ILMerge" Version="3.0.41">
       <PrivateAssets>all</PrivateAssets>

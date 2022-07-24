@@ -40,6 +40,7 @@
 
             EmbeddedTexturesHook.Init(stubAddr);
             TokenParserHook.Init(stubAddr + embeddedTexturesStubSize);
+            CustomRenderTargetsHook.Init();
 
             static int Align(int value)
             {
@@ -60,6 +61,7 @@
                 return;
             }
 
+            CustomRenderTargetsHook.Shutdown();
             TokenParserHook.Shutdown();
             EmbeddedTexturesHook.Shutdown();
 

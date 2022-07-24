@@ -50,7 +50,10 @@
         {
             if (!disposed)
             {
-                TextureDictionary.UnmapTexture(TextureName, native);
+                if (native.Data != IntPtr.Zero)
+                {
+                    TextureDictionary.UnmapTexture(TextureName, native);
+                }
                 disposed = true;
             }
         }
@@ -226,6 +229,26 @@
             }
         }
 
+        public void AddRenderTargetTexture(string name, int width, int height, TextureFormat format)
+        {
+            ThrowIfDisposed();
+            ThrowIfInvalidNewTextureName(name);
+
+            // TODO: check maximum size?
+            if (width <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(width), width, "Width must be greater than 0.");
+            }
+
+            if (height <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(height), height, "Height must be greater than 0.");
+            }
+
+            var tex = Grc.CreateRenderTargetTexture(name, (uint)width, (uint)height, format);
+            Grc.AddTexture(txd, Name, &tex->Base, name);
+        }
+
         private void ThrowIfDisposed()
         {
             if (disposed)
@@ -247,7 +270,7 @@
             }
         }
 
-        private grcTexture* GetTextureOrThrow(string name)
+        internal grcTexture* GetTextureOrThrow(string name)
         {
             if (!txd->Find(name, out var texture))
             {
