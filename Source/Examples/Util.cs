@@ -173,14 +173,14 @@
                     }
                 }
 
-                var renderId = CustomRenderTargetsHook.SetCurrentRenderTarget(txd, "my_rt");
-                NativeFunction.Natives.SET_TEXT_RENDER_ID(renderId);
-                NativeFunction.Natives.DRAW_RECT(0.5f, 0.5f, 1.0f, 1.0f, 25, 25, 25, 120);
-                NativeFunction.Natives.DRAW_RECT(0.25f, 0.25f, 0.15f, 0.15f, 0, 255, 0, 255);
-                NativeFunction.Natives.DRAW_RECT(0.75f, 0.75f, 0.15f, 0.15f, 255, 0, 0, 255);
-                TextCommands.Display("Time is " + World.TimeOfDay, TextStyle.Default with { Scale = 0.75f, Justification = TextJustification.Center }, 0.5f, 0.5f);
-                NativeFunction.Natives.SET_TEXT_RENDER_ID(1);
-
+                var rt = CustomRenderTargetsHook.SetCurrentRenderTarget(txd, "my_rt");
+                using (rt.Use())
+                {
+                    NativeFunction.Natives.DRAW_RECT(0.5f, 0.5f, 1.0f, 1.0f, 25, 25, 25, 120);
+                    NativeFunction.Natives.DRAW_RECT(0.25f, 0.25f, 0.15f, 0.15f, 0, 255, 0, 255);
+                    NativeFunction.Natives.DRAW_RECT(0.75f, 0.75f, 0.15f, 0.15f, 255, 0, 0, 255);
+                    TextCommands.Display("Time is " + World.TimeOfDay, TextStyle.Default with { Scale = 0.75f, Justification = TextJustification.Center }, 0.5f, 0.5f);
+                }
 
                 var aspectRatio = NativeFunction.Natives.xF1307EF624A80D87<float>(false);
                 var s = 0.1f;

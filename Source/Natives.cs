@@ -43,6 +43,7 @@
             }
         }
 
+        public static void SetTextRenderId(uint renderId) => Natives.x5F15302936E07111(renderId);
         public static void SetTextFont(int font) => Natives.x66E0276CC5F6B9DA(font);
         public static void SetTextScale(float scale, float size) => Natives.x07C837F9A01C34C9(scale, size);
         public static void SetTextColour(int r, int g, int b, int a) => Natives.xBE6B23FFA53FB442(r, g, b, a);

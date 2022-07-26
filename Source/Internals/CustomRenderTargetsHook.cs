@@ -82,7 +82,7 @@ public static unsafe class CustomRenderTargetsHook
         public int field_14;
     }
 
-    public static uint SetCurrentRenderTarget(RuntimeTextureDictionary txd, string renderTargetTexture)
+    public static RenderTarget SetCurrentRenderTarget(RuntimeTextureDictionary txd, string renderTargetTexture)
     {
         lock (lockObj)
         {
@@ -90,7 +90,7 @@ public static unsafe class CustomRenderTargetsHook
             renderTargetsData->Texture = texture;
             renderTargetsData->RenderTarget = (grcRenderTarget*)texture;
             renderTargetsData->Id = 12345678;
-            return renderTargetsData->Id;
+            return new(renderTargetsData->Id);
         }
     }
 }
