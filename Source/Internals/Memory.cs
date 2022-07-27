@@ -1,7 +1,9 @@
 ﻿namespace RAGENativeUI.Internals
 {
     using System;
+    using System.Diagnostics;
     using System.Drawing;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
@@ -9,6 +11,9 @@
 
     internal static unsafe class Memory
     {
+        [Conditional("DEBUG")]
+        private static void Log(string str) => Game.LogTrivialDebug($"[RAGENativeUI::{nameof(Memory)}] {str}");
+
         public const int MaxMemoryAddresses = 17;
         public const int MaxInts = 4;
 
@@ -135,7 +140,7 @@
 
             CControlMgr_sm_MappingMgr_KeyboardLayout = FindAddress(() =>
             {
-                IntPtr addr = Game.FindPattern("48 8D 05 ?? ?? ?? ?? 41 B8 ?? ?? ?? ?? 48 C1 E3 04 48 03 D8 44 39 03");
+                IntPtr addr = Game.FindPattern("48 8D 05 ?? ?? ?? ?? 41 B8 ?? ?? ?? ?? 48 C1 ?? 04 48 03 ?? 44 39 ??");
                 if (addr != IntPtr.Zero)
                 {
                     addr += *(int*)(addr + 3) + 7;
@@ -237,7 +242,7 @@
         }
 
         private static int findAddressKey = 0;
-        private static IntPtr FindAddress(Func<IntPtr> find)
+        private static IntPtr FindAddress(Func<IntPtr> find, [CallerLineNumber] int lineNumber = 0)
         {
             int key = findAddressKey++;
 
@@ -249,6 +254,10 @@
             if (Shared.MemoryAddresses[key] == 0)
             {
                 IntPtr addr = find();
+                if (addr == IntPtr.Zero)
+                {
+                    Log($"{nameof(FindAddress)}: ERROR - Address at line #{lineNumber} not found");
+                }
                 Shared.MemoryAddresses[key] = addr.ToInt64();
                 return addr;
             }
@@ -262,6 +271,7 @@
         {
             if (!scrProgramRegistry.Available)
             {
+                Log($"{nameof(FindPatternInScript)}: ERROR - scrProgramRegistry not available");
                 return IntPtr.Zero;
             }
 
@@ -269,6 +279,7 @@
 
             if (prog == null)
             {
+                Log($"{nameof(FindPatternInScript)}: ERROR - scrProgram '{name}' not loaded");
                 return IntPtr.Zero;
             }
 
@@ -286,6 +297,7 @@
                 }
             }
 
+            Log($"{nameof(FindPatternInScript)}: ERROR - Pattern '{string.Join(" ", pattern.Zip(mask, (p, m) => m == 0xFF ? p.ToString("X2") : "??"))}' in scrProgram '{name}' not found");
             return IntPtr.Zero;
         }
 
