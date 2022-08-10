@@ -21,10 +21,10 @@
 
         private void CreateMenuItems()
         {
-            UIMenuItem visualOptionsBindItem = new("Visual Options", $"Demonstrates the visual options of the ~b~{nameof(UIMenu)}~s~ class.");
-            UIMenuItem checkboxBindItem = new("Checkbox", $"Demonstrates the ~b~{nameof(UIMenuCheckboxItem)}~s~ class.");
-            UIMenuItem scrollerBindItem = new("Scroller", $"Demonstrates the ~b~{nameof(UIMenuListScrollerItem<int>)}~s~ and ~b~{nameof(UIMenuNumericScrollerItem<int>)}~s~ classes.");
-            UIMenuItem panelsBindItem = new("Panels", $"Demonstrates the ~b~{nameof(UIMenuPanel)}~s~ classes.");
+            UIMenuItem visualOptionsBindItem = new UIMenuItem("Visual Options", $"Demonstrates the visual options of the ~b~{nameof(UIMenu)}~s~ class.");
+            UIMenuItem checkboxBindItem = new UIMenuItem("Checkbox", $"Demonstrates the ~b~{nameof(UIMenuCheckboxItem)}~s~ class.");
+            UIMenuItem scrollerBindItem = new UIMenuItem("Scroller", $"Demonstrates the ~b~{nameof(UIMenuListScrollerItem<int>)}~s~ and ~b~{nameof(UIMenuNumericScrollerItem<int>)}~s~ classes.");
+            UIMenuItem panelsBindItem = new UIMenuItem("Panels", $"Demonstrates the ~b~{nameof(UIMenuPanel)}~s~ classes.");
 
             UIMenu visualOptionsMenu = new UIMenu(TitleText, SubtitleText + ": VISUAL OPTIONS");
             UIMenu checkboxMenu = new UIMenu(TitleText, SubtitleText + ": CHECKBOX");
