@@ -18,6 +18,7 @@
         public const int MaxInts = 4;
 
         public static readonly int TLS_AllocatorOffset = -1;
+        public static readonly int sysMemAllocator_Allocate_VTableOffset = -1;
         public static readonly IntPtr Screen_GetActualWidth, Screen_GetActualHeight;
         public static readonly IntPtr CTextStyle_ScriptStyle;
         public static readonly IntPtr CScaleformMgr_IsMovieRendering;
@@ -49,6 +50,7 @@
             if (tlsAllocatorOffsetAddr != IntPtr.Zero)
             {
                 TLS_AllocatorOffset = *(int*)(tlsAllocatorOffsetAddr + 1);
+                sysMemAllocator_Allocate_VTableOffset = *(byte*)(tlsAllocatorOffsetAddr + 0x15);
             }
 
             const string GetActualResolutionPattern = "48 83 EC 38 0F 29 74 24 ?? 66 0F 6E 35 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ??";
@@ -682,8 +684,11 @@
     {
         private readonly IntPtr* vtable;
 
-        public void* Allocate(ulong size, ulong align, int subAllocator) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, ulong, ulong, int, void*>)vtable[2])(ref this, size, align, subAllocator);
-        public void Free(void* ptr) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, void*, void>)vtable[4])(ref this, ptr);
+        public void* Allocate(ulong size, ulong align, int subAllocator) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, ulong, ulong, int, void*>)vtable[VTableIndexAllocate])(ref this, size, align, subAllocator);
+        public void Free(void* ptr) => ((delegate* unmanaged[Thiscall]<ref sysMemAllocator, void*, void>)vtable[VTableIndexFree])(ref this, ptr);
+
+        private static readonly int VTableIndexAllocate = Memory.sysMemAllocator_Allocate_VTableOffset / 8;
+        private static readonly int VTableIndexFree = VTableIndexAllocate + 2;
 
         public static ref sysMemAllocator TheAllocator => ref Unsafe.AsRef<sysMemAllocator>((void*)(IntPtr)UsingTls.GetFromMain(Memory.TLS_AllocatorOffset));
     }
