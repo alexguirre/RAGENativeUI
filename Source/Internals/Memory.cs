@@ -193,8 +193,10 @@
 
             if (Shared.MemoryInts[0] == 0 || Shared.MemoryInts[1] == 0 || Shared.MemoryInts[2] == 0)
             {
+                // b2802 introduced three new script opcodes after CALL (0x5D)
+                int fix = Game.ProductVersion.Build >= 2802 ? 3 : 0;
                 IntPtr ingamehudAddr = FindPatternInScript("ingamehud",
-                                                        new byte[] { 0x6F, 0x39, 0x08, 0x5F, 0x00, 0x00, 0x00, 0x5E, 0x00, 0x00, 0x00, 0x47 },
+                                                        new byte[] { (byte)(0x6F + fix), 0x39, 0x08, (byte)(0x5F + fix), 0x00, 0x00, 0x00, (byte)(0x5E + fix), 0x00, 0x00, 0x00, 0x47 },
                                                         new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF });
                 if (ingamehudAddr != IntPtr.Zero)
                 {
