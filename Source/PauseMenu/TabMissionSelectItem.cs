@@ -62,16 +62,30 @@ namespace RAGENativeUI.PauseMenu
         /// Create a mission logo from a game texture.
         /// </summary>
         /// <param name="textureDict">Name of the texture dictionary</param>
-        /// <param name="textureName">Name of the texture.</param>
+        /// <param name="textureName">Name of the texture</param>
         public MissionLogo(string textureDict, string textureName)
         {
             Sprite = new Sprite(textureDict, textureName, Point.Empty, Size.Empty);
             IsGameSprite = true;
         }
 
+        /// <summary>
+        /// Create a mission logo from a game texture.
+        /// Adds a background color (helpful for transparent/cutout textures)
+        /// </summary>
+        /// <param name="textureDict">Name of the texture dictionary</param>
+        /// <param name="textureName">Name of the texture</param>
+        /// <param name="backgroundColor">Background color behind the logo</param>
+        public MissionLogo(string textureDict, string textureName, Color backgroundColor) : this(textureDict, textureName)
+        {
+            BackgroundColor = backgroundColor;
+        }
+
         internal readonly bool IsGameSprite;
         internal readonly Texture Texture;
         internal readonly Sprite Sprite;
+
+        public Color BackgroundColor { get; set; } = Color.Empty;
 
         private Size spriteResolution;
         public Size Resolution
@@ -165,6 +179,7 @@ namespace RAGENativeUI.PauseMenu
         public float DefaultLogoRatio { get; set; } = 2f;
         public bool DynamicLogoRatio { get; set; } = true;
         public bool DynamicMissionWidth { get; set; } = false;
+        public Color LogoBackgroundColor { get; set; } = Color.Empty;
         public int MinMissionWidth { get; set; } = 512;
         public int MaxMissionWidth { get; set; } = 1440;
         public int MaxLogoHeight { get; set; } = 512;
@@ -309,6 +324,16 @@ namespace RAGENativeUI.PauseMenu
                     sprite.Position = missionPoint.AddPoints(new Point(logoPaddingLeft, 0));
                     sprite.Size = logoSize;
                     sprite.Color = Color.FromArgb(blackAlpha, 255, 255, 255);
+
+                    // draw rectangle with background color behind logo, if background color is set on logo or on tab
+                    Color bgColor = curHeist.Logo.BackgroundColor.IsEmpty ? LogoBackgroundColor : curHeist.Logo.BackgroundColor;
+                    if (!bgColor.IsEmpty)
+                    {
+                        bgColor = Color.FromArgb(Math.Max(bgColor.A, blackAlpha), bgColor);
+                        ResRectangle.Draw(sprite.Position, sprite.Size, bgColor);
+                    }
+                    
+                    // draw sprite after drawing background color rectangle
                     sprite.Draw();
                 }
                 else
