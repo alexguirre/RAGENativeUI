@@ -50,7 +50,8 @@
                 new MissionInformation("Mission Four") { Logo = new MissionLogo("candc_default", "dump") },
                 new MissionInformation("Unreasonably long mission name which really ought to be cut off because it's so stupidly long", "Long description with a~n~very very~n~very very~n~very very~n~very very~n~very very very very very very very very very very long string", new Tuple<string, string>[] { Tuple.Create("Objective", "Mission Two Objective"), Tuple.Create("Some more details", "Mission Two Details") }) { Logo = new MissionLogo("candc_casinoheist", "stockade_b") },
                 new MissionInformation("Skipped Mission") { Skipped = true },
-                new MissionInformation("Mission Item", "Mission with a very tall texture", new Tuple<string, string>[] { Tuple.Create("Info 1", "#1"), Tuple.Create("Info 2", "#2"), Tuple.Create("Info 3", "#3") }) { Logo = new MissionLogo("helicopterhud", "hud_vert") },
+                new MissionInformation("Mission Item", "Mission with a very tall texture", new Tuple<string, string>[] { Tuple.Create("Info 1", "#1"), Tuple.Create("Info 2", "#2"), Tuple.Create("Info 3", "#3") }) { Logo = new MissionLogo("helicopterhud", "hud_vert", System.Drawing.Color.Red) },
+                new MissionInformation("Embedded Texture", "This texture is embedded in a ydr") { Logo = new MissionLogo("embed:prop_copier_01", "prop_photocopier") },
             };
             tabView.AddTab(missionSelectTab = new TabMissionSelectItem("Static Mission Select Tab", missionsInfo));
             missionSelectTab.OnItemSelect += (info) =>
