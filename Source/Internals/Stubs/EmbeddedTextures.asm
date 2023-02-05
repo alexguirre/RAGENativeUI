@@ -80,8 +80,8 @@ pgDictionary_Values:            equ 0x30
 atArray_Items:                  equ 0x0
 atArray_Count:                  equ 0x8
 
-fwAssetStore_FindSlot:          equ 0x10
-fwAssetStore_GetPtr:            equ 0x40
+fwAssetStore_FindSlot:          equ 0x40
+fwAssetStore_GetPtr:            equ 0x70
 
 ; params
 ;   const char* texture_dictionary  - rcx
