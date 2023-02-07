@@ -769,11 +769,11 @@
         [StructLayout(LayoutKind.Explicit)]
         private struct VTable
         {
-            [FieldOffset(8 * 5)] public delegate* unmanaged[Thiscall]<ref grcTexture, uint> GetWidth;
-            [FieldOffset(8 * 6)] public delegate* unmanaged[Thiscall]<ref grcTexture, uint> GetHeight;
+            [FieldOffset(8 * 11)] public delegate* unmanaged[Thiscall]<ref grcTexture, uint> GetWidth;
+            [FieldOffset(8 * 12)] public delegate* unmanaged[Thiscall]<ref grcTexture, uint> GetHeight;
 
-            [FieldOffset(8 * 25)] public delegate* unmanaged[Thiscall]<ref grcTexture, int, int, out grcMapData, MapFlags, byte> Map;
-            [FieldOffset(8 * 26)] public delegate* unmanaged[Thiscall]<ref grcTexture, in grcMapData, void> Unmap;
+            [FieldOffset(8 * 31)] public delegate* unmanaged[Thiscall]<ref grcTexture, int, int, out grcMapData, MapFlags, byte> Map;
+            [FieldOffset(8 * 32)] public delegate* unmanaged[Thiscall]<ref grcTexture, in grcMapData, void> Unmap;
         }
 
         [FieldOffset(0x00)] private readonly VTable* vtable;
@@ -939,24 +939,24 @@
         [StructLayout(LayoutKind.Explicit)]
         private struct VTable
         {
-            [FieldOffset(8 * 1)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, string, void> Register;
-            [FieldOffset(8 * 2)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, string, void> FindSlot;
+            [FieldOffset(8 * 7)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, string, void> Register;
+            [FieldOffset(8 * 8)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, string, void> FindSlot;
 
-            [FieldOffset(8 * 4)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, void> RemoveSlot;
+            [FieldOffset(8 * 10)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, void> RemoveSlot;
 
-            [FieldOffset(8 * 8)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*> GetPtr;
+            [FieldOffset(8 * 14)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*> GetPtr;
 
-            [FieldOffset(8 * 16)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, strRefKind, void> AddRef;
-            [FieldOffset(8 * 17)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, strRefKind, void> RemoveRef;
+            [FieldOffset(8 * 22)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, strRefKind, void> AddRef;
+            [FieldOffset(8 * 23)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, strRefKind, void> RemoveRef;
 
-            [FieldOffset(8 * 19)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, int> GetNumRefs;
+            [FieldOffset(8 * 25)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, int> GetNumRefs;
 
-            [FieldOffset(8 * 32)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, uint> GetSize;
-            [FieldOffset(8 * 33)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, uint> GetNumUsedSlots;
+            [FieldOffset(8 * 38)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, uint> GetSize;
+            [FieldOffset(8 * 39)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, uint> GetNumUsedSlots;
 
-            [FieldOffset(8 * 37)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*, void> Set;
+            [FieldOffset(8 * 43)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, strLocalIndex, pgDictionary<grcTexture>*, void> Set;
 
-            [FieldOffset(8 * 39)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, in uint, void> AddSlot;
+            [FieldOffset(8 * 45)] public delegate* unmanaged[Thiscall]<ref fwTxdStore, out strLocalIndex, in uint, void> AddSlot;
         }
 
         private readonly VTable* vtable;
