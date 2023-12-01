@@ -13,6 +13,9 @@ RAGENativeUI is a library for [RAGEPluginHook](https://ragepluginhook.net/) that
 * [Instructional Buttons](https://github.com/alexguirre/RAGENativeUI/wiki/Instructional-Buttons-Overview)
 * [Big Messages](https://github.com/alexguirre/RAGENativeUI/wiki/Big-Messages-Overview)
 
+### Installation
+Copy RAGENativeUI.dll to main GTAV directory.
+
 ### Special Thanks
 
 Thanks to [Guad](https://github.com/Guad/) for creating [NativeUI](https://github.com/Guad/NativeUI). This project started as a fork of NativeUI.
