@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2016-2023 alexguirre
+Copyright (c) 2016-2024 alexguirre
 
 Copyright (c) 2016 Guad
 
