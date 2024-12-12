@@ -6,7 +6,6 @@
     using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-
     using Rage;
 
     internal static unsafe class Memory
@@ -166,7 +165,7 @@
                 {
                     CTextFile_GetStringByHash = addr - 0x19;
                     CTextFile_sm_CriticalSection = addr + *(int*)(addr + 3) + 7;
-                    CTextFile_OverridesTextMapOffset = *(int*)(addr + 0x19);
+                    CTextFile_OverridesTextMapOffset = *(int*)(addr + (Game.ProductVersion.Build >= 3407 ? 0x2D : 0x19));
                 }
             }
 
@@ -650,7 +649,10 @@
         public static ref CRITICAL_SECTION CriticalSection => ref Unsafe.AsRef<CRITICAL_SECTION>((void*)Memory.CTextFile_sm_CriticalSection);
 
         public static readonly bool Available = Memory.CTextFile_sm_Instance != IntPtr.Zero &&
-                                                Memory.CTextFile_OverridesTextMapOffset != -1 &&
+                                                // Try to safe-guard against code changing and reading the wrong value for OverridesTextMapOffset
+                                                // From b1011 to b3407 it moved from 0x258 - 0x288, if we read a value beyond 0x800 (arbitrary limit) very likely it is wrong
+                                                Memory.CTextFile_OverridesTextMapOffset > 0 &&
+                                                Memory.CTextFile_OverridesTextMapOffset <= 0x800 &&
                                                 Memory.CTextFile_GetStringByHash != IntPtr.Zero &&
                                                 Memory.CTextFile_sm_CriticalSection != IntPtr.Zero;
     }
